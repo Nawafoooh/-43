@@ -1,0 +1,649 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { Book, Users, Award, Clock, LogOut, Save, ChevronRight, Trophy, Star, CheckCircle, AlertTriangle } from 'lucide-react';
+
+const NafisStudentPlatform = () => {
+  const [currentView, setCurrentView] = useState('registration');
+  const [currentStudent, setCurrentStudent] = useState(null);
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [studentAnswers, setStudentAnswers] = useState([]);
+  const [timeRemaining, setTimeRemaining] = useState(120);
+  const [notification, setNotification] = useState({ show: false, message: '', type: 'info' });
+  const [stats, setStats] = useState({ totalQuestions: 0, activeStudents: 0, totalPoints: 0 });
+  const [competitionStatus, setCompetitionStatus] = useState({ isOpen: false, message: '', countdown: '' });
+
+  const MAX_SCORE = 107;
+
+  const defaultQuestions = [
+    {
+      id: 1,
+      question: "ما هو حاصل ضرب 7 × 8؟",
+      options: ["54", "56", "58", "60"],
+      correct: 1,
+      subject: "رياضيات"
+    },
+    {
+      id: 2,
+      question: "ما هي عاصمة المملكة العربية السعودية؟",
+      options: ["جدة", "الرياض", "الدمام", "مكة المكرمة"],
+      correct: 1,
+      subject: "جغرافيا"
+    },
+    {
+      id: 3,
+      question: "كم عدد أركان الإسلام؟",
+      options: ["4", "5", "6", "7"],
+      correct: 1,
+      subject: "تربية إسلامية"
+    },
+    {
+      id: 4,
+      question: "ما هو أكبر كوكب في النظام الشمسي؟",
+      options: ["الأرض", "المشتري", "زحل", "المريخ"],
+      correct: 1,
+      subject: "علوم"
+    },
+    {
+      id: 5,
+      question: "من هو أول خليفة راشد؟",
+      options: ["عمر بن الخطاب", "أبو بكر الصديق", "عثمان بن عفان", "علي بن أبي طالب"],
+      correct: 1,
+      subject: "تاريخ"
+    }
+  ];
+
+  useEffect(() => {
+    setQuestions(defaultQuestions);
+    setStats({
+      totalQuestions: defaultQuestions.length,
+      activeStudents: 0,
+      totalPoints: 0
+    });
+    
+    checkCompetitionStatus();
+    const interval = setInterval(checkCompetitionStatus, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    let timer;
+    if (currentView === 'test' && timeRemaining > 0) {
+      timer = setInterval(() => {
+        setTimeRemaining(prev => {
+          if (prev <= 1) {
+            handleTimeout();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [currentView, timeRemaining]);
+
+  const checkCompetitionStatus = () => {
+    const now = new Date();
+    const day = now.getDay();
+    const hours = now.getHours();
+
+    let isOpen = false;
+    if (day === 0 && hours >= 10) isOpen = true;
+    else if (day >= 1 && day <= 2) isOpen = true;
+    else if (day === 3 && hours < 22) isOpen = true;
+
+    const nextEventDate = day < 3 || (day === 3 && hours < 22) 
+      ? new Date(now.getFullYear(), now.getMonth(), now.getDate() + (3 - day), 22, 0, 0)
+      : new Date(now.getFullYear(), now.getMonth(), now.getDate() + (7 - day), 10, 0, 0);
+
+    const diff = nextEventDate - now;
+    const daysLeft = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hoursLeft = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutesLeft = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    let countdown = '';
+    if (daysLeft > 0) countdown = `${daysLeft} يوم و ${hoursLeft} ساعة`;
+    else if (hoursLeft > 0) countdown = `${hoursLeft} ساعة و ${minutesLeft} دقيقة`;
+    else countdown = `${minutesLeft} دقيقة`;
+
+    const message = isOpen 
+      ? '✅ المسابقة الأسبوعية مفتوحة الآن!'
+      : '⏸️ المسابقة مغلقة مؤقتاً';
+
+    setCompetitionStatus({ isOpen, message, countdown });
+  };
+
+  const showNotification = (message, type = 'info') => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => setNotification({ show: false, message: '', type: 'info' }), 3000);
+  };
+
+  const generateStudentCode = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
+  const handleRegister = () => {
+    const name = document.getElementById('studentName')?.value.trim();
+    const grade = document.getElementById('studentGrade')?.value;
+
+    if (!name || !grade) {
+      showNotification('يرجى إدخال جميع البيانات المطلوبة', 'error');
+      return;
+    }
+
+    const nameParts = name.split(' ').filter(part => part.length > 0);
+    if (nameParts.length < 3) {
+      showNotification('يرجى إدخال الاسم الرباعي كاملاً', 'error');
+      return;
+    }
+
+    const code = generateStudentCode();
+    const newStudent = {
+      name,
+      grade,
+      code,
+      score: 0,
+      createdAt: new Date()
+    };
+
+    setCurrentStudent(newStudent);
+    showNotification('تم التسجيل بنجاح!', 'success');
+    setCurrentView('dashboard');
+  };
+
+  const handleLogin = () => {
+    const code = document.getElementById('loginCode')?.value.trim();
+
+    if (!code || code.length !== 6) {
+      showNotification('يرجى إدخال رقم صحيح مكون من 6 أرقام', 'error');
+      return;
+    }
+
+    showNotification(`مرحباً بك!`, 'success');
+    setCurrentView('dashboard');
+  };
+
+  const startTest = () => {
+    if (!currentStudent) {
+      showNotification('يرجى تسجيل الدخول أولاً', 'error');
+      return;
+    }
+
+    if (!competitionStatus.isOpen) {
+      showNotification('المسابقة مغلقة حالياً', 'error');
+      return;
+    }
+
+    setCurrentQuestion(0);
+    setStudentAnswers([]);
+    setTimeRemaining(120);
+    setCurrentView('test');
+  };
+
+  const selectOption = (index) => {
+    const newAnswers = [...studentAnswers];
+    newAnswers[currentQuestion] = index;
+    setStudentAnswers(newAnswers);
+  };
+
+  const handleTimeout = () => {
+    showNotification('⏰ انتهى الوقت!', 'warning');
+    setTimeout(() => {
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(prev => prev + 1);
+        setTimeRemaining(120);
+      } else {
+        setCurrentView('dashboard');
+      }
+    }, 2000);
+  };
+
+  const nextQuestion = () => {
+    if (studentAnswers[currentQuestion] === undefined) {
+      showNotification('يرجى اختيار إجابة', 'error');
+      return;
+    }
+
+    const isCorrect = studentAnswers[currentQuestion] === questions[currentQuestion].correct;
+    
+    if (isCorrect) {
+      setCurrentStudent(prev => ({ ...prev, score: (prev.score || 0) + 1 }));
+      showNotification('إجابة صحيحة! +1 نقطة', 'success');
+    } else {
+      showNotification('إجابة خاطئة!', 'error');
+    }
+
+    setTimeout(() => {
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(prev => prev + 1);
+        setTimeRemaining(120);
+      } else {
+        showNotification('🎉 تم الانتهاء من جميع الأسئلة!', 'success');
+        setCurrentView('dashboard');
+      }
+    }, 2000);
+  };
+
+  const saveAndExit = () => {
+    showNotification('تم حفظ التقدم بنجاح!', 'success');
+    setCurrentView('dashboard');
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 to-purple-900 p-4">
+      <style>{`
+        @keyframes slideIn {
+          from { transform: translateX(400px); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        .notification-enter { animation: slideIn 0.3s ease-out; }
+      `}</style>
+
+      {notification.show && (
+        <div className={`fixed top-5 right-5 z-50 px-6 py-4 rounded-xl shadow-2xl notification-enter ${
+          notification.type === 'success' ? 'bg-gradient-to-r from-green-500 to-green-600' :
+          notification.type === 'error' ? 'bg-gradient-to-r from-red-500 to-red-600' :
+          notification.type === 'warning' ? 'bg-gradient-to-r from-orange-500 to-orange-600' :
+          'bg-gradient-to-r from-blue-500 to-blue-600'
+        } text-white font-semibold`}>
+          {notification.message}
+        </div>
+      )}
+
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-purple-700 to-purple-900 rounded-3xl p-8 mb-8 shadow-2xl">
+          <div className="text-center">
+            <div className="flex justify-center items-center gap-4 mb-6">
+              <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center text-white text-5xl font-bold shadow-lg">
+                ن
+              </div>
+              <div>
+                <h1 className="text-5xl font-extrabold text-white mb-2">نافس</h1>
+                <div className="text-xl text-purple-200 font-semibold">🎯 نظام التعلم التفاعلي المتطور</div>
+              </div>
+            </div>
+            
+            <div className="bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl p-6 max-w-2xl mx-auto">
+              <div className="text-white space-y-2">
+                <p className="font-bold text-lg">🇸🇦 المملكة العربية السعودية - وزارة التعليم</p>
+                <p>📍 قطاعي أحد والعوالي</p>
+                <p>🏫 <strong>المتوسطة الثالثة والأربعون - بنات</strong></p>
+                <p>👩‍💼 <strong>مديرة المدرسة: منى الرشيدي</strong></p>
+              </div>
+            </div>
+
+            <div className="flex justify-center gap-6 mt-6 flex-wrap">
+              <div className="bg-white/20 backdrop-blur-lg border border-white/30 px-6 py-4 rounded-2xl min-w-[140px]">
+                <div className="text-3xl font-bold text-white">{stats.totalQuestions}</div>
+                <div className="text-sm text-purple-200">إجمالي الأسئلة</div>
+              </div>
+              <div className="bg-white/20 backdrop-blur-lg border border-white/30 px-6 py-4 rounded-2xl min-w-[140px]">
+                <div className="text-3xl font-bold text-white">{stats.activeStudents}</div>
+                <div className="text-sm text-purple-200">طالبة نشطة</div>
+              </div>
+              <div className="bg-white/20 backdrop-blur-lg border border-white/30 px-6 py-4 rounded-2xl min-w-[140px]">
+                <div className="text-3xl font-bold text-white">{stats.totalPoints}</div>
+                <div className="text-sm text-purple-200">النقاط المجمعة</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Registration */}
+        {currentView === 'registration' && (
+          <div className="bg-white rounded-3xl p-8 shadow-2xl">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center text-white">
+                <Users size={24} />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800">التسجيل في المسابقة</h2>
+            </div>
+
+            <div className="space-y-5">
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">الاسم الرباعي</label>
+                <input
+                  id="studentName"
+                  type="text"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+                  placeholder="أدخل اسمك الرباعي"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">الصف</label>
+                <select
+                  id="studentGrade"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+                >
+                  <option value="">اختر الصف</option>
+                  <option value="1">الصف الأول المتوسط</option>
+                  <option value="2">الصف الثاني المتوسط</option>
+                  <option value="3">الصف الثالث المتوسط</option>
+                </select>
+              </div>
+
+              <button
+                onClick={handleRegister}
+                className="w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all transform hover:-translate-y-1"
+              >
+                تسجيل
+              </button>
+
+              <div className="text-center pt-4">
+                <p className="text-gray-600 mb-3">لديك حساب مسبقاً؟</p>
+                <button
+                  onClick={() => setCurrentView('login')}
+                  className="w-full bg-gradient-to-r from-gray-500 to-gray-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
+                >
+                  تسجيل الدخول
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Login */}
+        {currentView === 'login' && (
+          <div className="bg-white rounded-3xl p-8 shadow-2xl">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white">
+                <Book size={24} />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800">تسجيل الدخول</h2>
+            </div>
+
+            <div className="space-y-5">
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">رقم الطالبة (6 أرقام)</label>
+                <input
+                  id="loginCode"
+                  type="text"
+                  maxLength="6"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors"
+                  placeholder="أدخل رقم الطالبة"
+                />
+              </div>
+
+              <button
+                onClick={handleLogin}
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all transform hover:-translate-y-1"
+              >
+                دخول
+              </button>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 mt-6">
+                <h4 className="text-blue-800 font-bold mb-3 text-center">📌 نسيت رقم الطالبة؟</h4>
+                <p className="text-gray-700 text-center mb-4">للحصول على رقمك، يرجى التواصل مع:</p>
+                <div className="bg-white rounded-xl p-4 text-center">
+                  <p className="font-bold text-purple-600 text-lg">الأستاذة ريم العنزي</p>
+                  <p className="text-gray-600 text-sm mt-2">📍 مكتب الأستاذة ريم العنزي - المبنى الرئيسي</p>
+                </div>
+                <p className="text-gray-600 text-sm text-center mt-3">⏰ أوقات الدوام: الأحد - الخميس (7:00 ص - 2:00 م)</p>
+              </div>
+
+              <div className="text-center pt-4">
+                <p className="text-gray-600 mb-3">ليس لديك حساب؟</p>
+                <button
+                  onClick={() => setCurrentView('registration')}
+                  className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
+                >
+                  إنشاء حساب جديد
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Dashboard */}
+        {currentView === 'dashboard' && currentStudent && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-3xl p-8 shadow-2xl">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white">
+                  <Award size={24} />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800">لوحة الطالبة</h2>
+              </div>
+
+              <div className={`${competitionStatus.isOpen ? 'bg-gradient-to-r from-purple-600 to-purple-800' : 'bg-gradient-to-r from-gray-500 to-gray-600'} rounded-2xl p-6 mb-6 text-white`}>
+                <h3 className="text-2xl font-bold mb-3">{competitionStatus.message}</h3>
+                <p className="text-lg mb-2">{competitionStatus.isOpen ? '⏰ الوقت المتبقي:' : '🚀 العد التنازلي للافتتاح:'}</p>
+                <div className="text-3xl font-bold">{competitionStatus.countdown}</div>
+                <p className="text-sm opacity-90 mt-3">
+                  {competitionStatus.isOpen ? 'تنتهي يوم الأربعاء الساعة 10:00 مساءً' : 'المسابقة تفتح يوم الأحد الساعة 10:00 صباحاً'}
+                </p>
+              </div>
+
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold mb-2">مرحباً {currentStudent.name}</h3>
+                <p className="text-gray-600">الصف: {currentStudent.grade}</p>
+                {currentStudent.code && <p className="text-gray-600">رقم الطالبة: {currentStudent.code}</p>}
+              </div>
+
+              <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-6 text-white text-center mb-6">
+                <h3 className="text-xl font-bold mb-2">نقاطك الحالية</h3>
+                <div className="text-5xl font-bold">{currentStudent.score || 0}</div>
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={startTest}
+                  disabled={!competitionStatus.isOpen}
+                  className={`w-full py-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
+                    competitionStatus.isOpen
+                      ? 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:shadow-lg transform hover:-translate-y-1'
+                      : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                  }`}
+                >
+                  <CheckCircle size={20} />
+                  {competitionStatus.isOpen ? 'بدء الاختبار' : '🔒 المسابقة مغلقة'}
+                </button>
+
+                <button
+                  onClick={() => setCurrentView('results')}
+                  className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <Trophy size={20} />
+                  عرض النتائج
+                </button>
+
+                <button
+                  onClick={() => {
+                    setCurrentStudent(null);
+                    setCurrentView('registration');
+                  }}
+                  className="w-full bg-gradient-to-r from-gray-500 to-gray-600 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <LogOut size={20} />
+                  تسجيل الخروج
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Test Section */}
+        {currentView === 'test' && (
+          <div className="bg-white rounded-3xl p-8 shadow-2xl">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white">
+                <Book size={24} />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800">بنك الأسئلة</h2>
+            </div>
+
+            <div className={`${timeRemaining <= 30 ? 'bg-gradient-to-r from-red-500 to-red-600' : 'bg-gradient-to-r from-red-500 to-red-600'} rounded-2xl p-6 mb-6 text-white text-center`}>
+              <div className="text-sm mb-2">⏱️ الوقت المتبقي</div>
+              <div className="text-4xl font-bold">{formatTime(timeRemaining)}</div>
+              <div className="text-sm mt-2">
+                {timeRemaining <= 10 ? '⚠️ الوقت ينفد! أسرع!' : timeRemaining <= 30 ? '⏰ أقل من 30 ثانية!' : 'أجب قبل انتهاء الوقت!'}
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-green-500 to-green-600 transition-all duration-300"
+                  style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            {questions[currentQuestion] && (
+              <div className="bg-gray-50 rounded-2xl p-6 mb-6">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="bg-gradient-to-r from-purple-600 to-purple-800 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                    {questions[currentQuestion].subject}
+                  </span>
+                  <span className="text-gray-600 text-sm">
+                    السؤال {currentQuestion + 1} من {questions.length}
+                  </span>
+                </div>
+
+                <div className="text-xl font-semibold text-gray-800 mb-6">
+                  <strong>السؤال {currentQuestion + 1}:</strong> {questions[currentQuestion].question}
+                </div>
+
+                <div className="space-y-3">
+                  {questions[currentQuestion].options.map((option, index) => (
+                    <div
+                      key={index}
+                      onClick={() => selectOption(index)}
+                      className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                        studentAnswers[currentQuestion] === index
+                          ? 'border-purple-600 bg-purple-600 text-white'
+                          : 'border-gray-200 bg-white hover:border-purple-300 hover:bg-purple-50'
+                      }`}
+                    >
+                      {String.fromCharCode(65 + index)}) {option}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button
+                onClick={saveAndExit}
+                className="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+              >
+                <Save size={20} />
+                حفظ وخروج
+              </button>
+
+              <button
+                onClick={nextQuestion}
+                className={`flex-1 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 ${
+                  currentQuestion === questions.length - 1
+                    ? 'bg-gradient-to-r from-green-500 to-green-600'
+                    : 'bg-gradient-to-r from-purple-600 to-purple-800'
+                }`}
+              >
+                {currentQuestion === questions.length - 1 ? 'إنهاء الاختبار' : 'التالي'}
+                <ChevronRight size={20} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Results Section */}
+        {currentView === 'results' && (
+          <div className="bg-white rounded-3xl p-8 shadow-2xl">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl flex items-center justify-center text-white">
+                <Trophy size={24} />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800">النتائج والترتيب</h2>
+            </div>
+
+            <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-6 mb-6 text-white text-center">
+              <h3 className="text-xl font-bold mb-3">⚠️ تحذير هام لجميع الطالبات</h3>
+              <p className="text-lg leading-relaxed">
+                أي محاولة للتلاعب بالدرجات أو الحصول على درجات أعلى من {MAX_SCORE} ستؤدي إلى:<br/>
+                🚫 الاستبعاد الفوري من المسابقة<br/>
+                ⛔ إلغاء جميع النقاط المكتسبة<br/>
+                📚 ثقي بقدراتك واعتمدي على نفسك
+              </p>
+            </div>
+
+            <div className="bg-gradient-to-r from-purple-600 to-purple-800 rounded-t-2xl p-5 text-white text-center">
+              <h3 className="text-xl font-bold">🏆 ترتيب الصف</h3>
+            </div>
+            <div className="border-2 border-purple-200 rounded-b-2xl overflow-hidden mb-6">
+              <div className="divide-y divide-gray-200">
+                {[1, 2, 3, 4, 5].map((rank) => (
+                  <div key={rank} className={`p-4 flex justify-between items-center ${
+                    rank === 1 ? 'bg-gradient-to-r from-yellow-400 to-yellow-500' :
+                    rank === 2 ? 'bg-gradient-to-r from-gray-300 to-gray-400' :
+                    rank === 3 ? 'bg-gradient-to-r from-orange-400 to-orange-500' :
+                    'bg-white hover:bg-gray-50'
+                  } transition-colors`}>
+                    <div className="font-bold text-lg">{rank}</div>
+                    <div className="flex-1 mx-4">
+                      <div className="font-semibold">
+                        {rank === 1 ? 'الطالبة الأولى' : 
+                         rank === 2 ? 'الطالبة الثانية' :
+                         rank === 3 ? 'الطالبة الثالثة' :
+                         `الطالبة ${rank}`}
+                      </div>
+                    </div>
+                    <div className="font-bold text-lg">
+                      {Math.floor(Math.random() * 50) + 30} نقطة
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-purple-600 to-purple-800 rounded-t-2xl p-5 text-white text-center">
+              <h3 className="text-xl font-bold">🏆 ترتيب المدرسة</h3>
+            </div>
+            <div className="border-2 border-purple-200 rounded-b-2xl overflow-hidden mb-6">
+              <div className="divide-y divide-gray-200">
+                {[1, 2, 3, 4, 5].map((rank) => (
+                  <div key={rank} className={`p-4 flex justify-between items-center ${
+                    rank === 1 ? 'bg-gradient-to-r from-yellow-400 to-yellow-500' :
+                    rank === 2 ? 'bg-gradient-to-r from-gray-300 to-gray-400' :
+                    rank === 3 ? 'bg-gradient-to-r from-orange-400 to-orange-500' :
+                    'bg-white hover:bg-gray-50'
+                  } transition-colors`}>
+                    <div className="font-bold text-lg">{rank}</div>
+                    <div className="flex-1 mx-4">
+                      <div className="font-semibold">
+                        الطالبة {rank} - الصف {Math.floor(Math.random() * 3) + 1}
+                      </div>
+                    </div>
+                    <div className="font-bold text-lg">
+                      {Math.floor(Math.random() * 60) + 40} نقطة
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={() => setCurrentView('dashboard')}
+              className="w-full bg-gradient-to-r from-purple-600 to-purple-800 text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-all"
+            >
+              العودة للوحة الطالبة
+            </button>
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="text-center mt-10 text-white">
+          <p className="text-sm">تنفيذ وإشراف الأستاذة ريم العنزي</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default NafisStudentPlatform;
