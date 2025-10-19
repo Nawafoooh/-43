@@ -803,16 +803,28 @@
                 return;
             }
 
-            if (currentStudent.lastQuestion !== undefined && currentStudent.lastQuestion > 0) {
-                const resume = confirm(`هل تريد متابعة من حيث توقفت؟\nالسؤال: ${currentStudent.lastQuestion + 1} من ${questions.length}\n\nاضغط "موافق" للمتابعة، أو "إلغاء" للبدء من جديد`);
-                if (resume) {
-                    currentQuestion = currentStudent.lastQuestion;
-                    studentAnswers = currentStudent.lastAnswers || [];
-                } else {
-                    currentQuestion = 0;
-                    studentAnswers = [];
-                }
+            // ✅ إصلاح الثغرة: إذا كانت الطالبة قد بدأت الاختبار سابقاً، يجب عليها المتابعة فقط
+            if (currentStudent.lastQuestion !== undefined && currentStudent.lastQuestion > 0 && currentStudent.lastQuestion < questions.length) {
+                // إجبار الطالبة على المتابعة من حيث توقفت - بدون خيار البدء من جديد
+                showNotification('📚 سيتم استكمال الاختبار من حيث توقفت', 'info');
+                currentQuestion = currentStudent.lastQuestion;
+                studentAnswers = currentStudent.lastAnswers || [];
+                
+                // إظهار رسالة توضيحية
+                setTimeout(() => {
+                    alert(
+                        '📚 متابعة الاختبار\n\n' +
+                        `سيتم استكمال الاختبار من السؤال: ${currentStudent.lastQuestion + 1}\n` +
+                        `من أصل: ${questions.length}\n\n` +
+                        '⚠️ لضمان عدالة المسابقة:\n' +
+                        '• لا يمكن البدء من جديد\n' +
+                        '• يجب إكمال جميع الأسئلة المتبقية\n' +
+                        '• النقاط المكتسبة محفوظة\n\n' +
+                        'حظاً موفقاً! 🌟'
+                    );
+                }, 100);
             } else {
+                // أول مرة تبدأ الطالبة الاختبار
                 currentQuestion = 0;
                 studentAnswers = [];
             }
