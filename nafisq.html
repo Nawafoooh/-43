@@ -43,26 +43,6 @@
             flex-wrap: wrap;
         }
 
-        .logo {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            border-radius: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 40px;
-            font-weight: bold;
-            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
         .title-section h1 {
             font-size: 3.5em;
             margin-bottom: 10px;
@@ -433,7 +413,6 @@
         <!-- Header -->
         <div class="header">
             <div class="logo-section">
-                <div class="logo">ن</div>
                 <div class="title-section">
                     <h1>نافس</h1>
                     <div class="subtitle">🎯 نظام التعلم التفاعلي المتطور</div>
@@ -499,6 +478,13 @@
                 <input type="text" id="loginCode" placeholder="أدخل رقم الطالبة" maxlength="6">
             </div>
             <button class="btn" onclick="loginStudent()">دخول</button>
+
+            <!-- زر للاختبار السريع (يمكن إزالته في النسخة النهائية) -->
+            <div style="text-align:center;margin-top:20px;padding:15px;background:#fff3cd;border-radius:10px;border:2px dashed #f39c12">
+                <p style="color:#856404;font-weight:bold;margin-bottom:10px">🧪 للاختبار فقط</p>
+                <button class="btn warning" onclick="testLogin()" style="margin:0">دخول تجريبي سريع</button>
+                <p style="color:#666;font-size:0.85em;margin-top:8px">⚠️ هذا الخيار للاختبار فقط - احذفه في النسخة النهائية</p>
+            </div>
 
             <div class="alert-info" style="margin-top:25px;text-align:center">
                 <h4 style="color:#0c5460;margin-bottom:10px">📌 نسيت رقم الطالبة؟</h4>
@@ -791,9 +777,13 @@
             }
 
             try {
+                console.log('🔍 جاري البحث عن الطالبة برقم:', code);
+                
                 // البحث عن الطالبة في Firebase
                 const studentsQuery = query(collection(db, 'students'), where('code', '==', code));
                 const querySnapshot = await getDocs(studentsQuery);
+
+                console.log('📊 نتائج البحث:', querySnapshot.size);
 
                 if (querySnapshot.empty) {
                     showNotification('❌ رقم الطالبة غير موجود في النظام', 'error');
@@ -814,7 +804,17 @@
 
                 // تحميل بيانات الطالبة
                 const studentDoc = querySnapshot.docs[0];
-                currentStudent = { id: studentDoc.id, ...studentDoc.data() };
+                const studentData = studentDoc.data();
+                
+                console.log('✅ تم العثور على الطالبة:', studentData.name);
+                
+                currentStudent = { 
+                    id: studentDoc.id, 
+                    ...studentData,
+                    // تحويل Timestamp إلى Date إذا لزم الأمر
+                    createdAt: studentData.createdAt?.toDate ? studentData.createdAt.toDate() : studentData.createdAt,
+                    lastActive: studentData.lastActive?.toDate ? studentData.lastActive.toDate() : studentData.lastActive
+                };
 
                 // التحقق من الاستبعاد
                 if (currentStudent.disqualified === true) {
@@ -833,13 +833,14 @@
                     lastActive: new Date()
                 });
 
+                console.log('✅ تم تسجيل الدخول بنجاح');
                 showNotification(`مرحباً ${currentStudent.name}!`, 'success');
                 updateDashboardInfo();
                 showSection('dashboard');
 
             } catch (error) {
-                console.error('Error logging in:', error);
-                showNotification('حدث خطأ أثناء تسجيل الدخول', 'error');
+                console.error('❌ خطأ في تسجيل الدخول:', error);
+                showNotification('حدث خطأ أثناء تسجيل الدخول: ' + error.message, 'error');
             }
         };
 
@@ -1262,6 +1263,24 @@
         window.switchToRegister = function() {
             showSection('registration');
             showNotification('أنشئ حساب جديد بالاسم الرباعي', 'info');
+        };
+
+        // دخول تجريبي سريع (للاختبار فقط - احذفه في النسخة النهائية)
+        window.testLogin = function() {
+            console.log('🧪 دخول تجريبي سريع');
+            currentStudent = {
+                id: 'test123',
+                name: 'طالبة تجريبية',
+                grade: '1',
+                code: '999999',
+                score: 0,
+                testCompleted: false,
+                disqualified: false
+            };
+            
+            showNotification('✅ تم الدخول التجريبي بنجاح', 'success');
+            updateDashboardInfo();
+            showSection('dashboard');
         };
 
         // تحديث معلومات لوحة التحكم
