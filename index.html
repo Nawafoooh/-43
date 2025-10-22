@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>Telegram Trading Screener</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body{
+      font-family:Tahoma, sans-serif;
+      background:#111;
+      color:#eee;
+      text-align:center;
+      padding:20px;
+    }
+    textarea{
+      width:90%;
+      height:160px;
+      margin:15px auto;
+      font-size:15px;
+      padding:10px;
+      border-radius:6px;
+      border:none;
+      resize:vertical;
+    }
+    button{
+      padding:12px 28px;
+      font-size:18px;
+      background:#0ebeff;
+      color:#000;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+    }
+    #result{
+      margin-top:25px;
+      text-align:right;
+      white-space:pre-line;
+      font-size:16px;
+      line-height:1.7;
+    }
+    .sig-sell{color:#ff4757;font-weight:bold}
+    .sig-buy{color:#2ed573;font-weight:bold}
+  </style>
+</head>
+<body>
+
+  <h1>📊 محلل بيانات التليغرام</h1>
+  <textarea id="raw" placeholder="انسخ البيانات من التليغرام والصقها هنا..."></textarea>
+  <br>
+  <button onclick="analyze()">🔍 حلل الآن</button>
+  <div id="result"></div>
+
+  <script>
+    function analyze(){
+      const raw=document.getElementById("raw").value;
+      if(!raw.trim()){alert("الرجاء لصق البيانات أولًا");return;}
+      const lines=raw.split('\n');
+      let bestSell=null, bestBuy=null;
+
+      lines.forEach(l=>{
+        const volMatch =l.match(/([\d.]+)Ƀ\s+volume\s+in/);
+        const sellMatch=l.match(/Sell\s*\[(-?\d+)%\]/);
+        const priceMatch=l.match(/Price:([\d.]+)→([\d.]+)/);
+
+        if(volMatch && sellMatch && priceMatch){
+          const vol =parseFloat(volMatch[1]);
+          const sell=parseInt(sellMatch[1]);
+          const p1  =parseFloat(priceMatch[1]);
+          const p2  =parseFloat(priceMatch[2]);
+
+          // استراتيجية البيع القوي
+          if(sell<=-95 && Math.abs(p2-p1)<0.001){
+            if(!bestSell || vol>bestSell.vol) bestSell={vol,sell,price:p2,line:l.trim()};
+          }
+          // استراتيجية الشراء الذكي
+          if(sell<=-80 && Math.abs(p2-p1)<0.005){
+            if(!bestBuy || vol>bestBuy.vol) bestBuy={vol,sell,price:p2,line:l.trim()};
+          }
+        }
+      });
+
+      const sellTxt=bestSell?`<span class="sig-sell">🔴 أفضل بيع:</span> ${bestSell.line}`:"لا توجد إشارة بيع قوية";
+      const buyTxt =bestBuy ?`<span class="sig-buy">🟢 أفضل شراء:</span> ${bestBuy.line}`:"لا توجد إشارة شراء ذكية";
+
+      document.getElementById("result").innerHTML=`${sellTxt}\n\n${buyTxt}`;
+    }
+  </script>
+
+</body>
+</html>
