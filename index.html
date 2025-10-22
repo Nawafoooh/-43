@@ -2,94 +2,120 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>Telegram Multi-Data Screener</title>
+  <title>خفيف – متابعة التغيير</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-    body{font-family:Tahoma,sans-serif;background:#111;color:#eee;text-align:center;padding:20px}
-    textarea{width:90%;height:200px;margin:15px auto;font-size:14px;padding:10px;border-radius:6px;border:none;resize:vertical}
-    button{padding:12px 28px;font-size:18px;background:#0ebeff;color:#000;border:none;border-radius:6px;cursor:pointer}
-    #result{margin-top:25px;text-align:right;white-space:pre-line;font-size:15px;line-height:1.8}
+    body{font-family:Tahoma;background:#111;color:#eee;text-align:center;padding:20px}
+    textarea{width:90%;height:180px;margin:10px auto;font-size:14px;padding:8px;border-radius:6px;border:none;resize:vertical}
+    button{padding:10px 24px;font-size:17px;background:#0ebeff;color:#000;border:none;border-radius:6px;cursor:pointer;margin:4px}
+    #result,#follow{text-align:right;white-space:pre-line;font-size:15px;line-height:1.9}
     .sig-sell{color:#ff4757;font-weight:bold}
-    .sig-buy {color:#2ed573;font-weight:bold}
-    .block{border:1px solid #444;margin:8px 0;padding:8px;border-radius:6px;background:#1b1b1b}
+    .sig-buy{color:#2ed573;font-weight:bold}
+    .block{border:1px solid #444;margin:6px 0;padding:8px;border-radius:6px;background:#1b1b1b}
+    .settings{margin:15px auto;width:fit-fit;background:#222;padding:8px 14px;border-radius:6px}
+    input[type=number]{width:70px;padding:4px;border:none;border-radius:4px}
   </style>
 </head>
 <body>
 
-  <h1>📊 Telegram Multi-Data Screener</h1>
-  <textarea id="raw" placeholder="الصق جميع الرسائل الواردة هنا..."></textarea>
+  <h1>📊 خفيف – متابعة التغيير</h1>
+
+  <!-- إعدادات سريعة -->
+  <div class="settings">
+    حجم كبير ≥ <input id="minVol" type="number" value="1.0" step="0.1"> Ƀ &nbsp;
+    بيع ≥ <input id="sellThr" type="number" value="70"> % &nbsp;
+    تغيّر سعري ≤ <input id="maxChg" type="number" value="0.005" step="0.001">
+  </div>
+
+  <textarea id="raw" placeholder="الصق الرسائل هنا (يمكن لأكثر من رسالة)..."></textarea>
   <br>
-  <button onclick="analyze()">🔍 حلل الآن</button>
+  <button onclick="analyze()">🔍 ظهر الإشارات</button>
+  <button onclick="followUp()">📈 تابع التغيير</button>
+
   <div id="result"></div>
+  <div id="follow"></div>
 
   <script>
+    let lastSignals=[]; // نخزن الإشارات لحظة الظهور
+
     function analyze(){
       const raw=document.getElementById("raw").value;
-      if(!raw.trim()){alert("الرجاء لصق البيانات أولًا");return;}
+      if(!raw.trim()){alert("ألصق البيانات أولًا");return;}
       const lines=raw.split('\n');
 
-      const records=[];   // كلُّ التوصيات المستخرجة
+      const minVol   =parseFloat(document.getElementById("minVol").value);
+      const sellThr  =parseInt(document.getElementById("sellThr").value);
+      const maxChg   =parseFloat(document.getElementById("maxChg").value);
+
+      lastSignals=[]; // تفريغ سابق
       let i=0;
 
       while(i<lines.length){
         const l=lines[i];
-        // السطر الأساسي الذي يحتوي على الحجم
         const volMatch=l.match(/([\d.]+)Ƀ\s+volume\s+in/);
         if(volMatch){
           let j=i+1, sellPct=null, buyPct=null, priceLine=null;
-
-          // ابحث عن نسبة البيع/الشراء في السطور التالية
           while(j<lines.length && !priceLine){
-            const pctSell=lines[j].match(/Sell\s*\[(-?\d+)%\]/);
-            const pctBuy=lines[j].match(/Buy\s*\[(-?\d+)%\]/);
-            if(pctSell){sellPct=parseInt(pctSell[1]);}
-            if(pctBuy){buyPct=parseInt(pctBuy[1]);}
-            // عند أول سعر نوقف البحث
-            if(!priceLine) priceLine=lines[j].match(/Price:([\d.]+)→([\d.]+)/);
+            const s=lines[j];
+            if(!sellPct){const m=s.match(/Sell\s*\[(-?\d+)%\]/); if(m)sellPct=parseInt(m[1]);}
+            if(!buyPct) {const m=s.match(/Buy\s*\[(-?\d+)%\]/);  if(m)buyPct =parseInt(m[1]);}
+            if(!priceLine)priceLine=s.match(/Price:([\d.]+)→([\d.]+)/);
             j++;
           }
-
           const vol=parseFloat(volMatch[1]);
-          const symbolMatch=l.match(/^┌?#?(\w+)/); // استخراج الرمز إن وُجد
+          const symbolMatch=l.match(/^┌?#?(\w+)/);
           const symbol=symbolMatch?symbolMatch[1]:"UNKN";
 
-          if(priceLine){
+          if(priceLine && vol>=minVol){
             const p1=parseFloat(priceLine[1]);
             const p2=parseFloat(priceLine[2]);
-            records.push({symbol,vol,sellPct,buyPct,p1,p2,rawLine:l.trim()});
+            const chg=Math.abs(p2-p1);
+            // إشارة بيع خفيفة
+            if(sellPct!==null && sellPct>=sellThr && chg<=maxChg){
+              lastSignals.push({symbol,type:'sell',price:p2,vol,line:l.trim()});
+            }
+            // إشارة شراء خفيفة (نسبة شراء عالية + حجم كبير)
+            if(buyPct!==null && buyPct>=sellThr && chg<=maxChg){
+              lastSignals.push({symbol,type:'buy',price:p2,vol,line:l.trim()});
+            }
           }
         }
         i++;
       }
 
-      // ترتيب حسب أكبر حجم (أو يمكنك حسب أعلى نسبة بيع)
-      records.sort((a,b)=>b.vol-a.vol);
-
       let html="";
-      records.forEach(rec=>{
-        const {symbol,vol,sellPct,buyPct,p1,p2,rawLine}=rec;
-        const change=Math.abs(p2-p1);
-        // استراتيجية البيع القوي
-        if(sellPct!==null && sellPct<=-95 && change<0.001){
-          html+=`<div class="block"><span class="sig-sell">🔴 بيع قوي – ${symbol}</span><br>
-                 حجم: ${vol}Ƀ | Sell: ${sellPct}% | سعر: ${p1}→${p2}<br>
-                 <small>${rawLine}</small></div>`;
-        }
-        // استراتيجية الشراء الذكي (بيع كبير لكن السعر لم يهبط كثيرًا)
-        if(sellPct!==null && sellPct<=-80 && change<0.005){
-          html+=`<div class="block"><span class="sig-buy">🟢 شراء ذكي – ${symbol}</span><br>
-                 حجم: ${vol}Ƀ | Sell: ${sellPct}% | سعر: ${p1}→${p2}<br>
-                 <small>${rawLine}</small></div>`;
-        }
-        // حالة نادرة: شراء 100%
-        if(buyPct!==null && buyPct===100){
-          html+=`<div class="block"><span class="sig-buy">✅ شراء 100% – ${symbol}</span><br>
-                 حجم: ${vol}Ƀ | Buy: ${buyPct}% | سعر: ${p1}→${p2}<br>
-                 <small>${rawLine}</small></div>`;
+      lastSignals.forEach(sg=>{
+        const cls= sg.type==='sell' ? 'sig-sell':'sig-buy';
+        const txt= sg.type==='sell' ? 'بيع خفيف':'شراء خفيف';
+        html+=`<div class="block"><span class="${cls}">🔸 ${txt} – ${sg.symbol}</span><br>
+               سعر الإشارة: ${sg.price} | حجم: ${sg.vol}Ƀ<br>
+               <small>${sg.line}</small></div>`;
+      });
+      document.getElementById("result").innerHTML= html || "لا توجد إشارات مطابقة للإعدادات الحالية";
+      document.getElementById("follow").textContent=""; // تفريغ المتابعة
+    }
+
+    // متابعة بسيطة: احسب الفرق بين السعر الحالي وسعر الإشارة
+    function followUp(){
+      if(lastSignals.length===0){alert("اضغط «ظهر الإشارات» أولًا");return;}
+      const raw=document.getElementById("raw").value;
+      const lines=raw.split('\n');
+      let rep="";
+      lastSignals.forEach(sg=>{
+        // نبحث عن أحدث سعر لنفس الرمز داخل اللصق الجديد
+        for(const l of lines){
+          const p=l.match(/Price:[\d.]+\s*→\s*([\d.]+)/);
+          if(l.includes(sg.symbol) && p){
+            const cur=parseFloat(p[1]);
+            const diff= cur-sg.price;
+            const points= diff.toFixed(4);
+            const dir= diff>0 ? "📈":"📉";
+            rep+=`${sg.symbol}  ${dir}  ${points} نقطة من سعر الإشارة (${sg.price})\n`;
+            break;
+          }
         }
       });
-
-      document.getElementById("result").innerHTML= html || "لا توجد إشارات مطابقة للاستراتيجية";
+      document.getElementById("follow").textContent= rep ||"لم يُعثر على أسعار حديثة للرموز";
     }
   </script>
 
