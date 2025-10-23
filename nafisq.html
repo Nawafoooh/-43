@@ -1700,41 +1700,38 @@
         };
 
         // Contact Functions
-        window.showContactForm = function() {
-            if (!currentStudent) {
-                showNotification('يرجى تسجيل الدخول أولاً', 'error');
-                return;
-            }
-            
-            document.getElementById('contactName').value = currentStudent.name;
-            document.getElementById('contactGrade').value = 'الصف ' + currentStudent.grade;
-            document.getElementById('contactMessage').value = '';
-            document.getElementById('wordCount').textContent = '0';
-            
-            // تحديد الشعب حسب الصف
-            const classSelect = document.getElementById('contactClass');
-            classSelect.innerHTML = '<option value="">اختر الشعبة</option>';
-            
-            let numClasses = 0;
-            if (currentStudent.grade === 'الأول المتوسط' || currentStudent.grade === 'الأول') {
-                numClasses = 9; // الصف الأول: 9 شعب
-            } else if (currentStudent.grade === 'الثاني المتوسط' || currentStudent.grade === 'الثاني') {
-                numClasses = 11; // الصف الثاني: 11 شعبة
-            } else if (currentStudent.grade === 'الثالث المتوسط' || currentStudent.grade === 'الثالث') {
-                numClasses = 10; // الصف الثالث: 10 شعب
-            }
-            
-            // إضافة الشعب
-            const arabicNumbers = ['١', '٢', '٣', '٤', '٥ـ', '٦', '٧', '٨', '٩', '١٠', '١١']; 
-            for (let i = 0; i < numClasses && i < arabicNumbers.length; i++) {
-                const option = document.createElement('option');
-                option.value = arabicNumbers[i];
-                option.textContent = arabicNumbers[i];
-                classSelect.appendChild(option);
-            }
-            
-            showSection('contactSection');
-        };
+        window.showContactForm = function () {
+    if (!currentStudent) {
+        showNotification('يرجى تسجيل الدخول أولاً', 'error');
+        return;
+    }
+
+    // أسند البيانات
+    document.getElementById('contactName').value = currentStudent.name;
+    document.getElementById('contactGrade').value = 'الصف ' + currentStudent.grade + ' المتوسط';
+    document.getElementById('contactMessage').value = '';
+    document.getElementById('wordCount').textContent = '0';
+
+    // عدد الشعب حسب الصف
+    const gradeNum = currentStudent.grade;   // '1' أو '2' أو '3'
+    let numClasses = 0;
+    if (gradeNum === '1')      numClasses = 9;
+    else if (gradeNum === '2') numClasses = 11;
+    else if (gradeNum === '3') numClasses = 10;
+
+    // املأ القائمة
+    const classSelect = document.getElementById('contactClass');
+    classSelect.innerHTML = '<option value="">اختر الشعبة</option>';
+    const arabicNumbers = ['١','٢','٣','٤','٥ـ','٦','٧','٨','٩','١٠','١١'];
+    for (let i = 0; i < numClasses; i++) {
+        const opt = document.createElement('option');
+        opt.value = arabicNumbers[i];
+        opt.textContent = arabicNumbers[i];
+        classSelect.appendChild(opt);
+    }
+
+    showSection('contactSection');
+};
 
         // Word counter
         document.addEventListener('DOMContentLoaded', function() {
