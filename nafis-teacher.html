@@ -631,8 +631,8 @@
                 </div>
             </div>
             <div class="school-info">
-                <strong>🏫 مدرسة الثالثه والأربعون  المتوسطة</strong><br>
-                📍 المدينة المنورة - المملكة العربية السعودية
+                <strong>🏫 مدرسة الشاملة للصفوف الثلاثة الأولى المتوسطة</strong><br>
+                📍 منطقة الرياض - المملكة العربية السعودية
             </div>
         </div>
 
@@ -654,19 +654,21 @@
                 
                 <div class="upload-area" id="uploadArea">
                     <div class="upload-icon">📤</div>
-                    <h3>اسحب وأفلت ملف JSON هنا</h3>
+                    <h3>اسحب وأفلت ملف الأسئلة هنا</h3>
                     <p style="color: #7f8c8d; margin: 10px 0;">أو</p>
                     <button class="btn primary" onclick="document.getElementById('fileInput').click()">
                         اختر ملف
                     </button>
-                    <input type="file" id="fileInput" accept=".json">
+                    <input type="file" id="fileInput" accept=".json,.csv">
                     <p style="margin-top: 15px; color: #7f8c8d; font-size: 14px;">
-                        الملف يجب أن يكون بصيغة JSON ويحتوي على الأسئلة بالتنسيق الصحيح
+                        📄 يدعم النظام: <strong>CSV</strong> و <strong>JSON</strong><br>
+                        💡 تنسيق CSV: المادة, السؤال, الإجابة, الدرجة, الصعوبة, الملاحظات
                     </p>
                 </div>
 
                 <div class="action-buttons">
                     <button class="btn success" onclick="addManualQuestion()">➕ إضافة سؤال يدوياً</button>
+                    <button class="btn info" onclick="downloadTemplate()">📥 تحميل قالب CSV</button>
                     <button class="btn info" onclick="publishQuestions()">🚀 نشر الأسئلة للطالبات</button>
                     <button class="btn warning" onclick="clearAllQuestions()">🗑️ حذف جميع الأسئلة</button>
                 </div>
@@ -973,79 +975,265 @@
         function setupFileUpload() {
             const uploadArea = document.getElementById('uploadArea');
             const fileInput = document.getElementById('fileInput');
-
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.classList.add('dragover');
-            });
-
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.classList.remove('dragover');
-            });
-
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-                const file = e.dataTransfer.files[0];
-                handleFileUpload(file);
-            });
-
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                handleFileUpload(file);
-            });
-        }
-
-        async function handleFileUpload(file) {
-            if (!file) return;
             
-            if (!file.name.endsWith('.json')) {
-                showNotification('يرجى اختيار ملف JSON', 'error');
-                return;
-            }
-
-            try {
-                const text = await file.text();
-                const questions = JSON.parse(text);
-
-                if (!Array.isArray(questions)) {
-                    throw new Error('الملف يجب أن يحتوي على مصفوفة من الأسئلة');
-                }
-
-                showNotification('جاري رفع الأسئلة...', 'info');
-
-                const batch = writeBatch(db);
-                let count = 0;
-
-                for (const q of questions) {
-                    if (!q.question || !q.options || !Array.isArray(q.options) || typeof q.correct !== 'number') {
-                        console.warn('سؤال غير صالح:', q);
-                        continue;
-                    }
-
-                    const docRef = doc(collection(db, 'questions'));
-                    batch.set(docRef, {
-                        question: q.question,
-                        options: q.options,
-                        correct: q.correct,
-                        subject: q.subject || 'عام',
-                        explanation: q.explanation || '',
-                        createdAt: new Date(),
-                        active: true,
-                        published: false
-                    });
-                    count++;
-                }
-
-                await batch.commit();
-                showNotification(`تم رفع ${count} سؤال بنجاح!`, 'success');
-                loadQuestions();
-
-            } catch (error) {
-                console.error('Error uploading file:', error);
-                showNotification('حدث خطأ أثناء قراءة الملف: ' + error.message, 'error');
-            }
+            uploadArea.addEventListener('click', () => fileInput.click());
+            uploadArea.addEventListener('dragover', e => { 
+                e.preventDefault(); 
+                uploadArea.classList.add('dragover'); 
+            });
+            uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+            uploadArea.addEventListener('drop', e => {
+                e.preventDefault(); 
+                uploadArea.classList.remove('dragover');
+                if (e.dataTransfer.files.length) handleFileUpload(e.dataTransfer.files[0]);
+            });
+            fileInput.addEventListener('change', e => { 
+                if (e.target.files.length) handleFileUpload(e.target.files[0]); 
+            });
         }
+
+        function handleFileUpload(file) {
+            const allowed = ['.csv', '.xlsx', '.xls', '.json'];
+            const ext = file.name.toLowerCase().substr(file.name.lastIndexOf('.'));
+            if (!allowed.includes(ext)) return showNotification('نوع الملف غير مدعوم. يرجى استخدام CSV أو JSON', 'error');
+            
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    if (ext === '.json') processQuestions(JSON.parse(e.target.result));
+                    else if (ext === '.csv') processQuestions(parseCSV(e.target.result));
+                    else showNotification('يرجى استخدام ملف JSON أو CSV للآن', 'error');
+                } catch { 
+                    showNotification('خطأ في معالجة الملف. تأكد من صحة التنسيق', 'error'); 
+                }
+            };
+            (ext === '.json' || ext === '.csv') ? reader.readAsText(file) : reader.readAsArrayBuffer(file);
+        }
+
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n');
+            const questions = [];
+            
+            // تخطي السطر الأول (العناوين)
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                // تحليل السطر مع دعم الفواصل
+                const cols = line.split(',').map(c => c.trim().replace(/"/g, ''));
+                
+                // تنسيق: المادة, السؤال, الإجابة, الدرجة, الصعوبة, الملاحظات
+                if (cols.length >= 3) {
+                    const subject = cols[0] || 'عام';
+                    const questionText = cols[1];
+                    const correctAnswer = cols[2];
+                    const points = cols[3] ? parseInt(cols[3]) : 1;
+                    const difficulty = cols[4] || 'متوسط';
+                    const explanation = cols[5] || '';
+                    
+                    if (!questionText || !correctAnswer) continue;
+                    
+                    // توليد الخيارات بذكاء
+                    const options = generateSmartOptions(questionText, correctAnswer, subject);
+                    const correctIndex = options.indexOf(correctAnswer);
+                    
+                    questions.push({
+                        question: questionText,
+                        options: options,
+                        correct: correctIndex >= 0 ? correctIndex : 0,
+                        subject: subject,
+                        difficulty: difficulty,
+                        points: points,
+                        explanation: explanation
+                    });
+                }
+            }
+            return questions;
+        }
+
+        function generateSmartOptions(question, correctAnswer, subject) {
+            const options = [correctAnswer];
+            
+            // إذا كانت الإجابة رقماً
+            const num = parseFloat(correctAnswer);
+            if (!isNaN(num) && subject === 'رياضيات') {
+                // توليد خيارات قريبة من الرقم
+                const variations = [
+                    num + 1,
+                    num - 1,
+                    num * 2,
+                    Math.floor(num / 2),
+                    num + 5,
+                    num - 5,
+                    num + 10
+                ];
+                
+                while (options.length < 4) {
+                    const opt = variations[Math.floor(Math.random() * variations.length)].toString();
+                    if (!options.includes(opt)) options.push(opt);
+                }
+            } else {
+                // خيارات حسب المادة
+                let subjectOptions = [];
+                
+                if (subject === 'رياضيات') {
+                    subjectOptions = ['صحيح', 'خطأ', '0', '1', '2', '3', '4', '5', '10', '20', '100'];
+                } else if (subject === 'علوم') {
+                    subjectOptions = [
+                        'الماء', 'الهواء', 'النار', 'التربة', 'القلب', 'الرئة', 'الكبد', 
+                        'المعدة', 'الشمس', 'القمر', 'الأرض', 'المريخ', 'الأكسجين', 
+                        'النيتروجين', 'ثاني أكسيد الكربون', 'النبات', 'الحيوان', 'الخلايا'
+                    ];
+                } else if (subject === 'قراءة' || subject === 'لغة عربية') {
+                    subjectOptions = [
+                        'اسم', 'فعل', 'حرف', 'جملة اسمية', 'جملة فعلية', 'استفهامي',
+                        'تعجبي', 'أمري', 'اسم إشارة', 'اسم موصول', 'ضمير', 'مفرد', 
+                        'مثنى', 'جمع', 'تفضيل', 'نسبة', 'مصدر'
+                    ];
+                } else if (subject === 'لغة إنجليزية') {
+                    subjectOptions = [
+                        'yes', 'no', 'true', 'false', 'a', 'b', 'c', 'd', 'one', 'two', 'three'
+                    ];
+                } else if (subject === 'اجتماعيات') {
+                    subjectOptions = [
+                        'الرياض', 'جدة', 'مكة المكرمة', 'المدينة المنورة', 'الدمام',
+                        '1932', '1900', '2000', 'الملك عبدالعزيز', 'الملك سلمان'
+                    ];
+                } else if (subject === 'دراسات إسلامية') {
+                    subjectOptions = [
+                        'الشهادتان', 'الصلاة', 'الزكاة', 'الصوم', 'الحج', 'الإيمان',
+                        'الإسلام', 'الإحسان', 'رمضان', 'الكعبة', '5', '6'
+                    ];
+                } else {
+                    subjectOptions = [
+                        'الخيار الأول', 'الخيار الثاني', 'الخيار الثالث', 'الخيار الرابع',
+                        'صحيح', 'خطأ', 'لا شيء مما سبق', 'جميع ما سبق'
+                    ];
+                }
+                
+                // إضافة خيارات عشوائية
+                while (options.length < 4) {
+                    const opt = subjectOptions[Math.floor(Math.random() * subjectOptions.length)];
+                    if (!options.includes(opt)) options.push(opt);
+                }
+            }
+            
+            // خلط الخيارات
+            return shuffleArray(options.slice(0, 4));
+        }
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        async function processQuestions(questionsData) {
+            let questions = [];
+            
+            // دعم تنسيقات مختلفة
+            if (questionsData.nafes_exam) questions = questionsData.nafes_exam;
+            else if (Array.isArray(questionsData)) questions = questionsData;
+            else return showNotification('تنسيق البيانات غير صحيح', 'error');
+            
+            // التحقق من صحة الأسئلة
+            const valid = questions.filter(q => 
+                q.question && 
+                q.options && 
+                Array.isArray(q.options) && 
+                q.options.length === 4 && 
+                q.correct !== undefined && 
+                q.subject
+            );
+            
+            if (!valid.length) return showNotification('لم يتم العثور على أسئلة صحيحة في الملف', 'error');
+            
+            showNotification('جارٍ معالجة الأسئلة...', 'info');
+            
+            // فحص الأسئلة المكررة
+            const existingSnapshot = await getDocs(query(collection(db, 'questions'), where('active', '==', true)));
+            const existingMap = new Map();
+            
+            existingSnapshot.forEach(doc => {
+                const normalized = doc.data().question
+                    .trim()
+                    .replace(/\s+/g, ' ')
+                    .replace(/[.,،؟?!]/g, '')
+                    .toLowerCase();
+                existingMap.set(normalized, doc.id);
+            });
+            
+            const newQuestions = [];
+            const duplicates = [];
+            
+            valid.forEach(q => {
+                const normalized = q.question
+                    .trim()
+                    .replace(/\s+/g, ' ')
+                    .replace(/[.,،؟?!]/g, '')
+                    .toLowerCase();
+                    
+                if (!existingMap.has(normalized)) {
+                    newQuestions.push(q);
+                } else {
+                    duplicates.push(q.question);
+                }
+            });
+            
+            if (!newQuestions.length) {
+                return showNotification(
+                    `جميع الأسئلة (${valid.length}) موجودة مسبقاً!\nلم يتم إضافة أي أسئلة جديدة.`, 
+                    'error'
+                );
+            }
+            
+            if (!confirm(
+                `أسئلة جديدة: ${newQuestions.length}\n` +
+                `مكررة: ${duplicates.length}\n\n` +
+                `هل تريدين إضافة الأسئلة الجديدة فقط؟`
+            )) return;
+            
+            showNotification('جارٍ إضافة الأسئلة الجديدة...', 'info');
+            
+            // إضافة الأسئلة الجديدة
+            const batch = writeBatch(db);
+            newQuestions.forEach(q => {
+                batch.set(doc(collection(db, 'questions')), {
+                    question: q.question.trim(),
+                    options: q.options.map(opt => opt.trim()),
+                    correct: parseInt(q.correct),
+                    subject: q.subject.trim(),
+                    explanation: q.explanation ? q.explanation.trim() : '',
+                    difficulty: q.difficulty || 'متوسط',
+                    points: q.points || 1,
+                    createdAt: new Date(),
+                    active: true,
+                    published: false
+                });
+            });
+            
+            await batch.commit();
+            showNotification(`✅ تم إضافة ${newQuestions.length} سؤال بنجاح!`, 'success');
+            loadQuestions();
+        }
+
+        window.downloadTemplate = () => {
+            const csv = `المادة,السؤال,الإجابة,الدرجة,الصعوبة,الملاحظات
+رياضيات,ما قيمة 7 × (3 + 2) ؟,35,1,متوسط,
+رياضيات,إذا كان محيط المربع 36 سم فما طول ضلعه؟,9,1,متوسط,
+علوم,أي مما يلي يعد من الغازات في الغلاف الجوي؟,الأكسجين,1,سهل,
+قراءة,ما نوع الكلمة (السماء) في الجملة؟,اسم,1,سهل,`;
+            
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'قالب_الأسئلة_نافس.csv';
+            link.click();
+            showNotification('تم تحميل قالب الأسئلة بنجاح! 📥', 'success');
+        };
 
         // Questions Management
         async function loadQuestions() {
