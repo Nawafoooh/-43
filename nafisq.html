@@ -675,6 +675,7 @@
             <div class="action-buttons">
                 <button class="btn success" onclick="startTest()" id="startTestBtn">بدء الاختبار</button>
                 <button class="btn warning" onclick="showResults()">عرض النتائج</button>
+                <button class="btn primary" onclick="showContactForm()">💬 التواصل مع المشرفة</button>
                 <button class="btn secondary" onclick="logout()">تسجيل الخروج</button>
             </div>
         </div>
@@ -734,9 +735,56 @@
             <button class="btn" onclick="backToDashboard()">العودة للوحة الطالبة</button>
         </div>
 
+        <!-- Contact Section -->
+        <div id="contactSection" class="card hidden">
+            <h2 class="card-title">
+                <div class="icon">💬</div>
+                التواصل مع المشرفة
+            </h2>
+
+            <form id="contactForm" style="margin-top: 25px;">
+                <div class="form-group">
+                    <label>الاسم الثلاثي:</label>
+                    <input type="text" id="contactName" readonly style="background: #f5f5f5; cursor: not-allowed;">
+                </div>
+
+                <div class="form-group">
+                    <label>الصف:</label>
+                    <input type="text" id="contactGrade" readonly style="background: #f5f5f5; cursor: not-allowed;">
+                </div>
+
+                <div class="form-group">
+                    <label>الشعبة:</label>
+                    <select id="contactClass" required style="padding: 12px; border-radius: 10px; border: 2px solid #e8b4d9;">
+                        <option value="">اختر الشعبة</option>
+                        <option value="أ">أ</option>
+                        <option value="ب">ب</option>
+                        <option value="ج">ج</option>
+                        <option value="د">د</option>
+                        <option value="هـ">هـ</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>نص الرسالة (حد أقصى 500 كلمة):</label>
+                    <textarea id="contactMessage" rows="10" required 
+                        style="resize: vertical; padding: 15px; border-radius: 10px; border: 2px solid #e8b4d9; font-family: inherit;"
+                        placeholder="اكتبي رسالتك هنا..."></textarea>
+                    <div style="text-align: left; font-size: 13px; color: #666; margin-top: 8px; font-weight: 500;">
+                        <span id="wordCount" style="color: #d4a5c4; font-weight: bold;">0</span> / 500 كلمة
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px;">
+                    <button type="submit" class="btn primary">📤 إرسال الرسالة</button>
+                    <button type="button" class="btn secondary" onclick="backToDashboard()">العودة</button>
+                </div>
+            </form>
+        </div>
+
         <!-- Footer -->
         <div style="text-align: center; margin-top: 40px; color: white; font-size: 14px;">
-            <p>تنفيذ وإشراف الأستاذة ريم العنزي</p>
+            <p>تنفيذ وإشراف معلمات المواد المستهدفة</p>
         </div>
     </div>
 
@@ -1073,7 +1121,7 @@
         }
 
         function showSection(sectionId) {
-            const sections = ['registration', 'login', 'dashboard', 'testSection', 'resultsSection'];
+            const sections = ['registration', 'login', 'dashboard', 'testSection', 'resultsSection', 'contactSection'];
             sections.forEach(section => {
                 document.getElementById(section).classList.add('hidden');
             });
@@ -1655,6 +1703,93 @@
                 showNotification('حدث خطأ أثناء تحميل النتائج', 'error');
             }
         };
+
+        // Contact Functions
+        window.showContactForm = function() {
+            if (!currentStudent) {
+                showNotification('يرجى تسجيل الدخول أولاً', 'error');
+                return;
+            }
+            
+            document.getElementById('contactName').value = currentStudent.name;
+            document.getElementById('contactGrade').value = 'الصف ' + currentStudent.grade;
+            document.getElementById('contactClass').value = '';
+            document.getElementById('contactMessage').value = '';
+            document.getElementById('wordCount').textContent = '0';
+            
+            showSection('contactSection');
+        };
+
+        // Word counter
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('contactMessage');
+            if (messageInput) {
+                messageInput.addEventListener('input', function() {
+                    const text = this.value.trim();
+                    const words = text ? text.split(/\s+/).filter(word => word.length > 0) : [];
+                    const wordCount = words.length;
+                    
+                    document.getElementById('wordCount').textContent = wordCount;
+                    
+                    if (wordCount > 500) {
+                        document.getElementById('wordCount').style.color = '#e74c3c';
+                        showNotification('تجاوزت الحد المسموح (500 كلمة)', 'error');
+                    } else {
+                        document.getElementById('wordCount').style.color = '#d4a5c4';
+                    }
+                });
+            }
+        });
+
+        // Contact form submission
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const className = document.getElementById('contactClass').value;
+            const message = document.getElementById('contactMessage').value.trim();
+            
+            if (!className) {
+                showNotification('يرجى اختيار الشعبة', 'error');
+                return;
+            }
+            
+            if (!message) {
+                showNotification('يرجى كتابة رسالة', 'error');
+                return;
+            }
+            
+            const words = message.split(/\s+/).filter(word => word.length > 0);
+            if (words.length > 500) {
+                showNotification('الرسالة تتجاوز 500 كلمة. يرجى الاختصار', 'error');
+                return;
+            }
+            
+            try {
+                await addDoc(collection(db, 'messages'), {
+                    studentName: currentStudent.name,
+                    studentCode: currentStudent.code,
+                    grade: currentStudent.grade,
+                    class: className,
+                    message: message,
+                    wordCount: words.length,
+                    timestamp: new Date(),
+                    read: false,
+                    replied: false
+                });
+                
+                document.getElementById('contactForm').reset();
+                
+                showNotification('✅ تم إرسال رسالتك بنجاح!\n\nشكراً لتواصلك معنا 💕\nسيتم التواصل معك قريباً إن شاء الله', 'success');
+                
+                setTimeout(() => {
+                    backToDashboard();
+                }, 3000);
+                
+            } catch (error) {
+                console.error('Error sending message:', error);
+                showNotification('حدث خطأ أثناء إرسال الرسالة. حاولي مرة أخرى', 'error');
+            }
+        });
 
         window.backToDashboard = function() {
             updateDashboardInfo();
