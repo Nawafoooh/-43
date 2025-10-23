@@ -736,7 +736,7 @@
 
         <!-- Footer -->
         <div style="text-align: center; margin-top: 40px; color: white; font-size: 14px;">
-            <p>تنفيذ وإشراف معلمات المواد المستهدفه لنافس</p>
+            <p>تنفيذ وإشراف الأستاذة ريم العنزي</p>
         </div>
     </div>
 
@@ -1095,7 +1095,12 @@
 
             try {
                 console.log('🔄 جاري تحميل الأسئلة من Firebase...');
-                const questionsQuery = query(collection(db, 'questions'), where('active', '==', true));
+                // تحميل الأسئلة النشطة والمنشورة للطالبات
+                const questionsQuery = query(
+                    collection(db, 'questions'), 
+                    where('active', '==', true),
+                    where('published', '==', true)
+                );
                 const questionsSnapshot = await getDocs(questionsQuery);
                 
                 if (!questionsSnapshot.empty) {
@@ -1107,15 +1112,15 @@
                     cachedQuestions = [...questions];
                     cacheTimestamp = now;
                     
-                    console.log(`✅ تم تحميل ${questions.length} سؤال من Firebase وحفظه في Cache`);
+                    console.log(`✅ تم تحميل ${questions.length} سؤال منشور من Firebase`);
                     showNotification(`تم تحميل ${questions.length} سؤال من قاعدة البيانات`, 'success');
                     return true;
                 } else {
-                    console.log('⚠️ لا توجد أسئلة في Firebase، استخدام الأسئلة الافتراضية');
+                    console.log('⚠️ لا توجد أسئلة منشورة في Firebase، استخدام الأسئلة الافتراضية');
                     questions = [...defaultQuestions];
                     cachedQuestions = [...defaultQuestions];
                     cacheTimestamp = now;
-                    showNotification('يتم استخدام الأسئلة الافتراضية (5 أسئلة)', 'info');
+                    showNotification('لم يتم نشر أسئلة بعد. يتم استخدام الأسئلة الافتراضية', 'info');
                     return false;
                 }
             } catch (error) {
