@@ -617,6 +617,95 @@
             font-weight: bold;
             font-size: 14px;
         }
+
+        /* Messages Styles */
+        .message-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-right: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .message-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+
+        .message-item.unread {
+            background: #fff3cd;
+            border-right-color: #f39c12;
+        }
+
+        .message-item.replied {
+            background: #d4edda;
+            border-right-color: #28a745;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .message-info {
+            flex: 1;
+        }
+
+        .message-info h4 {
+            color: #2c3e50;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .message-info p {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin: 3px 0;
+        }
+
+        .message-content {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            line-height: 1.8;
+            color: #2c3e50;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .message-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .message-badge.new {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .message-badge.read {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .message-badge.replied {
+            background: #d4edda;
+            color: #155724;
+        }
     </style>
 </head>
 <body>
@@ -640,6 +729,7 @@
         <div class="tabs">
             <button class="tab active" onclick="switchTab('questions')">📝 إدارة الأسئلة</button>
             <button class="tab" onclick="switchTab('students')">👥 الطالبات</button>
+            <button class="tab" onclick="switchTab('messages')">💬 الرسائل</button>
             <button class="tab" onclick="switchTab('reports')">📊 التقارير</button>
             <button class="tab" onclick="switchTab('settings')">⚙️ الإعدادات</button>
         </div>
@@ -851,6 +941,54 @@
             </div>
         </div>
 
+        <!-- Messages Tab -->
+        <div id="messagesTab" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalMessages">0</div>
+                    <div class="stat-label">إجمالي الرسائل</div>
+                </div>
+                <div class="stat-card orange">
+                    <div class="stat-number" id="unreadMessages">0</div>
+                    <div class="stat-label">رسائل غير مقروءة</div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-number" id="readMessages">0</div>
+                    <div class="stat-label">رسائل مقروءة</div>
+                </div>
+                <div class="stat-card red">
+                    <div class="stat-number" id="repliedMessages">0</div>
+                    <div class="stat-label">تم الرد عليها</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <div class="icon">💬</div>
+                    <span>رسائل الطالبات</span>
+                </div>
+
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="filterMessages('all')">الكل</button>
+                    <button class="filter-btn" onclick="filterMessages('unread')">غير مقروءة</button>
+                    <button class="filter-btn" onclick="filterMessages('read')">مقروءة</button>
+                    <button class="filter-btn" onclick="filterMessages('replied')">تم الرد</button>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn success" onclick="loadMessages()">🔄 تحديث الرسائل</button>
+                    <button class="btn warning" onclick="markAllAsRead()">✅ تعليم الكل كمقروء</button>
+                </div>
+
+                <div id="messagesLoading" class="loading hidden">
+                    <div class="loading-spinner"></div>
+                    <p>جاري تحميل الرسائل...</p>
+                </div>
+
+                <div id="messagesList"></div>
+            </div>
+        </div>
+
         <!-- Settings Tab -->
         <div id="settingsTab" class="tab-content">
             <div class="card">
@@ -945,6 +1083,7 @@
             if (tabName === 'reports') loadReports();
             if (tabName === 'questions') loadQuestions();
             if (tabName === 'settings') updateSystemInfo();
+            if (tabName === 'messages') loadMessages();
         };
 
         // Notification System
@@ -1718,6 +1857,151 @@
                 loadQuestions();
             });
         }
+
+        // Messages Management
+        let allMessages = [];
+        let currentMessageFilter = 'all';
+
+        async function loadMessages() {
+            showLoading('messagesLoading', true);
+            try {
+                const snap = await getDocs(collection(db, 'messages'));
+                allMessages = [];
+                snap.forEach(d => allMessages.push({ id: d.id, ...d.data() }));
+                
+                allMessages.sort((a, b) => {
+                    const timeA = a.timestamp?.toDate() || new Date(0);
+                    const timeB = b.timestamp?.toDate() || new Date(0);
+                    return timeB - timeA;
+                });
+                
+                updateMessagesStats();
+                displayMessages();
+            } catch (e) {
+                console.error(e);
+                showNotification('حدث خطأ أثناء تحميل الرسائل', 'error');
+            } finally {
+                showLoading('messagesLoading', false);
+            }
+        }
+
+        function updateMessagesStats() {
+            const stats = {
+                total: allMessages.length,
+                unread: allMessages.filter(m => !m.read).length,
+                read: allMessages.filter(m => m.read && !m.replied).length,
+                replied: allMessages.filter(m => m.replied).length
+            };
+            
+            document.getElementById('totalMessages').textContent = stats.total;
+            document.getElementById('unreadMessages').textContent = stats.unread;
+            document.getElementById('readMessages').textContent = stats.read;
+            document.getElementById('repliedMessages').textContent = stats.replied;
+        }
+
+        function displayMessages() {
+            let filtered = allMessages;
+            
+            if (currentMessageFilter === 'unread') {
+                filtered = allMessages.filter(m => !m.read);
+            } else if (currentMessageFilter === 'read') {
+                filtered = allMessages.filter(m => m.read && !m.replied);
+            } else if (currentMessageFilter === 'replied') {
+                filtered = allMessages.filter(m => m.replied);
+            }
+            
+            const box = document.getElementById('messagesList');
+            
+            if (!filtered.length) {
+                box.innerHTML = `<div style="text-align:center;padding:40px;color:#7f8c8d"><p>لا توجد رسائل</p></div>`;
+                return;
+            }
+            
+            box.innerHTML = filtered.map(msg => {
+                const messageClass = msg.replied ? 'replied' : !msg.read ? 'unread' : '';
+                const badge = msg.replied ? '<span class="message-badge replied">✅ تم الرد</span>' : 
+                             !msg.read ? '<span class="message-badge new">🔔 جديدة</span>' : 
+                             '<span class="message-badge read">👁️ مقروءة</span>';
+                
+                const timestamp = msg.timestamp?.toDate() || new Date();
+                const dateStr = timestamp.toLocaleString('ar-SA');
+                
+                return `
+                <div class="message-item ${messageClass}">
+                    <div class="message-header">
+                        <div class="message-info">
+                            <h4>${msg.studentName} ${badge}</h4>
+                            <p>الصف ${msg.grade} - الشعبة ${msg.class} • ${msg.studentCode}</p>
+                            <p style="color:#999;font-size:12px;">📅 ${dateStr} • 📝 ${msg.wordCount || 0} كلمة</p>
+                        </div>
+                    </div>
+                    <div class="message-content">${msg.message}</div>
+                    <div class="message-actions">
+                        ${!msg.read ? `<button class="btn info" onclick="markAsRead('${msg.id}')">✅ مقروء</button>` : ''}
+                        ${msg.read && !msg.replied ? `<button class="btn success" onclick="markAsReplied('${msg.id}')">💬 تم الرد</button>` : ''}
+                        <button class="btn danger" onclick="deleteMessage('${msg.id}')">🗑️ حذف</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        window.filterMessages = function(filter) {
+            currentMessageFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            displayMessages();
+        };
+
+        window.markAsRead = async function(id) {
+            try {
+                await updateDoc(doc(db, 'messages', id), { read: true });
+                showNotification('تم تعليم الرسالة كمقروءة', 'success');
+                loadMessages();
+            } catch (e) {
+                console.error(e);
+                showNotification('حدث خطأ', 'error');
+            }
+        };
+
+        window.markAsReplied = async function(id) {
+            if (!confirm('تعليم كـ "تم الرد"؟')) return;
+            try {
+                await updateDoc(doc(db, 'messages', id), { replied: true, repliedAt: new Date() });
+                showNotification('تم تعليم الرسالة', 'success');
+                loadMessages();
+            } catch (e) {
+                console.error(e);
+                showNotification('حدث خطأ', 'error');
+            }
+        };
+
+        window.deleteMessage = async function(id) {
+            if (!confirm('حذف الرسالة؟')) return;
+            try {
+                await deleteDoc(doc(db, 'messages', id));
+                showNotification('تم حذف الرسالة', 'success');
+                loadMessages();
+            } catch (e) {
+                console.error(e);
+                showNotification('حدث خطأ', 'error');
+            }
+        };
+
+        window.markAllAsRead = async function() {
+            const unread = allMessages.filter(m => !m.read);
+            if (!unread.length) return showNotification('جميع الرسائل مقروءة', 'info');
+            if (!confirm(`تعليم ${unread.length} رسالة كمقروءة؟`)) return;
+            try {
+                const batch = writeBatch(db);
+                unread.forEach(m => batch.update(doc(db, 'messages', m.id), { read: true }));
+                await batch.commit();
+                showNotification('تم تعليم الكل كمقروء', 'success');
+                loadMessages();
+            } catch (e) {
+                console.error(e);
+                showNotification('حدث خطأ', 'error');
+            }
+        };
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
