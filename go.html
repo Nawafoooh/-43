@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>نموذج إذن دخول طالب</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- google font -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -34,19 +33,21 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, .15);
             width: 100%;
             max-width: 480px;
-            padding: 30px 35px;
+            padding: 30px 35px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
         }
         .card h1 {
             text-align: center;
             color: var(--primary);
-            margin-bottom: 6px;
             font-size: 26px;
         }
         .card p.sub {
             text-align: center;
             color: #777;
             font-size: 14px;
-            margin-bottom: 25px;
+            margin-bottom: 10px;
         }
         .time {
             background: var(--grey);
@@ -55,20 +56,18 @@
             text-align: center;
             font-size: 13px;
             color: #555;
-            margin-bottom: 20px;
         }
         .form-group {
-            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
         label {
-            display: block;
             font-weight: 700;
             color: #333;
-            margin-bottom: 6px;
             font-size: 15px;
         }
         input, select {
-            width: 100%;
             padding: 12px 14px;
             border: 1px solid #ddd;
             border-radius: 10px;
@@ -83,7 +82,7 @@
         .actions {
             display: flex;
             gap: 10px;
-            margin-top: 25px;
+            margin-top: 10px;
         }
         .btn {
             flex: 1;
@@ -111,7 +110,6 @@
         .btn-secondary:hover {
             background: #dfe6e9;
         }
-        /* ripple */
         .btn::after {
             content: '';
             position: absolute;
@@ -127,6 +125,15 @@
         .btn:active::after {
             width: 300px;
             height: 300px;
+        }
+        .footer {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+        }
+        .footer b {
+            color: var(--primary);
         }
         .toast {
             position: fixed;
@@ -192,6 +199,10 @@
             <button type="submit" class="btn btn-primary">📤 إرسال عبر واتساب</button>
         </div>
     </form>
+
+    <div class="footer">
+        وكيل المدرسة: <b>نواف الصبحي</b>
+    </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -200,7 +211,7 @@
     // عرض الوقت
     const timeEl = document.getElementById('time');
     function updateTime() {
-        const now = new Date().toLocaleString('ar-SA', {
+        timeEl.textContent = new Date().toLocaleString('ar-SA', {
             weekday: 'long',
             year: 'numeric',
             month: 'short',
@@ -208,7 +219,6 @@
             hour: '2-digit',
             minute: '2-digit'
         });
-        timeEl.textContent = now;
     }
     updateTime();
     setInterval(updateTime, 1000);
@@ -223,7 +233,7 @@
 
         return `السلام عليكم ورحمة الله وبركاته
 
-📋 *إذن دخول طالب*
+📋 إذن دخول طالب
 👤 الطالب: ${name}
 🎓 الصف: ${cls}
 👨‍🏫 المعلم: ${teacher}
@@ -231,25 +241,23 @@
 📌 السبب: ${reason}
 
 نرجو السماح له بالدخول،
-شاكرين تعاونكم.`;
+شاكرين تعاونكم.
+
+وكيل المدرسة: نواف الصبحي`;
     }
 
     // نسخ إلى الحافظة
     document.getElementById('copyBtn').onclick = () => {
-        const msg = buildMessage();
-        navigator.clipboard.writeText(msg).then(() => notify('✅ تم النسخ إلى الحافظة'));
+        navigator.clipboard.writeText(buildMessage()).then(() => notify('✅ تم النسخ إلى الحافظة'));
     };
 
     // إرسال عبر واتساب
     document.getElementById('form').addEventListener('submit', function (e) {
         e.preventDefault();
         const phone = document.getElementById('phone').value.trim();
-        const msg = buildMessage();
-        const url = `https://wa.me/${phone.replace('+', '')}?text=${encodeURIComponent(msg)}`;
-        // فتح الرابط مباشرة (بدون window.open لتجنب الحظر)
-        location.href = url;
+        const msg = encodeURIComponent(buildMessage());
+        location.href = `https://wa.me/${phone.replace('+', '')}?text=${msg}`;
         notify('📤 جاري فتح واتساب ...');
-        // إعادة تعيين النموذج بعد ثوانٍ
         setTimeout(() => this.reset(), 2500);
     });
 
