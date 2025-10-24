@@ -2,262 +2,264 @@
 <html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نموذج إذن دخول طالب</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- google font -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --success: #00b894;
+            --danger: #e17055;
+            --grey: #f5f6fa;
+        }
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
-        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             padding: 20px;
         }
-        
-        .container {
-            background: white;
+        .card {
+            background: #fff;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 40px;
-            max-width: 500px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, .15);
             width: 100%;
+            max-width: 480px;
+            padding: 30px 35px;
         }
-        
-        .header {
+        .card h1 {
             text-align: center;
-            margin-bottom: 30px;
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-size: 26px;
         }
-        
-        .header h1 {
-            color: #667eea;
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-        
-        .header p {
-            color: #666;
+        .card p.sub {
+            text-align: center;
+            color: #777;
             font-size: 14px;
-        }
-        
-        .form-group {
             margin-bottom: 25px;
         }
-        
-        label {
-            display: block;
-            color: #333;
-            font-weight: bold;
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
-        
-        input, select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s;
-            font-family: inherit;
-        }
-        
-        input:focus, select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-        
-        .btn:active {
-            transform: translateY(0);
-        }
-        
-        .time-display {
-            background: #f5f5f5;
+        .time {
+            background: var(--grey);
             padding: 10px;
-            border-radius: 8px;
+            border-radius: 10px;
             text-align: center;
-            color: #666;
-            font-size: 14px;
+            font-size: 13px;
+            color: #555;
             margin-bottom: 20px;
         }
-        
-        .success-message {
-            background: #4caf50;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            margin-top: 20px;
-            display: none;
+        .form-group {
+            margin-bottom: 18px;
         }
-        
-        @media (max-width: 600px) {
-            .container {
-                padding: 25px;
-            }
-            
-            .header h1 {
-                font-size: 24px;
-            }
+        label {
+            display: block;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 6px;
+            font-size: 15px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: .25s;
+        }
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, .15);
+            outline: none;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        .btn {
+            flex: 1;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .25s;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+        .btn-secondary {
+            background: var(--grey);
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background: #dfe6e9;
+        }
+        /* ripple */
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .4);
+            transform: translate(-50%, -50%);
+            transition: width .4s, height .4s;
+        }
+        .btn:active::after {
+            width: 300px;
+            height: 300px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--success);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-weight: 700;
+            opacity: 0;
+            transition: .35s;
+            z-index: 999;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📝 إذن دخول طالب</h1>
-            <p>نظام سريع لإرسال إذن للمعلم</p>
+
+<div class="card">
+    <h1>📝 إذن دخول طالب</h1>
+    <p class="sub">نموذج سريع ومرتب لإرسال الإذن عبر الواتساب</p>
+
+    <div class="time" id="time"></div>
+
+    <form id="form">
+        <div class="form-group">
+            <label>اسم الطالب</label>
+            <input id="name" placeholder="أدخل الاسم الثلاثي" required>
         </div>
-        
-        <div class="time-display" id="currentTime"></div>
-        
-        <form id="permissionForm">
-            <div class="form-group">
-                <label for="studentName">اسم الطالب</label>
-                <input type="text" id="studentName" required placeholder="أدخل اسم الطالب الثلاثي">
-            </div>
-            
-            <div class="form-group">
-                <label for="studentClass">الصف</label>
-                <select id="studentClass" required>
-                    <option value="">اختر الصف</option>
-                    <option value="1/1">أول متوسط - شعبة 1</option>
-                    <option value="1/2">أول متوسط - شعبة 2</option>
-                    <option value="1/3">أول متوسط - شعبة 3</option>
-                    <option value="1/4">أول متوسط - شعبة 4</option>
-                    <option value="1/5">أول متوسط - شعبة 5</option>
-                    <option value="1/6">أول متوسط - شعبة 6</option>
-                    <option value="2/1">ثاني متوسط - شعبة 1</option>
-                    <option value="2/2">ثاني متوسط - شعبة 2</option>
-                    <option value="2/3">ثاني متوسط - شعبة 3</option>
-                    <option value="2/4">ثاني متوسط - شعبة 4</option>
-                    <option value="2/5">ثاني متوسط - شعبة 5</option>
-                    <option value="2/6">ثاني متوسط - شعبة 6</option>
-                    <option value="3/1">ثالث متوسط - شعبة 1</option>
-                    <option value="3/2">ثالث متوسط - شعبة 2</option>
-                    <option value="3/3">ثالث متوسط - شعبة 3</option>
-                    <option value="3/4">ثالث متوسط - شعبة 4</option>
-                    <option value="3/5">ثالث متوسط - شعبة 5</option>
-                    <option value="3/6">ثالث متوسط - شعبة 6</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="teacherName">اسم المعلم والمادة</label>
-                <input type="text" id="teacherName" required placeholder="مثال: أ. محمد - رياضيات">
-            </div>
-            
-            <div class="form-group">
-                <label for="teacherPhone">رقم جوال المعلم</label>
-                <input type="tel" id="teacherPhone" required placeholder="05xxxxxxxx" pattern="[0-9]{10}">
-            </div>
-            
-            <div class="form-group">
-                <label for="reason">سبب التأخر</label>
-                <input type="text" id="reason" required placeholder="مثال: متأخر من إدارة المدرسة" value="متأخر من إدارة المدرسة">
-            </div>
-            
-            <button type="submit" class="btn">📤 إرسال إذن للمعلم</button>
-        </form>
-        
-        <div class="success-message" id="successMessage">
-            ✅ تم إرسال الإذن بنجاح!
+
+        <div class="form-group">
+            <label>الصف</label>
+            <select id="cls" required>
+                <option value="">اختر الصف</option>
+                <option>أول متوسط</option>
+                <option>ثاني متوسط</option>
+                <option>ثالث متوسط</option>
+            </select>
         </div>
-    </div>
 
-    <script>
-        // عرض الوقت الحالي
-        function updateTime() {
-            const now = new Date();
-            const timeString = now.toLocaleString('ar-SA', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-            document.getElementById('currentTime').textContent = timeString;
-        }
-        
-        updateTime();
-        setInterval(updateTime, 1000);
-        
-        // معالجة إرسال النموذج
-        document.getElementById('permissionForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const studentName = document.getElementById('studentName').value;
-            const studentClass = document.getElementById('studentClass').value;
-            const teacherName = document.getElementById('teacherName').value;
-            const teacherPhone = document.getElementById('teacherPhone').value;
-            const reason = document.getElementById('reason').value;
-            
-            const now = new Date();
-            const time = now.toLocaleString('ar-SA', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
-            });
-            
-            // إنشاء نص الرسالة
-            const message = `السلام عليكم
-📝 *إذن دخول طالب*
+        <div class="form-group">
+            <label>اسم المعلم والمادة</label>
+            <input id="teacher" placeholder="مثال: أ. خالد - رياضيات" required>
+        </div>
 
-👤 الطالب: ${studentName}
-🎓 الصف: ${studentClass}
-👨‍🏫 المعلم: ${teacherName}
-⏰ الوقت: ${time}
-📋 السبب: ${reason}
+        <div class="form-group">
+            <label>رقم جوال المعلم (مثال: 0555123456)</label>
+            <input id="phone" type="tel" pattern="05[0-9]{8}" required>
+        </div>
 
-✅ نرجو السماح لهم بالدخول
-شاكرين تعاونكم
+        <div class="form-group">
+            <label>سبب التأخر</label>
+            <input id="reason" value="متأخر من إدارة المدرسة" required>
+        </div>
 
-_وكيل المدرسة: نواف الصبحي_`;
-            
-            // ترميز الرسالة لـ URL
-            const encodedMessage = encodeURIComponent(message);
-            
-            // فتح واتساب
-            const whatsappURL = `https://wa.me/${teacherPhone}?text=${encodedMessage}`;
-            window.open(whatsappURL, '_blank');
-            
-            // عرض رسالة النجاح
-            document.getElementById('successMessage').style.display = 'block';
-            
-            // إعادة تعيين النموذج
-            setTimeout(() => {
-                document.getElementById('permissionForm').reset();
-                // إعادة القيمة الافتراضية لسبب التأخر
-                document.getElementById('reason').value = 'متأخر من إدارة المدرسة';
-                document.getElementById('successMessage').style.display = 'none';
-            }, 3000);
+        <div class="actions">
+            <button type="button" class="btn btn-secondary" id="copyBtn">📋 نسخ الرسالة</button>
+            <button type="submit" class="btn btn-primary">📤 إرسال عبر واتساب</button>
+        </div>
+    </form>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    // عرض الوقت
+    const timeEl = document.getElementById('time');
+    function updateTime() {
+        const now = new Date().toLocaleString('ar-SA', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
         });
-    </script>
+        timeEl.textContent = now;
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // بناء نص الرسالة
+    function buildMessage() {
+        const name = document.getElementById('name').value.trim();
+        const cls = document.getElementById('cls').value;
+        const teacher = document.getElementById('teacher').value.trim();
+        const reason = document.getElementById('reason').value.trim();
+        const time = new Date().toLocaleString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+
+        return `السلام عليكم ورحمة الله وبركاته
+
+📋 *إذن دخول طالب*
+👤 الطالب: ${name}
+🎓 الصف: ${cls}
+👨‍🏫 المعلم: ${teacher}
+⏰ الوقت: ${time}
+📌 السبب: ${reason}
+
+نرجو السماح له بالدخول،
+شاكرين تعاونكم.`;
+    }
+
+    // نسخ إلى الحافظة
+    document.getElementById('copyBtn').onclick = () => {
+        const msg = buildMessage();
+        navigator.clipboard.writeText(msg).then(() => notify('✅ تم النسخ إلى الحافظة'));
+    };
+
+    // إرسال عبر واتساب
+    document.getElementById('form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const phone = document.getElementById('phone').value.trim();
+        const msg = buildMessage();
+        const url = `https://wa.me/${phone.replace('+', '')}?text=${encodeURIComponent(msg)}`;
+        // فتح الرابط مباشرة (بدون window.open لتجنب الحظر)
+        location.href = url;
+        notify('📤 جاري فتح واتساب ...');
+        // إعادة تعيين النموذج بعد ثوانٍ
+        setTimeout(() => this.reset(), 2500);
+    });
+
+    // toast notification
+    function notify(text) {
+        const t = document.getElementById('toast');
+        t.textContent = text;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+</script>
 </body>
 </html>
