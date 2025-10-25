@@ -50,12 +50,6 @@
             cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
         .radio-option:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
         .radio-option input[type="radio"] { margin-left: 8px; }
-        .file-upload { display: flex; align-items: center; gap: 15px; padding: 20px;
-            border: 2px dashed var(--border); border-radius: 10px; background: var(--bg); }
-        .upload-btn { padding: 10px 20px; background: var(--primary); color: white; border: none;
-            border-radius: 8px; font-family: 'Tajawal', sans-serif; font-weight: 600; cursor: pointer; }
-        .upload-btn:hover { background: var(--primary-hover); }
-        .file-name { color: #64748b; font-size: 0.9rem; }
         .congestion { padding: 15px; border-radius: 10px; margin-top: 10px; margin-bottom: 15px; display: none; }
         .congestion.show { display: block; }
         .congestion.low { background: #d1fae5; border-right: 4px solid var(--success); color: #065f46; }
@@ -119,6 +113,7 @@
         .toast.show { display: block; }
         .toast.success { background: var(--success); }
         .toast.error { background: var(--danger); }
+        .toast.warning { background: var(--warning); }
         @media (max-width: 768px) {
             .tabs { flex-direction: column; }
             .request-buttons { grid-template-columns: repeat(2, 1fr); }
@@ -181,7 +176,6 @@
                             <button type="button" class="counter-btn" data-action="increase" data-target="luggageCount">+</button>
                         </div>
                     </div>
-
                     <button type="submit" class="btn-primary">إرسال بيانات الوصول ✈️</button>
                 </form>
             </div>
@@ -249,30 +243,30 @@
                     <input type="text" id="requestBookingNumber" placeholder="أدخل رقم الحجز أو الغرفة">
                 </div>
                 <div class="request-buttons">
-                    <button class="request-btn" data-request="cleaning">
+                    <button class="request-btn" type="button" data-request="cleaning">
                         <span class="icon">🧹</span>
                         <span>طلب تنظيف</span>
                     </button>
-                    <button class="request-btn" data-request="supplies">
+                    <button class="request-btn" type="button" data-request="supplies">
                         <span class="icon">🧴</span>
                         <span>طلب مستلزمات</span>
                     </button>
-                    <button class="request-btn" data-request="maintenance">
+                    <button class="request-btn" type="button" data-request="maintenance">
                         <span class="icon">🔧</span>
                         <span>بلاغ صيانة</span>
                     </button>
-                    <button class="request-btn" data-request="food">
+                    <button class="request-btn" type="button" data-request="food">
                         <span class="icon">🍽️</span>
                         <span>طلب طعام</span>
                     </button>
-                    <button class="request-btn" data-request="other">
+                    <button class="request-btn" type="button" data-request="other">
                         <span class="icon">💬</span>
                         <span>طلب آخر</span>
                     </button>
                 </div>
                 <div id="requestDetails" class="request-details">
                     <textarea id="requestNotes" placeholder="اكتب تفاصيل الطلب هنا..." rows="4" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:10px;font-family:'Tajawal',sans-serif;"></textarea>
-                    <button id="submitRequest" class="btn-primary">إرسال الطلب 📤</button>
+                    <button type="button" id="submitRequest" class="btn-primary">إرسال الطلب 📤</button>
                 </div>
                 <div class="chatbot">
                     <div class="chatbot-header">
@@ -283,13 +277,13 @@
                         <div class="chat-message bot-message">مرحباً! كيف يمكنني مساعدتك اليوم؟</div>
                     </div>
                     <div class="quick-questions">
-                        <button class="quick-q-btn" data-question="ما هي أوقات الإفطار؟">🍳 أوقات الإفطار</button>
-                        <button class="quick-q-btn" data-question="أين موقف السيارات؟">🚗 موقف السيارات</button>
-                        <button class="quick-q-btn" data-question="كيف أتصل بالاستقبال؟">📞 الاتصال بالاستقبال</button>
+                        <button class="quick-q-btn" type="button" data-question="ما هي أوقات الإفطار؟">🍳 أوقات الإفطار</button>
+                        <button class="quick-q-btn" type="button" data-question="أين موقف السيارات؟">🚗 موقف السيارات</button>
+                        <button class="quick-q-btn" type="button" data-question="كيف أتصل بالاستقبال؟">📞 الاتصال بالاستقبال</button>
                     </div>
                     <div class="chat-input-area">
                         <input type="text" id="chatInput" placeholder="اكتب سؤالك هنا...">
-                        <button id="sendChatBtn">إرسال</button>
+                        <button type="button" id="sendChatBtn">إرسال</button>
                     </div>
                 </div>
             </div>
@@ -297,10 +291,9 @@
     </div>
     <div id="toast" class="toast"></div>
     
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDld4NfSWqA5EKYLXo08NpeCewpICYbDLI",
             authDomain: "mudeefy-smart-hotel.firebaseapp.com",
@@ -310,8 +303,8 @@
             appId: "1:776841372805:web:2d248105748b49975175ec"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
         function showToast(msg, type = 'success') {
             const toast = document.getElementById('toast');
@@ -353,18 +346,21 @@
         async function updateCongestion(time, type) {
             const ind = document.getElementById(type === 'arrival' ? 'congestionIndicator' : 'departureCongestionIndicator');
             if (!time) { ind.classList.remove('show'); return; }
-            const today = new Date().toISOString().split('T')[0];
-            const col = type === 'arrival' ? 'arrivals' : 'departures';
-            const field = type === 'arrival' ? 'arrivalTime' : 'departureTime';
-            const q = query(collection(db, col), where('date', '==', today), where(field, '==', time));
-            const snap = await getDocs(q);
-            const count = snap.size;
-            let msg, cls;
-            if (count === 0) { msg = '✅ غير مزدحم - وقت ممتاز'; cls = 'low'; }
-            else if (count <= 2) { msg = `⚠️ ازدحام متوسط - ${count} حجز`; cls = 'medium'; }
-            else { msg = `🚨 مزدحم - ${count} حجوزات`; cls = 'high'; }
-            ind.textContent = msg;
-            ind.className = `congestion show ${cls}`;
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const col = type === 'arrival' ? 'arrivals' : 'departures';
+                const field = type === 'arrival' ? 'arrivalTime' : 'departureTime';
+                const snap = await db.collection(col).where('date', '==', today).where(field, '==', time).get();
+                const count = snap.size;
+                let msg, cls;
+                if (count === 0) { msg = '✅ غير مزدحم - وقت ممتاز'; cls = 'low'; }
+                else if (count <= 2) { msg = `⚠️ ازدحام متوسط - ${count} حجز`; cls = 'medium'; }
+                else { msg = `🚨 مزدحم - ${count} حجوزات`; cls = 'high'; }
+                ind.textContent = msg;
+                ind.className = `congestion show ${cls}`;
+            } catch(err) {
+                console.error(err);
+            }
         }
 
         document.getElementById('arrivalTime').addEventListener('change', e => updateCongestion(e.target.value, 'arrival'));
@@ -389,16 +385,24 @@
                 const plate = document.getElementById('plateNumber').value;
                 const luggage = parseInt(document.getElementById('luggageCount').value);
                 
-                await addDoc(collection(db, 'arrivals'), {
-                    bookingNumber: booking, guestName: name, arrivalTime: time, transportType: transport,
-                    plateNumber: transport === 'private' ? plate : null, luggageCount: luggage,
-                    status: 'قادم', createdAt: Timestamp.now(), date: new Date().toISOString().split('T')[0]
+                await db.collection('arrivals').add({
+                    bookingNumber: booking,
+                    guestName: name,
+                    arrivalTime: time,
+                    transportType: transport,
+                    plateNumber: transport === 'private' ? plate : null,
+                    luggageCount: luggage,
+                    status: 'قادم',
+                    createdAt: firebase.firestore.Timestamp.now(),
+                    date: new Date().toISOString().split('T')[0]
                 });
+                
                 showToast('تم إرسال بيانات الوصول بنجاح! ✈️', 'success');
                 e.target.reset();
                 document.getElementById('congestionIndicator').classList.remove('show');
             } catch (err) {
-                showToast('حدث خطأ. حاول مرة أخرى.', 'error');
+                console.error(err);
+                showToast('حدث خطأ: ' + err.message, 'error');
             }
         });
 
@@ -416,16 +420,24 @@
                 const time = document.getElementById('departureTime').value;
                 const help = document.querySelector('input[name="luggageHelp"]:checked').value;
                 const count = help === 'yes' ? parseInt(document.getElementById('departureLuggageCount').value) : 0;
-                await addDoc(collection(db, 'departures'), {
-                    bookingNumber: booking, departureTime: time, luggageHelp: help === 'yes', luggageCount: count,
-                    status: 'مجدول', createdAt: Timestamp.now(), date: new Date().toISOString().split('T')[0]
+                
+                await db.collection('departures').add({
+                    bookingNumber: booking,
+                    departureTime: time,
+                    luggageHelp: help === 'yes',
+                    luggageCount: count,
+                    status: 'مجدول',
+                    createdAt: firebase.firestore.Timestamp.now(),
+                    date: new Date().toISOString().split('T')[0]
                 });
+                
                 showToast('تم تأكيد موعد المغادرة بنجاح! 🚀', 'success');
                 e.target.reset();
                 document.getElementById('departureCongestionIndicator').classList.remove('show');
                 document.getElementById('departureLuggageGroup').style.display = 'none';
             } catch (err) {
-                showToast('حدث خطأ. حاول مرة أخرى.', 'error');
+                console.error(err);
+                showToast('حدث خطأ: ' + err.message, 'error');
             }
         });
 
@@ -442,20 +454,40 @@
         document.getElementById('submitRequest').addEventListener('click', async () => {
             const booking = document.getElementById('requestBookingNumber').value;
             const notes = document.getElementById('requestNotes').value;
-            if (!booking || !selectedType) { showToast('الرجاء إدخال رقم الحجز واختيار نوع الطلب', 'warning'); return; }
+            if (!booking || !selectedType) { 
+                showToast('الرجاء إدخال رقم الحجز واختيار نوع الطلب', 'warning'); 
+                return; 
+            }
             try {
-                const types = {cleaning:'🧹 طلب تنظيف',supplies:'🧴 طلب مستلزمات',maintenance:'🔧 بلاغ صيانة',food:'🍽️ طلب طعام',other:'💬 طلب آخر'};
-                await addDoc(collection(db, 'requests'), {
-                    bookingNumber: booking, type: selectedType, typeDisplay: types[selectedType], notes,
-                    status: 'new', statusDisplay: 'جديد', assignedTo: null, createdAt: Timestamp.now(),
-                    assignedAt: null, completedAt: null, responseTime: null, completionTime: null
+                const types = {
+                    cleaning:'🧹 طلب تنظيف',
+                    supplies:'🧴 طلب مستلزمات',
+                    maintenance:'🔧 بلاغ صيانة',
+                    food:'🍽️ طلب طعام',
+                    other:'💬 طلب آخر'
+                };
+                await db.collection('requests').add({
+                    bookingNumber: booking,
+                    type: selectedType,
+                    typeDisplay: types[selectedType],
+                    notes,
+                    status: 'new',
+                    statusDisplay: 'جديد',
+                    assignedTo: null,
+                    createdAt: firebase.firestore.Timestamp.now(),
+                    assignedAt: null,
+                    completedAt: null,
+                    responseTime: null,
+                    completionTime: null
                 });
                 showToast('تم إرسال الطلب بنجاح! 🛎️', 'success');
                 document.getElementById('requestNotes').value = '';
                 document.getElementById('requestDetails').classList.remove('show');
                 document.querySelectorAll('.request-btn').forEach(b => b.classList.remove('active'));
+                selectedType = null;
             } catch (err) {
-                showToast('حدث خطأ', 'error');
+                console.error(err);
+                showToast('حدث خطأ: ' + err.message, 'error');
             }
         });
 
