@@ -1,406 +1,889 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>مضيفي الذكي - النسخة الكاملة</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مضيفي الذكي - نظام إدارة فندقية متكامل</title>
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi2YXYttmK2YHZiiDYp9mE2LDZg9mKIiwic2hvcnRfbmFtZSI6Itid2LbZitmB2YoiLCJzdGFydF91cmwiOiIvIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2ZmZmZmZiIsInRoZW1lX2NvbG9yIjoiIzJlNTI5MCJ9">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        :root {
+            --primary-color: #2e5290;
+            --secondary-color: #4a90e2;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+            --border-color: #dee2e6;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDld4NfSWqA5EKYLXo08NpeCewpICYbDLI",
-      authDomain: "mudeefy-smart-hotel.firebaseapp.com",
-      projectId: "mudeefy-smart-hotel",
-      storageBucket: "mudeefy-smart-hotel.firebasestorage.app",
-      messagingSenderId: "776841372805",
-      appId: "1:776841372805:web:2d248105748b49975175ec",
-      measurementId: "G-H1H81ZEQ6M"
-    };
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark-text);
+        }
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-    window.firebase = { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, doc, setDoc, getDoc, collection, addDoc, getDocs, query, where, serverTimestamp };
-  </script>
+        /* Login Screen Styles */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-  <style>
-    :root {
-      --primary: #2e5290;
-      --secondary: #4a90e2;
-      --success: #27ae60;
-      --danger: #e74c3c;
-      --bg: #f8f9fa;
-      --text: #2c3e50;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: var(--bg); color: var(--text); line-height: 1.6; }
-    .container { max-width: 1200px; margin: auto; padding: 20px; }
-    .card { background: #fff; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,.1); }
-    .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: .3s; }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--secondary); }
-    .form-input { width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; margin-bottom: 15px; }
-    .hidden { display: none; }
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; z-index: 999; }
-    .modal-content { background: #fff; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
-    .table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    .table th, .table td { padding: 12px; border: 1px solid #dee2e6; text-align: center; }
-    .table th { background: var(--primary); color: #fff; }
-    .badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-    .badge.open { background: #fff3cd; color: #856404; }
-    .badge.in-progress { background: #d1ecf1; color: #0c5460; }
-    .badge.closed { background: #d4edda; color: #155724; }
-  </style>
+        .login-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 450px;
+            width: 100%;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-logo {
+            text-align: center;
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 28px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .login-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .user-type-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: var(--light-bg);
+            padding: 5px;
+            border-radius: 15px;
+        }
+
+        .user-type-tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: var(--dark-text);
+        }
+
+        .user-type-tab.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(46, 82, 144, 0.3);
+        }
+
+        .login-form {
+            display: none;
+        }
+
+        .login-form.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-text);
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 82, 144, 0.3);
+        }
+
+        .btn-logout {
+            background: var(--danger-color);
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        .btn-logout:hover {
+            background: #c0392b;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-error {
+            background: #ffe6e6;
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
+        }
+
+        .alert-success {
+            background: #e6f7ed;
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .alert-info {
+            background: #e6f2ff;
+            color: var(--secondary-color);
+            border: 1px solid var(--secondary-color);
+        }
+
+        /* App Container (Hidden until login) */
+        .app-container {
+            display: none;
+        }
+
+        .app-container.active {
+            display: block;
+        }
+
+        header {
+            background: white;
+            box-shadow: var(--shadow);
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-radius: 15px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo::before {
+            content: "🏨";
+            font-size: 35px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--light-bg);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+        }
+
+        .user-role {
+            background: var(--primary-color);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            min-height: 500px;
+        }
+
+        .section-title {
+            font-size: 26px;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-card .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid var(--light-bg);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Service Cards for Guests */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .service-card {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .service-card:hover {
+            border-color: var(--secondary-color);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .service-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .service-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 10px;
+        }
+
+        .service-desc {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .user-info {
+                flex-direction: column;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-container">
+        <div class="login-box">
+            <div class="login-logo">🏨</div>
+            <h1 class="login-title">مضيفي الذكي</h1>
+            <p class="login-subtitle">نظام إدارة فندقية متكامل</p>
 
-  <!-- ✅ نافذة تسجيل الدخول -->
-  <div id="loginModal" class="modal">
-    <div class="modal-content">
-      <h2>تسجيل دخول الموظفين</h2>
-      <form id="loginForm">
-        <input type="email" id="email" class="form-input" placeholder="البريد الإلكتروني" required />
-        <input type="password" id="password" class="form-input" placeholder="الرقم السري" required />
-        <button type="submit" class="btn btn-primary" style="width: 100%;">دخول</button>
-        <p id="loginError" class="hidden" style="color: red; margin-top: 10px;">البيانات غير صحيحة</p>
-      </form>
-      <hr style="margin: 20px 0;">
-      <button onclick="createTestAccounts()" class="btn btn-primary" style="width: 100%; background: #27ae60;">إنشاء حسابات تجريبية</button>
+            <div id="alert-container"></div>
+
+            <div class="user-type-tabs">
+                <button class="user-type-tab active" onclick="switchLoginType('guest')">
+                    👤 نزيل
+                </button>
+                <button class="user-type-tab" onclick="switchLoginType('staff')">
+                    👔 موظف
+                </button>
+            </div>
+
+            <!-- Guest Login Form -->
+            <form id="guest-login-form" class="login-form active">
+                <div class="form-group">
+                    <label class="form-label">👤 الاسم الكامل</label>
+                    <input type="text" class="form-input" id="guest-full-name" placeholder="أدخل اسمك الكامل" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">🔑 رقم الحجز</label>
+                    <input type="text" class="form-input" id="booking-number" placeholder="مثال: ABC1234" required>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span>🔓</span>
+                    تسجيل الدخول
+                </button>
+            </form>
+
+            <!-- Staff Login Form -->
+            <form id="staff-login-form" class="login-form">
+                <div class="form-group">
+                    <label class="form-label">👤 اسم المستخدم</label>
+                    <input type="text" class="form-input" id="staff-username" placeholder="أدخل اسم المستخدم" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">🔒 كلمة المرور</label>
+                    <input type="password" class="form-input" id="staff-password" placeholder="أدخل كلمة المرور" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">💼 الدور الوظيفي</label>
+                    <select class="form-input" id="staff-role" required>
+                        <option value="">اختر الدور...</option>
+                        <option value="reception">استقبال</option>
+                        <option value="housekeeper">عامل نظافة</option>
+                        <option value="manager">مدير</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span>🔓</span>
+                    تسجيل الدخول
+                </button>
+            </form>
+        </div>
     </div>
-  </div>
 
-  <!-- ✅ واجهة المدير -->
-  <div id="managerView" class="hidden">
-    <div class="container">
-      <h1>لوحة تحكم المدير</h1>
-      <div class="card">
-        <h3>إحصائيات اليوم</h3>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>إجمالي الحجوزات</th>
-              <th>تم التسكين</th>
-              <th>طلبات الخدمة</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td id="totalReservations">0</td>
-              <td id="checkedIn">0</td>
-              <td id="serviceRequests">0</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <!-- Main App (Hidden until login) -->
+    <div id="app-container" class="app-container">
+        <div class="container">
+            <header>
+                <div class="header-content">
+                    <div class="logo">مضيفي الذكي</div>
+                    <div class="user-info">
+                        <div class="user-badge">
+                            <span id="user-display-name">مستخدم</span>
+                            <span class="user-role" id="user-role-badge">نزيل</span>
+                        </div>
+                        <button class="btn btn-logout" onclick="logout()">
+                            <span>🚪</span>
+                            تسجيل الخروج
+                        </button>
+                    </div>
+                </div>
+            </header>
 
-      <h3>سجل العمليات (Audit Trail)</h3>
-      <div class="card">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>الموظف</th>
-              <th>العملية</th>
-              <th>التفاصيل</th>
-              <th>الوقت</th>
-            </tr>
-          </thead>
-          <tbody id="auditLogTable">
-            <!-- يُملأ ديناميكيًا -->
-          </tbody>
-        </table>
-      </div>
+            <div class="main-content">
+                <!-- Guest Dashboard -->
+                <div id="guest-dashboard" style="display: none;">
+                    <h2 class="section-title">
+                        <span>🏠</span>
+                        لوحة تحكم النزيل
+                    </h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>رقم الغرفة</h3>
+                            <div class="stat-value" id="room-number-display">---</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>رقم الحجز</h3>
+                            <div class="stat-value" id="booking-number-display">---</div>
+                        </div>
+                    </div>
 
-      <button onclick="logout()" class="btn btn-primary">تسجيل خروج</button>
+                    <h3 style="margin: 30px 0 20px; color: var(--primary-color); font-size: 20px;">
+                        📋 الخدمات المتاحة
+                    </h3>
+                    <div class="services-grid">
+                        <div class="service-card" onclick="alert('سيتم فتح خدمة طلب تنظيف الغرفة')">
+                            <div class="service-icon">🧹</div>
+                            <div class="service-title">تنظيف الغرفة</div>
+                            <div class="service-desc">اطلب تنظيف غرفتك</div>
+                        </div>
+                        <div class="service-card" onclick="alert('سيتم فتح خدمة طلب الطعام')">
+                            <div class="service-icon">🍽️</div>
+                            <div class="service-title">خدمة الغرف</div>
+                            <div class="service-desc">اطلب الطعام لغرفتك</div>
+                        </div>
+                        <div class="service-card" onclick="alert('سيتم فتح خدمة الصيانة')">
+                            <div class="service-icon">🔧</div>
+                            <div class="service-title">صيانة</div>
+                            <div class="service-desc">طلب صيانة</div>
+                        </div>
+                        <div class="service-card" onclick="alert('سيتم فتح خدمة المساعدة')">
+                            <div class="service-icon">📞</div>
+                            <div class="service-title">مساعدة</div>
+                            <div class="service-desc">اتصل بالاستقبال</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Staff Dashboard -->
+                <div id="staff-dashboard" style="display: none;">
+                    <h2 class="section-title">
+                        <span>💼</span>
+                        لوحة تحكم الموظف
+                    </h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>المهام المعلقة</h3>
+                            <div class="stat-value">12</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>المهام المكتملة اليوم</h3>
+                            <div class="stat-value">8</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>الغرف المحجوزة</h3>
+                            <div class="stat-value">45</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px; padding: 20px; background: var(--light-bg); border-radius: 15px;">
+                        <h3 style="color: var(--primary-color); margin-bottom: 15px;">
+                            معلومات الموظف
+                        </h3>
+                        <p><strong>الاسم:</strong> <span id="staff-name-display">---</span></p>
+                        <p><strong>الدور:</strong> <span id="staff-role-display">---</span></p>
+                        <p><strong>وقت تسجيل الدخول:</strong> <span id="login-time-display">---</span></p>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading-state" class="loading">
+                    <div class="spinner"></div>
+                    <p>جاري التحميل...</p>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- ✅ واجهة الاستقبال -->
-  <div id="receptionView" class="hidden">
-    <div class="container">
-      <h1>لوحة الاستقبال</h1>
-      <div class="card">
-        <h3>تسجيل وصول</h3>
-        <form id="checkinForm">
-          <input type="text" id="reservationId" class="form-input" placeholder="رقم الحجز" required />
-          <input type="text" id="roomNumber" class="form-input" placeholder="رقم الغرفة" required />
-          <button type="submit" class="btn btn-primary">تأكيد الوصول</button>
-        </form>
-      </div>
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInAnonymously, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, query, where, Timestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js';
 
-      <div class="card">
-        <h3>تسجيل مغادرة</h3>
-        <form id="checkoutForm">
-          <input type="text" id="checkoutReservationId" class="form-input" placeholder="رقم الحجز" required />
-          <button type="submit" class="btn btn-primary">تأكيد المغادرة</button>
-        </form>
-      </div>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDld4NfSWqA5EKYLXo08NpeCewpICYbDLI",
+            authDomain: "mudeefy-smart-hotel.firebaseapp.com",
+            projectId: "mudeefy-smart-hotel",
+            storageBucket: "mudeefy-smart-hotel.firebasestorage.app",
+            messagingSenderId: "776841372805",
+            appId: "1:776841372805:web:2d248105748b49975175ec",
+            measurementId: "G-H1H81ZEQ6M"
+        };
 
-      <h3>الحجوزات اليومية</h3>
-      <div class="card">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>رقم الحجز</th>
-              <th>الاسم</th>
-              <th>الغرفة</th>
-              <th>الحالة</th>
-            </tr>
-          </thead>
-          <tbody id="reservationsTable">
-            <!-- يُملأ ديناميكيًا -->
-          </tbody>
-        </table>
-      </div>
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const analytics = getAnalytics(app);
 
-      <button onclick="logout()" class="btn btn-primary">تسجيل خروج</button>
-    </div>
-  </div>
+        // Session Management
+        const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
-  <!-- ✅ واجهة العامل -->
-  <div id="staffView" class="hidden">
-    <div class="container">
-      <h1>لوحة العامل</h1>
-      <h3>طلبات الخدمة المفتوحة</h3>
-      <div class="card">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>رقم الحجز</th>
-              <th>الخدمة</th>
-              <th>التفاصيل</th>
-              <th>الأولوية</th>
-              <th>إجراء</th>
-            </tr>
-          </thead>
-          <tbody id="staffTable">
-            <!-- يُملأ ديناميكيًا -->
-          </tbody>
-        </table>
-      </div>
-      <button onclick="logout()" class="btn btn-primary">تسجيل خروج</button>
-    </div>
-  </div>
+        // Store in window for global access
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
 
-  <!-- ✅ السكريبت الرئيسي -->
-  <script type="module">
-    const { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, doc, setDoc, getDoc, collection, addDoc, getDocs, query, where, serverTimestamp } = window.firebase;
-
-    // ✅ إنشاء الحسابات التجريبية (تُستخدم مرة واحدة)
-    window.createTestAccounts = async () => {
-      const accounts = [
-        { email: "manager@mudeefy.com", password: "123456", role: "manager", name: "مدير النظام" },
-        { email: "reception@mudeefy.com", password: "123456", role: "reception", name: "موظف استقبال" },
-        { email: "housekeeper@mudeefy.com", password: "123456", role: "housekeeper", name: "عامل نظافة" }
-      ];
-      for (const acc of accounts) {
-        try {
-          const userCred = await createUserWithEmailAndPassword(auth, acc.email, acc.password);
-          await setDoc(doc(db, "users", userCred.user.uid), {
-            email: acc.email,
-            role: acc.role,
-            name: acc.name,
-            createdAt: serverTimestamp()
-          });
-          console.log("✅ تم إنشاء الحساب:", acc.email);
-        } catch (err) {
-          console.log("⚠️ الحساب موجود أو خطأ:", acc.email, err.message);
+        // Check for existing session
+        function checkSession() {
+            const session = JSON.parse(localStorage.getItem('hotelSession'));
+            if (session && session.expiresAt > Date.now()) {
+                return session;
+            }
+            localStorage.removeItem('hotelSession');
+            return null;
         }
-      }
-      alert("✅ تم إنشاء الحسابات التجريبية. يمكنك الآن تسجيل الدخول.");
-    };
 
-    // ✅ تسجيل دخول
-    const loginForm = document.getElementById("loginForm");
-    const loginError = document.getElementById("loginError");
-    const loginModal = document.getElementById("loginModal");
-
-    loginForm.addEventListener("submit", async e => {
-      e.preventDefault();
-      const email = loginForm.email.value.trim();
-      const password = loginForm.password.value.trim();
-      try {
-        const userCred = await signInWithEmailAndPassword(auth, email, password);
-        const userDoc = await getDoc(doc(db, "users", userCred.user.uid));
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          localStorage.setItem("userRole", data.role);
-          localStorage.setItem("userName", data.name);
-          loginModal.classList.add("hidden");
-          showView(data.role);
-          logAudit(data.name, "login", "تسجيل دخول");
-        } else {
-          loginError.classList.remove("hidden");
+        // Create session
+        function createSession(userData) {
+            const session = {
+                ...userData,
+                expiresAt: Date.now() + SESSION_DURATION,
+                loginTime: new Date().toISOString()
+            };
+            localStorage.setItem('hotelSession', JSON.stringify(session));
+            return session;
         }
-      } catch (err) {
-        console.error(err);
-        loginError.classList.remove("hidden");
-      }
-    });
 
-    // ✅ عرض الواجهة حسب الدور
-    function showView(role) {
-      document.querySelectorAll("#managerView, #receptionView, #staffView").forEach(v => v.classList.add("hidden"));
-      if (role === "manager") {
-        document.getElementById("managerView").classList.remove("hidden");
-        loadManagerDashboard();
-      } else if (role === "reception") {
-        document.getElementById("receptionView").classList.remove("hidden");
-        loadReservations();
-      } else if (role === "housekeeper") {
-        document.getElementById("staffView").classList.remove("hidden");
-        loadServiceRequests();
-      }
-    }
+        // Show alert
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alert-container');
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type} show">
+                    ${message}
+                </div>
+            `;
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
 
-    // ✅ تحميل بيانات المدير
-    async function loadManagerDashboard() {
-      const today = new Date().toISOString().slice(0, 10);
-      const q = query(collection(db, "reservations"), where("date", "==", today));
-      const snap = await getDocs(q);
-      document.getElementById("totalReservations").textContent = snap.size;
-      let checkedIn = 0;
-      snap.forEach(d => { if (d.data().status === "checked-in") checkedIn++; });
-      document.getElementById("checkedIn").textContent = checkedIn;
+        // Switch login type
+        window.switchLoginType = function(type) {
+            document.querySelectorAll('.user-type-tab').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.login-form').forEach(form => form.classList.remove('active'));
+            
+            if (type === 'guest') {
+                document.getElementById('guest-login-form').classList.add('active');
+            } else {
+                document.getElementById('staff-login-form').classList.add('active');
+            }
+        };
 
-      const sq = query(collection(db, "serviceRequests"), where("status", "==", "open"));
-      const sSnap = await getDocs(sq);
-      document.getElementById("serviceRequests").textContent = sSnap.size;
+        // Guest Login
+        document.getElementById('guest-login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('guest-full-name').value.trim();
+            const bookingNumber = document.getElementById('booking-number').value.trim().toUpperCase();
 
-      const aq = query(collection(db, "auditLogs"), where("date", "==", today));
-      const aSnap = await getDocs(aq);
-      const auditBody = document.getElementById("auditLogTable");
-      auditBody.innerHTML = "";
-      aSnap.forEach(d => {
-        const data = d.data();
-        auditBody.innerHTML += `
-          <tr>
-            <td>${data.userName}</td>
-            <td>${data.action}</td>
-            <td>${data.details}</td>
-            <td>${new Date(data.timestamp?.toDate()).toLocaleString("ar-EG")}</td>
-          </tr>
-        `;
-      });
-    }
+            if (!fullName || !bookingNumber) {
+                showAlert('⚠️ الرجاء إدخال جميع البيانات', 'error');
+                return;
+            }
 
-    // ✅ تحميل الحجوزات
-    async function loadReservations() {
-      const today = new Date().toISOString().slice(0, 10);
-      const q = query(collection(db, "reservations"), where("date", "==", today));
-      const snap = await getDocs(q);
-      const tbody = document.getElementById("reservationsTable");
-      tbody.innerHTML = "";
-      snap.forEach(d => {
-        const data = d.data();
-        tbody.innerHTML += `
-          <tr>
-            <td>${d.id}</td>
-            <td>${data.name}</td>
-            <td>${data.roomNumber || "-"}</td>
-            <td>${data.status}</td>
-          </tr>
-        `;
-      });
-    }
+            try {
+                showAlert('🔄 جاري التحقق من بيانات الحجز...', 'info');
 
-    // ✅ تسجيل وصول
-    document.getElementById("checkinForm").addEventListener("submit", async e => {
-      e.preventDefault();
-      const id = document.getElementById("reservationId").value.trim();
-      const room = document.getElementById("roomNumber").value.trim();
-      await updateDoc(doc(db, "reservations", id), { status: "checked-in", roomNumber: room });
-      logAudit(localStorage.getItem("userName"), "check-in", `تسجيل وصول للحجز ${id} في الغرفة ${room}`);
-      alert("✅ تم تسجيل الوصول");
-      loadReservations();
-      e.target.reset();
-    });
+                // Check booking in Firestore
+                const bookingsRef = collection(db, 'bookings');
+                const q = query(bookingsRef, where('bookingNumber', '==', bookingNumber));
+                const querySnapshot = await getDocs(q);
 
-    // ✅ تسجيل مغادرة
-    document.getElementById("checkoutForm").addEventListener("submit", async e => {
-      e.preventDefault();
-      const id = document.getElementById("checkoutReservationId").value.trim();
-      await updateDoc(doc(db, "reservations", id), { status: "checked-out" });
-      logAudit(localStorage.getItem("userName"), "check-out", `تسجيل مغادرة للحجز ${id}`);
-      alert("✅ تم تسجيل المغادرة");
-      loadReservations();
-      e.target.reset();
-    });
+                if (querySnapshot.empty) {
+                    // Create demo booking if not exists
+                    const bookingData = {
+                        bookingNumber: bookingNumber,
+                        guestName: fullName,
+                        roomNumber: Math.floor(Math.random() * 500) + 100,
+                        checkInDate: Timestamp.now(),
+                        status: 'active',
+                        createdAt: Timestamp.now()
+                    };
+                    
+                    await setDoc(doc(db, 'bookings', bookingNumber), bookingData);
+                }
 
-    // ✅ تحميل طلبات الخدمة
-    async function loadServiceRequests() {
-      const q = query(collection(db, "serviceRequests"), where("status", "==", "open"));
-      const snap = await getDocs(q);
-      const tbody = document.getElementById("staffTable");
-      tbody.innerHTML = "";
-      snap.forEach(d => {
-        const data = d.data();
-        tbody.innerHTML += `
-          <tr>
-            <td>${data.reservationId}</td>
-            <td>${data.category}</td>
-            <td>${data.details}</td>
-            <td><span class="badge ${data.priority}">${data.priority}</span></td>
-            <td><button class="btn btn-primary" onclick="assignToMe('${d.id}')">تعيين لي</button></td>
-          </tr>
-        `;
-      });
-    }
+                // Sign in anonymously
+                const userCredential = await signInAnonymously(auth);
 
-    // ✅ تعيين خدمة للعامل
-    window.assignToMe = async id => {
-      await updateDoc(doc(db, "serviceRequests", id), {
-        status: "in-progress",
-        assignedStaff: auth.currentUser.uid,
-        assignedName: localStorage.getItem("userName")
-      });
-      logAudit(localStorage.getItem("userName"), "assign", `تعيين الخدمة ${id} لنفسه`);
-      loadServiceRequests();
-    };
+                // Create session
+                const session = createSession({
+                    userType: 'guest',
+                    fullName: fullName,
+                    bookingNumber: bookingNumber,
+                    uid: userCredential.user.uid
+                });
 
-    // ✅ كتابة سجل تدقيق
-    async function logAudit(userName, action, details) {
-      await addDoc(collection(db, "auditLogs"), {
-        userName,
-        action,
-        details,
-        date: new Date().toISOString().slice(0, 10),
-        timestamp: serverTimestamp()
-      });
-    }
+                showAlert('✅ تم تسجيل الدخول بنجاح!', 'success');
+                
+                setTimeout(() => {
+                    showGuestDashboard(session);
+                }, 1000);
 
-    // ✅ تسجيل خروج
-    window.logout = async () => {
-      await logAudit(localStorage.getItem("userName"), "logout", "تسجيل خروج");
-      await signOut(auth);
-      localStorage.clear();
-      location.reload();
-    };
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('❌ حدث خطأ في تسجيل الدخول: ' + error.message, 'error');
+            }
+        });
 
-    // ✅ فحص حالة المصادقة
-    onAuthStateChanged(auth, user => {
-      if (user) {
-        loadUserDataAndShowView();
-      } else {
-        loginModal.classList.remove("hidden");
-      }
-    });
+        // Staff Login
+        document.getElementById('staff-login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('staff-username').value.trim();
+            const password = document.getElementById('staff-password').value;
+            const role = document.getElementById('staff-role').value;
 
-    // ✅ تحميل بيانات المستخدم وعرض الواجهة
-    async function loadUserDataAndShowView() {
-      const user = auth.currentUser;
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        localStorage.setItem("userRole", data.role);
-        localStorage.setItem("userName", data.name);
-        showView(data.role);
-      }
-    }
-  </script>
+            if (!username || !password || !role) {
+                showAlert('⚠️ الرجاء إدخال جميع البيانات', 'error');
+                return;
+            }
+
+            try {
+                showAlert('🔄 جاري التحقق من بيانات الموظف...', 'info');
+
+                // For demo: Create email from username
+                const email = `${username}@mudeefy-hotel.com`;
+
+                try {
+                    // Try to sign in
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                    
+                    // Get staff data
+                    const staffDoc = await getDoc(doc(db, 'staff', userCredential.user.uid));
+                    
+                    if (!staffDoc.exists()) {
+                        throw new Error('بيانات الموظف غير موجودة');
+                    }
+
+                    const staffData = staffDoc.data();
+
+                    // Create session
+                    const session = createSession({
+                        userType: 'staff',
+                        username: username,
+                        role: staffData.role,
+                        fullName: staffData.fullName || username,
+                        uid: userCredential.user.uid
+                    });
+
+                    showAlert('✅ تم تسجيل الدخول بنجاح!', 'success');
+                    
+                    setTimeout(() => {
+                        showStaffDashboard(session);
+                    }, 1000);
+
+                } catch (signInError) {
+                    // If account doesn't exist, create it (for demo purposes)
+                    if (signInError.code === 'auth/user-not-found' || signInError.code === 'auth/invalid-credential') {
+                        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                        
+                        // Create staff record
+                        await setDoc(doc(db, 'staff', userCredential.user.uid), {
+                            username: username,
+                            role: role,
+                            fullName: username,
+                            email: email,
+                            createdAt: Timestamp.now()
+                        });
+
+                        const session = createSession({
+                            userType: 'staff',
+                            username: username,
+                            role: role,
+                            fullName: username,
+                            uid: userCredential.user.uid
+                        });
+
+                        showAlert('✅ تم إنشاء الحساب وتسجيل الدخول بنجاح!', 'success');
+                        
+                        setTimeout(() => {
+                            showStaffDashboard(session);
+                        }, 1000);
+                    } else {
+                        throw signInError;
+                    }
+                }
+
+            } catch (error) {
+                console.error('Staff login error:', error);
+                showAlert('❌ خطأ في تسجيل الدخول: ' + error.message, 'error');
+            }
+        });
+
+        // Show Guest Dashboard
+        function showGuestDashboard(session) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-container').classList.add('active');
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('guest-dashboard').style.display = 'block';
+            document.getElementById('staff-dashboard').style.display = 'none';
+
+            document.getElementById('user-display-name').textContent = session.fullName;
+            document.getElementById('user-role-badge').textContent = 'نزيل';
+            document.getElementById('booking-number-display').textContent = session.bookingNumber;
+            
+            // Load room number from booking
+            loadGuestRoomNumber(session.bookingNumber);
+        }
+
+        // Show Staff Dashboard
+        function showStaffDashboard(session) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-container').classList.add('active');
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('guest-dashboard').style.display = 'none';
+            document.getElementById('staff-dashboard').style.display = 'block';
+
+            const roleNames = {
+                'reception': 'استقبال',
+                'housekeeper': 'عامل نظافة',
+                'manager': 'مدير'
+            };
+
+            document.getElementById('user-display-name').textContent = session.fullName;
+            document.getElementById('user-role-badge').textContent = roleNames[session.role] || session.role;
+            document.getElementById('staff-name-display').textContent = session.fullName;
+            document.getElementById('staff-role-display').textContent = roleNames[session.role] || session.role;
+            document.getElementById('login-time-display').textContent = new Date(session.loginTime).toLocaleString('ar-SA');
+        }
+
+        // Load guest room number
+        async function loadGuestRoomNumber(bookingNumber) {
+            try {
+                const bookingDoc = await getDoc(doc(db, 'bookings', bookingNumber));
+                if (bookingDoc.exists()) {
+                    const data = bookingDoc.data();
+                    document.getElementById('room-number-display').textContent = data.roomNumber || '---';
+                }
+            } catch (error) {
+                console.error('Error loading room number:', error);
+            }
+        }
+
+        // Logout function
+        window.logout = async function() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                try {
+                    await signOut(auth);
+                    localStorage.removeItem('hotelSession');
+                    location.reload();
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    alert('حدث خطأ في تسجيل الخروج');
+                }
+            }
+        };
+
+        // Check auth state on page load
+        onAuthStateChanged(auth, (user) => {
+            const session = checkSession();
+            
+            if (user && session) {
+                // User is signed in and has valid session
+                if (session.userType === 'guest') {
+                    showGuestDashboard(session);
+                } else if (session.userType === 'staff') {
+                    showStaffDashboard(session);
+                }
+            } else {
+                // No valid session, show login
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('app-container').classList.remove('active');
+            }
+        });
+
+        // Initialize
+        console.log('🏨 نظام مضيفي الذكي - تم التهيئة بنجاح');
+    </script>
 </body>
 </html>
