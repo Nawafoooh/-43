@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>مضيفي الذكي - تطبيق النزيل</title>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDld4NfSWqA5EKYLXo08NpeCewpICYbDLI",
+      authDomain: "mudeefy-smart-hotel.firebaseapp.com",
+      projectId: "mudeefy-smart-hotel",
+      storageBucket: "mudeefy-smart-hotel.firebasestorage.app",
+      messagingSenderId: "776841372805",
+      appId: "1:776841372805:web:2d248105748b49975175ec",
+      measurementId: "G-H1H81ZEQ6M"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.firebase = { db, collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc };
+  </script>
+
+  <style>
+    :root {
+      --primary: #2e5290;
+      --secondary: #4a90e2;
+      --success: #27ae60;
+      --bg: #f8f9fa;
+      --text: #2c3e50;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: var(--bg); color: var(--text); line-height: 1.6; }
+    .container { max-width: 600px; margin: auto; padding: 20px; }
+    .card { background: #fff; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,.1); }
+    .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: .3s; }
+    .btn-primary { background: var(--primary); color: #fff; width: 100%; }
+    .btn-primary:hover { background: var(--secondary); }
+    .form-input { width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; margin-bottom: 15px; }
+    .hidden { display: none; }
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 10px 20px;
+      border: none;
+      background: #e0e0e0;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: .3s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .time-slot {
+      padding: 15px;
+      border: 2px solid #dee2e6;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: .3s;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .time-slot.selected {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+    }
+    .counter {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: #f1f1f1;
+      padding: 10px;
+      border-radius: 10px;
+      width: fit-content;
+      margin: auto;
+    }
+    .counter-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .counter-value {
+      font-size: 24px;
+      font-weight: bold;
+      min-width: 40px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ نافذة تسجيل دخول النزيل -->
+  <div id="loginModal" class="container">
+    <div class="card">
+      <h2>دخول النزيل</h2>
+      <form id="guestLoginForm">
+        <input type="text" id="guestName" class="form-input" placeholder="الاسم الرباعي كما سجلته" required />
+        <input type="text" id="guestCode" class="form-input" placeholder="رقم الحجز السري (مثلاً 205-2505)" required />
+        <button type="submit" class="btn btn-primary">دخول</button>
+        <p id="loginError" class="hidden" style="color: red; margin-top: 10px;">البيانات غير صحيحة أو الحجز غير موجود</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ✅ واجهة النزيل بعد الدخول -->
+  <div id="guestDashboard" class="container hidden">
+    <div class="card">
+      <h2>مرحباً <span id="displayName"></span></h2>
+      <p>رقم حجزك: <strong id="displayCode"></strong></p>
+      <p>رقم الغرفة: <strong id="displayRoom"></strong></p>
+      <p>حالة الحجز: <strong id="displayStatus"></strong></p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('services')">طلب خدمة</button>
+      <button class="tab-btn" onclick="switchTab('checkout')">جدولة المغادرة</button>
+    </div>
+
+    <!-- ✅ طلب خدمة -->
+    <div id="services" class="tab-content active">
+      <div class="card">
+        <h3>طلب خدمة</h3>
+        <form id="serviceForm">
+          <select id="serviceType" class="form-input" required>
+            <option value="">اختر نوع الخدمة</option>
+            <option value="تنظيف">تنظيف</option>
+            <option value="صيانة">صيانة</option>
+            <option value="مستلزمات">مستلزمات إضافية</option>
+            <option value="خدمة غرف">خدمة غرف</option>
+          </select>
+          <textarea id="serviceDetails" class="form-input" rows="4" placeholder="اكتب تفاصيل طلبك هنا..." required></textarea>
+          <button type="submit" class="btn btn-primary">إرسال الطلب</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ✅ جدولة المغادرة -->
+    <div id="checkout" class="tab-content">
+      <div class="card">
+        <h3>جدولة المغادرة</h3>
+        <form id="checkoutForm">
+          <label>اختر وقت المغادرة:</label>
+          <div class="time-slot" onclick="selectTime(this, '08:00')">08:00 صباحاً</div>
+          <div class="time-slot" onclick="selectTime(this, '10:00')">10:00 صباحاً</div>
+          <div class="time-slot" onclick="selectTime(this, '12:00')">12:00 ظهراً</div>
+          <button type="submit" class="btn btn-primary">تأكيد المغادرة</button>
+        </form>
+      </div>
+    </div>
+
+    <button onclick="logout()" class="btn btn-primary" style="margin-top: 20px;">خروج</button>
+  </div>
+
+  <!-- ✅ السكريبت -->
+  <script type="module">
+    const { db, collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc } = window.firebase;
+
+    let currentReservation = null;
+    let selectedTime = null;
+
+    // ✅ تسجيل دخول النزيل
+    document.getElementById("guestLoginForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const name = document.getElementById("guestName").value.trim();
+      const code = document.getElementById("guestCode").value.trim();
+
+      const q = query(collection(db, "guestReservations"), where("name", "==", name), where("secretCode", "==", code));
+      const snap = await getDocs(q);
+
+      if (!snap.empty) {
+        currentReservation = snap.docs[0].data();
+        currentReservation.id = snap.docs[0].id;
+        document.getElementById("displayName").textContent = currentReservation.name;
+        document.getElementById("displayCode").textContent = code;
+        document.getElementById("displayRoom").textContent = currentReservation.roomNumber || "-";
+        document.getElementById("displayStatus").textContent = currentReservation.status;
+
+        document.getElementById("loginModal").classList.add("hidden");
+        document.getElementById("guestDashboard").classList.remove("hidden");
+      } else {
+        document.getElementById("loginError").classList.remove("hidden");
+      }
+    });
+
+    // ✅ تبديل التبويبات
+    window.switchTab = tab => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+      event.target.classList.add("active");
+      document.getElementById(tab).classList.add("active");
+    };
+
+    // ✅ اختيار وقت المغادرة
+    window.selectTime = (el, time) => {
+      document.querySelectorAll(".time-slot").forEach(s => s.classList.remove("selected"));
+      el.classList.add("selected");
+      selectedTime = time;
+    };
+
+    // ✅ إرسال طلب خدمة
+    document.getElementById("serviceForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const type = document.getElementById("serviceType").value;
+      const details = document.getElementById("serviceDetails").value;
+
+      await addDoc(collection(db, "serviceRequests"), {
+        reservationId: currentReservation.id,
+        category: type,
+        details: details,
+        priority: "normal",
+        status: "open",
+        createdAt: serverTimestamp()
+      });
+
+      alert("✅ تم إرسال طلبك بنجاح، سيتم الرد عليك قريبًا.");
+      e.target.reset();
+    });
+
+    // ✅ تأكيد المغادرة
+    document.getElementById("checkoutForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      if (!selectedTime) return alert("اختر وقت المغادرة أولاً.");
+
+      await updateDoc(doc(db, "guestReservations", currentReservation.id), {
+        checkoutTime: selectedTime,
+        status: "checkout-scheduled"
+      });
+
+      alert("✅ تم جدولة المغادرة في الساعة " + selectedTime);
+      e.target.reset();
+    });
+
+    // ✅ خروج
+    window.logout = () => {
+      currentReservation = null;
+      document.getElementById("guestDashboard").classList.add("hidden");
+      document.getElementById("loginModal").classList.remove("hidden");
+      document.getElementById("guestLoginForm").reset();
+    };
+  </script>
+</body>
+</html>
