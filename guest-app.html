@@ -1,260 +1,526 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>مضيفي الذكي - تطبيق النزيل</title>
-
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDld4NfSWqA5EKYLXo08NpeCewpICYbDLI",
-      authDomain: "mudeefy-smart-hotel.firebaseapp.com",
-      projectId: "mudeefy-smart-hotel",
-      storageBucket: "mudeefy-smart-hotel.firebasestorage.app",
-      messagingSenderId: "776841372805",
-      appId: "1:776841372805:web:2d248105748b49975175ec",
-      measurementId: "G-H1H81ZEQ6M"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window.firebase = { db, collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc };
-  </script>
-
-  <style>
-    :root {
-      --primary: #2e5290;
-      --secondary: #4a90e2;
-      --success: #27ae60;
-      --bg: #f8f9fa;
-      --text: #2c3e50;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: var(--bg); color: var(--text); line-height: 1.6; }
-    .container { max-width: 600px; margin: auto; padding: 20px; }
-    .card { background: #fff; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,.1); }
-    .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: .3s; }
-    .btn-primary { background: var(--primary); color: #fff; width: 100%; }
-    .btn-primary:hover { background: var(--secondary); }
-    .form-input { width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; margin-bottom: 15px; }
-    .hidden { display: none; }
-    .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-    .tab-btn {
-      padding: 10px 20px;
-      border: none;
-      background: #e0e0e0;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: .3s;
-    }
-    .tab-btn.active {
-      background: var(--primary);
-      color: #fff;
-    }
-    .tab-content {
-      display: none;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    .time-slot {
-      padding: 15px;
-      border: 2px solid #dee2e6;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: .3s;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .time-slot.selected {
-      border-color: var(--primary);
-      background: var(--primary);
-      color: #fff;
-    }
-    .counter {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      background: #f1f1f1;
-      padding: 10px;
-      border-radius: 10px;
-      width: fit-content;
-      margin: auto;
-    }
-    .counter-btn {
-      width: 40px;
-      height: 40px;
-      border: none;
-      background: var(--primary);
-      color: #fff;
-      border-radius: 50%;
-      font-size: 20px;
-      cursor: pointer;
-    }
-    .counter-value {
-      font-size: 24px;
-      font-weight: bold;
-      min-width: 40px;
-      text-align: center;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مضيفي الذكي - واجهة النزيل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2563eb; --primary-hover: #1d4ed8; --success: #10b981;
+            --warning: #f59e0b; --danger: #ef4444; --bg: #f8fafc; --text: #1e293b;
+            --border: #e2e8f0; --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        body { font-family: 'Tajawal', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; color: var(--text); line-height: 1.6; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { background: white; padding: 30px; border-radius: 20px; box-shadow: var(--shadow);
+            text-align: center; margin-bottom: 20px; }
+        .header h1 { font-size: 2rem; color: var(--primary); margin-bottom: 10px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; background: white; padding: 10px;
+            border-radius: 15px; box-shadow: var(--shadow); }
+        .tab-btn { flex: 1; padding: 15px; background: transparent; border: none;
+            font-family: 'Tajawal', sans-serif; font-size: 1rem; font-weight: 600;
+            color: #64748b; border-radius: 10px; cursor: pointer; transition: all 0.3s; }
+        .tab-btn:hover { background: var(--bg); color: var(--primary); }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card { background: white; border-radius: 20px; padding: 30px; box-shadow: var(--shadow); }
+        .card-header { margin-bottom: 25px; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
+        .card-header h2 { font-size: 1.5rem; color: var(--text); margin-bottom: 5px; }
+        .card-header p { color: #64748b; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px;
+            border: 2px solid var(--border); border-radius: 10px; font-family: 'Tajawal', sans-serif;
+            font-size: 1rem; transition: all 0.3s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .counter { display: flex; align-items: center; gap: 15px; max-width: 200px; }
+        .counter-btn { width: 50px; height: 50px; border: 2px solid var(--primary);
+            background: white; color: var(--primary); font-size: 1.5rem; font-weight: bold;
+            border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+        .counter-btn:hover { background: var(--primary); color: white; }
+        .counter input { width: 80px; text-align: center; font-size: 1.2rem; font-weight: 600; }
+        .radio-group { display: flex; gap: 15px; }
+        .radio-option { flex: 1; padding: 12px; border: 2px solid var(--border); border-radius: 10px;
+            cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
+        .radio-option:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
+        .radio-option input[type="radio"] { margin-left: 8px; }
+        .file-upload { display: flex; align-items: center; gap: 15px; padding: 20px;
+            border: 2px dashed var(--border); border-radius: 10px; background: var(--bg); }
+        .upload-btn { padding: 10px 20px; background: var(--primary); color: white; border: none;
+            border-radius: 8px; font-family: 'Tajawal', sans-serif; font-weight: 600; cursor: pointer; }
+        .upload-btn:hover { background: var(--primary-hover); }
+        .file-name { color: #64748b; font-size: 0.9rem; }
+        .congestion { padding: 15px; border-radius: 10px; margin-top: 10px; margin-bottom: 15px; display: none; }
+        .congestion.show { display: block; }
+        .congestion.low { background: #d1fae5; border-right: 4px solid var(--success); color: #065f46; }
+        .congestion.medium { background: #fef3c7; border-right: 4px solid var(--warning); color: #92400e; }
+        .congestion.high { background: #fee2e2; border-right: 4px solid var(--danger); color: #991b1b; }
+        .btn-primary { width: 100%; padding: 15px 30px; border: none; border-radius: 12px;
+            font-family: 'Tajawal', sans-serif; font-size: 1.1rem; font-weight: 600;
+            cursor: pointer; transition: all 0.3s; background: var(--primary); color: white;
+            box-shadow: var(--shadow); margin-top: 15px; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .request-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px; margin: 20px 0; }
+        .request-btn { padding: 20px; border: 2px solid var(--border); background: white;
+            border-radius: 12px; cursor: pointer; transition: all 0.3s; display: flex;
+            flex-direction: column; align-items: center; gap: 10px; }
+        .request-btn:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05);
+            transform: translateY(-4px); box-shadow: var(--shadow); }
+        .request-btn.active { border-color: var(--primary); background: var(--primary); color: white; }
+        .request-btn .icon { font-size: 2.5rem; }
+        .request-btn span:last-child { font-weight: 600; font-size: 1rem; }
+        .request-details { margin-top: 20px; padding: 20px; background: var(--bg);
+            border-radius: 12px; display: none; }
+        .request-details.show { display: block; }
+        .chatbot { margin-top: 30px; padding: 20px; background: var(--bg); border-radius: 15px; }
+        .chatbot-header { text-align: center; margin-bottom: 15px; }
+        .chatbot-header h3 { font-size: 1.3rem; color: var(--text); }
+        .chat-messages { height: 300px; overflow-y: auto; padding: 15px; background: white;
+            border-radius: 12px; margin-bottom: 15px; }
+        .chat-message { padding: 12px; margin-bottom: 10px; border-radius: 12px; max-width: 80%;
+            animation: slideIn 0.3s; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); } }
+        .bot-message { background: var(--primary); color: white; margin-left: 0; margin-right: auto; }
+        .user-message { background: var(--bg); color: var(--text); margin-right: 0; margin-left: auto; }
+        .quick-questions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .quick-q-btn { padding: 8px 15px; background: white; border: 2px solid var(--border);
+            border-radius: 20px; font-family: 'Tajawal', sans-serif; font-size: 0.9rem;
+            cursor: pointer; transition: all 0.3s; }
+        .quick-q-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        .chat-input-area { display: flex; gap: 10px; }
+        .chat-input-area input { flex: 1; padding: 12px; border: 2px solid var(--border);
+            border-radius: 12px; font-family: 'Tajawal', sans-serif; }
+        .chat-input-area button { padding: 12px 20px; background: var(--primary); color: white;
+            border: none; border-radius: 12px; font-family: 'Tajawal', sans-serif;
+            font-weight: 600; cursor: pointer; }
+        .chat-input-area button:hover { background: var(--primary-hover); }
+        .invoice { padding: 20px; background: var(--bg); border-radius: 12px; margin: 20px 0; }
+        .invoice h3 { margin-bottom: 15px; color: var(--text); }
+        .invoice-item { display: flex; justify-content: space-between; padding: 10px 0;
+            border-bottom: 1px solid var(--border); }
+        .invoice-item.total { font-weight: 700; font-size: 1.2rem; color: var(--primary);
+            border-bottom: none; margin-top: 10px; }
+        .invoice-note { margin-top: 15px; font-size: 0.9rem; color: #64748b; font-style: italic; }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(50%);
+            background: var(--text); color: white; padding: 15px 30px; border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); z-index: 2000; display: none;
+            animation: slideUp 0.3s; }
+        @keyframes slideUp { from { transform: translate(50%, 50px); opacity: 0; }
+            to { transform: translate(50%, 0); opacity: 1; } }
+        .toast.show { display: block; }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        @media (max-width: 768px) {
+            .tabs { flex-direction: column; }
+            .request-buttons { grid-template-columns: repeat(2, 1fr); }
+            .card { padding: 20px; }
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <div class="header">
+            <h1>🏨 مضيفي الذكي</h1>
+            <p>مرحباً بك في منصة النزلاء</p>
+        </div>
 
-  <!-- ✅ نافذة تسجيل دخول النزيل -->
-  <div id="loginModal" class="container">
-    <div class="card">
-      <h2>دخول النزيل</h2>
-      <form id="guestLoginForm">
-        <input type="text" id="guestName" class="form-input" placeholder="الاسم الرباعي كما سجلته" required />
-        <input type="text" id="guestCode" class="form-input" placeholder="رقم الحجز السري (مثلاً 205-2505)" required />
-        <button type="submit" class="btn btn-primary">دخول</button>
-        <p id="loginError" class="hidden" style="color: red; margin-top: 10px;">البيانات غير صحيحة أو الحجز غير موجود</p>
-      </form>
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="arrival">بطاقة الوصول</button>
+            <button class="tab-btn" data-tab="departure">جدولة المغادرة</button>
+            <button class="tab-btn" data-tab="requests">مركز الطلبات</button>
+        </div>
+
+        <div id="arrivalTab" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h2>📅 بطاقة الوصول الذكية</h2>
+                    <p>ساعدنا في تجهيز استقبالك المثالي</p>
+                </div>
+                <form id="arrivalForm">
+                    <div class="form-group">
+                        <label>رقم الحجز</label>
+                        <input type="text" id="bookingNumber" placeholder="أدخل رقم الحجز" required>
+                    </div>
+                    <div class="form-group">
+                        <label>اسم النزيل</label>
+                        <input type="text" id="guestName" placeholder="الاسم الكامل" required>
+                    </div>
+                    <div class="form-group">
+                        <label>⏰ وقت الوصول المتوقع</label>
+                        <select id="arrivalTime" required>
+                            <option value="">اختر الوقت</option>
+                        </select>
+                    </div>
+                    <div id="congestionIndicator" class="congestion"></div>
+                    <div class="form-group">
+                        <label>🚗 وسيلة النقل</label>
+                        <select id="transportType" required>
+                            <option value="">اختر وسيلة النقل</option>
+                            <option value="taxi">تاكسي</option>
+                            <option value="private">سيارة خاصة</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="plateNumberGroup" style="display: none;">
+                        <label>🔢 رقم لوحة السيارة</label>
+                        <input type="text" id="plateNumber" placeholder="مثال: أ ب ج 1234">
+                    </div>
+                    <div class="form-group">
+                        <label>🧳 عدد الحقائب</label>
+                        <div class="counter">
+                            <button type="button" class="counter-btn" data-action="decrease" data-target="luggageCount">-</button>
+                            <input type="number" id="luggageCount" value="1" min="0" max="10" readonly>
+                            <button type="button" class="counter-btn" data-action="increase" data-target="luggageCount">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>📸 صورة الهوية</label>
+                        <div class="file-upload">
+                            <input type="file" id="idUpload" accept="image/*" style="display: none;">
+                            <button type="button" class="upload-btn" onclick="document.getElementById('idUpload').click()">📁 اختر صورة</button>
+                            <span id="fileName" class="file-name">لم يتم اختيار ملف</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">إرسال بيانات الوصول ✈️</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="departureTab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>🚪 جدولة المغادرة</h2>
+                    <p>نظم موعد مغادرتك بسهولة</p>
+                </div>
+                <form id="departureForm">
+                    <div class="form-group">
+                        <label>رقم الحجز</label>
+                        <input type="text" id="departureBookingNumber" placeholder="أدخل رقم الحجز" required>
+                    </div>
+                    <div class="form-group">
+                        <label>⏰ وقت المغادرة المتوقع</label>
+                        <select id="departureTime" required>
+                            <option value="">اختر الوقت</option>
+                        </select>
+                    </div>
+                    <div id="departureCongestionIndicator" class="congestion"></div>
+                    <div class="form-group">
+                        <label>💼 هل تحتاج مساعدة في الحقائب؟</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="luggageHelp" value="yes">
+                                <span>نعم</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="luggageHelp" value="no" checked>
+                                <span>لا</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="departureLuggageGroup" style="display: none;">
+                        <label>عدد الحقائب</label>
+                        <div class="counter">
+                            <button type="button" class="counter-btn" data-action="decrease" data-target="departureLuggageCount">-</button>
+                            <input type="number" id="departureLuggageCount" value="1" min="1" max="10" readonly>
+                            <button type="button" class="counter-btn" data-action="increase" data-target="departureLuggageCount">+</button>
+                        </div>
+                    </div>
+                    <div class="invoice">
+                        <h3>📋 ملخص الفاتورة</h3>
+                        <div class="invoice-item"><span>عدد الليالي:</span><span>3 ليالي</span></div>
+                        <div class="invoice-item"><span>سعر الليلة:</span><span>500 ريال</span></div>
+                        <div class="invoice-item total"><span>الإجمالي:</span><span>1,500 ريال</span></div>
+                        <p class="invoice-note">* الفاتورة النهائية ستكون عند المغادرة</p>
+                    </div>
+                    <button type="submit" class="btn-primary">تأكيد موعد المغادرة 🚀</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="requestsTab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>🛎️ مركز الطلبات</h2>
+                    <p>نحن هنا لخدمتك على مدار الساعة</p>
+                </div>
+                <div class="form-group">
+                    <label>رقم الحجز / رقم الغرفة</label>
+                    <input type="text" id="requestBookingNumber" placeholder="أدخل رقم الحجز أو الغرفة">
+                </div>
+                <div class="request-buttons">
+                    <button class="request-btn" data-request="cleaning">
+                        <span class="icon">🧹</span>
+                        <span>طلب تنظيف</span>
+                    </button>
+                    <button class="request-btn" data-request="supplies">
+                        <span class="icon">🧴</span>
+                        <span>طلب مستلزمات</span>
+                    </button>
+                    <button class="request-btn" data-request="maintenance">
+                        <span class="icon">🔧</span>
+                        <span>بلاغ صيانة</span>
+                    </button>
+                    <button class="request-btn" data-request="food">
+                        <span class="icon">🍽️</span>
+                        <span>طلب طعام</span>
+                    </button>
+                    <button class="request-btn" data-request="other">
+                        <span class="icon">💬</span>
+                        <span>طلب آخر</span>
+                    </button>
+                </div>
+                <div id="requestDetails" class="request-details">
+                    <textarea id="requestNotes" placeholder="اكتب تفاصيل الطلب هنا..." rows="4" style="width:100%;padding:12px;border:2px solid var(--border);border-radius:10px;font-family:'Tajawal',sans-serif;"></textarea>
+                    <button id="submitRequest" class="btn-primary">إرسال الطلب 📤</button>
+                </div>
+                <div class="chatbot">
+                    <div class="chatbot-header">
+                        <h3>🤖 المساعد الآلي</h3>
+                        <p>اسألني أي شيء!</p>
+                    </div>
+                    <div id="chatMessages" class="chat-messages">
+                        <div class="chat-message bot-message">مرحباً! كيف يمكنني مساعدتك اليوم؟</div>
+                    </div>
+                    <div class="quick-questions">
+                        <button class="quick-q-btn" data-question="ما هي أوقات الإفطار؟">🍳 أوقات الإفطار</button>
+                        <button class="quick-q-btn" data-question="أين موقف السيارات؟">🚗 موقف السيارات</button>
+                        <button class="quick-q-btn" data-question="كيف أتصل بالاستقبال؟">📞 الاتصال بالاستقبال</button>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chatInput" placeholder="اكتب سؤالك هنا...">
+                        <button id="sendChatBtn">إرسال</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+    <div id="toast" class="toast"></div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-  <!-- ✅ واجهة النزيل بعد الدخول -->
-  <div id="guestDashboard" class="container hidden">
-    <div class="card">
-      <h2>مرحباً <span id="displayName"></span></h2>
-      <p>رقم حجزك: <strong id="displayCode"></strong></p>
-      <p>رقم الغرفة: <strong id="displayRoom"></strong></p>
-      <p>حالة الحجز: <strong id="displayStatus"></strong></p>
-    </div>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDld4NfSWqA5EKYLXo08NpeCewpICYbDLI",
+            authDomain: "mudeefy-smart-hotel.firebaseapp.com",
+            projectId: "mudeefy-smart-hotel",
+            storageBucket: "mudeefy-smart-hotel.firebasestorage.app",
+            messagingSenderId: "776841372805",
+            appId: "1:776841372805:web:2d248105748b49975175ec"
+        };
 
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('services')">طلب خدمة</button>
-      <button class="tab-btn" onclick="switchTab('checkout')">جدولة المغادرة</button>
-    </div>
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
 
-    <!-- ✅ طلب خدمة -->
-    <div id="services" class="tab-content active">
-      <div class="card">
-        <h3>طلب خدمة</h3>
-        <form id="serviceForm">
-          <select id="serviceType" class="form-input" required>
-            <option value="">اختر نوع الخدمة</option>
-            <option value="تنظيف">تنظيف</option>
-            <option value="صيانة">صيانة</option>
-            <option value="مستلزمات">مستلزمات إضافية</option>
-            <option value="خدمة غرف">خدمة غرف</option>
-          </select>
-          <textarea id="serviceDetails" class="form-input" rows="4" placeholder="اكتب تفاصيل طلبك هنا..." required></textarea>
-          <button type="submit" class="btn btn-primary">إرسال الطلب</button>
-        </form>
-      </div>
-    </div>
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
 
-    <!-- ✅ جدولة المغادرة -->
-    <div id="checkout" class="tab-content">
-      <div class="card">
-        <h3>جدولة المغادرة</h3>
-        <form id="checkoutForm">
-          <label>اختر وقت المغادرة:</label>
-          <div class="time-slot" onclick="selectTime(this, '08:00')">08:00 صباحاً</div>
-          <div class="time-slot" onclick="selectTime(this, '10:00')">10:00 صباحاً</div>
-          <div class="time-slot" onclick="selectTime(this, '12:00')">12:00 ظهراً</div>
-          <button type="submit" class="btn btn-primary">تأكيد المغادرة</button>
-        </form>
-      </div>
-    </div>
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab + 'Tab').classList.add('active');
+            });
+        });
 
-    <button onclick="logout()" class="btn btn-primary" style="margin-top: 20px;">خروج</button>
-  </div>
+        const times = [];
+        for (let h = 12; h <= 23; h++) {
+            for (let m = 0; m < 60; m += 30) {
+                const time = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+                const display = new Date(`2000-01-01T${time}`).toLocaleTimeString('ar-SA', {hour: '2-digit', minute: '2-digit', hour12: true});
+                times.push({ value: time, display });
+            }
+        }
+        times.forEach(t => {
+            ['arrivalTime', 'departureTime'].forEach(id => {
+                const opt = document.createElement('option');
+                opt.value = t.value;
+                opt.textContent = t.display;
+                document.getElementById(id).appendChild(opt);
+            });
+        });
 
-  <!-- ✅ السكريبت -->
-  <script type="module">
-    const { db, collection, query, where, getDocs, addDoc, serverTimestamp, doc, updateDoc } = window.firebase;
+        document.getElementById('transportType').addEventListener('change', e => {
+            document.getElementById('plateNumberGroup').style.display = e.target.value === 'private' ? 'block' : 'none';
+        });
 
-    let currentReservation = null;
-    let selectedTime = null;
+        async function updateCongestion(time, type) {
+            const ind = document.getElementById(type === 'arrival' ? 'congestionIndicator' : 'departureCongestionIndicator');
+            if (!time) { ind.classList.remove('show'); return; }
+            const today = new Date().toISOString().split('T')[0];
+            const col = type === 'arrival' ? 'arrivals' : 'departures';
+            const field = type === 'arrival' ? 'arrivalTime' : 'departureTime';
+            const q = query(collection(db, col), where('date', '==', today), where(field, '==', time));
+            const snap = await getDocs(q);
+            const count = snap.size;
+            let msg, cls;
+            if (count === 0) { msg = '✅ غير مزدحم - وقت ممتاز'; cls = 'low'; }
+            else if (count <= 2) { msg = `⚠️ ازدحام متوسط - ${count} حجز`; cls = 'medium'; }
+            else { msg = `🚨 مزدحم - ${count} حجوزات`; cls = 'high'; }
+            ind.textContent = msg;
+            ind.className = `congestion show ${cls}`;
+        }
 
-    // ✅ تسجيل دخول النزيل
-    document.getElementById("guestLoginForm").addEventListener("submit", async e => {
-      e.preventDefault();
-      const name = document.getElementById("guestName").value.trim();
-      const code = document.getElementById("guestCode").value.trim();
+        document.getElementById('arrivalTime').addEventListener('change', e => updateCongestion(e.target.value, 'arrival'));
+        document.getElementById('departureTime').addEventListener('change', e => updateCongestion(e.target.value, 'departure'));
 
-      const q = query(collection(db, "guestReservations"), where("name", "==", name), where("secretCode", "==", code));
-      const snap = await getDocs(q);
+        document.querySelectorAll('.counter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const input = document.getElementById(btn.dataset.target);
+                let val = parseInt(input.value);
+                if (btn.dataset.action === 'increase' && val < parseInt(input.max)) input.value = val + 1;
+                if (btn.dataset.action === 'decrease' && val > parseInt(input.min)) input.value = val - 1;
+            });
+        });
 
-      if (!snap.empty) {
-        currentReservation = snap.docs[0].data();
-        currentReservation.id = snap.docs[0].id;
-        document.getElementById("displayName").textContent = currentReservation.name;
-        document.getElementById("displayCode").textContent = code;
-        document.getElementById("displayRoom").textContent = currentReservation.roomNumber || "-";
-        document.getElementById("displayStatus").textContent = currentReservation.status;
+        document.getElementById('idUpload').addEventListener('change', e => {
+            document.getElementById('fileName').textContent = e.target.files.length ? e.target.files[0].name : 'لم يتم اختيار ملف';
+        });
 
-        document.getElementById("loginModal").classList.add("hidden");
-        document.getElementById("guestDashboard").classList.remove("hidden");
-      } else {
-        document.getElementById("loginError").classList.remove("hidden");
-      }
-    });
+        document.getElementById('arrivalForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            try {
+                const booking = document.getElementById('bookingNumber').value;
+                const name = document.getElementById('guestName').value;
+                const time = document.getElementById('arrivalTime').value;
+                const transport = document.getElementById('transportType').value;
+                const plate = document.getElementById('plateNumber').value;
+                const luggage = parseInt(document.getElementById('luggageCount').value);
+                const file = document.getElementById('idUpload').files[0];
+                let url = null;
+                if (file) {
+                    const storageRef = ref(storage, `id-images/${booking}-${Date.now()}`);
+                    const snap = await uploadBytes(storageRef, file);
+                    url = await getDownloadURL(snap.ref);
+                }
+                await addDoc(collection(db, 'arrivals'), {
+                    bookingNumber: booking, guestName: name, arrivalTime: time, transportType: transport,
+                    plateNumber: transport === 'private' ? plate : null, luggageCount: luggage, idImageUrl: url,
+                    status: 'قادم', createdAt: Timestamp.now(), date: new Date().toISOString().split('T')[0]
+                });
+                showToast('تم إرسال بيانات الوصول بنجاح! ✈️', 'success');
+                e.target.reset();
+                document.getElementById('fileName').textContent = 'لم يتم اختيار ملف';
+                document.getElementById('congestionIndicator').classList.remove('show');
+            } catch (err) {
+                showToast('حدث خطأ. حاول مرة أخرى.', 'error');
+            }
+        });
 
-    // ✅ تبديل التبويبات
-    window.switchTab = tab => {
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-      event.target.classList.add("active");
-      document.getElementById(tab).classList.add("active");
-    };
+        document.querySelectorAll('input[name="luggageHelp"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                document.getElementById('departureLuggageGroup').style.display = 
+                    document.querySelector('input[name="luggageHelp"]:checked').value === 'yes' ? 'block' : 'none';
+            });
+        });
 
-    // ✅ اختيار وقت المغادرة
-    window.selectTime = (el, time) => {
-      document.querySelectorAll(".time-slot").forEach(s => s.classList.remove("selected"));
-      el.classList.add("selected");
-      selectedTime = time;
-    };
+        document.getElementById('departureForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            try {
+                const booking = document.getElementById('departureBookingNumber').value;
+                const time = document.getElementById('departureTime').value;
+                const help = document.querySelector('input[name="luggageHelp"]:checked').value;
+                const count = help === 'yes' ? parseInt(document.getElementById('departureLuggageCount').value) : 0;
+                await addDoc(collection(db, 'departures'), {
+                    bookingNumber: booking, departureTime: time, luggageHelp: help === 'yes', luggageCount: count,
+                    status: 'مجدول', createdAt: Timestamp.now(), date: new Date().toISOString().split('T')[0]
+                });
+                showToast('تم تأكيد موعد المغادرة بنجاح! 🚀', 'success');
+                e.target.reset();
+                document.getElementById('departureCongestionIndicator').classList.remove('show');
+                document.getElementById('departureLuggageGroup').style.display = 'none';
+            } catch (err) {
+                showToast('حدث خطأ. حاول مرة أخرى.', 'error');
+            }
+        });
 
-    // ✅ إرسال طلب خدمة
-    document.getElementById("serviceForm").addEventListener("submit", async e => {
-      e.preventDefault();
-      const type = document.getElementById("serviceType").value;
-      const details = document.getElementById("serviceDetails").value;
+        let selectedType = null;
+        document.querySelectorAll('.request-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.request-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedType = btn.dataset.request;
+                document.getElementById('requestDetails').classList.add('show');
+            });
+        });
 
-      await addDoc(collection(db, "serviceRequests"), {
-        reservationId: currentReservation.id,
-        category: type,
-        details: details,
-        priority: "normal",
-        status: "open",
-        createdAt: serverTimestamp()
-      });
+        document.getElementById('submitRequest').addEventListener('click', async () => {
+            const booking = document.getElementById('requestBookingNumber').value;
+            const notes = document.getElementById('requestNotes').value;
+            if (!booking || !selectedType) { showToast('الرجاء إدخال رقم الحجز واختيار نوع الطلب', 'warning'); return; }
+            try {
+                const types = {cleaning:'🧹 طلب تنظيف',supplies:'🧴 طلب مستلزمات',maintenance:'🔧 بلاغ صيانة',food:'🍽️ طلب طعام',other:'💬 طلب آخر'};
+                await addDoc(collection(db, 'requests'), {
+                    bookingNumber: booking, type: selectedType, typeDisplay: types[selectedType], notes,
+                    status: 'new', statusDisplay: 'جديد', assignedTo: null, createdAt: Timestamp.now(),
+                    assignedAt: null, completedAt: null, responseTime: null, completionTime: null
+                });
+                showToast('تم إرسال الطلب بنجاح! 🛎️', 'success');
+                document.getElementById('requestNotes').value = '';
+                document.getElementById('requestDetails').classList.remove('show');
+                document.querySelectorAll('.request-btn').forEach(b => b.classList.remove('active'));
+            } catch (err) {
+                showToast('حدث خطأ', 'error');
+            }
+        });
 
-      alert("✅ تم إرسال طلبك بنجاح، سيتم الرد عليك قريبًا.");
-      e.target.reset();
-    });
+        const faq = {
+            'ما هي أوقات الإفطار': 'يتم تقديم الإفطار من 7:00 صباحاً حتى 11:00 صباحاً في المطعم الرئيسي.',
+            'أين موقف السيارات': 'موقف السيارات يقع في الطابق السفلي (B1). المواقف متاحة مجاناً.',
+            'كيف أتصل بالاستقبال': 'اضغط 0 من هاتف الغرفة، أو اتصل على: 0555-123-4567'
+        };
 
-    // ✅ تأكيد المغادرة
-    document.getElementById("checkoutForm").addEventListener("submit", async e => {
-      e.preventDefault();
-      if (!selectedTime) return alert("اختر وقت المغادرة أولاً.");
+        function handleChat(msg) {
+            if (!msg.trim()) return;
+            const msgs = document.getElementById('chatMessages');
+            const userMsg = document.createElement('div');
+            userMsg.className = 'chat-message user-message';
+            userMsg.textContent = msg;
+            msgs.appendChild(userMsg);
+            msgs.scrollTop = msgs.scrollHeight;
+            setTimeout(() => {
+                let answer = 'عذراً، لم أفهم سؤالك. يمكنك التواصل مع الاستقبال للمساعدة. 📞';
+                for (let q in faq) {
+                    if (msg.includes(q) || q.includes(msg)) { answer = faq[q]; break; }
+                }
+                const botMsg = document.createElement('div');
+                botMsg.className = 'chat-message bot-message';
+                botMsg.textContent = answer;
+                msgs.appendChild(botMsg);
+                msgs.scrollTop = msgs.scrollHeight;
+            }, 500);
+        }
 
-      await updateDoc(doc(db, "guestReservations", currentReservation.id), {
-        checkoutTime: selectedTime,
-        status: "checkout-scheduled"
-      });
+        document.getElementById('sendChatBtn').addEventListener('click', () => {
+            handleChat(document.getElementById('chatInput').value);
+            document.getElementById('chatInput').value = '';
+        });
 
-      alert("✅ تم جدولة المغادرة في الساعة " + selectedTime);
-      e.target.reset();
-    });
+        document.getElementById('chatInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') {
+                handleChat(e.target.value);
+                e.target.value = '';
+            }
+        });
 
-    // ✅ خروج
-    window.logout = () => {
-      currentReservation = null;
-      document.getElementById("guestDashboard").classList.add("hidden");
-      document.getElementById("loginModal").classList.remove("hidden");
-      document.getElementById("guestLoginForm").reset();
-    };
-  </script>
+        document.querySelectorAll('.quick-q-btn').forEach(btn => {
+            btn.addEventListener('click', () => handleChat(btn.dataset.question));
+        });
+    </script>
 </body>
 </html>
