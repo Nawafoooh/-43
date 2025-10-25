@@ -3,382 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مضيفي الذكي - Smart Host</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>مضيفي الذكي - لوحة الفندق</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2563eb; --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+            --bg: #f8fafc; --text: #1e293b; --border: #e2e8f0; --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        body { font-family: 'Tajawal', sans-serif; background: #f1f5f9; color: var(--text); line-height: 1.6; }
+        .header { background: white; padding: 20px 30px; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
+        .header-content { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo h1 { font-size: 1.8rem; color: var(--primary); }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; background: white; padding: 10px; border-radius: 15px; box-shadow: var(--shadow); }
+        .tab-btn { flex: 1; padding: 15px; background: transparent; border: none; font-family: 'Tajawal', sans-serif;
+            font-size: 1rem; font-weight: 600; color: #64748b; border-radius: 10px; cursor: pointer; transition: all 0.3s; }
+        .tab-btn:hover { background: var(--bg); color: var(--primary); }
+        .tab-btn.active { background: var(--primary); color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card { background: white; border-radius: 15px; padding: 25px; box-shadow: var(--shadow); margin-bottom: 20px; }
+        .card-header { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--border); display: flex;
+            justify-content: space-between; align-items: center; }
+        .card-header h2 { font-size: 1.5rem; color: var(--text); }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 20px; }
+        .stats-row { display: flex; gap: 15px; margin-bottom: 20px; }
+        .stat-box { flex: 1; padding: 15px; background: var(--bg); border-radius: 12px; text-align: center; }
+        .stat-label { display: block; font-size: 0.9rem; color: #64748b; margin-bottom: 5px; }
+        .stat-value { display: block; font-size: 2rem; font-weight: 700; color: var(--primary); }
+        .guest-card, .request-card { padding: 15px; border: 2px solid var(--border); border-radius: 12px;
+            margin-bottom: 15px; transition: all 0.3s; }
+        .guest-card:hover, .request-card:hover { border-color: var(--primary); box-shadow: var(--shadow); }
+        .guest-header, .request-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .guest-name, .request-type { font-size: 1.1rem; font-weight: 600; color: var(--text); }
+        .guest-time { padding: 5px 12px; background: var(--primary); color: white; border-radius: 8px; font-weight: 600; font-size: 0.9rem; }
+        .guest-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;
+            margin: 10px 0; font-size: 0.95rem; }
+        .status-buttons { display: flex; gap: 10px; margin-top: 10px; }
+        .status-btn { flex: 1; padding: 10px; border: 2px solid var(--border); background: white; border-radius: 8px;
+            font-family: 'Tajawal', sans-serif; cursor: pointer; transition: all 0.3s; }
+        .status-btn:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
+        .status-btn.active { background: var(--success); color: white; border-color: var(--success); }
+        .request-card { border-left: 5px solid #3b82f6; }
+        .request-card.new { border-left-color: var(--danger); }
+        .request-card.in-progress { border-left-color: var(--warning); }
+        .request-card.completed { border-left-color: var(--success); }
+        .request-status { padding: 5px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; }
+        .request-status.new { background: #fee2e2; color: #991b1b; }
+        .request-status.in-progress { background: #fef3c7; color: #92400e; }
+        .request-status.completed { background: #d1fae5; color: #065f46; }
+        .request-info { margin: 10px 0; color: #64748b; font-size: 0.95rem; }
+        .request-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .request-actions select { flex: 1; padding: 10px; border: 2px solid var(--border); border-radius: 8px; font-family: 'Tajawal', sans-serif; }
+        .request-actions button { padding: 10px 20px; border: none; border-radius: 8px; font-family: 'Tajawal', sans-serif;
+            font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .assign-btn { background: #3b82f6; color: white; }
+        .complete-btn { background: var(--success); color: white; }
+        .request-actions button:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+        .metrics { display: flex; gap: 15px; margin-top: 10px; padding: 10px; background: var(--bg); border-radius: 8px; font-size: 0.85rem; }
+        .metric { display: flex; align-items: center; gap: 5px; }
+        .metric strong { color: #64748b; }
+        .metric span { color: var(--primary); font-weight: 600; }
+        .leaderboard { background: var(--bg); border-radius: 12px; padding: 15px; }
+        .leaderboard-item { display: flex; align-items: center; gap: 15px; padding: 15px; background: white;
+            border-radius: 12px; margin-bottom: 10px; transition: all 0.3s; }
+        .leaderboard-item:hover { transform: translateX(-5px); box-shadow: var(--shadow); }
+        .rank { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: 900; border-radius: 50%; }
+        .leaderboard-item:nth-child(1) .rank { background: linear-gradient(135deg, #ffd700, #ffed4e); color: #854d0e; }
+        .leaderboard-item:nth-child(2) .rank { background: linear-gradient(135deg, #c0c0c0, #e8e8e8); color: #475569; }
+        .leaderboard-item:nth-child(3) .rank { background: linear-gradient(135deg, #cd7f32, #e9a566); color: #78350f; }
+        .leaderboard-item:nth-child(n+4) .rank { background: var(--bg); color: #64748b; }
+        .staff-info { flex: 1; }
+        .staff-name { font-size: 1.1rem; font-weight: 600; color: var(--text); }
+        .staff-dept { font-size: 0.9rem; color: #64748b; }
+        .points { text-align: left; }
+        .points-value { font-size: 1.8rem; font-weight: 900; color: var(--primary); }
+        .points-label { font-size: 0.85rem; color: #64748b; }
+        .staff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+        .staff-card { padding: 20px; background: white; border: 2px solid var(--border); border-radius: 12px;
+            text-align: center; transition: all 0.3s; }
+        .staff-card:hover { border-color: var(--primary); box-shadow: var(--shadow); transform: translateY(-5px); }
+        .staff-avatar { width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;
+            font-size: 2rem; color: white; }
+        .staff-card h4 { font-size: 1.2rem; margin-bottom: 5px; }
+        .staff-card p { color: #64748b; margin-bottom: 15px; }
+        .staff-stats { display: flex; justify-content: space-around; padding-top: 15px; border-top: 2px solid var(--border); }
+        .staff-stat { text-align: center; }
+        .staff-stat-value { display: block; font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .staff-stat-label { display: block; font-size: 0.85rem; color: #64748b; }
+        .btn-secondary { padding: 10px 20px; background: #8b5cf6; color: white; border: none; border-radius: 8px;
+            font-family: 'Tajawal', sans-serif; font-weight: 600; cursor: pointer; }
+        .btn-secondary:hover { background: #7c3aed; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); align-items: center; justify-content: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .close { color: #64748b; float: left; font-size: 2rem; font-weight: bold; cursor: pointer; }
+        .close:hover { color: var(--text); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border: 2px solid var(--border);
+            border-radius: 10px; font-family: 'Tajawal', sans-serif; }
+        .btn-primary { width: 100%; padding: 12px; background: var(--primary); color: white; border: none;
+            border-radius: 10px; font-family: 'Tajawal', sans-serif; font-weight: 600; cursor: pointer; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(50%); background: var(--text);
+            color: white; padding: 15px 30px; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            z-index: 2000; display: none; }
+        .toast.show { display: block; animation: slideUp 0.3s; }
+        @keyframes slideUp { from { transform: translate(50%, 50px); opacity: 0; } to { transform: translate(50%, 0); opacity: 1; } }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        .empty-state { text-align: center; padding: 40px; color: #64748b; }
+        .empty-icon { font-size: 4rem; margin-bottom: 15px; }
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .tabs { flex-direction: column; }
+            .stats-row { flex-direction: column; }
+        }
+    </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loadingScreen" class="loading-screen">
-        <div class="loader"></div>
-        <p>جاري التحميل...</p>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo"><h1>🏨 مضيفي الذكي - لوحة الفندق</h1></div>
+        </div>
     </div>
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="arrivals">الوصول والمغادرة</button>
+            <button class="tab-btn" data-tab="requests">إدارة الطلبات</button>
+            <button class="tab-btn" data-tab="staff">إدارة الموظفين</button>
+        </div>
 
-    <!-- Main Container -->
-    <div id="appContainer" class="app-container" style="display: none;">
-        
-        <!-- Navigation Header -->
-        <header class="main-header">
-            <div class="header-content">
-                <div class="logo">
-                    <h1>🏨 مضيفي الذكي</h1>
-                </div>
-                <nav class="main-nav">
-                    <button class="nav-btn active" data-view="guest">واجهة النزيل</button>
-                    <button class="nav-btn" data-view="admin">لوحة الإدارة</button>
-                    <button class="nav-btn" data-view="staff">واجهة الموظف</button>
-                </nav>
-            </div>
-        </header>
-
-        <!-- ===================== GUEST APP ===================== -->
-        <div id="guestView" class="view-container active">
-            <div class="guest-tabs">
-                <button class="tab-btn active" data-tab="arrival">بطاقة الوصول الذكية</button>
-                <button class="tab-btn" data-tab="departure">جدولة المغادرة</button>
-                <button class="tab-btn" data-tab="requests">مركز الطلبات</button>
-            </div>
-
-            <!-- Arrival Card -->
-            <div id="arrivalTab" class="tab-content active">
+        <div id="arrivalsTab" class="tab-content active">
+            <div class="dashboard-grid">
                 <div class="card">
-                    <div class="card-header">
-                        <h2>📅 بطاقة الوصول الذكية</h2>
-                        <p>ساعدنا في تجهيز استقبالك المثالي</p>
-                    </div>
-                    <form id="arrivalForm" class="form-container">
-                        <div class="form-group">
-                            <label>رقم الحجز</label>
-                            <input type="text" id="bookingNumber" placeholder="أدخل رقم الحجز" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>اسم النزيل</label>
-                            <input type="text" id="guestName" placeholder="الاسم الكامل" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>⏰ وقت الوصول المتوقع</label>
-                            <select id="arrivalTime" required>
-                                <option value="">اختر الوقت</option>
-                            </select>
-                        </div>
-
-                        <div id="congestionIndicator" class="congestion-indicator"></div>
-
-                        <div class="form-group">
-                            <label>🚗 وسيلة النقل</label>
-                            <select id="transportType" required>
-                                <option value="">اختر وسيلة النقل</option>
-                                <option value="taxi">تاكسي</option>
-                                <option value="private">سيارة خاصة</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group" id="plateNumberGroup" style="display: none;">
-                            <label>🔢 رقم لوحة السيارة</label>
-                            <input type="text" id="plateNumber" placeholder="مثال: أ ب ج 1234">
-                        </div>
-
-                        <div class="form-group">
-                            <label>🧳 عدد الحقائب</label>
-                            <div class="counter-control">
-                                <button type="button" class="counter-btn" data-action="decrease" data-target="luggageCount">-</button>
-                                <input type="number" id="luggageCount" value="1" min="0" max="10" readonly>
-                                <button type="button" class="counter-btn" data-action="increase" data-target="luggageCount">+</button>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>📸 صورة الهوية</label>
-                            <div class="file-upload-area">
-                                <input type="file" id="idUpload" accept="image/*" style="display: none;">
-                                <button type="button" class="upload-btn" onclick="document.getElementById('idUpload').click()">
-                                    📁 اختر صورة
-                                </button>
-                                <span id="fileName" class="file-name">لم يتم اختيار ملف</span>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn-primary">إرسال بيانات الوصول ✈️</button>
-                    </form>
+                    <div class="card-header"><h2>✈️ القادمون اليوم</h2></div>
+                    <div id="arrivingList"></div>
                 </div>
-            </div>
-
-            <!-- Departure Tab -->
-            <div id="departureTab" class="tab-content">
                 <div class="card">
-                    <div class="card-header">
-                        <h2>🚪 جدولة المغادرة</h2>
-                        <p>نظم موعد مغادرتك بسهولة</p>
-                    </div>
-                    <form id="departureForm" class="form-container">
-                        <div class="form-group">
-                            <label>رقم الحجز</label>
-                            <input type="text" id="departureBookingNumber" placeholder="أدخل رقم الحجز" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>⏰ وقت المغادرة المتوقع</label>
-                            <select id="departureTime" required>
-                                <option value="">اختر الوقت</option>
-                            </select>
-                        </div>
-
-                        <div id="departureCongestionIndicator" class="congestion-indicator"></div>
-
-                        <div class="form-group">
-                            <label>💼 هل تحتاج مساعدة في الحقائب؟</label>
-                            <div class="radio-group">
-                                <label class="radio-option">
-                                    <input type="radio" name="luggageHelp" value="yes">
-                                    <span>نعم</span>
-                                </label>
-                                <label class="radio-option">
-                                    <input type="radio" name="luggageHelp" value="no" checked>
-                                    <span>لا</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="form-group" id="departureLuggageGroup" style="display: none;">
-                            <label>عدد الحقائب</label>
-                            <div class="counter-control">
-                                <button type="button" class="counter-btn" data-action="decrease" data-target="departureLuggageCount">-</button>
-                                <input type="number" id="departureLuggageCount" value="1" min="1" max="10" readonly>
-                                <button type="button" class="counter-btn" data-action="increase" data-target="departureLuggageCount">+</button>
-                            </div>
-                        </div>
-
-                        <div class="invoice-preview">
-                            <h3>📋 ملخص الفاتورة</h3>
-                            <div class="invoice-item">
-                                <span>عدد الليالي:</span>
-                                <span>3 ليالي</span>
-                            </div>
-                            <div class="invoice-item">
-                                <span>سعر الليلة:</span>
-                                <span>500 ريال</span>
-                            </div>
-                            <div class="invoice-item total">
-                                <span>الإجمالي:</span>
-                                <span>1,500 ريال</span>
-                            </div>
-                            <p class="invoice-note">* الفاتورة النهائية ستكون عند المغادرة</p>
-                        </div>
-
-                        <button type="submit" class="btn-primary">تأكيد موعد المغادرة 🚀</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Requests Center -->
-            <div id="requestsTab" class="tab-content">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>🛎️ مركز الطلبات</h2>
-                        <p>نحن هنا لخدمتك على مدار الساعة</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label>رقم الحجز / رقم الغرفة</label>
-                        <input type="text" id="requestBookingNumber" placeholder="أدخل رقم الحجز أو الغرفة">
-                    </div>
-
-                    <div class="request-buttons">
-                        <button class="request-btn" data-request="cleaning">
-                            <span class="icon">🧹</span>
-                            <span>طلب تنظيف</span>
-                        </button>
-                        <button class="request-btn" data-request="supplies">
-                            <span class="icon">🧴</span>
-                            <span>طلب مستلزمات</span>
-                        </button>
-                        <button class="request-btn" data-request="maintenance">
-                            <span class="icon">🔧</span>
-                            <span>بلاغ صيانة</span>
-                        </button>
-                        <button class="request-btn" data-request="food">
-                            <span class="icon">🍽️</span>
-                            <span>طلب طعام</span>
-                        </button>
-                        <button class="request-btn" data-request="other">
-                            <span class="icon">💬</span>
-                            <span>طلب آخر</span>
-                        </button>
-                    </div>
-
-                    <div id="requestDetails" class="request-details" style="display: none;">
-                        <textarea id="requestNotes" placeholder="اكتب تفاصيل الطلب هنا..." rows="4"></textarea>
-                        <button id="submitRequest" class="btn-primary">إرسال الطلب 📤</button>
-                    </div>
-
-                    <!-- Chatbot Section -->
-                    <div class="chatbot-section">
-                        <div class="chatbot-header">
-                            <h3>🤖 المساعد الآلي</h3>
-                            <p>اسألني أي شيء!</p>
-                        </div>
-                        <div id="chatMessages" class="chat-messages">
-                            <div class="chat-message bot-message">
-                                مرحباً! كيف يمكنني مساعدتك اليوم؟
-                            </div>
-                        </div>
-                        <div class="chat-quick-questions">
-                            <button class="quick-q-btn" data-question="ما هي أوقات الإفطار؟">🍳 أوقات الإفطار</button>
-                            <button class="quick-q-btn" data-question="أين موقف السيارات؟">🚗 موقف السيارات</button>
-                            <button class="quick-q-btn" data-question="كيف أتصل بالاستقبال؟">📞 الاتصال بالاستقبال</button>
-                        </div>
-                        <div class="chat-input-area">
-                            <input type="text" id="chatInput" placeholder="اكتب سؤالك هنا...">
-                            <button id="sendChatBtn">إرسال</button>
-                        </div>
-                    </div>
+                    <div class="card-header"><h2>🚪 المغادرون اليوم</h2></div>
+                    <div id="departingList"></div>
                 </div>
             </div>
         </div>
 
-        <!-- ===================== ADMIN DASHBOARD ===================== -->
-        <div id="adminView" class="view-container">
-            <div class="admin-tabs">
-                <button class="tab-btn active" data-tab="arrivals">الوصول والمغادرة</button>
-                <button class="tab-btn" data-tab="requestsManagement">إدارة الطلبات</button>
-                <button class="tab-btn" data-tab="staffManagement">إدارة الموظفين</button>
-            </div>
-
-            <!-- Arrivals & Departures -->
-            <div id="arrivalsTab" class="tab-content active">
-                <div class="dashboard-grid">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>✈️ القادمون اليوم</h2>
-                        </div>
-                        <div id="arrivingGuestsList" class="guests-list">
-                            <div class="loading-message">جاري تحميل البيانات...</div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>🚪 المغادرون اليوم</h2>
-                        </div>
-                        <div id="departingGuestsList" class="guests-list">
-                            <div class="loading-message">جاري تحميل البيانات...</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Requests Management -->
-            <div id="requestsManagementTab" class="tab-content">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>📋 إدارة الطلبات</h2>
-                        <div class="stats-row">
-                            <div class="stat-box">
-                                <span class="stat-label">طلبات جديدة</span>
-                                <span class="stat-value" id="newRequestsCount">0</span>
-                            </div>
-                            <div class="stat-box">
-                                <span class="stat-label">قيد التنفيذ</span>
-                                <span class="stat-value" id="inProgressCount">0</span>
-                            </div>
-                            <div class="stat-box">
-                                <span class="stat-label">مكتملة اليوم</span>
-                                <span class="stat-value" id="completedTodayCount">0</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="requestsList" class="requests-list">
-                        <div class="loading-message">جاري تحميل الطلبات...</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Staff Management -->
-            <div id="staffManagementTab" class="tab-content">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>⭐ لوحة نجوم الخدمة</h2>
-                        <button id="addStaffBtn" class="btn-secondary">➕ إضافة موظف</button>
-                    </div>
-                    
-                    <div class="leaderboard">
-                        <h3>🏆 المتصدرون هذا الشهر</h3>
-                        <div id="leaderboardList" class="leaderboard-list">
-                            <div class="loading-message">جاري تحميل البيانات...</div>
-                        </div>
-                    </div>
-
-                    <div class="staff-list-section">
-                        <h3>👥 جميع الموظفين</h3>
-                        <div id="staffList" class="staff-grid">
-                            <div class="loading-message">جاري تحميل البيانات...</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===================== STAFF APP ===================== -->
-        <div id="staffView" class="view-container">
+        <div id="requestsTab" class="tab-content">
             <div class="card">
                 <div class="card-header">
-                    <h2>📱 واجهة الموظف</h2>
-                    <div class="staff-login-section">
-                        <input type="text" id="staffIdInput" placeholder="أدخل رقم الموظف">
-                        <button id="staffLoginBtn" class="btn-primary">تسجيل الدخول</button>
+                    <h2>📋 إدارة الطلبات</h2>
+                    <div class="stats-row">
+                        <div class="stat-box"><span class="stat-label">طلبات جديدة</span><span class="stat-value" id="newCount">0</span></div>
+                        <div class="stat-box"><span class="stat-label">قيد التنفيذ</span><span class="stat-value" id="progressCount">0</span></div>
+                        <div class="stat-box"><span class="stat-label">مكتملة اليوم</span><span class="stat-value" id="completedCount">0</span></div>
                     </div>
                 </div>
+                <div id="requestsList"></div>
+            </div>
+        </div>
 
-                <div id="staffTasksSection" style="display: none;">
-                    <div class="staff-info">
-                        <h3>مرحباً، <span id="staffNameDisplay"></span></h3>
-                        <p>نقاطك الشهرية: <strong id="staffPointsDisplay">0</strong> نقطة</p>
-                    </div>
-
-                    <div class="tasks-stats">
-                        <div class="stat-box">
-                            <span class="stat-label">مهام جديدة</span>
-                            <span class="stat-value" id="staffNewTasks">0</span>
-                        </div>
-                        <div class="stat-box">
-                            <span class="stat-label">قيد التنفيذ</span>
-                            <span class="stat-value" id="staffInProgressTasks">0</span>
-                        </div>
-                        <div class="stat-box">
-                            <span class="stat-label">مكتملة اليوم</span>
-                            <span class="stat-value" id="staffCompletedTasks">0</span>
-                        </div>
-                    </div>
-
-                    <div id="staffTasksList" class="staff-tasks-list">
-                        <div class="loading-message">جاري تحميل المهام...</div>
-                    </div>
+        <div id="staffTab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>⭐ لوحة نجوم الخدمة</h2>
+                    <button id="addStaffBtn" class="btn-secondary">➕ إضافة موظف</button>
                 </div>
+                <div class="leaderboard">
+                    <h3 style="margin-bottom:15px;">🏆 المتصدرون هذا الشهر</h3>
+                    <div id="leaderboard"></div>
+                </div>
+                <h3 style="margin:25px 0 15px;">👥 جميع الموظفين</h3>
+                <div id="staffList" class="staff-grid"></div>
             </div>
         </div>
     </div>
 
-    <!-- Modal for Add Staff -->
     <div id="addStaffModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>➕ إضافة موظف جديد</h2>
+            <h2 style="margin-bottom:20px;">➕ إضافة موظف جديد</h2>
             <form id="addStaffForm">
-                <div class="form-group">
-                    <label>رقم الموظف</label>
-                    <input type="text" id="newStaffId" required>
-                </div>
-                <div class="form-group">
-                    <label>اسم الموظف</label>
-                    <input type="text" id="newStaffName" required>
-                </div>
+                <div class="form-group"><label>رقم الموظف</label><input type="text" id="staffId" required></div>
+                <div class="form-group"><label>اسم الموظف</label><input type="text" id="staffName" required></div>
                 <div class="form-group">
                     <label>القسم</label>
-                    <select id="newStaffDept" required>
+                    <select id="staffDept" required>
                         <option value="cleaning">النظافة</option>
                         <option value="maintenance">الصيانة</option>
                         <option value="reception">الاستقبال</option>
@@ -390,11 +204,258 @@
         </div>
     </div>
 
-    <!-- Notification Toast -->
     <div id="toast" class="toast"></div>
 
-    <!-- Firebase SDK -->
-    <script type="module" src="app.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, where, orderBy, limit, Timestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const app = initializeApp({
+            apiKey: "AIzaSyDld4NfSWqA5EKYLXo08NpeCewpICYbDLI",
+            authDomain: "mudeefy-smart-hotel.firebaseapp.com",
+            projectId: "mudeefy-smart-hotel",
+            storageBucket: "mudeefy-smart-hotel.firebasestorage.app",
+            messagingSenderId: "776841372805",
+            appId: "1:776841372805:web:2d248105748b49975175ec"
+        });
+        const db = getFirestore(app);
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function formatTime(ts) {
+            if (!ts) return 'غير محدد';
+            const d = ts.toDate ? ts.toDate() : new Date(ts);
+            return d.toLocaleTimeString('ar-SA', {hour: '2-digit', minute: '2-digit'});
+        }
+
+        function calcDiff(start, end) {
+            if (!start || !end) return 0;
+            const s = start.toDate ? start.toDate() : new Date(start);
+            const e = end.toDate ? end.toDate() : new Date(end);
+            return Math.round((e - s) / 60000);
+        }
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab + 'Tab').classList.add('active');
+                if (btn.dataset.tab === 'arrivals') loadArrivals();
+                if (btn.dataset.tab === 'requests') loadRequests();
+                if (btn.dataset.tab === 'staff') loadStaff();
+            });
+        });
+
+        async function loadArrivals() {
+            const today = new Date().toISOString().split('T')[0];
+            const q1 = query(collection(db, 'arrivals'), where('date', '==', today), orderBy('arrivalTime', 'asc'));
+            const q2 = query(collection(db, 'departures'), where('date', '==', today), orderBy('departureTime', 'asc'));
+            const [arr, dep] = await Promise.all([getDocs(q1), getDocs(q2)]);
+            const arrDiv = document.getElementById('arrivingList');
+            const depDiv = document.getElementById('departingList');
+            arrDiv.innerHTML = arr.empty ? '<div class="empty-state"><div class="empty-icon">📭</div><p>لا توجد حجوزات قادمة</p></div>' : '';
+            depDiv.innerHTML = dep.empty ? '<div class="empty-state"><div class="empty-icon">📭</div><p>لا توجد مغادرات</p></div>' : '';
+            arr.forEach(d => {
+                const data = d.data();
+                const time = new Date(`2000-01-01T${data.arrivalTime}`).toLocaleTimeString('ar-SA', {hour: '2-digit', minute: '2-digit', hour12: true});
+                arrDiv.innerHTML += `<div class="guest-card">
+                    <div class="guest-header"><div class="guest-name">${data.guestName || data.bookingNumber}</div><div class="guest-time">${time}</div></div>
+                    <div class="guest-details">
+                        <div><strong>رقم الحجز:</strong> ${data.bookingNumber}</div>
+                        <div><strong>الوسيلة:</strong> ${data.transportType === 'taxi' ? 'تاكسي' : 'سيارة خاصة'}</div>
+                        ${data.plateNumber ? `<div><strong>اللوحة:</strong> ${data.plateNumber}</div>` : ''}
+                        <div><strong>الحقائب:</strong> ${data.luggageCount}</div>
+                    </div>
+                    <div class="status-buttons">
+                        <button class="status-btn ${data.status === 'قادم' ? 'active' : ''}" onclick="updateStatus('${d.id}', 'قادم', 'arrivals')">قادم</button>
+                        <button class="status-btn ${data.status === 'في الفندق' ? 'active' : ''}" onclick="updateStatus('${d.id}', 'في الفندق', 'arrivals')">في الفندق</button>
+                    </div>
+                </div>`;
+            });
+            dep.forEach(d => {
+                const data = d.data();
+                const time = new Date(`2000-01-01T${data.departureTime}`).toLocaleTimeString('ar-SA', {hour: '2-digit', minute: '2-digit', hour12: true});
+                depDiv.innerHTML += `<div class="guest-card">
+                    <div class="guest-header"><div class="guest-name">${data.bookingNumber}</div><div class="guest-time">${time}</div></div>
+                    <div class="guest-details">
+                        <div><strong>مساعدة الحقائب:</strong> ${data.luggageHelp ? `نعم (${data.luggageCount})` : 'لا'}</div>
+                    </div>
+                    <div class="status-buttons">
+                        <button class="status-btn ${data.status === 'مجدول' ? 'active' : ''}" onclick="updateStatus('${d.id}', 'مجدول', 'departures')">مجدول</button>
+                        <button class="status-btn ${data.status === 'غادر' ? 'active' : ''}" onclick="updateStatus('${d.id}', 'غادر', 'departures')">غادر</button>
+                    </div>
+                </div>`;
+            });
+        }
+
+        window.updateStatus = async (id, status, col) => {
+            await updateDoc(doc(db, col, id), {status, updatedAt: Timestamp.now()});
+            showToast('تم تحديث الحالة', 'success');
+            loadArrivals();
+        };
+
+        async function loadRequests() {
+            const q = query(collection(db, 'requests'), orderBy('createdAt', 'desc'), limit(50));
+            const snap = await getDocs(q);
+            const div = document.getElementById('requestsList');
+            let newC = 0, progC = 0, compC = 0;
+            const today = new Date().toISOString().split('T')[0];
+            snap.forEach(d => {
+                const data = d.data();
+                if (data.status === 'new') newC++;
+                if (data.status === 'in-progress') progC++;
+                if (data.status === 'completed' && data.completedAt) {
+                    const cd = data.completedAt.toDate().toISOString().split('T')[0];
+                    if (cd === today) compC++;
+                }
+            });
+            document.getElementById('newCount').textContent = newC;
+            document.getElementById('progressCount').textContent = progC;
+            document.getElementById('completedCount').textContent = compC;
+            div.innerHTML = snap.empty ? '<div class="empty-state"><div class="empty-icon">📭</div><p>لا توجد طلبات</p></div>' : '';
+            const staffSnap = await getDocs(collection(db, 'staff'));
+            const staffOpts = staffSnap.docs.map(d => `<option value="${d.data().name}">${d.data().name}</option>`).join('');
+            snap.forEach(d => {
+                const data = d.data();
+                let metrics = '';
+                if (data.responseTime || data.completionTime) {
+                    metrics = `<div class="metrics">
+                        ${data.responseTime ? `<div class="metric"><strong>زمن الاستجابة:</strong> <span>${data.responseTime} دقيقة</span></div>` : ''}
+                        ${data.completionTime ? `<div class="metric"><strong>زمن الإنجاز:</strong> <span>${data.completionTime} دقيقة</span></div>` : ''}
+                    </div>`;
+                }
+                div.innerHTML += `<div class="request-card ${data.status}">
+                    <div class="request-header">
+                        <div class="request-type">${data.typeDisplay}</div>
+                        <div class="request-status ${data.status}">${data.statusDisplay}</div>
+                    </div>
+                    <div class="request-info">
+                        <div><strong>رقم الحجز:</strong> ${data.bookingNumber}</div>
+                        <div><strong>الوقت:</strong> ${formatTime(data.createdAt)}</div>
+                        ${data.notes ? `<div><strong>التفاصيل:</strong> ${data.notes}</div>` : ''}
+                        ${data.assignedTo ? `<div><strong>مسند إلى:</strong> ${data.assignedTo}</div>` : ''}
+                    </div>
+                    ${metrics}
+                    <div class="request-actions">
+                        <select id="staff_${d.id}" ${data.status !== 'new' ? 'disabled' : ''}>
+                            <option value="">اختر موظف</option>
+                            ${staffOpts}
+                        </select>
+                        ${data.status === 'new' ? `<button class="assign-btn" onclick="assignReq('${d.id}')">إسناد</button>` : ''}
+                        ${data.status === 'in-progress' ? `<button class="complete-btn" onclick="completeReq('${d.id}')">إكمال</button>` : ''}
+                    </div>
+                </div>`;
+            });
+        }
+
+        window.assignReq = async (id) => {
+            const staff = document.getElementById(`staff_${id}`).value;
+            if (!staff) { showToast('اختر موظف', 'warning'); return; }
+            const snap = await getDocs(query(collection(db, 'requests'), where('__name__', '==', id)));
+            let data;
+            snap.forEach(d => data = d.data());
+            const resp = calcDiff(data.createdAt, Timestamp.now());
+            await updateDoc(doc(db, 'requests', id), {
+                assignedTo: staff, status: 'in-progress', statusDisplay: 'قيد التنفيذ',
+                assignedAt: Timestamp.now(), responseTime: resp
+            });
+            showToast(`تم إسناد الطلب إلى ${staff}`, 'success');
+            loadRequests();
+        };
+
+        window.completeReq = async (id) => {
+            const snap = await getDocs(query(collection(db, 'requests'), where('__name__', '==', id)));
+            let data;
+            snap.forEach(d => data = d.data());
+            const comp = calcDiff(data.assignedAt, Timestamp.now());
+            await updateDoc(doc(db, 'requests', id), {
+                status: 'completed', statusDisplay: 'مكتمل', completedAt: Timestamp.now(), completionTime: comp
+            });
+            if (data.assignedTo) {
+                let pts = 10;
+                if (comp < 15) pts += 5;
+                else if (comp < 30) pts += 3;
+                const sq = query(collection(db, 'staff'), where('name', '==', data.assignedTo));
+                const ss = await getDocs(sq);
+                if (!ss.empty) {
+                    const sd = ss.docs[0];
+                    const curr = sd.data().monthlyPoints || 0;
+                    const tasks = sd.data().tasksCompleted || 0;
+                    await updateDoc(doc(db, 'staff', sd.id), {
+                        monthlyPoints: curr + pts, tasksCompleted: tasks + 1, lastUpdated: Timestamp.now()
+                    });
+                }
+            }
+            showToast('تم إكمال الطلب! ⭐', 'success');
+            loadRequests();
+        };
+
+        async function loadStaff() {
+            const q = query(collection(db, 'staff'), orderBy('monthlyPoints', 'desc'));
+            const snap = await getDocs(q);
+            const leader = document.getElementById('leaderboard');
+            const list = document.getElementById('staffList');
+            leader.innerHTML = snap.empty ? '<div class="empty-state">لا توجد بيانات</div>' : '';
+            list.innerHTML = snap.empty ? '<div class="empty-state">لا يوجد موظفون</div>' : '';
+            const deptMap = {cleaning:'النظافة',maintenance:'الصيانة',reception:'الاستقبال',porter:'حمل الحقائب'};
+            const deptIcon = {cleaning:'🧹',maintenance:'🔧',reception:'📞',porter:'🧳'};
+            let rank = 1;
+            snap.forEach(d => {
+                const data = d.data();
+                const dept = deptMap[data.department];
+                if (rank <= 10) {
+                    leader.innerHTML += `<div class="leaderboard-item">
+                        <div class="rank">${rank}</div>
+                        <div class="staff-info"><div class="staff-name">${data.name}</div><div class="staff-dept">${dept}</div></div>
+                        <div class="points"><div class="points-value">${data.monthlyPoints || 0}</div><div class="points-label">نقطة</div></div>
+                    </div>`;
+                }
+                list.innerHTML += `<div class="staff-card">
+                    <div class="staff-avatar">${deptIcon[data.department] || '👤'}</div>
+                    <h4>${data.name}</h4>
+                    <p>${dept}</p>
+                    <div class="staff-stats">
+                        <div class="staff-stat"><span class="staff-stat-value">${data.monthlyPoints || 0}</span><span class="staff-stat-label">نقطة</span></div>
+                        <div class="staff-stat"><span class="staff-stat-value">${data.tasksCompleted || 0}</span><span class="staff-stat-label">مهمة</span></div>
+                    </div>
+                </div>`;
+                rank++;
+            });
+        }
+
+        document.getElementById('addStaffBtn').addEventListener('click', () => {
+            document.getElementById('addStaffModal').classList.add('show');
+        });
+
+        document.querySelector('.close').addEventListener('click', () => {
+            document.getElementById('addStaffModal').classList.remove('show');
+        });
+
+        document.getElementById('addStaffForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const sid = document.getElementById('staffId').value;
+            const name = document.getElementById('staffName').value;
+            const dept = document.getElementById('staffDept').value;
+            await addDoc(collection(db, 'staff'), {
+                staffId: sid, name, department: dept, monthlyPoints: 0, tasksCompleted: 0, createdAt: Timestamp.now()
+            });
+            showToast('تم إضافة الموظف!', 'success');
+            e.target.reset();
+            document.getElementById('addStaffModal').classList.remove('show');
+            loadStaff();
+        });
+
+        onSnapshot(query(collection(db, 'requests'), orderBy('createdAt', 'desc')), () => {
+            if (document.getElementById('requestsTab').classList.contains('active')) loadRequests();
+        });
+
+        loadArrivals();
+    </script>
 </body>
 </html>
-
