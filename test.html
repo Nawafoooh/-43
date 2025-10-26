@@ -1567,16 +1567,19 @@
                 if (!querySnapshot.empty) {
                     const studentDocRef = doc(db, 'students', querySnapshot.docs[0].id);
                     
+                    // حفظ التقدم وإزالة testCompleted إذا كان موجوداً
                     await updateDoc(studentDocRef, {
                         lastQuestion: currentQuestion,
                         lastAnswers: studentAnswers,
                         score: currentStudent.score,
                         lastActive: new Date(),
-                        savedAt: new Date()
+                        savedAt: new Date(),
+                        testCompleted: false  // إزالة أي testCompleted خاطئ من قبل
                     });
                     
                     currentStudent.lastQuestion = currentQuestion;
                     currentStudent.lastAnswers = studentAnswers;
+                    currentStudent.testCompleted = false;  // تحديث القيمة المحلية
                     
                     showNotification('✅ تم حفظ تقدمك بنجاح!\nيمكنك المتابعة لاحقاً من حيث توقفت 💕', 'success');
                     
