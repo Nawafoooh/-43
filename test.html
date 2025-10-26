@@ -1385,8 +1385,11 @@
                     studentAnswers = currentStudent.lastAnswers || [];
                     showNotification('تم استئناف الاختبار من حيث توقفت', 'success');
                 } else {
+                    // البدء من جديد - إعادة تعيين كل شيء
                     currentQuestion = 0;
                     studentAnswers = [];
+                    currentStudent.score = 0;
+                    document.getElementById('currentScore').textContent = '0';
                     showNotification('بدء اختبار جديد', 'info');
                 }
             } else {
