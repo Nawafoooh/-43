@@ -360,8 +360,8 @@
     </div>
 
     <!-- External Libraries (CDN with fallback) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js "></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
@@ -770,24 +770,47 @@
             });
         }
 
-        async function generatePDF() {
+        function generatePDF() {
+            if (!statistics.count) {
+                showAlert('لا توجد بيانات لإنشاء التقرير', 'error');
+                return;
+            }
+
             const grade = document.getElementById('grade').value;
             const section = document.getElementById('section').value;
             const subject = document.getElementById('subject').value;
             const examDate = document.getElementById('examDate').value;
 
-            // تعريف الخط العربي
-            pdfMake.fonts = {
-                Amiri: {
-                    normal: 'Amiri-Regular.ttf',
-                    bold: 'Amiri-Bold.ttf',
-                    italics: 'Amiri-Regular.ttf',
-                    bolditalics: 'Amiri-Bold.ttf'
-                }
-            };
+            const today = new Date();
+            const arabicDate = today.toLocaleDateString('ar-SA', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric'
+            });
 
             const docDefinition = {
                 content: [
+                    {
+                        text: 'المملكة العربية السعودية',
+                        style: 'mainHeader',
+                        alignment: 'center'
+                    },
+                    {
+                        text: 'وزارة التعليم',
+                        style: 'subMainHeader',
+                        alignment: 'center'
+                    },
+                    {
+                        text: 'متوسطة المنذر بن عمرو الأنصاري',
+                        style: 'schoolName',
+                        alignment: 'center'
+                    },
+                    {
+                        text: 'إدارة تعليم منطقة المدينة المنورة',
+                        style: 'educationOffice',
+                        alignment: 'center'
+                    },
+                    '\n',
                     {
                         text: 'تقرير تحليل درجات الطلاب',
                         style: 'header',
@@ -795,11 +818,20 @@
                     },
                     '\n',
                     {
+                        text: `المدير: خالد المطيري | البريد: almuntherschool@gmail.com`,
+                        style: 'infoLine',
+                        alignment: 'center'
+                    },
+                    {
                         text: `الصف: ${grade} | الشعبة: ${section} | المادة: ${subject} | التاريخ: ${examDate}`,
                         style: 'subheader',
                         alignment: 'center'
                     },
                     '\n',
+                    {
+                        text: 'الإحصائيات الرئيسية',
+                        style: 'sectionTitle'
+                    },
                     {
                         style: 'tableExample',
                         table: {
@@ -812,6 +844,7 @@
                                 ['الوسيط', statistics.median],
                                 ['المنوال', statistics.mode],
                                 ['الانحراف المعياري', statistics.stdDev],
+                                ['التباين', statistics.variance],
                                 ['أقل درجة', statistics.min],
                                 ['أعلى درجة', statistics.max],
                                 ['المدى', statistics.range],
@@ -827,7 +860,11 @@
                         layout: 'lightHorizontalLines'
                     },
                     '\n',
-                     {
+                    {
+                        text: 'توزيع التقديرات',
+                        style: 'sectionTitle'
+                    },
+                    {
                         style: 'tableExample',
                         table: {
                             headerRows: 1,
@@ -838,146 +875,120 @@
                             ]
                         },
                         layout: 'lightHorizontalLines'
+                    },
+                    '\n',
+                    {
+                        text: `أفضل الطلاب (أعلى 10%)`,
+                        style: 'sectionTitle'
+                    },
+                    {
+                        style: 'tableExample',
+                        table: {
+                            headerRows: 1,
+                            widths: [30, '*', 'auto'],
+                            body: [
+                                [{text: '#', style: 'tableHeader'}, {text: 'اسم الطالب', style: 'tableHeader'}, {text: 'الدرجة', style: 'tableHeader'}],
+                                ...statistics.topStudents.map((s, index) => [(index + 1), s.name, s.score.toFixed(2)])
+                            ]
+                        },
+                        layout: 'lightHorizontalLines'
                     }
                 ],
                 styles: {
+                    mainHeader: {
+                        fontSize: 16,
+                        bold: true,
+                        color: '#005c4b',
+                        margin: [0, 10, 0, 5]
+                    },
+                    subMainHeader: {
+                        fontSize: 14,
+                        bold: true,
+                        color: '#005c4b',
+                        margin: [0, 0, 0, 5]
+                    },
+                    schoolName: {
+                        fontSize: 13,
+                        bold: true,
+                        color: '#005c4b',
+                        margin: [0, 0, 0, 3]
+                    },
+                    educationOffice: {
+                        fontSize: 12,
+                        color: '#005c4b',
+                        margin: [0, 0, 0, 10]
+                    },
                     header: {
                         fontSize: 18,
                         bold: true,
                         color: '#005c4b'
                     },
                     subheader: {
-                        fontSize: 12,
+                        fontSize: 11,
                         color: '#333'
+                    },
+                    infoLine: {
+                        fontSize: 10,
+                        color: '#555',
+                        margin: [0, 0, 0, 3]
+                    },
+                    sectionTitle: {
+                        fontSize: 14,
+                        bold: true,
+                        color: '#005c4b',
+                        alignment: 'center',
+                        margin: [0, 10, 0, 5]
                     },
                     tableExample: {
                         margin: [0, 5, 0, 15]
                     },
                     tableHeader: {
                         bold: true,
-                        fontSize: 13,
+                        fontSize: 12,
                         color: 'white',
-                        fillColor: '#005c4b'
+                        fillColor: '#005c4b',
+                        alignment: 'center'
                     }
                 },
                 defaultStyle: {
-                    font: 'Amiri',
+                    font: 'Roboto',
+                    fontSize: 11,
                     alignment: 'right'
                 },
                 pageOrientation: 'portrait',
                 pageSize: 'A4',
                 pageMargins: [40, 60, 40, 60],
+                footer: function(currentPage, pageCount) {
+                    return {
+                        columns: [
+                            { text: 'Nawaf Alsubhi 2025', alignment: 'left', fontSize: 9, color: '#6c757d', margin: [40, 0, 0, 0] },
+                            { text: `صفحة ${currentPage} من ${pageCount}`, alignment: 'center', fontSize: 9, color: '#6c757d' },
+                            { text: arabicDate, alignment: 'right', fontSize: 9, color: '#6c757d', margin: [0, 0, 40, 0] }
+                        ],
+                        margin: [0, 10, 0, 0]
+                    };
+                }
             };
 
-            const pdfDocGenerator = pdfMake.createPdf(docDefinition);
-            pdfDocGenerator.open(); // لفتح في نافذة جديدة
+            generatedPDF = pdfMake.createPdf(docDefinition);
+            generatedPDF.open();
             
             showAlert('تم إنشاء التقرير بنجاح!', 'success');
         }
 
         function downloadPDFDirect() {
+            if (!generatedPDF) {
+                showAlert('يرجى إنشاء التقرير أولاً', 'error');
+                return;
+            }
+
             const grade = document.getElementById('grade').value;
             const section = document.getElementById('section').value;
             const subject = document.getElementById('subject').value;
             const examDate = document.getElementById('examDate').value;
             const fileName = `تقرير_${subject}_${grade}_شعبة${section}_${examDate}.pdf`;
 
-            // تعريف الخط العربي
-            pdfMake.fonts = {
-                Amiri: {
-                    normal: 'Amiri-Regular.ttf',
-                    bold: 'Amiri-Bold.ttf',
-                    italics: 'Amiri-Regular.ttf',
-                    bolditalics: 'Amiri-Bold.ttf'
-                }
-            };
-
-            const docDefinition = {
-                content: [
-                    {
-                        text: 'تقرير تحليل درجات الطلاب',
-                        style: 'header',
-                        alignment: 'center'
-                    },
-                    '\n',
-                    {
-                        text: `الصف: ${grade} | الشعبة: ${section} | المادة: ${subject} | التاريخ: ${examDate}`,
-                        style: 'subheader',
-                        alignment: 'center'
-                    },
-                    '\n',
-                    {
-                        style: 'tableExample',
-                        table: {
-                            headerRows: 1,
-                            widths: ['*', 'auto'],
-                            body: [
-                                [{text: 'الإحصاء', style: 'tableHeader'}, {text: 'القيمة', style: 'tableHeader'}],
-                                ['إجمالي عدد الطلاب', statistics.count],
-                                ['المتوسط الحسابي', statistics.mean],
-                                ['الوسيط', statistics.median],
-                                ['المنوال', statistics.mode],
-                                ['الانحراف المعياري', statistics.stdDev],
-                                ['أقل درجة', statistics.min],
-                                ['أعلى درجة', statistics.max],
-                                ['المدى', statistics.range],
-                                ['عدد الناجحين (≥ 60)', statistics.passCount],
-                                ['عدد الراسبين', statistics.failCount],
-                                ['نسبة النجاح', `%${statistics.passRate}`],
-                                ['الربيع الأول (Q1)', statistics.q1],
-                                ['الربيع الثالث (Q3)', statistics.q3],
-                                ['المدى الربيعي (IQR)', statistics.iqr],
-                                ['عدد القيم الشاذة', statistics.outliers]
-                            ]
-                        },
-                        layout: 'lightHorizontalLines'
-                    },
-                    '\n',
-                     {
-                        style: 'tableExample',
-                        table: {
-                            headerRows: 1,
-                            widths: ['*', 'auto', 'auto'],
-                            body: [
-                                [{text: 'التقدير', style: 'tableHeader'}, {text: 'عدد الطلاب', style: 'tableHeader'}, {text: 'النسبة', style: 'tableHeader'}],
-                                ...statistics.gradeDistribution.map(g => [g.name, g.count, `%${g.percentage}`])
-                            ]
-                        },
-                        layout: 'lightHorizontalLines'
-                    }
-                ],
-                styles: {
-                    header: {
-                        fontSize: 18,
-                        bold: true,
-                        color: '#005c4b'
-                    },
-                    subheader: {
-                        fontSize: 12,
-                        color: '#333'
-                    },
-                    tableExample: {
-                        margin: [0, 5, 0, 15]
-                    },
-                    tableHeader: {
-                        bold: true,
-                        fontSize: 13,
-                        color: 'white',
-                        fillColor: '#005c4b'
-                    }
-                },
-                defaultStyle: {
-                    font: 'Amiri',
-                    alignment: 'right'
-                },
-                pageOrientation: 'portrait',
-                pageSize: 'A4',
-                pageMargins: [40, 60, 40, 60],
-            };
-
-            const pdfDocGenerator = pdfMake.createPdf(docDefinition);
-            pdfDocGenerator.download(fileName);
-            
+            generatedPDF.download(fileName);
             showAlert('تم تحميل التقرير بنجاح!', 'success');
         }
 
