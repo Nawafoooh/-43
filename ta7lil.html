@@ -333,7 +333,7 @@
                             <tr>
                                 <th>الاسم</th>
                                 <th>الدرجة</th>
-                                <th>الحالة</th>
+                                <th>التقدير</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody"></tbody>
@@ -501,6 +501,26 @@
             const upperBound = q3 + 1.5 * iqr;
             const outliers = scores.filter(s => s < lowerBound || s > upperBound);
 
+            // Grade Distribution (Saudi System)
+            const gradeRanges = [
+                { name: 'ممتاز', min: 90, max: 100, color: '#28a745' },
+                { name: 'جيد جداً', min: 80, max: 89.99, color: '#17a2b8' },
+                { name: 'جيد', min: 70, max: 79.99, color: '#ffc107' },
+                { name: 'مقبول', min: 60, max: 69.99, color: '#fd7e14' },
+                { name: 'ضعيف', min: 0, max: 59.99, color: '#dc3545' }
+            ];
+
+            const gradeDistribution = gradeRanges.map(grade => {
+                const count = scores.filter(s => s >= grade.min && s <= grade.max).length;
+                const percentage = ((count / n) * 100).toFixed(2);
+                return {
+                    name: grade.name,
+                    count: count,
+                    percentage: percentage,
+                    color: grade.color
+                };
+            });
+
             // Success/Fail (60% threshold)
             const passThreshold = 60;
             const passCount = scores.filter(s => s >= passThreshold).length;
@@ -525,7 +545,6 @@
                 binLabels.push(`${binStart.toFixed(0)}-${binEnd.toFixed(0)}`);
                 bins[i] = scores.filter(s => s >= binStart && s < binEnd).length;
             }
-            // Add last score to last bin
             bins[binCount - 1] += scores.filter(s => s === max).length;
 
             statistics = {
@@ -548,7 +567,8 @@
                 topStudents,
                 bottomStudents,
                 bins,
-                binLabels
+                binLabels,
+                gradeDistribution
             };
         }
 
@@ -593,17 +613,64 @@
                 </div>
             `;
 
+            // Grade Distribution Table
+            const gradeTableHTML = `
+                <div class="table-container" style="margin: 30px 0;">
+                    <h3 style="text-align: center; color: #005c4b; margin-bottom: 15px;">توزيع التقديرات</h3>
+                    <table style="background: white;">
+                        <thead>
+                            <tr style="background: #005c4b;">
+                                <th>التقدير</th>
+                                <th>عدد الطلاب</th>
+                                <th>النسبة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${statistics.gradeDistribution.map(grade => `
+                                <tr>
+                                    <td style="font-weight: bold; color: ${grade.color};">${grade.name}</td>
+                                    <td style="font-size: 18px; font-weight: bold;">${grade.count}</td>
+                                    <td style="font-size: 18px; font-weight: bold; color: ${grade.color};">%${grade.percentage}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            // Insert grade table before data table
+            const dataTableContainer = document.querySelector('.table-container');
+            dataTableContainer.insertAdjacentHTML('beforebegin', gradeTableHTML);
+
             // Display table
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
             studentData.forEach(student => {
-                const status = student.score >= 60 ? 'ناجح' : 'راسب';
-                const statusColor = student.score >= 60 ? '#28a745' : '#dc3545';
+                let grade = '';
+                let gradeColor = '';
+                
+                if (student.score >= 90) {
+                    grade = 'ممتاز';
+                    gradeColor = '#28a745';
+                } else if (student.score >= 80) {
+                    grade = 'جيد جداً';
+                    gradeColor = '#17a2b8';
+                } else if (student.score >= 70) {
+                    grade = 'جيد';
+                    gradeColor = '#ffc107';
+                } else if (student.score >= 60) {
+                    grade = 'مقبول';
+                    gradeColor = '#fd7e14';
+                } else {
+                    grade = 'ضعيف';
+                    gradeColor = '#dc3545';
+                }
+                
                 tbody.innerHTML += `
                     <tr>
                         <td>${student.name}</td>
-                        <td>${student.score.toFixed(2)}</td>
-                        <td style="color: ${statusColor}; font-weight: bold;">${status}</td>
+                        <td style="font-weight: bold; font-size: 16px;">${student.score.toFixed(2)}</td>
+                        <td style="color: ${gradeColor}; font-weight: bold; font-size: 15px;">${grade}</td>
                     </tr>
                 `;
             });
@@ -660,6 +727,52 @@
                         x: {
                             ticks: {
                                 font: { size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Add pie chart for grade distribution
+            const pieChartContainer = document.createElement('div');
+            pieChartContainer.id = 'pieChartContainer';
+            pieChartContainer.style.cssText = 'margin: 30px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); max-width: 500px;';
+            pieChartContainer.innerHTML = '<canvas id="gradeChart"></canvas>';
+            document.getElementById('chartContainer').insertAdjacentElement('afterend', pieChartContainer);
+
+            const pieCtx = document.getElementById('gradeChart').getContext('2d');
+            new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: statistics.gradeDistribution.map(g => g.name),
+                    datasets: [{
+                        data: statistics.gradeDistribution.map(g => g.count),
+                        backgroundColor: statistics.gradeDistribution.map(g => g.color),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { size: 13, family: 'Segoe UI' },
+                                padding: 15
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'توزيع التقديرات',
+                            font: { size: 18, family: 'Segoe UI' }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const percentage = statistics.gradeDistribution[context.dataIndex].percentage;
+                                    return `${context.label}: ${context.parsed} طالب (${percentage}%)`;
+                                }
                             }
                         }
                     }
@@ -744,6 +857,35 @@
                 theme: 'grid',
                 headStyles: { fillColor: [0, 92, 75], fontSize: 11 },
                 styles: { fontSize: 10, font: 'helvetica' },
+                margin: { left: 20, right: 20 }
+            });
+
+            yPos = doc.lastAutoTable.finalY + 10;
+
+            // Grade Distribution Table
+            if (yPos > 200) {
+                doc.addPage();
+                yPos = 20;
+            }
+
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text('Grade Distribution', 20, yPos);
+            yPos += 7;
+
+            const gradeData = statistics.gradeDistribution.map(g => [
+                g.name,
+                g.count,
+                `${g.percentage}%`
+            ]);
+
+            doc.autoTable({
+                startY: yPos,
+                head: [['Grade', 'Count', 'Percentage']],
+                body: gradeData,
+                theme: 'striped',
+                headStyles: { fillColor: [0, 92, 75], fontSize: 11 },
+                styles: { fontSize: 10, font: 'helvetica', halign: 'center' },
                 margin: { left: 20, right: 20 }
             });
 
@@ -836,11 +978,16 @@
             if (confirm('هل تريد البدء من جديد؟ سيتم حذف جميع البيانات الحالية.')) {
                 studentData = [];
                 statistics = {};
+                generatedPDF = null;
                 document.getElementById('resultsSection').classList.add('hidden');
                 document.getElementById('fileInput').value = '';
                 if (chartInstance) {
                     chartInstance.destroy();
                     chartInstance = null;
+                }
+                const pieContainer = document.getElementById('pieChartContainer');
+                if (pieContainer) {
+                    pieContainer.remove();
                 }
                 showAlert('تم إعادة تعيين البرنامج بنجاح', 'success');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
