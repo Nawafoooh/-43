@@ -348,15 +348,14 @@
                 <!-- Actions -->
                 <div class="actions">
                     <button class="btn btn-primary" onclick="generatePDF()">📄 إنشاء تقرير PDF</button>
-                    <button class="btn btn-primary" onclick="uploadToDrive()" style="background: #4285f4;">☁️ رفع لـ Google Drive</button>
+                    <button class="btn btn-primary" onclick="downloadPDFDirect()" style="background: #007bff;">💾 تحميل PDF</button>
                     <button class="btn btn-secondary" onclick="resetApp()">🔄 بداية جديدة</button>
                 </div>
             </div>
         </div>
 
         <div class="footer">
-            متوسطة المنذر بن عمرو الأنصاري | إدارة تعليم منطقة المدينة المنورة<br>
-            المدير: خالد المطيري | البريد الإلكتروني: almuntherschool@gmail.com
+            Nawaf Alsubhi 2025
         </div>
     </div>
 
@@ -365,7 +364,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://apis.google.com/js/api.js"></script>
 
     <script>
         // Global variables
@@ -373,14 +371,6 @@
         let statistics = {};
         let chartInstance = null;
         let generatedPDF = null;
-
-        // Google Drive Configuration
-        const CLIENT_ID = 'YOUR_CLIENT_ID.apps.googleusercontent.com'; // يجب تغييره
-        const API_KEY = 'YOUR_API_KEY'; // يجب تغييره
-        const SCOPES = 'https://www.googleapis.com/auth/drive.file';
-        let tokenClient;
-        let gapiInited = false;
-        let gisInited = false;
 
         // File input handler
         document.getElementById('fileInput').addEventListener('change', handleFileUpload);
@@ -784,9 +774,6 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
 
-            // Add Arabic font support (using embedded fonts)
-            doc.setLanguage("ar");
-
             const grade = document.getElementById('grade').value;
             const section = document.getElementById('section').value;
             const subject = document.getElementById('subject').value;
@@ -796,48 +783,56 @@
 
             // Header
             doc.setFillColor(0, 92, 75);
-            doc.rect(0, 0, 210, 40, 'F');
+            doc.rect(0, 0, 210, 50, 'F');
             
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(20);
-            doc.text('Kingdom of Saudi Arabia', 105, 12, { align: 'center' });
-            doc.text('Ministry of Education', 105, 20, { align: 'center' });
+            doc.setFontSize(22);
+            doc.text('Kingdom of Saudi Arabia', 105, 15, { align: 'center' });
+            doc.text('Ministry of Education', 105, 25, { align: 'center' });
             doc.setFontSize(16);
-            doc.text('Al-Munther Bin Amr Al-Ansari Middle School', 105, 28, { align: 'center' });
-            doc.text('Student Scores Analysis Report', 105, 35, { align: 'center' });
+            doc.text('Al-Munther Bin Amr Al-Ansari Middle School', 105, 35, { align: 'center' });
+            doc.setFontSize(14);
+            doc.text('Madinah Region Education Administration', 105, 42, { align: 'center' });
+            doc.text('Student Scores Analysis Report', 105, 48, { align: 'center' });
 
-            yPos = 50;
+            yPos = 60;
             doc.setTextColor(0, 0, 0);
             doc.setFontSize(12);
 
-            // School info
-            doc.text(`Grade: ${grade}`, 20, yPos);
-            doc.text(`Section: ${section}`, 120, yPos);
-            yPos += 7;
-            doc.text(`Subject: ${subject}`, 20, yPos);
-            doc.text(`Date: ${examDate}`, 120, yPos);
-            yPos += 7;
-            doc.text(`Principal: Khaled Al-Mutairi`, 20, yPos);
-            yPos += 7;
-            doc.text(`Education Office: Madinah Region`, 20, yPos);
-            yPos += 7;
-            doc.text(`Email: almuntherschool@gmail.com`, 20, yPos);
-            yPos += 12;
+            // School info box
+            doc.setFillColor(248, 249, 250);
+            doc.rect(15, yPos - 5, 180, 35, 'F');
+            doc.setDrawColor(0, 92, 75);
+            doc.setLineWidth(0.5);
+            doc.rect(15, yPos - 5, 180, 35, 'S');
+
+            doc.setFontSize(11);
+            doc.text(`Principal: Khaled Al-Mutairi`, 20, yPos + 2);
+            doc.text(`Email: almuntherschool@gmail.com`, 20, yPos + 9);
+            doc.text(`Grade: ${grade}`, 20, yPos + 16);
+            doc.text(`Section: ${section}`, 20, yPos + 23);
+            doc.text(`Subject: ${subject}`, 110, yPos + 16);
+            doc.text(`Date: ${examDate}`, 110, yPos + 23);
+
+            yPos += 45;
 
             // Statistics summary
             doc.setFontSize(14);
             doc.setFont(undefined, 'bold');
+            doc.setTextColor(0, 92, 75);
             doc.text('Statistical Summary', 20, yPos);
+            doc.setTextColor(0, 0, 0);
             yPos += 8;
             doc.setFont(undefined, 'normal');
             doc.setFontSize(11);
 
             const statsData = [
                 ['Total Students', statistics.count],
-                ['Mean', statistics.mean],
+                ['Mean (Average)', statistics.mean],
                 ['Median', statistics.median],
                 ['Mode', statistics.mode],
                 ['Standard Deviation', statistics.stdDev],
+                ['Variance', statistics.variance],
                 ['Minimum Score', statistics.min],
                 ['Maximum Score', statistics.max],
                 ['Range', statistics.range],
@@ -855,8 +850,21 @@
                 head: [['Statistic', 'Value']],
                 body: statsData,
                 theme: 'grid',
-                headStyles: { fillColor: [0, 92, 75], fontSize: 11 },
-                styles: { fontSize: 10, font: 'helvetica' },
+                headStyles: { 
+                    fillColor: [0, 92, 75], 
+                    fontSize: 11,
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                styles: { 
+                    fontSize: 10, 
+                    font: 'helvetica',
+                    cellPadding: 3
+                },
+                columnStyles: {
+                    0: { cellWidth: 100, halign: 'left' },
+                    1: { cellWidth: 60, halign: 'center', fontStyle: 'bold' }
+                },
                 margin: { left: 20, right: 20 }
             });
 
@@ -870,22 +878,39 @@
 
             doc.setFontSize(14);
             doc.setFont(undefined, 'bold');
+            doc.setTextColor(0, 92, 75);
             doc.text('Grade Distribution', 20, yPos);
+            doc.setTextColor(0, 0, 0);
             yPos += 7;
 
-            const gradeData = statistics.gradeDistribution.map(g => [
-                g.name,
-                g.count,
-                `${g.percentage}%`
-            ]);
+            const gradeData = statistics.gradeDistribution.map(g => {
+                let englishGrade = '';
+                if (g.name === 'ممتاز') englishGrade = 'Excellent (90-100)';
+                else if (g.name === 'جيد جداً') englishGrade = 'Very Good (80-89)';
+                else if (g.name === 'جيد') englishGrade = 'Good (70-79)';
+                else if (g.name === 'مقبول') englishGrade = 'Acceptable (60-69)';
+                else if (g.name === 'ضعيف') englishGrade = 'Weak (0-59)';
+                
+                return [englishGrade, g.count, `${g.percentage}%`];
+            });
 
             doc.autoTable({
                 startY: yPos,
                 head: [['Grade', 'Count', 'Percentage']],
                 body: gradeData,
                 theme: 'striped',
-                headStyles: { fillColor: [0, 92, 75], fontSize: 11 },
-                styles: { fontSize: 10, font: 'helvetica', halign: 'center' },
+                headStyles: { 
+                    fillColor: [0, 92, 75], 
+                    fontSize: 11,
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                styles: { 
+                    fontSize: 10, 
+                    font: 'helvetica', 
+                    halign: 'center',
+                    cellPadding: 4
+                },
                 margin: { left: 20, right: 20 }
             });
 
@@ -899,70 +924,106 @@
 
             doc.setFontSize(12);
             doc.setFont(undefined, 'bold');
-            doc.text(`Top 10% Students (${statistics.topStudents.length})`, 20, yPos);
+            doc.setTextColor(0, 92, 75);
+            doc.text(`Top 10% Students (${statistics.topStudents.length} students)`, 20, yPos);
+            doc.setTextColor(0, 0, 0);
             yPos += 7;
 
-            const topData = statistics.topStudents.map(s => [s.name, s.score.toFixed(2)]);
+            const topData = statistics.topStudents.map((s, index) => [
+                index + 1,
+                s.name,
+                s.score.toFixed(2)
+            ]);
+            
             doc.autoTable({
                 startY: yPos,
-                head: [['Student Name', 'Score']],
+                head: [['Rank', 'Student Name', 'Score']],
                 body: topData,
                 theme: 'striped',
-                headStyles: { fillColor: [40, 167, 69], fontSize: 10 },
-                styles: { fontSize: 9 },
-                margin: { left: 20, right: 120 }
+                headStyles: { 
+                    fillColor: [40, 167, 69], 
+                    fontSize: 10,
+                    fontStyle: 'bold'
+                },
+                styles: { 
+                    fontSize: 9,
+                    cellPadding: 3
+                },
+                columnStyles: {
+                    0: { cellWidth: 20, halign: 'center' },
+                    1: { cellWidth: 100 },
+                    2: { cellWidth: 30, halign: 'center', fontStyle: 'bold' }
+                },
+                margin: { left: 20, right: 20 }
             });
 
-            // Chart image
+            // Charts on new page
+            doc.addPage();
+            yPos = 20;
+            
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(0, 92, 75);
+            doc.text('Visual Analysis', 105, yPos, { align: 'center' });
+            doc.setTextColor(0, 0, 0);
+            yPos += 10;
+
+            // Histogram
             if (chartInstance) {
-                const chartImage = document.getElementById('histogramChart').toDataURL('image/png');
-                doc.addPage();
-                doc.setFontSize(14);
-                doc.setFont(undefined, 'bold');
-                doc.text('Score Distribution Histogram', 105, 20, { align: 'center' });
-                doc.addImage(chartImage, 'PNG', 20, 30, 170, 100);
+                const chartImage = document.getElementById('histogramChart').toDataURL('image/png', 1.0);
+                doc.setFontSize(12);
+                doc.text('Score Distribution Histogram', 105, yPos, { align: 'center' });
+                doc.addImage(chartImage, 'PNG', 15, yPos + 5, 180, 90);
+                yPos += 100;
             }
 
-            // Footer
+            // Pie chart
+            const pieCanvas = document.getElementById('gradeChart');
+            if (pieCanvas) {
+                const pieImage = pieCanvas.toDataURL('image/png', 1.0);
+                doc.setFontSize(12);
+                doc.text('Grade Distribution Chart', 105, yPos + 5, { align: 'center' });
+                doc.addImage(pieImage, 'PNG', 55, yPos + 10, 100, 100);
+            }
+
+            // Footer on all pages
             const pageCount = doc.internal.getNumberOfPages();
             for (let i = 1; i <= pageCount; i++) {
                 doc.setPage(i);
-                doc.setFontSize(9);
+                doc.setFontSize(8);
                 doc.setTextColor(128, 128, 128);
+                doc.setDrawColor(200, 200, 200);
+                doc.line(20, 282, 190, 282);
                 doc.text(`Page ${i} of ${pageCount}`, 105, 287, { align: 'center' });
-                doc.text(`Generated: ${new Date().toLocaleString('ar-SA')}`, 105, 292, { align: 'center' });
+                doc.text(`Generated: ${new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}`, 20, 292);
+                doc.text('Nawaf Alsubhi 2025', 190, 292, { align: 'right' });
             }
 
-            // Save PDF globally for upload
+            // Save PDF globally
             generatedPDF = doc;
 
-            // Open PDF in new window with actions
+            // Open PDF in new window
             const pdfBlob = doc.output('blob');
             const pdfUrl = URL.createObjectURL(pdfBlob);
-            const pdfWindow = window.open(pdfUrl);
+            window.open(pdfUrl);
             
-            // Create action buttons in new window
-            setTimeout(() => {
-                if (pdfWindow) {
-                    const actionDiv = pdfWindow.document.createElement('div');
-                    actionDiv.style.cssText = 'position:fixed;top:10px;right:10px;z-index:10000;background:white;padding:15px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
-                    actionDiv.innerHTML = `
-                        <button onclick="window.print()" style="padding:10px 20px;background:#005c4b;color:white;border:none;border-radius:5px;cursor:pointer;margin:5px;font-size:14px;">🖨️ طباعة</button>
-                        <button onclick="downloadPDF()" style="padding:10px 20px;background:#007bff;color:white;border:none;border-radius:5px;cursor:pointer;margin:5px;font-size:14px;">💾 تحميل</button>
-                    `;
-                    pdfWindow.document.body.appendChild(actionDiv);
+            showAlert('تم إنشاء التقرير بنجاح!', 'success');
+        }
 
-                    // Add download function
-                    pdfWindow.downloadPDF = function() {
-                        const link = document.createElement('a');
-                        link.href = pdfUrl;
-                        link.download = `${subject}_${grade}_Section${section}_${examDate}.pdf`;
-                        link.click();
-                    };
-                }
-            }, 1000);
-            
-            showAlert('تم إنشاء التقرير بنجاح! يمكنك الآن رفعه لـ Google Drive', 'success');
+        function downloadPDFDirect() {
+            if (!generatedPDF) {
+                showAlert('يرجى إنشاء التقرير أولاً', 'error');
+                return;
+            }
+
+            const grade = document.getElementById('grade').value;
+            const section = document.getElementById('section').value;
+            const subject = document.getElementById('subject').value;
+            const examDate = document.getElementById('examDate').value;
+            const fileName = `${subject}_${grade}_Section${section}_${examDate}.pdf`;
+
+            generatedPDF.save(fileName);
+            showAlert('تم تحميل التقرير بنجاح!', 'success');
         }
 
         function showAlert(message, type) {
@@ -996,111 +1057,6 @@
 
         // Set today's date as default
         document.getElementById('examDate').valueAsDate = new Date();
-
-        // Google Drive Upload Function
-        function uploadToDrive() {
-            if (!generatedPDF) {
-                showAlert('يرجى إنشاء التقرير أولاً قبل الرفع', 'error');
-                return;
-            }
-
-            // Initialize Google API
-            gapiLoaded();
-        }
-
-        function gapiLoaded() {
-            gapi.load('client', initializeGapiClient);
-        }
-
-        async function initializeGapiClient() {
-            try {
-                await gapi.client.init({
-                    apiKey: API_KEY,
-                    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-                });
-                gapiInited = true;
-                maybeEnableButtons();
-            } catch (error) {
-                console.error('Error initializing GAPI:', error);
-                showAlert('خطأ في الاتصال بـ Google Drive. يرجى التحقق من إعدادات API', 'error');
-            }
-        }
-
-        function gisLoaded() {
-            tokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: CLIENT_ID,
-                scope: SCOPES,
-                callback: '', // defined later
-            });
-            gisInited = true;
-            maybeEnableButtons();
-        }
-
-        function maybeEnableButtons() {
-            if (gapiInited && gisInited) {
-                handleAuthClick();
-            }
-        }
-
-        function handleAuthClick() {
-            tokenClient.callback = async (resp) => {
-                if (resp.error !== undefined) {
-                    showAlert('فشل في المصادقة مع Google', 'error');
-                    throw (resp);
-                }
-                await uploadFileToDrive();
-            };
-
-            if (gapi.client.getToken() === null) {
-                tokenClient.requestAccessToken({prompt: 'consent'});
-            } else {
-                tokenClient.requestAccessToken({prompt: ''});
-            }
-        }
-
-        async function uploadFileToDrive() {
-            try {
-                const grade = document.getElementById('grade').value;
-                const section = document.getElementById('section').value;
-                const subject = document.getElementById('subject').value;
-                const examDate = document.getElementById('examDate').value;
-                const fileName = `${subject}_${grade}_Section${section}_${examDate}.pdf`;
-
-                const pdfBlob = generatedPDF.output('blob');
-                
-                const metadata = {
-                    name: fileName,
-                    mimeType: 'application/pdf'
-                };
-
-                const formData = new FormData();
-                formData.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-                formData.append('file', pdfBlob);
-
-                const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-                    method: 'POST',
-                    headers: new Headers({ 'Authorization': 'Bearer ' + gapi.client.getToken().access_token }),
-                    body: formData
-                });
-
-                const result = await response.json();
-                
-                if (result.id) {
-                    showAlert(`تم رفع الملف بنجاح إلى Google Drive!`, 'success');
-                } else {
-                    showAlert('حدث خطأ أثناء رفع الملف', 'error');
-                }
-            } catch (error) {
-                console.error('Error uploading to Drive:', error);
-                showAlert('حدث خطأ أثناء رفع الملف إلى Google Drive', 'error');
-            }
-        }
-
-        // Load Google Identity Services
-        const gisScript = document.createElement('script');
-        gisScript.src = 'https://accounts.google.com/gsi/client';
-        gisScript.onload = gisLoaded;
-        document.head.appendChild(gisScript);
     </script>
 </body>
 </html>
