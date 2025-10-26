@@ -5,264 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>برنامج تحليل الدرجات - متوسطة المنذر بن عمرو الأنصاري</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #005c4b 0%, #007a63 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .logo-section {
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-
-        .content {
-            padding: 40px;
-        }
-
-        .form-section {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 15px;
-        }
-
-        select, input[type="text"], input[type="date"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 15px;
-            font-family: inherit;
-            transition: border-color 0.3s;
-        }
-
-        select:focus, input:focus {
-            outline: none;
-            border-color: #005c4b;
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            margin-top: 20px;
-        }
-
-        .file-input-label {
-            display: block;
-            padding: 15px 30px;
-            background: #005c4b;
-            color: white;
-            text-align: center;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .file-input-label:hover {
-            background: #007a63;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        .btn {
-            padding: 15px 40px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: inherit;
-        }
-
-        .btn-primary {
-            background: #005c4b;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #007a63;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 92, 75, 0.3);
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-            margin-left: 10px;
-        }
-
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-            padding: 20px;
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: bold;
-            color: #005c4b;
-            margin: 10px 0;
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: #6c757d;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            margin: 30px 0;
-            border-radius: 10px;
-            border: 1px solid #dee2e6;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        th {
-            background: #005c4b;
-            color: white;
-            font-weight: 600;
-        }
-
-        tr:hover {
-            background: #f8f9fa;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .actions {
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        #chartContainer {
-            margin: 30px 0;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #6c757d;
-        }
-
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #005c4b;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .footer {
-            text-align: center;
-            padding: 20px;
-            color: #6c757d;
-            font-size: 14px;
-            border-top: 1px solid #dee2e6;
-        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:linear-gradient(135deg,#f5f7fa 0%,#e8ecf1 100%);min-height:100vh;padding:20px;}
+        .container{max-width:1200px;margin:0 auto;background:white;border-radius:15px;box-shadow:0 10px 40px rgba(0,0,0,.1);overflow:hidden}
+        .header{background:linear-gradient(135deg,#005c4b 0%,#007a63 100%);color:white;padding:30px;text-align:center}
+        .logo-section text-align:center}
+        h1{font-size:28px;margin-bottom:10px}
+        .subtitle{font-size:16px;opacity:.9}
+        .content{padding:40px}
+        .form-section{background:#f8f9fa;padding:30px;border-radius:10px;margin-bottom:30px}
+        .form-group{margin-bottom:20px}
+        label{display:block;margin-bottom:8px;font-weight:600;color:#333;font-size:15px}
+        select,input[type="text"],input[type="date"]{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:15px;font-family:inherit;transition:border-color .3s}
+        select:focus,input:focus{outline:none;border-color:#005c4b}
+        .file-input-wrapper{position:relative;margin-top:20px}
+        .file-input-label{display:block;padding:15px 30px;background:#005c4b;color:white;text-align:center;border-radius:8px;cursor:pointer;transition:background .3s;font-size:16px;font-weight:600}
+        .file-input-label:hover{background:#007a63}
+        input[type="file"]{display:none}
+        .btn{padding:15px 40px;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:all .3s;font-family:inherit}
+        .btn-primary{background:#005c4b;color:white}
+        .btn-primary:hover{background:#007a63;transform:translateY(-2px);box-shadow:0 5px 15px rgba(0,92,75,.3)}
+        .btn-secondary{background:#6c757d;color:white;margin-left:10px}
+        .btn-secondary:hover{background:#5a6268}
+        .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin:30px 0}
+        .stat-card{background:linear-gradient(135deg,#fff 0%,#f8f9fa 100%);padding:20px;border-radius:10px;border:2px solid #e9ecef;text-align:center}
+        .stat-value{font-size:32px;font-weight:bold;color:#005c4b;margin:10px 0}
+        .stat-label{font-size:14px;color:#6c757d}
+        .table-container{overflow-x:auto;margin:30px 0;border-radius:10px;border:1px solid #dee2e6}
+        table{width:100%;border-collapse:collapse;background:white}
+        th,td{padding:12px;text-align:center;border-bottom:1px solid #dee2e6}
+        th{background:#005c4b;color:white;font-weight:600}
+        tr:hover{background:#f8f9fa}
+        .hidden{display:none}
+        .actions{text-align:center;margin-top:30px}
+        .alert{padding:15px;border-radius:8px;margin-bottom:20px}
+        .alert-success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+        .alert-error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
+        #chartContainer{margin:30px 0;padding:20px;background:white;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+        .footer{text-align:center;padding:20px;color:#6c757d;font-size:14px;border-top:1px solid #dee2e6}
     </style>
 </head>
 <body>
@@ -287,34 +67,23 @@
                         <option value="ثالث متوسط">ثالث متوسط</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label for="section">الشعبة:</label>
                     <select id="section">
                         <option value="">اختر الشعبة</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
+                        <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option>
                     </select>
                 </div>
-
                 <div class="form-group">
                     <label for="subject">مادة الاختبار:</label>
                     <input type="text" id="subject" placeholder="مثال: الرياضيات">
                 </div>
-
                 <div class="form-group">
                     <label for="examDate">تاريخ الاختبار:</label>
                     <input type="date" id="examDate">
                 </div>
-
                 <div class="file-input-wrapper">
-                    <label for="fileInput" class="file-input-label">
-                        📁 استيراد ملف Excel أو CSV
-                    </label>
+                    <label for="fileInput" class="file-input-label">📁 استيراد ملف Excel أو CSV</label>
                     <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
                 </div>
             </div>
@@ -322,707 +91,242 @@
             <!-- Results Section -->
             <div id="resultsSection" class="hidden">
                 <div id="alertContainer"></div>
-
-                <!-- Statistics Cards -->
                 <div class="stats-grid" id="statsGrid"></div>
-
-                <!-- Data Table -->
                 <div class="table-container">
                     <table id="dataTable">
-                        <thead>
-                            <tr>
-                                <th>الاسم</th>
-                                <th>الدرجة</th>
-                                <th>التقدير</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>الاسم</th><th>الدرجة</th><th>التقدير</th></tr></thead>
                         <tbody id="tableBody"></tbody>
                     </table>
                 </div>
-
-                <!-- Chart -->
-                <div id="chartContainer">
-                    <canvas id="histogramChart"></canvas>
-                </div>
-
-                <!-- Actions -->
+                <div id="chartContainer"><canvas id="histogramChart"></canvas></div>
                 <div class="actions">
                     <button class="btn btn-primary" onclick="generatePDF()">📄 إنشاء تقرير PDF</button>
-                    <button class="btn btn-primary" onclick="downloadPDFDirect()" style="background: #007bff;">💾 تحميل PDF</button>
                     <button class="btn btn-secondary" onclick="resetApp()">🔄 بداية جديدة</button>
                 </div>
             </div>
         </div>
 
-        <div class="footer">
-            Nawaf Alsubhi 2025
-        </div>
+        <div class="footer">Nawaf Alsubhi 2025</div>
     </div>
 
-    <!-- External Libraries (CDN with fallback) -->
+    <!-- المكتبات -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <script>
-        // Global variables
-        let studentData = [];
-        let statistics = {};
-        let chartInstance = null;
-        let generatedPDF = null;
+        let studentData=[],statistics={},chartInstance=null;
 
-        // File input handler
-        document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+        document.getElementById('fileInput').addEventListener('change',handleFileUpload);
+        document.getElementById('examDate').valueAsDate=new Date();
 
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            // Validate form inputs
-            if (!validateInputs()) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-
-                    processData(jsonData);
-                } catch (error) {
-                    showAlert('خطأ في قراءة الملف. تأكد من صحة التنسيق.', 'error');
-                }
+        function handleFileUpload(e){
+            const file=e.target.files[0]; if(!file||!validateInputs())return;
+            const reader=new FileReader();
+            reader.onload=function(ev){
+                try{
+                    const data=new Uint8Array(ev.target.result);
+                    const wb=XLSX.read(data,{type:'array'});
+                    const ws=wb.Sheets[wb.SheetNames[0]];
+                    const json=XLSX.utils.sheet_to_json(ws);
+                    processData(json);
+                }catch{showAlert('خطأ في قراءة الملف','error')}
             };
             reader.readAsArrayBuffer(file);
         }
-
-        function validateInputs() {
-            const grade = document.getElementById('grade').value;
-            const section = document.getElementById('section').value;
-            const subject = document.getElementById('subject').value;
-            const examDate = document.getElementById('examDate').value;
-
-            if (!grade || !section || !subject || !examDate) {
-                showAlert('يرجى ملء جميع الحقول قبل استيراد الملف', 'error');
-                return false;
-            }
+        function validateInputs(){
+            const g=document.getElementById('grade').value,
+                  s=document.getElementById('section').value,
+                  sub=document.getElementById('subject').value,
+                  d=document.getElementById('examDate').value;
+            if(!g||!s||!sub||!d){showAlert('يرجى ملء جميع الحقول','error');return false}
             return true;
         }
-
-        function processData(data) {
-            studentData = [];
-            
-            // Find score column (Score, Degree, الدرجة, etc.)
-            const sampleRow = data[0];
-            let scoreKey = Object.keys(sampleRow).find(key => 
-                key.toLowerCase().includes('score') || 
-                key.toLowerCase().includes('degree') || 
-                key.includes('درجة')
-            );
-            
-            let nameKey = Object.keys(sampleRow).find(key => 
-                key.toLowerCase().includes('name') || 
-                key.toLowerCase().includes('student') || 
-                key.includes('اسم') ||
-                key.includes('طالب')
-            );
-
-            if (!scoreKey || !nameKey) {
-                showAlert('لم يتم العثور على أعمدة الاسم والدرجة. تأكد من وجود أعمدة بعنوان Name و Score', 'error');
-                return;
-            }
-
-            data.forEach(row => {
-                const name = row[nameKey];
-                const score = parseFloat(row[scoreKey]);
-                
-                if (name && !isNaN(score)) {
-                    studentData.push({ name, score });
-                }
+        function processData(data){
+            studentData=[];
+            const row=data[0];
+            const scoreKey=Object.keys(row).find(k=>/score|degree|درجة/i.test(k));
+            const nameKey=Object.keys(row).find(k=>/name|student|اسم|طالب/i.test(k));
+            if(!scoreKey||!nameKey){showAlert('لم يتم العثور على أعمدة الاسم والدرجة','error');return}
+            data.forEach(r=>{
+                const name=r[nameKey],score=parseFloat(r[scoreKey]);
+                if(name&&!isNaN(score))studentData.push({name,score});
             });
-
-            if (studentData.length === 0) {
-                showAlert('لم يتم العثور على بيانات صالحة في الملف', 'error');
-                return;
-            }
-
+            if(studentData.length===0){showAlert('لا توجد بيانات صالحة','error');return}
             calculateStatistics();
             displayResults();
-            showAlert(`تم استيراد ${studentData.length} طالب بنجاح`, 'success');
+            showAlert(`تم استيراد ${studentData.length} طالب`,'success');
         }
-
-        function calculateStatistics() {
-            const scores = studentData.map(s => s.score).sort((a, b) => a - b);
-            const n = scores.length;
-
-            // Basic stats
-            const sum = scores.reduce((a, b) => a + b, 0);
-            const mean = sum / n;
-            const min = scores[0];
-            const max = scores[n - 1];
-            const range = max - min;
-
-            // Median
-            const median = n % 2 === 0 
-                ? (scores[n/2 - 1] + scores[n/2]) / 2 
-                : scores[Math.floor(n/2)];
-
-            // Mode
-            const frequency = {};
-            scores.forEach(score => frequency[score] = (frequency[score] || 0) + 1);
-            const maxFreq = Math.max(...Object.values(frequency));
-            const mode = Object.keys(frequency).filter(k => frequency[k] === maxFreq).map(Number);
-
-            // Standard deviation and variance
-            const variance = scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / n;
-            const stdDev = Math.sqrt(variance);
-
-            // Percentiles
-            const q1Index = Math.floor(n * 0.25);
-            const q3Index = Math.floor(n * 0.75);
-            const q1 = scores[q1Index];
-            const q3 = scores[q3Index];
-            const iqr = q3 - q1;
-
-            // Outliers
-            const lowerBound = q1 - 1.5 * iqr;
-            const upperBound = q3 + 1.5 * iqr;
-            const outliers = scores.filter(s => s < lowerBound || s > upperBound);
-
-            // Grade Distribution (Saudi System)
-            const gradeRanges = [
-                { name: 'ممتاز', min: 90, max: 100, color: '#28a745' },
-                { name: 'جيد جداً', min: 80, max: 89.99, color: '#17a2b8' },
-                { name: 'جيد', min: 70, max: 79.99, color: '#ffc107' },
-                { name: 'مقبول', min: 60, max: 69.99, color: '#fd7e14' },
-                { name: 'ضعيف', min: 0, max: 59.99, color: '#dc3545' }
+        function calculateStatistics(){
+            const sc=studentData.map(s=>s.score).sort((a,b)=>a-b),n=sc.length;
+            const sum=sc.reduce((a,b)=>a+b,0),mean=sum/n,min=sc[0],max=sc[n-1],range=max-min;
+            const median=n%2===0?(sc[n/2-1]+sc[n/2])/2:sc[Math.floor(n/2)];
+            const freq={}; sc.forEach(v=>freq[v]=(freq[v]||0)+1);
+            const maxF=Math.max(...Object.values(freq));
+            const mode=Object.keys(freq).filter(k=>freq[k]===maxF).map(Number);
+            const variance=sc.reduce((s,v)=>s+Math.pow(v-mean,2),0)/n;
+            const stdDev=Math.sqrt(variance);
+            const q1=sc[Math.floor(n*0.25)],q3=sc[Math.floor(n*0.75)],iqr=q3-q1;
+            const outliers=sc.filter(v=>v<q1-1.5*iqr||v>q3+1.5*iqr).length;
+            const passCount=sc.filter(v=>v>=60).length,failCount=n-passCount;
+            const passRate=((passCount/n)*100).toFixed(2);
+            const grades=[
+                {name:'ممتاز',min:90,max:100,color:'#28a745'},
+                {name:'جيد جداً',min:80,max:89.99,color:'#17a2b8'},
+                {name:'جيد',min:70,max:79.99,color:'#ffc107'},
+                {name:'مقبول',min:60,max:69.99,color:'#fd7e14'},
+                {name:'ضعيف',min:0,max:59.99,color:'#dc3545'}
             ];
-
-            const gradeDistribution = gradeRanges.map(grade => {
-                const count = scores.filter(s => s >= grade.min && s <= grade.max).length;
-                const percentage = ((count / n) * 100).toFixed(2);
-                return {
-                    name: grade.name,
-                    count: count,
-                    percentage: percentage,
-                    color: grade.color
-                };
+            const gradeDist=grades.map(g=>{
+                const c=sc.filter(s=>s>=g.min&&s<=g.max).length;
+                return{name:g.name,count:c,percentage:((c/n)*100).toFixed(2),color:g.color};
             });
-
-            // Success/Fail (60% threshold)
-            const passThreshold = 60;
-            const passCount = scores.filter(s => s >= passThreshold).length;
-            const failCount = n - passCount;
-            const passRate = (passCount / n) * 100;
-
-            // Top/Bottom 10%
-            const top10Count = Math.ceil(n * 0.1);
-            const bottom10Count = Math.ceil(n * 0.1);
-            const topStudents = studentData.slice().sort((a, b) => b.score - a.score).slice(0, top10Count);
-            const bottomStudents = studentData.slice().sort((a, b) => a.score - b.score).slice(0, bottom10Count);
-
-            // Histogram bins
-            const binCount = Math.min(10, Math.ceil(Math.sqrt(n)));
-            const binWidth = range / binCount;
-            const bins = Array(binCount).fill(0);
-            const binLabels = [];
-
-            for (let i = 0; i < binCount; i++) {
-                const binStart = min + i * binWidth;
-                const binEnd = binStart + binWidth;
-                binLabels.push(`${binStart.toFixed(0)}-${binEnd.toFixed(0)}`);
-                bins[i] = scores.filter(s => s >= binStart && s < binEnd).length;
+            const binCount=Math.min(10,Math.ceil(Math.sqrt(n)));
+            const binWidth=range/binCount;
+            const bins=Array(binCount).fill(0);
+            const binLabels=[];
+            for(let i=0;i<binCount;i++){
+                const a=min+i*binWidth,b=a+binWidth;
+                binLabels.push(`${a.toFixed(0)}-${b.toFixed(0)}`);
+                bins[i]=sc.filter(v=>v>=a&&v<b).length;
             }
-            bins[binCount - 1] += scores.filter(s => s === max).length;
-
-            statistics = {
-                count: n,
-                mean: mean.toFixed(2),
-                median: median.toFixed(2),
-                mode: mode.length > 0 ? mode.map(m => m.toFixed(2)).join(', ') : 'لا يوجد',
-                min: min.toFixed(2),
-                max: max.toFixed(2),
-                range: range.toFixed(2),
-                stdDev: stdDev.toFixed(2),
-                variance: variance.toFixed(2),
-                q1: q1.toFixed(2),
-                q3: q3.toFixed(2),
-                iqr: iqr.toFixed(2),
-                outliers: outliers.length,
-                passCount,
-                failCount,
-                passRate: passRate.toFixed(2),
-                topStudents,
-                bottomStudents,
-                bins,
-                binLabels,
-                gradeDistribution
+            bins[binCount-1]+=sc.filter(v=>v===max).length;
+            statistics={
+                count:n,mean:mean.toFixed(2),median:median.toFixed(2),
+                mode:mode.length?mode.join(', '):'لا يوجد',
+                min:min.toFixed(2),max:max.toFixed(2),range:range.toFixed(2),
+                stdDev:stdDev.toFixed(2),variance:variance.toFixed(2),
+                q1:q1.toFixed(2),q3:q3.toFixed(2),iqr:iqr.toFixed(2),outliers,
+                passCount,failCount,passRate,gradeDistribution:gradeDist,
+                bins,binLabels
             };
         }
-
-        function displayResults() {
-            // Show results section
+        function displayResults(){
             document.getElementById('resultsSection').classList.remove('hidden');
-
-            // Display statistics cards
-            const statsGrid = document.getElementById('statsGrid');
-            statsGrid.innerHTML = `
-                <div class="stat-card">
-                    <div class="stat-label">عدد الطلاب</div>
-                    <div class="stat-value">${statistics.count}</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">المتوسط الحسابي</div>
-                    <div class="stat-value">${statistics.mean}</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">الوسيط</div>
-                    <div class="stat-value">${statistics.median}</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">المنوال</div>
-                    <div class="stat-value" style="font-size: 20px;">${statistics.mode}</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">الانحراف المعياري</div>
-                    <div class="stat-value">${statistics.stdDev}</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">أعلى درجة</div>
-                    <div class="stat-value">${statistics.max}</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">أقل درجة</div>
-                    <div class="stat-value">${statistics.min}</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">نسبة النجاح</div>
-                    <div class="stat-value">${statistics.passRate}%</div>
-                </div>
-            `;
-
-            // Grade Distribution Table
-            const gradeTableHTML = `
-                <div class="table-container" style="margin: 30px 0;">
-                    <h3 style="text-align: center; color: #005c4b; margin-bottom: 15px;">توزيع التقديرات</h3>
-                    <table style="background: white;">
-                        <thead>
-                            <tr style="background: #005c4b;">
-                                <th>التقدير</th>
-                                <th>عدد الطلاب</th>
-                                <th>النسبة</th>
-                            </tr>
-                        </thead>
+            const statsGrid=document.getElementById('statsGrid');
+            statsGrid.innerHTML=`
+                <div class="stat-card"><div class="stat-label">عدد الطلاب</div><div class="stat-value">${statistics.count}</div></div>
+                <div class="stat-card"><div class="stat-label">المتوسط</div><div class="stat-value">${statistics.mean}</div></div>
+                <div class="stat-card"><div class="stat-label">الوسيط</div><div class="stat-value">${statistics.median}</div></div>
+                <div class="stat-card"><div class="stat-label">المنوال</div><div class="stat-value" style="font-size:20px">${statistics.mode}</div></div>
+                <div class="stat-card"><div class="stat-label">الانحراف المعياري</div><div class="stat-value">${statistics.stdDev}</div></div>
+                <div class="stat-card"><div class="stat-label">أعلى درجة</div><div class="stat-value">${statistics.max}</div></div>
+                <div class="stat-card"><div class="stat-label">أقل درجة</div><div class="stat-value">${statistics.min}</div></div>
+                <div class="stat-card"><div class="stat-label">نسبة النجاح</div><div class="stat-value">${statistics.passRate}%</div></div>`;
+            const gradeTableHTML=`
+                <div class="table-container" style="margin:30px 0">
+                    <h3 style="text-align:center;color:#005c4b;margin-bottom:15px">توزيع التقديرات</h3>
+                    <table style="background:white">
+                        <thead><tr style="background:#005c4b"><th>التقدير</th><th>عدد الطلاب</th><th>النسبة</th></tr></thead>
                         <tbody>
-                            ${statistics.gradeDistribution.map(grade => `
-                                <tr>
-                                    <td style="font-weight: bold; color: ${grade.color};">${grade.name}</td>
-                                    <td style="font-size: 18px; font-weight: bold;">${grade.count}</td>
-                                    <td style="font-size: 18px; font-weight: bold; color: ${grade.color};">%${grade.percentage}</td>
-                                </tr>
-                            `).join('')}
+                            ${statistics.gradeDistribution.map(g=>`
+                                <tr><td style="font-weight:bold;color:${g.color}">${g.name}</td>
+                                <td style="font-size:18px;font-weight:bold">${g.count}</td>
+                                <td style="font-size:18px;font-weight:bold;color:${g.color}">%${g.percentage}</td></tr>`).join('')}
                         </tbody>
                     </table>
-                </div>
-            `;
-
-            // Insert grade table before data table
-            const dataTableContainer = document.querySelector('.table-container');
-            dataTableContainer.insertAdjacentHTML('beforebegin', gradeTableHTML);
-
-            // Display table
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-            studentData.forEach(student => {
-                let grade = '';
-                let gradeColor = '';
-                
-                if (student.score >= 90) {
-                    grade = 'ممتاز';
-                    gradeColor = '#28a745';
-                } else if (student.score >= 80) {
-                    grade = 'جيد جداً';
-                    gradeColor = '#17a2b8';
-                } else if (student.score >= 70) {
-                    grade = 'جيد';
-                    gradeColor = '#ffc107';
-                } else if (student.score >= 60) {
-                    grade = 'مقبول';
-                    gradeColor = '#fd7e14';
-                } else {
-                    grade = 'ضعيف';
-                    gradeColor = '#dc3545';
-                }
-                
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${student.name}</td>
-                        <td style="font-weight: bold; font-size: 16px;">${student.score.toFixed(2)}</td>
-                        <td style="color: ${gradeColor}; font-weight: bold; font-size: 15px;">${grade}</td>
-                    </tr>
-                `;
+                </div>`;
+            document.querySelector('.table-container').insertAdjacentHTML('beforebegin',gradeTableHTML);
+            const tbody=document.getElementById('tableBody'); tbody.innerHTML='';
+            studentData.forEach(st=>{
+                let gr='',color='';
+                if(st.score>=90){gr='ممتاز';color='#28a745';}
+                else if(st.score>=80){gr='جيد جداً';color='#17a2b8';}
+                else if(st.score>=70){gr='جيد';color='#ffc107';}
+                else if(st.score>=60){gr='مقبول';color='#fd7e14';}
+                else{gr='ضعيف';color='#dc3545';}
+                tbody.innerHTML+=`<tr><td>${st.name}</td><td style="font-weight:bold;font-size:16px">${st.score.toFixed(2)}</td><td style="color:${color};font-weight:bold;font-size:15px">${gr}</td></tr>`;
             });
-
-            // Display chart
             displayHistogram();
-
-            // Scroll to results
-            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('resultsSection').scrollIntoView({behavior:'smooth'});
         }
-
-        function displayHistogram() {
-            const ctx = document.getElementById('histogramChart').getContext('2d');
-            
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-
-            chartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: statistics.binLabels,
-                    datasets: [{
-                        label: 'عدد الطلاب',
-                        data: statistics.bins,
-                        backgroundColor: 'rgba(0, 92, 75, 0.7)',
-                        borderColor: 'rgba(0, 92, 75, 1)',
-                        borderWidth: 2
-                    }]
+        function displayHistogram(){
+            const ctx=document.getElementById('histogramChart').getContext('2d');
+            if(chartInstance)chartInstance.destroy();
+            chartInstance=new Chart(ctx,{
+                type:'bar',
+                data:{
+                    labels:statistics.binLabels,
+                    datasets:[{label:'عدد الطلاب',data:statistics.bins,backgroundColor:'rgba(0,92,75,.7)',borderColor:'rgba(0,92,75,1)',borderWidth:2}]
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            labels: {
-                                font: { size: 14, family: 'Segoe UI' }
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'توزيع الدرجات',
-                            font: { size: 18, family: 'Segoe UI' }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1,
-                                font: { size: 12 }
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                font: { size: 12 }
-                            }
-                        }
-                    }
+                options:{
+                    responsive:true,
+                    plugins:{legend:{display:true,labels:{font:{size:14,family:'Segoe UI'}}},title:{display:true,text:'توزيع الدرجات',font:{size:18,family:'Segoe UI'}}},
+                    scales:{y:{beginAtZero:true,ticks:{stepSize:1,font:{size:12}}},x:{ticks:{font:{size:12}}}}
                 }
             });
-
-            // Add pie chart for grade distribution
-            const pieChartContainer = document.createElement('div');
-            pieChartContainer.id = 'pieChartContainer';
-            pieChartContainer.style.cssText = 'margin: 30px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); max-width: 500px;';
-            pieChartContainer.innerHTML = '<canvas id="gradeChart"></canvas>';
-            document.getElementById('chartContainer').insertAdjacentElement('afterend', pieChartContainer);
-
-            const pieCtx = document.getElementById('gradeChart').getContext('2d');
-            new Chart(pieCtx, {
-                type: 'pie',
-                data: {
-                    labels: statistics.gradeDistribution.map(g => g.name),
-                    datasets: [{
-                        data: statistics.gradeDistribution.map(g => g.count),
-                        backgroundColor: statistics.gradeDistribution.map(g => g.color),
-                        borderWidth: 2,
-                        borderColor: '#fff'
-                    }]
+            const pieContainer=document.createElement('div');
+            pieContainer.id='pieChartContainer';
+            pieContainer.style.cssText='margin:30px auto;padding:20px;background:white;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.05);max-width:500px';
+            pieContainer.innerHTML='<canvas id="gradeChart"></canvas>';
+            document.getElementById('chartContainer').insertAdjacentElement('afterend',pieContainer);
+            const pieCtx=document.getElementById('gradeChart').getContext('2d');
+            new Chart(pieCtx,{
+                type:'pie',
+                data:{
+                    labels:statistics.gradeDistribution.map(g=>g.name),
+                    datasets:[{data:statistics.gradeDistribution.map(g=>g.count),backgroundColor:statistics.gradeDistribution.map(g=>g.color),borderWidth:2,borderColor:'#fff'}]
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                font: { size: 13, family: 'Segoe UI' },
-                                padding: 15
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'توزيع التقديرات',
-                            font: { size: 18, family: 'Segoe UI' }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const percentage = statistics.gradeDistribution[context.dataIndex].percentage;
-                                    return `${context.label}: ${context.parsed} طالب (${percentage}%)`;
-                                }
-                            }
-                        }
+                options:{
+                    responsive:true,
+                    plugins:{
+                        legend:{position:'bottom',labels:{font:{size:13,family:'Segoe UI'},padding:15}},
+                        title:{display:true,text:'توزيع التقديرات',font:{size:18,family:'Segoe UI'}},
+                        tooltip:{callbacks:{label:function(ctx){const p=statistics.gradeDistribution[ctx.dataIndex].percentage;return`${ctx.label}: ${ctx.parsed} طالب (${p}%)`}}}
                     }
                 }
             });
         }
+        async function generatePDF(){
+            const grade=document.getElementById('grade').value;
+            const section=document.getElementById('section').value;
+            const subject=document.getElementById('subject').value;
+            const examDate=document.getElementById('examDate').value;
 
-        function generatePDF() {
-            if (!statistics.count) {
-                showAlert('لا توجد بيانات لإنشاء التقرير', 'error');
-                return;
+            showAlert('جاري إنشاء التقرير...','success');
+
+            const element=document.getElementById('resultsSection');
+            const canvas=await html2canvas(element,{scale:2,useCORS:true,logging:false});
+            const imgData=canvas.toDataURL('image/png',1.0);
+
+            const {jsPDF}=window.jspdf;
+            const pdf=new jsPDF('p','mm','a4');
+            const imgWidth=210;
+            const pageHeight=297;
+            const imgHeight=(canvas.height*imgWidth)/canvas.width;
+            let heightLeft=imgHeight;
+            let position=0;
+
+            pdf.addImage(imgData,'PNG',0,position,imgWidth,imgHeight);
+            heightLeft-=pageHeight;
+
+            while(heightLeft>=0){
+                position=heightLeft-imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData,'PNG',0,position,imgWidth,imgHeight);
+                heightLeft-=pageHeight;
             }
-
-            const grade = document.getElementById('grade').value;
-            const section = document.getElementById('section').value;
-            const subject = document.getElementById('subject').value;
-            const examDate = document.getElementById('examDate').value;
-
-            const today = new Date();
-            const arabicDate = today.toLocaleDateString('ar-SA', {
-                year: 'numeric',
-                month: 'numeric',
-                day: 'numeric'
-            });
-
-            const docDefinition = {
-                content: [
-                    {
-                        text: 'المملكة العربية السعودية',
-                        style: 'mainHeader',
-                        alignment: 'center'
-                    },
-                    {
-                        text: 'وزارة التعليم',
-                        style: 'subMainHeader',
-                        alignment: 'center'
-                    },
-                    {
-                        text: 'متوسطة المنذر بن عمرو الأنصاري',
-                        style: 'schoolName',
-                        alignment: 'center'
-                    },
-                    {
-                        text: 'إدارة تعليم منطقة المدينة المنورة',
-                        style: 'educationOffice',
-                        alignment: 'center'
-                    },
-                    '\n',
-                    {
-                        text: 'تقرير تحليل درجات الطلاب',
-                        style: 'header',
-                        alignment: 'center'
-                    },
-                    '\n',
-                    {
-                        text: `المدير: خالد المطيري | البريد: almuntherschool@gmail.com`,
-                        style: 'infoLine',
-                        alignment: 'center'
-                    },
-                    {
-                        text: `الصف: ${grade} | الشعبة: ${section} | المادة: ${subject} | التاريخ: ${examDate}`,
-                        style: 'subheader',
-                        alignment: 'center'
-                    },
-                    '\n',
-                    {
-                        text: 'الإحصائيات الرئيسية',
-                        style: 'sectionTitle'
-                    },
-                    {
-                        style: 'tableExample',
-                        table: {
-                            headerRows: 1,
-                            widths: ['*', 'auto'],
-                            body: [
-                                [{text: 'الإحصاء', style: 'tableHeader'}, {text: 'القيمة', style: 'tableHeader'}],
-                                ['إجمالي عدد الطلاب', statistics.count],
-                                ['المتوسط الحسابي', statistics.mean],
-                                ['الوسيط', statistics.median],
-                                ['المنوال', statistics.mode],
-                                ['الانحراف المعياري', statistics.stdDev],
-                                ['التباين', statistics.variance],
-                                ['أقل درجة', statistics.min],
-                                ['أعلى درجة', statistics.max],
-                                ['المدى', statistics.range],
-                                ['عدد الناجحين (≥ 60)', statistics.passCount],
-                                ['عدد الراسبين', statistics.failCount],
-                                ['نسبة النجاح', `%${statistics.passRate}`],
-                                ['الربيع الأول (Q1)', statistics.q1],
-                                ['الربيع الثالث (Q3)', statistics.q3],
-                                ['المدى الربيعي (IQR)', statistics.iqr],
-                                ['عدد القيم الشاذة', statistics.outliers]
-                            ]
-                        },
-                        layout: 'lightHorizontalLines'
-                    },
-                    '\n',
-                    {
-                        text: 'توزيع التقديرات',
-                        style: 'sectionTitle'
-                    },
-                    {
-                        style: 'tableExample',
-                        table: {
-                            headerRows: 1,
-                            widths: ['*', 'auto', 'auto'],
-                            body: [
-                                [{text: 'التقدير', style: 'tableHeader'}, {text: 'عدد الطلاب', style: 'tableHeader'}, {text: 'النسبة', style: 'tableHeader'}],
-                                ...statistics.gradeDistribution.map(g => [g.name, g.count, `%${g.percentage}`])
-                            ]
-                        },
-                        layout: 'lightHorizontalLines'
-                    },
-                    '\n',
-                    {
-                        text: `أفضل الطلاب (أعلى 10%)`,
-                        style: 'sectionTitle'
-                    },
-                    {
-                        style: 'tableExample',
-                        table: {
-                            headerRows: 1,
-                            widths: [30, '*', 'auto'],
-                            body: [
-                                [{text: '#', style: 'tableHeader'}, {text: 'اسم الطالب', style: 'tableHeader'}, {text: 'الدرجة', style: 'tableHeader'}],
-                                ...statistics.topStudents.map((s, index) => [(index + 1), s.name, s.score.toFixed(2)])
-                            ]
-                        },
-                        layout: 'lightHorizontalLines'
-                    }
-                ],
-                styles: {
-                    mainHeader: {
-                        fontSize: 16,
-                        bold: true,
-                        color: '#005c4b',
-                        margin: [0, 10, 0, 5]
-                    },
-                    subMainHeader: {
-                        fontSize: 14,
-                        bold: true,
-                        color: '#005c4b',
-                        margin: [0, 0, 0, 5]
-                    },
-                    schoolName: {
-                        fontSize: 13,
-                        bold: true,
-                        color: '#005c4b',
-                        margin: [0, 0, 0, 3]
-                    },
-                    educationOffice: {
-                        fontSize: 12,
-                        color: '#005c4b',
-                        margin: [0, 0, 0, 10]
-                    },
-                    header: {
-                        fontSize: 18,
-                        bold: true,
-                        color: '#005c4b'
-                    },
-                    subheader: {
-                        fontSize: 11,
-                        color: '#333'
-                    },
-                    infoLine: {
-                        fontSize: 10,
-                        color: '#555',
-                        margin: [0, 0, 0, 3]
-                    },
-                    sectionTitle: {
-                        fontSize: 14,
-                        bold: true,
-                        color: '#005c4b',
-                        alignment: 'center',
-                        margin: [0, 10, 0, 5]
-                    },
-                    tableExample: {
-                        margin: [0, 5, 0, 15]
-                    },
-                    tableHeader: {
-                        bold: true,
-                        fontSize: 12,
-                        color: 'white',
-                        fillColor: '#005c4b',
-                        alignment: 'center'
-                    }
-                },
-                defaultStyle: {
-                    font: 'Roboto',
-                    fontSize: 11,
-                    alignment: 'right'
-                },
-                pageOrientation: 'portrait',
-                pageSize: 'A4',
-                pageMargins: [40, 60, 40, 60],
-                footer: function(currentPage, pageCount) {
-                    return {
-                        columns: [
-                            { text: 'Nawaf Alsubhi 2025', alignment: 'left', fontSize: 9, color: '#6c757d', margin: [40, 0, 0, 0] },
-                            { text: `صفحة ${currentPage} من ${pageCount}`, alignment: 'center', fontSize: 9, color: '#6c757d' },
-                            { text: arabicDate, alignment: 'right', fontSize: 9, color: '#6c757d', margin: [0, 0, 40, 0] }
-                        ],
-                        margin: [0, 10, 0, 0]
-                    };
-                }
-            };
-
-            generatedPDF = pdfMake.createPdf(docDefinition);
-            generatedPDF.open();
-            
-            showAlert('تم إنشاء التقرير بنجاح!', 'success');
+            pdf.save(`تقرير_${subject}_${grade}_شعبة${section}_${examDate}.pdf`);
+            showAlert('تم إنشاء التقرير بنجاح!','success');
         }
-
-        function downloadPDFDirect() {
-            if (!generatedPDF) {
-                showAlert('يرجى إنشاء التقرير أولاً', 'error');
-                return;
-            }
-
-            const grade = document.getElementById('grade').value;
-            const section = document.getElementById('section').value;
-            const subject = document.getElementById('subject').value;
-            const examDate = document.getElementById('examDate').value;
-            const fileName = `تقرير_${subject}_${grade}_شعبة${section}_${examDate}.pdf`;
-
-            generatedPDF.download(fileName);
-            showAlert('تم تحميل التقرير بنجاح!', 'success');
+        function showAlert(msg,tp){
+            const box=document.getElementById('alertContainer');
+            const cls=tp==='success'?'alert-success':'alert-error';
+            box.innerHTML=`<div class="alert ${cls}">${msg}</div>`;
+            setTimeout(()=>box.innerHTML='',5000);
         }
-
-        function showAlert(message, type) {
-            const alertContainer = document.getElementById('alertContainer');
-            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
-            alertContainer.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
-            setTimeout(() => {
-                alertContainer.innerHTML = '';
-            }, 5000);
+        function resetApp(){
+            if(!confirm('هل تريد البدء من جديد؟ سيتم حذف جميع البيانات الحالية.'))return;
+            studentData=[];statistics={};generatedPDF=null;
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('fileInput').value='';
+            if(chartInstance){chartInstance.destroy();chartInstance=null;}
+            const pieContainer=document.getElementById('pieChartContainer');
+            if(pieContainer)pieContainer.remove();
+            showAlert('تم إعادة تعيين البرنامج بنجاح','success');
+            window.scrollTo({top:0,behavior:'smooth'});
         }
-
-        function resetApp() {
-            if (confirm('هل تريد البدء من جديد؟ سيتم حذف جميع البيانات الحالية.')) {
-                studentData = [];
-                statistics = {};
-                generatedPDF = null;
-                document.getElementById('resultsSection').classList.add('hidden');
-                document.getElementById('fileInput').value = '';
-                if (chartInstance) {
-                    chartInstance.destroy();
-                    chartInstance = null;
-                }
-                const pieContainer = document.getElementById('pieChartContainer');
-                if (pieContainer) {
-                    pieContainer.remove();
-                }
-                showAlert('تم إعادة تعيين البرنامج بنجاح', 'success');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-
-        // Set today's date as default
-        document.getElementById('examDate').valueAsDate = new Date();
     </script>
 </body>
 </html>
