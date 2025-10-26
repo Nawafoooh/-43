@@ -774,6 +774,10 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
 
+            // Add Amiri font for Arabic support
+            doc.addFont('https://cdn.jsdelivr.net/npm/@fontsource/amiri@4.5.0/files/amiri-arabic-400-normal.woff', 'Amiri', 'normal');
+            doc.setFont('Amiri');
+
             const grade = document.getElementById('grade').value;
             const section = document.getElementById('section').value;
             const subject = document.getElementById('subject').value;
@@ -781,94 +785,97 @@
 
             let yPos = 20;
 
-            // Header
+            // Header - Green Background
             doc.setFillColor(0, 92, 75);
-            doc.rect(0, 0, 210, 50, 'F');
+            doc.rect(0, 0, 210, 55, 'F');
             
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(22);
-            doc.text('Kingdom of Saudi Arabia', 105, 15, { align: 'center' });
-            doc.text('Ministry of Education', 105, 25, { align: 'center' });
+            doc.setFontSize(20);
+            doc.text('المملكة العربية السعودية', 105, 15, { align: 'center', lang: 'ar' });
+            doc.setFontSize(18);
+            doc.text('وزارة التعليم', 105, 25, { align: 'center', lang: 'ar' });
             doc.setFontSize(16);
-            doc.text('Al-Munther Bin Amr Al-Ansari Middle School', 105, 35, { align: 'center' });
+            doc.text('متوسطة المنذر بن عمرو الأنصاري', 105, 35, { align: 'center', lang: 'ar' });
             doc.setFontSize(14);
-            doc.text('Madinah Region Education Administration', 105, 42, { align: 'center' });
-            doc.text('Student Scores Analysis Report', 105, 48, { align: 'center' });
+            doc.text('إدارة تعليم منطقة المدينة المنورة', 105, 43, { align: 'center', lang: 'ar' });
+            doc.setFontSize(16);
+            doc.text('تقرير تحليل درجات الطلاب', 105, 52, { align: 'center', lang: 'ar' });
 
-            yPos = 60;
+            yPos = 65;
             doc.setTextColor(0, 0, 0);
-            doc.setFontSize(12);
 
             // School info box
             doc.setFillColor(248, 249, 250);
-            doc.rect(15, yPos - 5, 180, 35, 'F');
+            doc.rect(15, yPos - 5, 180, 38, 'F');
             doc.setDrawColor(0, 92, 75);
             doc.setLineWidth(0.5);
-            doc.rect(15, yPos - 5, 180, 35, 'S');
+            doc.rect(15, yPos - 5, 180, 38, 'S');
 
             doc.setFontSize(11);
-            doc.text(`Principal: Khaled Al-Mutairi`, 20, yPos + 2);
-            doc.text(`Email: almuntherschool@gmail.com`, 20, yPos + 9);
-            doc.text(`Grade: ${grade}`, 20, yPos + 16);
-            doc.text(`Section: ${section}`, 20, yPos + 23);
-            doc.text(`Subject: ${subject}`, 110, yPos + 16);
-            doc.text(`Date: ${examDate}`, 110, yPos + 23);
+            doc.text(`المدير: خالد المطيري`, 185, yPos + 2, { align: 'right', lang: 'ar' });
+            doc.text(`البريد الإلكتروني: almuntherschool@gmail.com`, 185, yPos + 9, { align: 'right' });
+            doc.text(`الصف: ${grade}`, 185, yPos + 16, { align: 'right', lang: 'ar' });
+            doc.text(`الشعبة: ${section}`, 185, yPos + 23, { align: 'right', lang: 'ar' });
+            doc.text(`المادة: ${subject}`, 95, yPos + 16, { align: 'right', lang: 'ar' });
+            doc.text(`التاريخ: ${examDate}`, 95, yPos + 23, { align: 'right', lang: 'ar' });
+            doc.text(`عدد الطلاب: ${statistics.count}`, 95, yPos + 30, { align: 'right', lang: 'ar' });
 
-            yPos += 45;
+            yPos += 48;
 
-            // Statistics summary
+            // Main Statistics Table
             doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
+            doc.setFont('Amiri', 'bold');
             doc.setTextColor(0, 92, 75);
-            doc.text('Statistical Summary', 20, yPos);
+            doc.text('الإحصائيات الرئيسية', 105, yPos, { align: 'center', lang: 'ar' });
             doc.setTextColor(0, 0, 0);
             yPos += 8;
-            doc.setFont(undefined, 'normal');
-            doc.setFontSize(11);
+            doc.setFont('Amiri', 'normal');
 
             const statsData = [
-                ['Total Students', statistics.count],
-                ['Mean (Average)', statistics.mean],
-                ['Median', statistics.median],
-                ['Mode', statistics.mode],
-                ['Standard Deviation', statistics.stdDev],
-                ['Variance', statistics.variance],
-                ['Minimum Score', statistics.min],
-                ['Maximum Score', statistics.max],
-                ['Range', statistics.range],
-                ['Pass Count (>=60)', statistics.passCount],
-                ['Fail Count', statistics.failCount],
-                ['Pass Rate', `${statistics.passRate}%`],
-                ['Q1 (25th percentile)', statistics.q1],
-                ['Q3 (75th percentile)', statistics.q3],
-                ['IQR', statistics.iqr],
-                ['Outliers Count', statistics.outliers]
+                ['إجمالي عدد الطلاب', statistics.count],
+                ['المتوسط الحسابي', statistics.mean],
+                ['الوسيط', statistics.median],
+                ['المنوال', statistics.mode],
+                ['الانحراف المعياري', statistics.stdDev],
+                ['التباين', statistics.variance],
+                ['أقل درجة', statistics.min],
+                ['أعلى درجة', statistics.max],
+                ['المدى', statistics.range],
+                ['عدد الناجحين (≥ 60)', statistics.passCount],
+                ['عدد الراسبين', statistics.failCount],
+                ['نسبة النجاح', `%${statistics.passRate}`],
+                ['الربيع الأول (Q1)', statistics.q1],
+                ['الربيع الثالث (Q3)', statistics.q3],
+                ['المدى الربيعي (IQR)', statistics.iqr],
+                ['عدد القيم الشاذة', statistics.outliers]
             ];
 
             doc.autoTable({
                 startY: yPos,
-                head: [['Statistic', 'Value']],
+                head: [['الإحصاء', 'القيمة']],
                 body: statsData,
                 theme: 'grid',
                 headStyles: { 
                     fillColor: [0, 92, 75], 
-                    fontSize: 11,
+                    fontSize: 12,
                     fontStyle: 'bold',
-                    halign: 'center'
+                    halign: 'center',
+                    font: 'Amiri'
                 },
                 styles: { 
-                    fontSize: 10, 
-                    font: 'helvetica',
-                    cellPadding: 3
+                    fontSize: 11, 
+                    font: 'Amiri',
+                    cellPadding: 4,
+                    halign: 'center'
                 },
                 columnStyles: {
-                    0: { cellWidth: 100, halign: 'left' },
-                    1: { cellWidth: 60, halign: 'center', fontStyle: 'bold' }
+                    0: { halign: 'right', cellWidth: 110 },
+                    1: { halign: 'center', fontStyle: 'bold', cellWidth: 50 }
                 },
                 margin: { left: 20, right: 20 }
             });
 
-            yPos = doc.lastAutoTable.finalY + 10;
+            yPos = doc.lastAutoTable.finalY + 12;
 
             // Grade Distribution Table
             if (yPos > 200) {
@@ -877,55 +884,56 @@
             }
 
             doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
+            doc.setFont('Amiri', 'bold');
             doc.setTextColor(0, 92, 75);
-            doc.text('Grade Distribution', 20, yPos);
+            doc.text('توزيع التقديرات', 105, yPos, { align: 'center', lang: 'ar' });
             doc.setTextColor(0, 0, 0);
             yPos += 7;
 
-            const gradeData = statistics.gradeDistribution.map(g => {
-                let englishGrade = '';
-                if (g.name === 'ممتاز') englishGrade = 'Excellent (90-100)';
-                else if (g.name === 'جيد جداً') englishGrade = 'Very Good (80-89)';
-                else if (g.name === 'جيد') englishGrade = 'Good (70-79)';
-                else if (g.name === 'مقبول') englishGrade = 'Acceptable (60-69)';
-                else if (g.name === 'ضعيف') englishGrade = 'Weak (0-59)';
-                
-                return [englishGrade, g.count, `${g.percentage}%`];
-            });
+            const gradeData = statistics.gradeDistribution.map(g => [
+                g.name,
+                g.count,
+                `%${g.percentage}`
+            ]);
 
             doc.autoTable({
                 startY: yPos,
-                head: [['Grade', 'Count', 'Percentage']],
+                head: [['التقدير', 'عدد الطلاب', 'النسبة']],
                 body: gradeData,
                 theme: 'striped',
                 headStyles: { 
                     fillColor: [0, 92, 75], 
-                    fontSize: 11,
+                    fontSize: 12,
                     fontStyle: 'bold',
-                    halign: 'center'
+                    halign: 'center',
+                    font: 'Amiri'
                 },
                 styles: { 
-                    fontSize: 10, 
-                    font: 'helvetica', 
+                    fontSize: 11, 
+                    font: 'Amiri', 
                     halign: 'center',
-                    cellPadding: 4
+                    cellPadding: 5
+                },
+                columnStyles: {
+                    0: { fontStyle: 'bold', cellWidth: 80 },
+                    1: { fontStyle: 'bold', cellWidth: 50 },
+                    2: { fontStyle: 'bold', cellWidth: 50 }
                 },
                 margin: { left: 20, right: 20 }
             });
 
-            yPos = doc.lastAutoTable.finalY + 10;
+            yPos = doc.lastAutoTable.finalY + 12;
 
-            // Top 10% students
-            if (yPos > 240) {
+            // Top 10% Students
+            if (yPos > 230) {
                 doc.addPage();
                 yPos = 20;
             }
 
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
+            doc.setFontSize(13);
+            doc.setFont('Amiri', 'bold');
             doc.setTextColor(0, 92, 75);
-            doc.text(`Top 10% Students (${statistics.topStudents.length} students)`, 20, yPos);
+            doc.text(`أفضل ${statistics.topStudents.length} طالب (أعلى 10%)`, 105, yPos, { align: 'center', lang: 'ar' });
             doc.setTextColor(0, 0, 0);
             yPos += 7;
 
@@ -937,72 +945,90 @@
             
             doc.autoTable({
                 startY: yPos,
-                head: [['Rank', 'Student Name', 'Score']],
+                head: [['الترتيب', 'اسم الطالب', 'الدرجة']],
                 body: topData,
                 theme: 'striped',
                 headStyles: { 
                     fillColor: [40, 167, 69], 
-                    fontSize: 10,
-                    fontStyle: 'bold'
+                    fontSize: 11,
+                    fontStyle: 'bold',
+                    font: 'Amiri',
+                    halign: 'center'
                 },
                 styles: { 
-                    fontSize: 9,
-                    cellPadding: 3
+                    fontSize: 10,
+                    cellPadding: 4,
+                    font: 'Amiri'
                 },
                 columnStyles: {
-                    0: { cellWidth: 20, halign: 'center' },
-                    1: { cellWidth: 100 },
+                    0: { cellWidth: 25, halign: 'center' },
+                    1: { cellWidth: 100, halign: 'right' },
                     2: { cellWidth: 30, halign: 'center', fontStyle: 'bold' }
                 },
                 margin: { left: 20, right: 20 }
             });
 
-            // Charts on new page
+            // Visual Charts Page
             doc.addPage();
             yPos = 20;
             
             doc.setFontSize(16);
-            doc.setFont(undefined, 'bold');
+            doc.setFont('Amiri', 'bold');
             doc.setTextColor(0, 92, 75);
-            doc.text('Visual Analysis', 105, yPos, { align: 'center' });
+            doc.text('التحليل البصري', 105, yPos, { align: 'center', lang: 'ar' });
             doc.setTextColor(0, 0, 0);
-            yPos += 10;
+            yPos += 12;
 
             // Histogram
             if (chartInstance) {
                 const chartImage = document.getElementById('histogramChart').toDataURL('image/png', 1.0);
-                doc.setFontSize(12);
-                doc.text('Score Distribution Histogram', 105, yPos, { align: 'center' });
+                doc.setFontSize(13);
+                doc.setFont('Amiri', 'bold');
+                doc.text('رسم بياني لتوزيع الدرجات', 105, yPos, { align: 'center', lang: 'ar' });
                 doc.addImage(chartImage, 'PNG', 15, yPos + 5, 180, 90);
                 yPos += 100;
             }
 
-            // Pie chart
+            // Pie Chart
             const pieCanvas = document.getElementById('gradeChart');
             if (pieCanvas) {
                 const pieImage = pieCanvas.toDataURL('image/png', 1.0);
-                doc.setFontSize(12);
-                doc.text('Grade Distribution Chart', 105, yPos + 5, { align: 'center' });
+                doc.setFontSize(13);
+                doc.setFont('Amiri', 'bold');
+                doc.text('رسم دائري لتوزيع التقديرات', 105, yPos + 5, { align: 'center', lang: 'ar' });
                 doc.addImage(pieImage, 'PNG', 55, yPos + 10, 100, 100);
             }
 
             // Footer on all pages
             const pageCount = doc.internal.getNumberOfPages();
+            const today = new Date();
+            const arabicDate = today.toLocaleDateString('ar-SA-u-ca-islamic', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const gregorianDate = today.toLocaleDateString('ar-SA', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric'
+            });
+
             for (let i = 1; i <= pageCount; i++) {
                 doc.setPage(i);
                 doc.setFontSize(8);
                 doc.setTextColor(128, 128, 128);
                 doc.setDrawColor(200, 200, 200);
                 doc.line(20, 282, 190, 282);
-                doc.text(`Page ${i} of ${pageCount}`, 105, 287, { align: 'center' });
-                doc.text(`Generated: ${new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}`, 20, 292);
-                doc.text('Nawaf Alsubhi 2025', 190, 292, { align: 'right' });
+                doc.setFont('Amiri', 'normal');
+                doc.text(`صفحة ${i} من ${pageCount}`, 105, 287, { align: 'center', lang: 'ar' });
+                doc.text(`تاريخ الإنشاء: ${gregorianDate}`, 185, 292, { align: 'right', lang: 'ar' });
+                doc.text('Nawaf Alsubhi 2025', 20, 292, { align: 'left' });
             }
 
-            // Save PDF globally
+            // Save PDF
             generatedPDF = doc;
 
-            // Open PDF in new window
+            // Open in new window
             const pdfBlob = doc.output('blob');
             const pdfUrl = URL.createObjectURL(pdfBlob);
             window.open(pdfUrl);
@@ -1020,7 +1046,7 @@
             const section = document.getElementById('section').value;
             const subject = document.getElementById('subject').value;
             const examDate = document.getElementById('examDate').value;
-            const fileName = `${subject}_${grade}_Section${section}_${examDate}.pdf`;
+            const fileName = `تقرير_${subject}_${grade}_شعبة${section}_${examDate}.pdf`;
 
             generatedPDF.save(fileName);
             showAlert('تم تحميل التقرير بنجاح!', 'success');
