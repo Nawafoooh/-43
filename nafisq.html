@@ -1371,10 +1371,34 @@
                 return;
             }
 
+            // 🔀 إذا كان هناك ترتيب مخلوط محفوظ، استخدمه
+            if (currentStudent.questionsOrder && currentStudent.questionsOrder.length > 0) {
+                const orderedQuestions = [];
+                currentStudent.questionsOrder.forEach(questionId => {
+                    const question = questions.find(q => q.id === questionId);
+                    if (question) {
+                        orderedQuestions.push(question);
+                    }
+                });
+                
+                // استخدام الترتيب المخلوط المحفوظ
+                if (orderedQuestions.length > 0) {
+                    questions = orderedQuestions;
+                    console.log('🔀 تم تحميل الأسئلة بالترتيب المخلوط المحفوظ');
+                }
+            }
+
             startSession();
 
-            currentQuestion = 0;
-            studentAnswers = [];
+            if (currentStudent.lastQuestion !== undefined && currentStudent.lastQuestion < questions.length && !currentStudent.testCompleted) {
+                // المتابعة تلقائياً من حيث توقفت - بدون خيار البدء من جديد
+                currentQuestion = currentStudent.lastQuestion;
+                studentAnswers = currentStudent.lastAnswers || [];
+                showNotification(`✅ تم استئناف الاختبار من السؤال ${currentQuestion + 1} من ${questions.length}`, 'success');
+            } else {
+                currentQuestion = 0;
+                studentAnswers = [];
+            }
 
             showSection('testSection');
             displayQuestion();
@@ -1567,33 +1591,44 @@
                 if (!querySnapshot.empty) {
                     const studentDocRef = doc(db, 'students', querySnapshot.docs[0].id);
                     
+                    // 🔀 خلط الأسئلة المتبقية (الحل الذكي ضد الغش!)
+                    const answeredQuestions = questions.slice(0, currentQuestion + 1); // الأسئلة المجابة
+                    const remainingQuestions = questions.slice(currentQuestion + 1);   // الأسئلة المتبقية
+                    
+                    // خلط الأسئلة المتبقية بترتيب عشوائي
+                    for (let i = remainingQuestions.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [remainingQuestions[i], remainingQuestions[j]] = [remainingQuestions[j], remainingQuestions[i]];
+                    }
+                    
+                    // دمج الأسئلة: المجابة (بترتيبها) + المتبقية (مخلوطة)
+                    questions = [...answeredQuestions, ...remainingQuestions];
+                    
+                    // حفظ ترتيب الأسئلة المخلوط مع معرفات الأسئلة
+                    const shuffledQuestionsOrder = questions.map(q => q.id);
+                    
+                    // حفظ التقدم + ترتيب الأسئلة الجديد
                     await updateDoc(studentDocRef, {
-                        testCompleted: true,
-                        completedAt: new Date(),
-                        lastQuestion: questions.length,
-                        lastAnswers: [],
+                        lastQuestion: currentQuestion,
+                        lastAnswers: studentAnswers,
                         score: currentStudent.score,
-                        finalScore: currentStudent.score,
+                        questionsOrder: shuffledQuestionsOrder,  // حفظ الترتيب المخلوط
                         lastActive: new Date(),
-                        savedAt: new Date()
+                        savedAt: new Date(),
+                        testCompleted: false
                     });
                     
-                    currentStudent.testCompleted = true;
-                    currentStudent.lastQuestion = questions.length;
-                    currentStudent.lastAnswers = [];
+                    currentStudent.lastQuestion = currentQuestion;
+                    currentStudent.lastAnswers = studentAnswers;
+                    currentStudent.questionsOrder = shuffledQuestionsOrder;
+                    currentStudent.testCompleted = false;
                     
-                    showNotification('تم حفظ التقدم بنجاح!', 'success');
-                    updateDashboardInfo();
-                    showSection('dashboard');
+                    showNotification('✅ تم حفظ تقدمك بنجاح!\n⚠️ تنبيه: الأسئلة المتبقية تم خلطها 🔀', 'success');
                     
                     setTimeout(() => {
-                        alert(
-                            '✅ تم حفظ نتائجك\n\n' +
-                            'تم إنهاء الاختبار وحفظ نقاطك.\n\n' +
-                            `نقاطك النهائية: ${currentStudent.score || 0}\n\n` +
-                            '⚠️ ملاحظة هامة: لا يمكن إعادة الاختبار مرة أخرى'
-                        );
-                    }, 500);
+                        updateDashboardInfo();
+                        showSection('dashboard');
+                    }, 2500);
                 }
                 
             } catch (error) {
