@@ -1371,6 +1371,23 @@
                 return;
             }
 
+            // 🔀 إذا كان هناك ترتيب مخلوط محفوظ، استخدمه
+            if (currentStudent.questionsOrder && currentStudent.questionsOrder.length > 0) {
+                const orderedQuestions = [];
+                currentStudent.questionsOrder.forEach(questionId => {
+                    const question = questions.find(q => q.id === questionId);
+                    if (question) {
+                        orderedQuestions.push(question);
+                    }
+                });
+                
+                // استخدام الترتيب المخلوط المحفوظ
+                if (orderedQuestions.length > 0) {
+                    questions = orderedQuestions;
+                    console.log('🔀 تم تحميل الأسئلة بالترتيب المخلوط المحفوظ');
+                }
+            }
+
             startSession();
 
             if (currentStudent.lastQuestion !== undefined && currentStudent.lastQuestion < questions.length && !currentStudent.testCompleted) {
@@ -1574,26 +1591,44 @@
                 if (!querySnapshot.empty) {
                     const studentDocRef = doc(db, 'students', querySnapshot.docs[0].id);
                     
-                    // حفظ التقدم وإزالة testCompleted إذا كان موجوداً
+                    // 🔀 خلط الأسئلة المتبقية (الحل الذكي ضد الغش!)
+                    const answeredQuestions = questions.slice(0, currentQuestion + 1); // الأسئلة المجابة
+                    const remainingQuestions = questions.slice(currentQuestion + 1);   // الأسئلة المتبقية
+                    
+                    // خلط الأسئلة المتبقية بترتيب عشوائي
+                    for (let i = remainingQuestions.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [remainingQuestions[i], remainingQuestions[j]] = [remainingQuestions[j], remainingQuestions[i]];
+                    }
+                    
+                    // دمج الأسئلة: المجابة (بترتيبها) + المتبقية (مخلوطة)
+                    questions = [...answeredQuestions, ...remainingQuestions];
+                    
+                    // حفظ ترتيب الأسئلة المخلوط مع معرفات الأسئلة
+                    const shuffledQuestionsOrder = questions.map(q => q.id);
+                    
+                    // حفظ التقدم + ترتيب الأسئلة الجديد
                     await updateDoc(studentDocRef, {
                         lastQuestion: currentQuestion,
                         lastAnswers: studentAnswers,
                         score: currentStudent.score,
+                        questionsOrder: shuffledQuestionsOrder,  // حفظ الترتيب المخلوط
                         lastActive: new Date(),
                         savedAt: new Date(),
-                        testCompleted: false  // إزالة أي testCompleted خاطئ من قبل
+                        testCompleted: false
                     });
                     
                     currentStudent.lastQuestion = currentQuestion;
                     currentStudent.lastAnswers = studentAnswers;
-                    currentStudent.testCompleted = false;  // تحديث القيمة المحلية
+                    currentStudent.questionsOrder = shuffledQuestionsOrder;
+                    currentStudent.testCompleted = false;
                     
-                    showNotification('✅ تم حفظ تقدمك بنجاح!\nيمكنك المتابعة لاحقاً من حيث توقفت 💕', 'success');
+                    showNotification('✅ تم حفظ تقدمك بنجاح!\n⚠️ تنبيه: الأسئلة المتبقية تم خلطها 🔀', 'success');
                     
                     setTimeout(() => {
                         updateDashboardInfo();
                         showSection('dashboard');
-                    }, 2000);
+                    }, 2500);
                 }
                 
             } catch (error) {
