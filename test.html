@@ -1567,7 +1567,6 @@
                 if (!querySnapshot.empty) {
                     const studentDocRef = doc(db, 'students', querySnapshot.docs[0].id);
                     
-                    // حفظ التقدم الحالي فقط بدون إنهاء الاختبار
                     await updateDoc(studentDocRef, {
                         lastQuestion: currentQuestion,
                         lastAnswers: studentAnswers,
@@ -1575,6 +1574,9 @@
                         lastActive: new Date(),
                         savedAt: new Date()
                     });
+                    
+                    currentStudent.lastQuestion = currentQuestion;
+                    currentStudent.lastAnswers = studentAnswers;
                     
                     showNotification('✅ تم حفظ تقدمك بنجاح!\nيمكنك المتابعة لاحقاً من حيث توقفت 💕', 'success');
                     
