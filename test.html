@@ -1373,8 +1373,26 @@
 
             startSession();
 
-            currentQuestion = 0;
-            studentAnswers = [];
+            if (currentStudent.lastQuestion !== undefined && currentStudent.lastQuestion < questions.length && !currentStudent.testCompleted) {
+                const resumeConfirm = confirm(
+                    `هل تريدين متابعة من حيث توقفت؟\n` +
+                    `السؤال: ${currentStudent.lastQuestion + 1} من ${questions.length}\n\n` +
+                    `اضغطي "موافق" للمتابعة، أو "إلغاء" للبدء من جديد`
+                );
+                
+                if (resumeConfirm) {
+                    currentQuestion = currentStudent.lastQuestion;
+                    studentAnswers = currentStudent.lastAnswers || [];
+                    showNotification('تم استئناف الاختبار من حيث توقفت', 'success');
+                } else {
+                    currentQuestion = 0;
+                    studentAnswers = [];
+                    showNotification('بدء اختبار جديد', 'info');
+                }
+            } else {
+                currentQuestion = 0;
+                studentAnswers = [];
+            }
 
             showSection('testSection');
             displayQuestion();
