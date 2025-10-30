@@ -61,6 +61,12 @@
                         </svg>
                         مسح الكل
                     </button>
+                    <button onclick="importDefaultSchedule()" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                        </svg>
+                        استيراد الجدول الافتراضي
+                    </button>
                 </div>
             </div>
         </div>
@@ -127,12 +133,14 @@
 
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-gray-800">الجدول المدرسي</h2>
-                    <button onclick="addScheduleEntry()" class="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition w-full md:w-auto justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                        </svg>
-                        إضافة حصة
-                    </button>
+                    <div class="flex gap-2">
+                        <button onclick="addScheduleEntry()" class="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            إضافة حصة
+                        </button>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <div id="schedule-list"></div>
@@ -240,6 +248,162 @@
             "فهد عويض عوض الشاماني الحربي"
         ];
 
+        // الجدول المدرسي الافتراضي
+        const defaultSchedule = [
+            // الصف الثالث - ٦
+            { teacherName: "ساير العضيله المطيري", day: "الأحد", period: "1", subject: "التربية البدنية والدفاع عن النفس", className: "الثالث - ٦" },
+            { teacherName: "عبيد العياضي الحربي", day: "الأحد", period: "2", subject: "الرياضيات", className: "الثالث - ٦" },
+            { teacherName: "أحمد الحربي", day: "الأحد", period: "3", subject: "العلوم", className: "الثالث - ٦" },
+            { teacherName: "سعد الحربي", day: "الأحد", period: "4", subject: "التفكير الناقد", className: "الثالث - ٦" },
+            { teacherName: "نافع المطيري", day: "الأحد", period: "5", subject: "الدراسات الاجتماعية", className: "الثالث - ٦" },
+            { teacherName: "نميان الحربي", day: "الأحد", period: "6", subject: "القرآن الكريم والدراسات الإسلامية", className: "الثالث - ٦" },
+            { teacherName: "حبيب العمري الحربي", day: "الأحد", period: "7", subject: "اللغة العربية", className: "الثالث - ٦" },
+
+            // الصف الثالث - ٥
+            { teacherName: "سعد الحربي", day: "الأحد", period: "1", subject: "التفكير الناقد", className: "الثالث - ٥" },
+            { teacherName: "نميان الحربي", day: "الأحد", period: "2", subject: "القرآن الكريم والدراسات الإسلامية", className: "الثالث - ٥" },
+            { teacherName: "عبيد العياضي الحربي", day: "الأحد", period: "3", subject: "الرياضيات", className: "الثالث - ٥" },
+            { teacherName: "حبيب العمري الحربي", day: "الأحد", period: "4", subject: "اللغة العربية", className: "الثالث - ٥" },
+            { teacherName: "عبيد العياضي الحربي", day: "الأحد", period: "5", subject: "الرياضيات", className: "الثالث - ٥" },
+            { teacherName: "نافع المطيري", day: "الأحد", period: "6", subject: "الدراسات الاجتماعية", className: "الثالث - ٥" },
+            { teacherName: "نميان الحربي", day: "الأحد", period: "7", subject: "القرآن الكريم والدراسات الإسلامية", className: "الثالث - ٥" },
+
+            // الصف الثالث - ٤
+            { teacherName: "فؤاد بن العتيبي", day: "الأحد", period: "1", subject: "اللغة الإنجليزية", className: "الثالث - ٤" },
+            { teacherName: "ساير العضيله المطيري", day: "الأحد", period: "2", subject: "التربية البدنية والدفاع عن النفس", className: "الثالث - ٤" },
+            { teacherName: "عبدالله الرحيلى", day: "الأحد", period: "3", subject: "الرياضيات", className: "الثالث - ٤" },
+            { teacherName: "فواز المهيمزي الرشيدي", day: "الأحد", period: "4", subject: "القرآن الكريم والدراسات الإسلامية", className: "الثالث - ٤" },
+            { teacherName: "سعد الحربي", day: "الأحد", period: "5", subject: "التفكير الناقد", className: "الثالث - ٤" },
+            { teacherName: "حبيب العمري الحربي", day: "الأحد", period: "6", subject: "اللغة العربية", className: "الثالث - ٤" },
+            { teacherName: "موسى الحربي", day: "الأحد", period: "7", subject: "المهارات الحياتية والأسرية", className: "الثالث - ٤" },
+
+            // الصف الثالث - ٣
+            { teacherName: "عبدالله الرحيلى", day: "الأحد", period: "1", subject: "الرياضيات", className: "الثالث - ٣" },
+            { teacherName: "أحمد الرشيدي", day: "الأحد", period: "2", subject: "اللغة الإنجليزية", className: "الثالث - ٣" },
+            { teacherName: "فواز المهيمزي الرشيدي", day: "الأحد", period: "3", subject: "القرآن الكريم والدراسات الإسلامية", className: "الثالث - ٣" },
+            { teacherName: "نافع المطيري", day: "الأحد", period: "4", subject: "الدراسات الاجتماعية", className: "الثالث - ٣" },
+            { teacherName: "عبدالعزيز الرويثي", day: "الأحد", period: "5", subject: "اللغة العربية", className: "الثالث - ٣" },
+            { teacherName: "عبدالله بن ال بحران القرني", day: "الأحد", period: "6", subject: "المهارات الرقمية", className: "الثالث - ٣" },
+            { teacherName: "سعد الحربي", day: "الأحد", period: "7", subject: "التفكير الناقد", className: "الثالث - ٣" },
+
+            // الصف الثالث - ٢
+            { teacherName: "أحمد الحربي", day: "الأحد", period: "1", subject: "العلوم", className: "الثالث - ٢" },
+            { teacherName: "أحمد الحربي", day: "الأحد", period: "2", subject: "العلوم", className: "الثالث - ٢" },
+            { teacherName: "عبدالله بن ال بحران القرني", day: "الأحد", period: "3", subject: "المهارات الرقمية", className: "الثالث - ٢" },
+            { teacherName: "عبدالله الرحيلى", day: "الأحد", period: "4", subject: "الرياضيات", className: "الثالث - ٢" },
+            { teacherName: "ساير العضيله المطيري", day: "الأحد", period: "5", subject: "التربية البدنية والدفاع عن النفس", className: "الثالث - ٢" },
+            { teacherName: "عبدالعزيز الرويثي", day: "الأحد", period: "6", subject: "اللغة العربية", className: "الثالث - ٢" },
+            { teacherName: "سلطان السحيمي", day: "الأحد", period: "7", subject: "القرآن الكريم والدراسات الإسلامية", className: "الثالث - ٢" },
+
+            // الصف الثالث - ١
+            { teacherName: "سلطان السحيمي", day: "الأحد", period: "1", subject: "القرآن الكريم والدراسات الإسلامية", className: "الثالث - ١" },
+            { teacherName: "عبدالله الرحيلى", day: "الأحد", period: "2", subject: "الرياضيات", className: "الثالث - ١" },
+            { teacherName: "نافع المطيري", day: "الأحد", period: "3", subject: "الدراسات الاجتماعية", className: "الثالث - ١" },
+            { teacherName: "سيف العارضي", day: "الأحد", period: "4", subject: "التربية الفنية", className: "الثالث - ١" },
+            { teacherName: "سيف العارضي", day: "الأحد", period: "5", subject: "التربية الفنية", className: "الثالث - ١" },
+            { teacherName: "سلطان السحيمي", day: "الأحد", period: "6", subject: "القرآن الكريم والدراسات الإسلامية", className: "الثالث - ١" },
+            { teacherName: "عبدالعزيز الرويثي", day: "الأحد", period: "7", subject: "اللغة العربية", className: "الثالث - ١" },
+
+            // الصف الثاني - ٦
+            { teacherName: "موسى الحربي", day: "الأحد", period: "1", subject: "المهارات الحياتية والأسرية", className: "الثاني - ٦" },
+            { teacherName: "عبدالعزيز المخلفي", day: "الأحد", period: "2", subject: "العلوم", className: "الثاني - ٦" },
+            { teacherName: "فيصل الصاعدي", day: "الأحد", period: "3", subject: "اللغة العربية", className: "الثاني - ٦" },
+            { teacherName: "موفق السحيمي", day: "الأحد", period: "4", subject: "القرآن الكريم والدراسات الإسلامية", className: "الثاني - ٦" },
+            { teacherName: "حمزة اسلام", day: "الأحد", period: "5", subject: "اللغة الإنجليزية", className: "الثاني - ٦" },
+            { teacherName: "ناهر المطيري", day: "الأحد", period: "6", subject: "الرياضيات", className: "الثاني - ٦" },
+            { teacherName: "فيصل أبو سلمي", day: "الأحد", period: "7", subject: "التربية البدنية والدفاع عن النفس", className: "الثاني - ٦" },
+
+            // الصف الثاني - ٥
+            { teacherName: "ناهر المطيري", day: "الأحد", period: "1", subject: "الرياضيات", className: "الثاني - ٥" },
+            { teacherName: "ناهر المطيري", day: "الأحد", period: "2", subject: "الرياضيات", className: "الثاني - ٥" },
+            { teacherName: "اسامه العوفي", day: "الأحد", period: "3", subject: "الدراسات الاجتماعية", className: "الثاني - ٥" },
+            { teacherName: "موسى الحربي", day: "الأحد", period: "4", subject: "المهارات الحياتية والأسرية", className: "الثاني - ٥" },
+            { teacherName: "عبدالهادي الشاماني", day: "الأحد", period: "5", subject: "التربية الفنية", className: "الثاني - ٥" },
+            { teacherName: "عبدالهادي الشاماني", day: "الأحد", period: "6", subject: "التربية الفنية", className: "الثاني - ٥" },
+            { teacherName: "فيصل الصاعدي", day: "الأحد", period: "7", subject: "اللغة العربية", className: "الثاني - ٥" },
+
+            // الصف الثاني - ٣
+            { teacherName: "اسامه العوفي", day: "الأحد", period: "1", subject: "الدراسات الاجتماعية", className: "الثاني - ٣" },
+            { teacherName: "حمزة اسلام", day: "الأحد", period: "2", subject: "اللغة الإنجليزية", className: "الثاني - ٣" },
+            { teacherName: "عبدالعزيز المخلفي", day: "الأحد", period: "3", subject: "العلوم", className: "الثاني - ٣" },
+            { teacherName: "عبدالله بن ال بحران القرني", day: "الأحد", period: "4", subject: "المهارات الرقمية", className: "الثاني - ٣" },
+            { teacherName: "فهد الشاماني الحربي", day: "الأحد", period: "5", subject: "اللغة العربية", className: "الثاني - ٣" },
+            { teacherName: "ساير العضيله المطيري", day: "الأحد", period: "6", subject: "التربية البدنية والدفاع عن النفس", className: "الثاني - ٣" },
+            { teacherName: "سلمان الحارثي", day: "الأحد", period: "7", subject: "القرآن الكريم والدراسات الإسلامية", className: "الثاني - ٣" },
+
+            // الصف الثاني - ٢
+            { teacherName: "حمزة اسلام", day: "الأحد", period: "1", subject: "اللغة الإنجليزية", className: "الثاني - ٢" },
+            { teacherName: "عبدالله بن ال بحران القرني", day: "الأحد", period: "2", subject: "المهارات الرقمية", className: "الثاني - ٢" },
+            { teacherName: "عبدالله الحربي", day: "الأحد", period: "3", subject: "الرياضيات", className: "الثاني - ٢" },
+            { teacherName: "عبدالله الحربي", day: "الأحد", period: "4", subject: "الرياضيات", className: "الثاني - ٢" },
+            { teacherName: "أحمد التركي", day: "الأحد", period: "5", subject: "اللغة العربية", className: "الثاني - ٢" },
+            { teacherName: "ابراهيم الجابري", day: "الأحد", period: "6", subject: "القرآن الكريم والدراسات الإسلامية", className: "الثاني - ٢" },
+            { teacherName: "اسامه العوفي", day: "الأحد", period: "7", subject: "الدراسات الاجتماعية", className: "الثاني - ٢" },
+
+            // الصف الثاني - ١
+            { teacherName: "عبدالله الحربي", day: "الأحد", period: "1", subject: "الرياضيات", className: "الثاني - ١" },
+            { teacherName: "اسامه العوفي", day: "الأحد", period: "2", subject: "الدراسات الاجتماعية", className: "الثاني - ١" },
+            { teacherName: "ساير العضيله المطيري", day: "الأحد", period: "3", subject: "التربية البدنية والدفاع عن النفس", className: "الثاني - ١" },
+            { teacherName: "عبدالعزيز المخلفي", day: "الأحد", period: "4", subject: "العلوم", className: "الثاني - ١" },
+            { teacherName: "ابراهيم الجابري", day: "الأحد", period: "5", subject: "القرآن الكريم والدراسات الإسلامية", className: "الثاني - ١" },
+            { teacherName: "أحمد التركي", day: "الأحد", period: "6", subject: "اللغة العربية", className: "الثاني - ١" },
+            { teacherName: "عبدالله بن ال بحران القرني", day: "الأحد", period: "7", subject: "المهارات الرقمية", className: "الثاني - ١" },
+
+            // الصف الأول - ٦
+            { teacherName: "محمد العوفي", day: "الأحد", period: "1", subject: "القرآن الكريم والدراسات الإسلامية", className: "الأول - ٦" },
+            { teacherName: "علي العلوي الحربي", day: "الأحد", period: "2", subject: "العلوم", className: "الأول - ٦" },
+            { teacherName: "محمد العوفي", day: "الأحد", period: "3", subject: "القرآن الكريم والدراسات الإسلامية", className: "الأول - ٦" },
+            { teacherName: "ناهر المطيري", day: "الأحد", period: "4", subject: "الرياضيات", className: "الأول - ٦" },
+            { teacherName: "كاتب الرشيدى", day: "الأحد", period: "5", subject: "اللغة الإنجليزية", className: "الأول - ٦" },
+            { teacherName: "محمد الزهراني", day: "الأحد", period: "6", subject: "اللغة العربية", className: "الأول - ٦" },
+            { teacherName: "نافع المطيري", day: "الأحد", period: "7", subject: "الدراسات الاجتماعية", className: "الأول - ٦" },
+
+            // الصف الأول - ٥
+            { teacherName: "علي العلوي الحربي", day: "الأحد", period: "1", subject: "العلوم", className: "الأول - ٥" },
+            { teacherName: "كاتب الرشيدى", day: "الأحد", period: "2", subject: "اللغة الإنجليزية", className: "الأول - ٥" },
+            { teacherName: "موسى الحربي", day: "الأحد", period: "3", subject: "المهارات الحياتية والأسرية", className: "الأول - ٥" },
+            { teacherName: "عبدالمجيد الرشيدي", day: "الأحد", period: "4", subject: "المهارات الرقمية", className: "الأول - ٥" },
+            { teacherName: "محمد الزهراني", day: "الأحد", period: "5", subject: "اللغة العربية", className: "الأول - ٥" },
+            { teacherName: "عبيد العياضي الحربي", day: "الأحد", period: "6", subject: "الرياضيات", className: "الأول - ٥" },
+            { teacherName: "ابراهيم العلوي", day: "الأحد", period: "7", subject: "الدراسات الاجتماعية", className: "الأول - ٥" },
+
+            // الصف الأول - ٤
+            { teacherName: "عبدالله العمري", day: "الأحد", period: "1", subject: "القرآن الكريم والدراسات الإسلامية", className: "الأول - ٤" },
+            { teacherName: "ابراهيم العلوي", day: "الأحد", period: "2", subject: "الدراسات الاجتماعية", className: "الأول - ٤" },
+            { teacherName: "مشعل العمري الحربي", day: "الأحد", period: "3", subject: "الرياضيات", className: "الأول - ٤" },
+            { teacherName: "مشعل العمري الحربي", day: "الأحد", period: "4", subject: "الرياضيات", className: "الأول - ٤" },
+            { teacherName: "فيصل أبو سلمي", day: "الأحد", period: "5", subject: "التربية البدنية والدفاع عن النفس", className: "الأول - ٤" },
+            { teacherName: "كاتب الرشيدى", day: "الأحد", period: "6", subject: "اللغة الإنجليزية", className: "الأول - ٤" },
+            { teacherName: "محمد الزهراني", day: "الأحد", period: "7", subject: "اللغة العربية", className: "الأول - ٤" },
+
+            // الصف الأول - ٣
+            { teacherName: "كاتب الرشيدى", day: "الأحد", period: "1", subject: "اللغة الإنجليزية", className: "الأول - ٣" },
+            { teacherName: "محمد بن العوفي", day: "الأحد", period: "2", subject: "اللغة العربية", className: "الأول - ٣" },
+            { teacherName: "علي العلوي الحربي", day: "الأحد", period: "3", subject: "العلوم", className: "الأول - ٣" },
+            { teacherName: "فيصل أبو سلمي", day: "الأحد", period: "4", subject: "التربية البدنية والدفاع عن النفس", className: "الأول - ٣" },
+            { teacherName: "ابراهيم العلوي", day: "الأحد", period: "5", subject: "الدراسات الاجتماعية", className: "الأول - ٣" },
+            { teacherName: "مشعل العمري الحربي", day: "الأحد", period: "6", subject: "الرياضيات", className: "الأول - ٣" },
+            { teacherName: "عبدالله العمري", day: "الأحد", period: "7", subject: "القرآن الكريم والدراسات الإسلامية", className: "الأول - ٣" },
+
+            // الصف الأول - ٢
+            { teacherName: "مشعل العمري الحربي", day: "الأحد", period: "1", subject: "الرياضيات", className: "الأول - ٢" },
+            { teacherName: "عبدالهادي الشاماني", day: "الأحد", period: "2", subject: "التربية الفنية", className: "الأول - ٢" },
+            { teacherName: "عبدالهادي الشاماني", day: "الأحد", period: "3", subject: "التربية الفنية", className: "الأول - ٢" },
+            { teacherName: "ابراهيم العلوي", day: "الأحد", period: "4", subject: "الدراسات الاجتماعية", className: "الأول - ٢" },
+            { teacherName: "محمد بن العوفي", day: "الأحد", period: "5", subject: "اللغة العربية", className: "الأول - ٢" },
+            { teacherName: "فيصل أبو سلمي", day: "الأحد", period: "6", subject: "التربية البدنية والدفاع عن النفس", className: "الأول - ٢" },
+            { teacherName: "بدر السحيمي", day: "الأحد", period: "7", subject: "القرآن الكريم والدراسات الإسلامية", className: "الأول - ٢" },
+
+            // الصف الأول - ١
+            { teacherName: "فيصل أبو سلمي", day: "الأحد", period: "1", subject: "التربية البدنية والدفاع عن النفس", className: "الأول - ١" },
+            { teacherName: "مشعل العمري الحربي", day: "الأحد", period: "2", subject: "الرياضيات", className: "الأول - ١" },
+            { teacherName: "محمد بن العوفي", day: "الأحد", period: "3", subject: "اللغة العربية", className: "الأول - ١" },
+            { teacherName: "بدر السحيمي", day: "الأحد", period: "4", subject: "القرآن الكريم والدراسات الإسلامية", className: "الأول - ١" },
+            { teacherName: "مشعل العمري الحربي", day: "الأحد", period: "5", subject: "الرياضيات", className: "الأول - ١" },
+            { teacherName: "عبدالمجيد الرشيدي", day: "الأحد", period: "6", subject: "المهارات الرقمية", className: "الأول - ١" },
+            { teacherName: "أحمد الرشيدي", day: "الأحد", period: "7", subject: "اللغة الإنجليزية", className: "الأول - ١" }
+        ];
+
         // دمج أسماء Excel مع البيانات الموجودة
         function mergeExcelTeachers() {
             const existingNames = new Set(teachers.map(t => t.name));
@@ -253,6 +417,39 @@
                     });
                 }
             });
+        }
+
+        // استيراد الجدول الافتراضي
+        function importDefaultSchedule() {
+            if (confirm('هل تريد استيراد الجدول المدرسي الافتراضي؟ سيتم إضافة جميع الحصص تلقائياً.')) {
+                let addedCount = 0;
+                
+                defaultSchedule.forEach(entry => {
+                    // تجنب التكرار
+                    const exists = schedule.some(s => 
+                        s.teacherName === entry.teacherName && 
+                        s.day === entry.day && 
+                        s.period === entry.period && 
+                        s.className === entry.className
+                    );
+                    
+                    if (!exists) {
+                        schedule.push({
+                            id: Date.now() + Math.random(),
+                            teacherName: entry.teacherName,
+                            day: entry.day,
+                            period: entry.period,
+                            subject: entry.subject,
+                            className: entry.className
+                        });
+                        addedCount++;
+                    }
+                });
+
+                renderSchedule();
+                updateStats();
+                showNotification(`تم استيراد ${addedCount} حصة بنجاح من الجدول الافتراضي`, 'success');
+            }
         }
 
         // تحميل البيانات من localStorage
@@ -269,6 +466,11 @@
             mergeExcelTeachers();
             
             renderAll();
+
+            // إذا لم يكن هناك جدول، نعرض رسالة ترحيب
+            if (schedule.length === 0) {
+                showNotification('مرحباً! يمكنك استيراد الجدول الافتراضي باستخدام الزر أعلاه', 'success');
+            }
         }
 
         // حفظ جميع البيانات
@@ -657,7 +859,7 @@
                         <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <p class="text-lg">لا توجد حصص في الجدول. ابدأ بإضافة حصة!</p>
+                        <p class="text-lg">لا توجد حصص في الجدول. ابدأ باستيراد الجدول الافتراضي!</p>
                     </div>
                 `;
             } else {
@@ -696,7 +898,7 @@
             }
         }
 
-               // عرض سجلات الغياب
+        // عرض سجلات الغياب
         function renderAbsences() {
             const list = document.getElementById('absences-list');
             if (absences.length === 0) {
@@ -755,58 +957,7 @@
         // تهيئة الصفحة
         window.onload = function() {
             loadData();
-            
-            // إضافة مثال توضيحي للاستيراد
-            const exampleData = `الثالث - ٦
-اليوم	الحصة الأولى	الحصة الثانية	الحصة الثالثة	الحصة الرابعة	الحصة الخامسة	الحصة السادسة	الحصة السابعة
-الأحد	
-
-التربية البدنية والدفاع عن النفس
-المعلم : ساير العضيله المطيري
-
-الرياضيات
-المعلم : عبيد العياضي الحربي
-
-العلوم
-المعلم : أحمد الحربي
-
-التفكير الناقد
-المعلم : سعد الحربي
-
-الدراسات الاجتماعية
-المعلم : نافع المطيري
-
-القرآن الكريم والدراسات الإسلامية
-المعلم : نميان الحربي
-
-اللغة العربية
-المعلم : حبيب العمري الحربي
-الاثنين	
-
-اللغة الإنجليزية
-المعلم : فؤاد بن العتيبي
-
-الرياضيات
-المعلم : عبيد العياضي الحربي
-
-القرآن الكريم والدراسات الإسلامية
-المعلم : نميان الحربي
-
-القرآن الكريم والدراسات الإسلامية
-المعلم : نميان الحربي
-
-العلوم
-المعلم : أحمد الحربي
-
-التفكير الناقد
-المعلم : سعد الحربي
-
-اللغة العربية
-المعلم : حبيب العمري الحربي`;
-
-            document.getElementById('schedule-paste-area').placeholder = "الصق الجدول الكامل هنا...\n\nمثال:\n" + exampleData;
         };
     </script>
 </body>
-</html>
-           
+</html>   
