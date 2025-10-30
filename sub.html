@@ -1,0 +1,426 @@
+import React, { useState, useEffect } from 'react';
+import { Calendar, Users, UserX, Clock, Plus, Download, Trash2, Save, AlertCircle, CheckCircle } from 'lucide-react';
+
+const TeacherSubstituteSystem = () => {
+  const [teachers, setTeachers] = useState([]);
+  const [schedule, setSchedule] = useState([]);
+  const [absences, setAbsences] = useState([]);
+  const [activeTab, setActiveTab] = useState('schedule');
+  const [notification, setNotification] = useState(null);
+
+  const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'];
+  const periods = ['1', '2', '3', '4', '5', '6', '7'];
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      const teachersData = await window.storage.get('teachers');
+      const scheduleData = await window.storage.get('schedule');
+      const absencesData = await window.storage.get('absences');
+      
+      if (teachersData) setTeachers(JSON.parse(teachersData.value));
+      if (scheduleData) setSchedule(JSON.parse(scheduleData.value));
+      if (absencesData) setAbsences(JSON.parse(absencesData.value));
+    } catch (error) {
+      console.log('بيانات جديدة، سيتم البدء من الصفر');
+    }
+  };
+
+  const saveData = async () => {
+    try {
+      await window.storage.set('teachers', JSON.stringify(teachers));
+      await window.storage.set('schedule', JSON.stringify(schedule));
+      await window.storage.set('absences', JSON.stringify(absences));
+      showNotification('تم حفظ البيانات بنجاح', 'success');
+    } catch (error) {
+      showNotification('حدث خطأ أثناء الحفظ', 'error');
+    }
+  };
+
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  const addTeacher = () => {
+    const name = prompt('أدخل اسم المعلم:');
+    const subject = prompt('أدخل التخصص:');
+    if (name && subject) {
+      setTeachers([...teachers, { 
+        id: Date.now(), 
+        name, 
+        subject, 
+        substituteCount: 0 
+      }]);
+      showNotification('تم إضافة المعلم بنجاح', 'success');
+    }
+  };
+
+  const deleteTeacher = (id) => {
+    if (confirm('هل أنت متأكد من حذف هذا المعلم؟')) {
+      setTeachers(teachers.filter(t => t.id !== id));
+      showNotification('تم حذف المعلم', 'success');
+    }
+  };
+
+  const addScheduleEntry = () => {
+    const teacherName = prompt('اسم المعلم:');
+    const day = prompt(`اليوم (${days.join(', ')}):`);
+    const period = prompt(`الحصة (${periods.join(', ')}):`);
+    const subject = prompt('المادة:');
+    const className = prompt('الصف:');
+
+    if (teacherName && day && period && subject && className) {
+      setSchedule([...schedule, {
+        id: Date.now(),
+        teacherName,
+        day,
+        period,
+        subject,
+        className
+      }]);
+      showNotification('تم إضافة الحصة للجدول', 'success');
+    }
+  };
+
+  const findSubstitute = (absentTeacher, day, period) => {
+    const busyTeachers = schedule
+      .filter(s => s.day === day && s.period === period)
+      .map(s => s.teacherName);
+
+    const availableTeachers = teachers
+      .filter(t => t.name !== absentTeacher && !busyTeachers.includes(t.name))
+      .sort((a, b) => a.substituteCount - b.substituteCount);
+
+    return availableTeachers[0] || null;
+  };
+
+  const markAbsent = () => {
+    const absentTeacherName = prompt('أدخل اسم المعلم الغائب:');
+    if (!absentTeacherName) return;
+
+    const todaySchedule = schedule.filter(s => s.teacherName === absentTeacherName);
+    
+    if (todaySchedule.length === 0) {
+      showNotification('لا توجد حصص لهذا المعلم في الجدول', 'error');
+      return;
+    }
+
+    const newAbsences = [];
+    todaySchedule.forEach(entry => {
+      const substitute = findSubstitute(absentTeacherName, entry.day, entry.period);
+      
+      if (substitute) {
+        const updatedTeachers = teachers.map(t => 
+          t.id === substitute.id 
+            ? { ...t, substituteCount: t.substituteCount + 1 }
+            : t
+        );
+        setTeachers(updatedTeachers);
+
+        newAbsences.push({
+          id: Date.now() + Math.random(),
+          date: new Date().toLocaleDateString('ar-SA'),
+          absentTeacher: absentTeacherName,
+          substitute: substitute.name,
+          day: entry.day,
+          period: entry.period,
+          subject: entry.subject,
+          className: entry.className
+        });
+      } else {
+        newAbsences.push({
+          id: Date.now() + Math.random(),
+          date: new Date().toLocaleDateString('ar-SA'),
+          absentTeacher: absentTeacherName,
+          substitute: 'لا يوجد بديل متاح',
+          day: entry.day,
+          period: entry.period,
+          subject: entry.subject,
+          className: entry.className
+        });
+      }
+    });
+
+    setAbsences([...absences, ...newAbsences]);
+    showNotification(`تم تعيين البدلاء لـ ${todaySchedule.length} حصة`, 'success');
+  };
+
+  const deleteAbsence = (id) => {
+    setAbsences(absences.filter(a => a.id !== id));
+    showNotification('تم حذف سجل الغياب', 'success');
+  };
+
+  const clearAllData = () => {
+    if (confirm('هل أنت متأكد من حذف جميع البيانات؟ لا يمكن التراجع عن هذا الإجراء!')) {
+      setTeachers([]);
+      setSchedule([]);
+      setAbsences([]);
+      showNotification('تم حذف جميع البيانات', 'success');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4" dir="rtl">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Calendar className="w-10 h-10 text-indigo-600" />
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800">نظام إدارة حصص الانتظار</h1>
+                <p className="text-gray-600">إدارة ذكية للمعلمين والجداول المدرسية</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={saveData} className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                <Save className="w-5 h-5" />
+                حفظ البيانات
+              </button>
+              <button onClick={clearAllData} className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">
+                <Trash2 className="w-5 h-5" />
+                مسح الكل
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Notification */}
+        {notification && (
+          <div className={`mb-4 p-4 rounded-lg flex items-center gap-3 ${
+            notification.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }`}>
+            {notification.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+            <span className="font-semibold">{notification.message}</span>
+          </div>
+        )}
+
+        {/* Tabs */}
+        <div className="bg-white rounded-lg shadow-lg mb-6">
+          <div className="flex border-b">
+            <button
+              onClick={() => setActiveTab('schedule')}
+              className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition ${
+                activeTab === 'schedule' 
+                  ? 'bg-indigo-600 text-white' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <Calendar className="w-5 h-5" />
+              الجدول المدرسي
+            </button>
+            <button
+              onClick={() => setActiveTab('teachers')}
+              className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition ${
+                activeTab === 'teachers' 
+                  ? 'bg-indigo-600 text-white' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <Users className="w-5 h-5" />
+              المعلمين
+            </button>
+            <button
+              onClick={() => setActiveTab('absences')}
+              className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition ${
+                activeTab === 'absences' 
+                  ? 'bg-indigo-600 text-white' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <UserX className="w-5 h-5" />
+              حصص الانتظار
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          {/* Teachers Tab */}
+          {activeTab === 'teachers' && (
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">قائمة المعلمين</h2>
+                <button
+                  onClick={addTeacher}
+                  className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
+                >
+                  <Plus className="w-5 h-5" />
+                  إضافة معلم
+                </button>
+              </div>
+              <div className="grid gap-4">
+                {teachers.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500">
+                    <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg">لا توجد معلمين بعد. ابدأ بإضافة معلم!</p>
+                  </div>
+                ) : (
+                  teachers.map(teacher => (
+                    <div key={teacher.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                      <div>
+                        <h3 className="font-bold text-lg text-gray-800">{teacher.name}</h3>
+                        <p className="text-gray-600">التخصص: {teacher.subject}</p>
+                        <p className="text-sm text-indigo-600">عدد حصص الانتظار: {teacher.substituteCount}</p>
+                      </div>
+                      <button
+                        onClick={() => deleteTeacher(teacher.id)}
+                        className="text-red-600 hover:bg-red-100 p-2 rounded-lg transition"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Schedule Tab */}
+          {activeTab === 'schedule' && (
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">الجدول المدرسي</h2>
+                <button
+                  onClick={addScheduleEntry}
+                  className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
+                >
+                  <Plus className="w-5 h-5" />
+                  إضافة حصة
+                </button>
+              </div>
+              <div className="overflow-x-auto">
+                {schedule.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500">
+                    <Clock className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg">لا توجد حصص في الجدول. ابدأ بإضافة حصة!</p>
+                  </div>
+                ) : (
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-indigo-600 text-white">
+                        <th className="p-3 text-right">اليوم</th>
+                        <th className="p-3 text-right">الحصة</th>
+                        <th className="p-3 text-right">المعلم</th>
+                        <th className="p-3 text-right">المادة</th>
+                        <th className="p-3 text-right">الصف</th>
+                        <th className="p-3 text-center">إجراءات</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {schedule.map(entry => (
+                        <tr key={entry.id} className="border-b hover:bg-gray-50">
+                          <td className="p-3">{entry.day}</td>
+                          <td className="p-3">{entry.period}</td>
+                          <td className="p-3 font-semibold">{entry.teacherName}</td>
+                          <td className="p-3">{entry.subject}</td>
+                          <td className="p-3">{entry.className}</td>
+                          <td className="p-3 text-center">
+                            <button
+                              onClick={() => setSchedule(schedule.filter(s => s.id !== entry.id))}
+                              className="text-red-600 hover:bg-red-100 p-2 rounded-lg transition"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Absences Tab */}
+          {activeTab === 'absences' && (
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">إدارة حصص الانتظار</h2>
+                <button
+                  onClick={markAbsent}
+                  className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                >
+                  <UserX className="w-5 h-5" />
+                  تسجيل غياب معلم
+                </button>
+              </div>
+              <div className="space-y-4">
+                {absences.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500">
+                    <UserX className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg">لا توجد سجلات غياب حتى الآن</p>
+                  </div>
+                ) : (
+                  absences.map(absence => (
+                    <div key={absence.id} className="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border-r-4 border-orange-500">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">غائب</span>
+                            <span className="font-bold text-lg">{absence.absentTeacher}</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3 text-sm">
+                            <div><span className="text-gray-600">البديل:</span> <span className="font-semibold text-green-700">{absence.substitute}</span></div>
+                            <div><span className="text-gray-600">التاريخ:</span> <span className="font-semibold">{absence.date}</span></div>
+                            <div><span className="text-gray-600">اليوم:</span> <span className="font-semibold">{absence.day}</span></div>
+                            <div><span className="text-gray-600">الحصة:</span> <span className="font-semibold">{absence.period}</span></div>
+                            <div><span className="text-gray-600">المادة:</span> <span className="font-semibold">{absence.subject}</span></div>
+                            <div><span className="text-gray-600">الصف:</span> <span className="font-semibold">{absence.className}</span></div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => deleteAbsence(absence.id)}
+                          className="text-red-600 hover:bg-red-100 p-2 rounded-lg transition"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="flex items-center gap-3">
+              <Users className="w-8 h-8 text-blue-600" />
+              <div>
+                <p className="text-gray-600 text-sm">عدد المعلمين</p>
+                <p className="text-3xl font-bold text-gray-800">{teachers.length}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="flex items-center gap-3">
+              <Clock className="w-8 h-8 text-green-600" />
+              <div>
+                <p className="text-gray-600 text-sm">عدد الحصص</p>
+                <p className="text-3xl font-bold text-gray-800">{schedule.length}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="flex items-center gap-3">
+              <UserX className="w-8 h-8 text-orange-600" />
+              <div>
+                <p className="text-gray-600 text-sm">حصص الانتظار</p>
+                <p className="text-3xl font-bold text-gray-800">{absences.length}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TeacherSubstituteSystem;
