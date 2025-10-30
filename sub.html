@@ -110,6 +110,21 @@
 
             <!-- Schedule Tab -->
             <div id="content-schedule" class="tab-content hidden">
+                <!-- أداة استيراد الجدول -->
+                <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h3 class="text-lg font-bold text-blue-800 mb-2">استيراد الجدول المدرسي</h3>
+                    <p class="text-blue-600 mb-3">الصق الجدول الكامل من منصة مدرستي وسيتم معالجته تلقائياً</p>
+                    <textarea id="schedule-paste-area" rows="10" class="w-full p-3 border border-blue-300 rounded-lg" placeholder="الصق الجدول الكامل هنا..."></textarea>
+                    <div class="flex gap-2 mt-2">
+                        <button onclick="processPastedSchedule()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                            معالجة الجدول تلقائياً
+                        </button>
+                        <button onclick="addBulkEntry()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
+                            إدخال جماعي
+                        </button>
+                    </div>
+                </div>
+
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-gray-800">الجدول المدرسي</h2>
                     <button onclick="addScheduleEntry()" class="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition w-full md:w-auto justify-center">
@@ -443,6 +458,166 @@
             showNotification('تم حذف سجل الغياب', 'success');
         }
 
+        // ========== الميزات الجديدة ==========
+
+        // معالجة الجدول المدرسي المنسوخ
+        function processPastedSchedule() {
+            const pasteArea = document.getElementById('schedule-paste-area');
+            const data = pasteArea.value.trim();
+            
+            if (!data) {
+                showNotification('يرجى لصق الجدول أولاً', 'error');
+                return;
+            }
+
+            const lines = data.split('\n').filter(line => line.trim());
+            let scheduleEntries = [];
+            let currentClass = '';
+            let currentDay = '';
+            let currentPeriod = 1;
+
+            lines.forEach(line => {
+                line = line.trim();
+                
+                // اكتشاف الصف
+                if (line.includes('الثالث') || line.includes('الثاني') || line.includes('الأول')) {
+                    currentClass = extractClassName(line);
+                    return;
+                }
+                
+                // اكتشاف اليوم
+                const days = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'];
+                const foundDay = days.find(day => line.includes(day));
+                if (foundDay) {
+                    currentDay = foundDay;
+                    currentPeriod = 1;
+                    return;
+                }
+                
+                // اكتشاف الحصة
+                if (line.includes('الحصة')) {
+                    currentPeriod = extractPeriodNumber(line);
+                    return;
+                }
+                
+                // استخراج بيانات الحصة
+                const periodData = extractPeriodData(line, currentClass, currentDay, currentPeriod);
+                if (periodData) {
+                    scheduleEntries.push(periodData);
+                    currentPeriod++;
+                }
+            });
+
+            // إضافة الحصص إلى الجدول
+            let addedCount = 0;
+            scheduleEntries.forEach(entry => {
+                if (isValidScheduleEntry(entry)) {
+                    // تجنب التكرار
+                    const exists = schedule.some(s => 
+                        s.teacherName === entry.teacher && 
+                        s.day === entry.day && 
+                        s.period === entry.period && 
+                        s.className === entry.className
+                    );
+                    
+                    if (!exists) {
+                        schedule.push({
+                            id: Date.now() + Math.random(),
+                            teacherName: entry.teacher,
+                            day: entry.day,
+                            period: entry.period,
+                            subject: entry.subject,
+                            className: entry.className
+                        });
+                        addedCount++;
+                    }
+                }
+            });
+
+            renderSchedule();
+            updateStats();
+            showNotification(`تمت إضافة ${addedCount} حصة بنجاح`, 'success');
+            pasteArea.value = '';
+        }
+
+        // استخراج اسم الصف
+        function extractClassName(line) {
+            const classMatch = line.match(/(الثالث|الثاني|الأول)\s*-\s*[\d١٢٣٤٥٦]/);
+            return classMatch ? classMatch[0] : '';
+        }
+
+        // استخراج رقم الحصة
+        function extractPeriodNumber(line) {
+            const periodMatch = line.match(/الحصة\s*(\d+)/);
+            return periodMatch ? parseInt(periodMatch[1]) : 1;
+        }
+
+        // استخراج بيانات الحصة
+        function extractPeriodData(line, className, day, period) {
+            if (!line || line.includes('اليوم') || line.includes('الحصة') || !className || !day) {
+                return null;
+            }
+
+            // استخراج المادة والمعلم
+            const subjectMatch = line.match(/^([^:]+)/);
+            const teacherMatch = line.match(/المعلم\s*:\s*([^\.]+)/);
+            
+            if (subjectMatch && teacherMatch) {
+                return {
+                    subject: subjectMatch[1].trim(),
+                    teacher: teacherMatch[1].trim(),
+                    className: className,
+                    day: day,
+                    period: period
+                };
+            }
+            
+            return null;
+        }
+
+        // التحقق من صحة بيانات الحصة
+        function isValidScheduleEntry(entry) {
+            return entry.teacher && entry.subject && entry.className && entry.day && entry.period;
+        }
+
+        // إدخال جماعي للبيانات
+        function addBulkEntry() {
+            const bulkData = prompt(`📝 أدخل بيانات الحصص (سطر لكل حصة - مفصولة بفاصلة):
+            
+الصيغة: المعلم,اليوم,الحصة,المادة,الصف
+
+أمثلة:
+محمد أحمد, الأحد, 1, رياضيات, أول/أ
+علي سالم, الأحد, 2, علوم, ثاني/ب
+فاطمة محمد, الأحد, 3, لغة عربية, ثالث/ج`);
+
+            if (bulkData) {
+                const lines = bulkData.split('\n');
+                let added = 0;
+                
+                lines.forEach(line => {
+                    const [teacher, day, period, subject, className] = line.split(',').map(item => item.trim());
+                    if (teacher && day && period && subject && className) {
+                        schedule.push({
+                            id: Date.now() + Math.random(),
+                            teacherName: teacher,
+                            day: day,
+                            period: period,
+                            subject: subject,
+                            className: className
+                        });
+                        added++;
+                    }
+                });
+                
+                renderSchedule();
+                updateStats();
+                showNotification(`تم إضافة ${added} حصة بنجاح`, 'success');
+            }
+        }
+
+        // ========== نهاية الميزات الجديدة ==========
+
         // عرض قائمة المعلمين
         function renderTeachers() {
             const list = document.getElementById('teachers-list');
@@ -494,7 +669,8 @@
                                 <th class="p-3 text-right">الحصة</th>
                                 <th class="p-3 text-right">المعلم</th>
                                 <th class="p-3 text-right">المادة</th>
-                                <th class="p-3 text-right">الصف                                <th class="p-3 text-center">إجراءات</th>
+                                <th class="p-3 text-right">الصف</th>
+                                <th class="p-3 text-center">إجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -520,7 +696,7 @@
             }
         }
 
-        // عرض سجلات الغياب
+               // عرض سجلات الغياب
         function renderAbsences() {
             const list = document.getElementById('absences-list');
             if (absences.length === 0) {
@@ -579,7 +755,58 @@
         // تهيئة الصفحة
         window.onload = function() {
             loadData();
+            
+            // إضافة مثال توضيحي للاستيراد
+            const exampleData = `الثالث - ٦
+اليوم	الحصة الأولى	الحصة الثانية	الحصة الثالثة	الحصة الرابعة	الحصة الخامسة	الحصة السادسة	الحصة السابعة
+الأحد	
+
+التربية البدنية والدفاع عن النفس
+المعلم : ساير العضيله المطيري
+
+الرياضيات
+المعلم : عبيد العياضي الحربي
+
+العلوم
+المعلم : أحمد الحربي
+
+التفكير الناقد
+المعلم : سعد الحربي
+
+الدراسات الاجتماعية
+المعلم : نافع المطيري
+
+القرآن الكريم والدراسات الإسلامية
+المعلم : نميان الحربي
+
+اللغة العربية
+المعلم : حبيب العمري الحربي
+الاثنين	
+
+اللغة الإنجليزية
+المعلم : فؤاد بن العتيبي
+
+الرياضيات
+المعلم : عبيد العياضي الحربي
+
+القرآن الكريم والدراسات الإسلامية
+المعلم : نميان الحربي
+
+القرآن الكريم والدراسات الإسلامية
+المعلم : نميان الحربي
+
+العلوم
+المعلم : أحمد الحربي
+
+التفكير الناقد
+المعلم : سعد الحربي
+
+اللغة العربية
+المعلم : حبيب العمري الحربي`;
+
+            document.getElementById('schedule-paste-area').placeholder = "الصق الجدول الكامل هنا...\n\nمثال:\n" + exampleData;
         };
     </script>
 </body>
 </html>
+           
