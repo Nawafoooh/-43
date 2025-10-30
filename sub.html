@@ -6,24 +6,36 @@
     <title>نظام إدارة حصص الانتظار المدرسية</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .tab-active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-        .tab-inactive { color: #4a5568; }
-        .tab-inactive:hover { background-color: #f7fafc; }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        * {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .notification { animation: slideIn 0.3s ease-out; }
-        .priority-1 { background-color: #dcfce7; border-right: 4px solid #16a34a; }
-        .priority-2 { background-color: #fef9c3; border-right: 4px solid #ca8a04; }
-        .priority-3 { background-color: #fee2e2; border-right: 4px solid #dc2626; }
+        .tab-active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .tab-inactive {
+            color: #4a5568;
+        }
+        .tab-inactive:hover {
+            background-color: #f7fafc;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .notification {
+            animation: slideIn 0.3s ease-out;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-4">
-
     <div class="max-w-7xl mx-auto">
-
         <!-- Header -->
         <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -33,13 +45,22 @@
                     </svg>
                     <div>
                         <h1 class="text-3xl font-bold text-gray-800">نظام إدارة حصص الانتظار</h1>
-                        <p class="text-gray-600">نظام ذكي لاختيار معلمي الانتظار حسب الأولويات</p>
+                        <p class="text-gray-600">إدارة ذكية للمعلمين والجداول المدرسية</p>
                     </div>
                 </div>
                 <div class="flex gap-2 flex-wrap">
-                    <button onclick="saveAllData()" class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">حفظ البيانات</button>
-                    <button onclick="clearAllData()" class="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">مسح الكل</button>
-                    <button onclick="initializeSystem()" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">تهيئة النظام</button>
+                    <button onclick="saveAllData()" class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                        </svg>
+                        حفظ البيانات
+                    </button>
+                    <button onclick="clearAllData()" class="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        مسح الكل
+                    </button>
                 </div>
             </div>
         </div>
@@ -50,9 +71,24 @@
         <!-- Tabs -->
         <div class="bg-white rounded-lg shadow-lg mb-6">
             <div class="flex flex-col md:flex-row border-b">
-                <button onclick="switchTab('teachers')" id="tab-teachers" class="flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition tab-active">المعلمين</button>
-                <button onclick="switchTab('substitution')" id="tab-substitution" class="flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition tab-inactive">نظام الانتظار الذكي</button>
-                <button onclick="switchTab('absences')" id="tab-absences" class="flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition tab-inactive">حصص الانتظار</button>
+                <button onclick="switchTab('teachers')" id="tab-teachers" class="flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition tab-active">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                    المعلمين
+                </button>
+                <button onclick="switchTab('schedule')" id="tab-schedule" class="flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition tab-inactive">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    الجدول المدرسي
+                </button>
+                <button onclick="switchTab('absences')" id="tab-absences" class="flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition tab-inactive">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    حصص الانتظار
+                </button>
             </div>
         </div>
 
@@ -61,80 +97,30 @@
             <!-- Teachers Tab -->
             <div id="content-teachers" class="tab-content">
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <h2 class="text-2xl font-bold text-gray-800">قائمة المعلمين وأولويات الانتظار</h2>
-                    <div class="flex gap-2">
-                        <button onclick="addTeacher()" class="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">إضافة معلم</button>
-                        <button onclick="generatePriorityReport()" class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">تقرير الأولويات</button>
-                    </div>
-                </div>
-                <div id="teachers-list" class="grid gap-4">
-                    <div class="text-center py-12 text-gray-500">
-                        <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    <h2 class="text-2xl font-bold text-gray-800">قائمة المعلمين</h2>
+                    <button onclick="addTeacher()" class="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition w-full md:w-auto justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
-                        <p class="text-lg">لا توجد معلمين بعد. ابدأ بتهيئة النظام!</p>
-                        <button onclick="initializeSystem()" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">تهيئة النظام</button>
-                    </div>
+                        إضافة معلم
+                    </button>
                 </div>
+                <div id="teachers-list" class="grid gap-4"></div>
             </div>
 
-            <!-- Substitution Tab -->
-            <div id="content-substitution" class="tab-content hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-gradient-to-br from-green-50 to-blue-50 p-6 rounded-lg border border-green-200">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-4">نظام الانتظار الذكي</h2>
-                        <div class="space-y-4">
-                            <div class="bg-white p-4 rounded-lg shadow">
-                                <h3 class="font-bold text-lg text-green-700 mb-2">تعيين انتظار تلقائي</h3>
-                                <p class="text-gray-600 mb-3">سيقوم النظام باختيار أفضل معلم للانتظار حسب الشروط المحددة</p>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">اليوم</label>
-                                        <select id="substitution-day" class="w-full p-2 border border-gray-300 rounded-lg">
-                                            <option value="الأحد">الأحد</option>
-                                            <option value="الاثنين">الاثنين</option>
-                                            <option value="الثلاثاء">الثلاثاء</option>
-                                            <option value="الأربعاء">الأربعاء</option>
-                                            <option value="الخميس">الخميس</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">الحصة</label>
-                                        <select id="substitution-period" class="w-full p-2 border border-gray-300 rounded-lg">
-                                            <option value="1">الحصة 1</option>
-                                            <option value="2">الحصة 2</option>
-                                            <option value="3">الحصة 3</option>
-                                            <option value="4">الحصة 4</option>
-                                            <option value="5">الحصة 5</option>
-                                            <option value="6">الحصة 6</option>
-                                            <option value="7">الحصة 7</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <button onclick="findBestSubstitute()" class="w-full mt-4 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition font-semibold">ابحث عن أفضل معلم للانتظار</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="bg-white p-6 rounded-lg shadow border">
-                            <h3 class="text-xl font-bold text-gray-800 mb-4">نتائج البحث عن البديل</h3>
-                            <div id="substitution-results" class="space-y-3">
-                                <p class="text-gray-500 text-center py-8">سيظهر هنا أفضل المعلمين للانتظار حسب الشروط</p>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Schedule Tab -->
+            <div id="content-schedule" class="tab-content hidden">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                    <h2 class="text-2xl font-bold text-gray-800">الجدول المدرسي</h2>
+                    <button onclick="addScheduleEntry()" class="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition w-full md:w-auto justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        إضافة حصة
+                    </button>
                 </div>
-
-                <!-- شروط النظام -->
-                <div class="mt-6 bg-yellow-50 p-6 rounded-lg border border-yellow-200">
-                    <h3 class="text-lg font-bold text-yellow-800 mb-3">شروط نظام الانتظار الذكي</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-yellow-700">
-                        <div class="flex items-start gap-2"><span class="bg-yellow-200 rounded-full p-1">✓</span><span>لا يأخذ المعلم أكثر من انتظار واحد في اليوم</span></div>
-                        <div class="flex items-start gap-2"><span class="bg-yellow-200 rounded-full p-1">✓</span><span>الأولوية لمن لم يأخذ انتظار في الأيام السابقة</span></div>
-                        <div class="flex items-start gap-2"><span class="bg-yellow-200 rounded-full p-1">✓</span><span>المعلم الذي لديه أكثر من 5 حصص في اليوم لا يدخل الانتظار</span></div>
-                        <div class="flex items-start gap-2"><span class="bg-yellow-200 rounded-full p-1">✓</span><span>مراعاة عدد حصص الانتظار المطلوبة لكل معلم</span></div>
-                    </div>
+                <div class="overflow-x-auto">
+                    <div id="schedule-list"></div>
                 </div>
             </div>
 
@@ -149,19 +135,12 @@
                         تسجيل غياب معلم
                     </button>
                 </div>
-                <div id="absences-list" class="space-y-4">
-                    <div class="text-center py-12 text-gray-500">
-                        <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                        </svg>
-                        <p class="text-lg">لا توجد سجلات غياب حتى الآن</p>
-                    </div>
-                </div>
+                <div id="absences-list" class="space-y-4"></div>
             </div>
         </div>
 
         <!-- Statistics -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <div class="flex items-center gap-3">
                     <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,11 +155,11 @@
             <div class="bg-white rounded-lg shadow-lg p-6">
                 <div class="flex items-center gap-3">
                     <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     <div>
-                        <p class="text-gray-600 text-sm">النظام الذكي</p>
-                        <p class="text-3xl font-bold text-gray-800">✅</p>
+                        <p class="text-gray-600 text-sm">عدد الحصص</p>
+                        <p id="stat-schedule" class="text-3xl font-bold text-gray-800">0</p>
                     </div>
                 </div>
             </div>
@@ -195,205 +174,6 @@
                     </div>
                 </div>
             </div>
-            <div class="bg-white rounded-lg shadow-lg p-6">
-                <div class="flex items-center gap-3">
-                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                    <div>
-                        <p class="text-gray-600 text-sm">جاهز للعمل</p>
-                        <p class="text-3xl font-bold text-gray-800">🚀</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let teachers = [];
-        let absences = [];
-
-        const teacherSubstitutionRequirements = {
-            "عبدالمجيد الرشيدي": 1,
-            "عبدالهادي الشاماني": 3,
-            "عبيد بن دخيل العياضي الحربي": 1,
-            "علي متعب العلوي الحربي": 0,
-            "فهد عويض الشاماني الحربي": 7,
-            "فؤاد بن محمد العتيبي": 0,
-            "فيصل عطالله الصاعدي": 10,
-            "محمد بن ذعار العوفي": 2,
-            "محمد بن عماري الزهراني": 4,
-            "محمد عياد العوفي": 9,
-            "مشعل بن هليل العمري الحربي": 0,
-            "فيصل عواد أبو سلمي": 0,
-            "موسى غازي سفر الحربي": 3,
-            "موفق مرزوق السحيمي": 9,
-            "نافع شعوي المطيري": 3,
-            "نميان علي الحربي": 7,
-            "ابراهيم عايض الجابري": 10,
-            "ابراهيم عياد العلوي": 5,
-            "أحمد إبراهيم التركي": 8,
-            "أحمد حامد الحربي": 0,
-            "اسامه منور العوفي": 3,
-            "بدر عبدالعزيز السحيمي": 11,
-            "حبيب علي العمري الحربي": 7,
-            "حمزة صدقة اسلام": 0,
-            "ساير فيصل العضيله المطيري": 0,
-            "سعد طالع الحربي": 10,
-            "سلطان عويض السحيمي": 8,
-            "سلمان صالح الحارثي": 11,
-            "سيف عبدالمنعم العارضي": 3,
-            "عبدالعزيز غلاب المخلفي": 0,
-            "عبدالعزيز مفلح الرويثي": 9,
-            "عبدالله بن محمد القرني": 3,
-            "عبدالله بن مطر العمري": 8,
-            "عبدالله حمود الحربي": 0,
-            "عبدالله صلاح الرحيلى": 0,
-            "كاتب مفلح الرشيدى": 3,
-            "نواف منصور الصبحي": 3,
-            "موسى مسعود الحيسوني": 3
-        };
-
-        const excelTeachers = [
-            "عبدالله بن مطر العمري",
-            "محمد بن عماري الزهراني",
-            "موفق مرزوق السحيمي",
-            "فواز زايد المهيمزي الرشيدي",
-            "فيصل عطالله الصاعدي",
-            "ابراهيم عياد العلوي",
-            "عبدالله حمود الحربي",
-            "ساير فيصل العضيله المطيري",
-            "نافع شعوي المطيري",
-            "اسامه منور العوفي",
-            "محمد عياد العوفي",
-            "أحمد إبراهيم التركي",
-            "أحمد حامد الحربي",
-            "نميان علي الحربي",
-            "عبدالله صلاح الرحيلى",
-            "مشعل بن هليل العمري الحربي",
-            "علي متعب العلوي الحربي",
-            "سيف عبدالمنعم العارضي",
-            "محمد بن ذعار العوفي",
-            "فؤاد بن محمد العتيبي",
-            "حمزة صدقة اسلام",
-            "سلمان صالح الحارثي",
-            "عبيد بن دخيل العياضي الحربي",
-            "عبدالعزيز مفلح الرويثي",
-            "فيصل عواد أبو سلمي",
-            "عبدالله بن محمد القرني",
-            "كاتب مفلح الرشيدى",
-            "حبيب علي العمري الحربي",
-            "ابراهيم عايض الجابري",
-            "سلطان عويض السحيمي",
-            "عبدالهادي معيض الشاماني",
-            "عبدالعزيز غلاب المخلفي",
-            "سعد طالع الحربي",
-            "موسى غازي سفر الحربي",
-            "موسى مسعود الحيسوني",
-            "نواف منصور الصبحي",
-            "بدر عبدالعزيز السحيمي",
-            "فهد عويض الشاماني الحربي"
-        ];
-
-        function initializeSystem() {
-            if (confirm('هل تريد تهيئة النظام بجميع المعلمين وبيانات الانتظار؟')) {
-                teachers = excelTeachers.map(name => ({
-                    id: Date.now() + Math.random(),
-                    name,
-                    subject: "غير محدد",
-                    substituteCount: 0,
-                    requiredSubstitutions: teacherSubstitutionRequirements[name] || 0
-                }));
-                renderTeachers();
-                updateStats();
-                saveAllData();
-                showNotification('تم تهيئة النظام بنجاح مع ' + teachers.length + ' معلم', 'success');
-            }
-        }
-
-        function saveAllData() {
-            localStorage.setItem('teachers', JSON.stringify(teachers));
-            localStorage.setItem('absences', JSON.stringify(absences));
-            showNotification('تم حفظ البيانات بنجاح', 'success');
-        }
-
-        function loadData() {
-            const savedTeachers = localStorage.getItem('teachers');
-            const savedAbsences = localStorage.getItem('absences');
-            if (savedTeachers) {
-                teachers = JSON.parse(savedTeachers);
-                teachers.forEach(t => t.requiredSubstitutions = teacherSubstitutionRequirements[t.name] || 0);
-            }
-            if (savedAbsences) absences = JSON.parse(savedAbsences);
-            renderAll();
-        }
-
-        function clearAllData() {
-            if (confirm('هل أنت متأكد من حذف جميع البيانات؟ لا يمكن التراجع عن هذا الإجراء!')) {
-                teachers = [];
-                absences = [];
-                localStorage.clear();
-                renderAll();
-                showNotification('تم حذف جميع البيانات', 'success');
-            }
-        }
-
-        function showNotification(message, type) {
-            const notification = document.getElementById('notification');
-            notification.className = `mb-4 p-4 rounded-lg notification flex items-center gap-3 ${type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
-            notification.innerHTML = `<span class="font-semibold">${message}</span>`;
-            notification.classList.remove('hidden');
-            setTimeout(() => notification.classList.add('hidden'), 3000);
-        }
-
-        function switchTab(tab) {
-            const tabs = ['teachers', 'substitution', 'absences'];
-            tabs.forEach(t => {
-                const tabBtn = document.getElementById(`tab-${t}`);
-                const content = document.getElementById(`content-${t}`);
-                if (t === tab) {
-                    tabBtn.className = 'flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition tab-active';
-                    content.classList.remove('hidden');
-                } else {
-                    tabBtn.className = 'flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition tab-inactive';
-                    content.classList.add('hidden');
-                }
-            });
-        }
-
-        function addTeacher() {
-            const name = prompt('أدخل اسم المعلم:');
-            const subject = prompt('أدخل التخصص:');
-            if (name && subject) {
-                teachers.push({
-                    id: Date.now(),
-                    name,
-                    subject,
-                    substituteCount: 0,
-                    requiredSubstitutions: teacherSubstitutionRequirements[name] || 0
-                });
-                renderTeachers();
-                updateStats();
-                showNotification('تم إضافة المعلم بنجاح', 'success');
-            }
-        }
-
-        function deleteTeacher(id) {
-            if (confirm('هل أنت متأكد من حذف هذا المعلم؟')) {
-                teachers = teachers.filter(t => t.id !== id);
-                renderTeachers();
-                updateStats();
-                showNotification('تم حذف المعلم', 'success');
-            }
-        }
-
-        function findBestSubstitute() {
-            if (teachers.length === 0) {
-                showNotification('يرجى تهيئة النظام أ class="text-gray-600 text-sm">جاهز للعمل</p>
-                        <p class="text-3xl font-bold text-gray-800">🚀</p>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -402,142 +182,93 @@
         let schedule = [];
         let absences = [];
 
-        // بيانات حصص الانتظار المطلوبة لكل معلم - مصححة
-        const teacherSubstitutionRequirements = {
-            "عبدالمجيد الرشيدي": 1,
-            "عبدالهادي الشاماني": 3,
-            "عبيد بن دخيل العياضي الحربي": 1,
-            "علي متعب العلوي الحربي": 0,
-            "فهد عويض الشاماني الحربي": 7,
-            "فؤاد بن محمد العتيبي": 0,
-            "فيصل عطالله الصاعدي": 10,
-            "محمد بن ذعار العوفي": 2,
-            "محمد بن عماري الزهراني": 4,
-            "محمد عياد العوفي": 9,
-            "مشعل بن هليل العمري الحربي": 0,
-            "فيصل عواد أبو سلمي": 0,
-            "موسى غازي سفر الحربي": 3,
-            "موفق مرزوق السحيمي": 9,
-            "نافع شعوي المطيري": 3,
-            "نميان علي الحربي": 7,
-            "ابراهيم عايض الجابري": 10,
-            "ابراهيم عياد العلوي": 5,
-            "أحمد إبراهيم التركي": 8,
-            "أحمد حامد الحربي": 0,
-            "اسامه منور العوفي": 3,
-            "بدر عبدالعزيز السحيمي": 11,
-            "حبيب علي العمري الحربي": 7,
-            "حمزة صدقة اسلام": 0,
-            "ساير فيصل العضيله المطيري": 0,
-            "سعد طالع الحربي": 10,
-            "سلطان عويض السحيمي": 8,
-            "سلمان صالح الحارثي": 11,
-            "سيف عبدالمنعم العارضي": 3,
-            "عبدالعزيز غلاب المخلفي": 0,
-            "عبدالعزيز مفلح الرويثي": 9,
-            "عبدالله بن محمد القرني": 3,
-            "عبدالله بن مطر العمري": 8,
-            "عبدالله حمود الحربي": 0,
-            "عبدالله صلاح الرحيلى": 0,
-            "كاتب مفلح الرشيدى": 3,
-            "نواف منصور الصبحي": 3,
-            "موسى مسعود الحيسوني": 3
-        };
-
-        // قائمة المعلمين الأساسية - مصححة (بدون تكرار)
+        // قائمة المعلمين المستخرجة من Excel
         const excelTeachers = [
-            "عبدالله بن مطر العمري",
-            "محمد بن عماري الزهراني", 
-            "موفق مرزوق السحيمي",
-            "فواز زايد المهيمزي الرشيدي",
-            "فيصل عطالله الصاعدي",
-            "ابراهيم عياد العلوي",
-            "عبدالله حمود الحربي",
-            "ساير فيصل العضيله المطيري",
-            "نافع شعوي المطيري",
-            "اسامه منور العوفي",
-            "محمد عياد العوفي",
-            "أحمد إبراهيم التركي",
-            "أحمد حامد الحربي",
-            "نميان علي الحربي",
-            "عبدالله صلاح الرحيلى",
-            "مشعل بن هليل العمري الحربي",
-            "علي متعب العلوي الحربي",
-            "سيف عبدالمنعم العارضي",
-            "محمد بن ذعار العوفي",
-            "فؤاد بن محمد العتيبي",
-            "حمزة صدقة اسلام",
-            "سلمان صالح الحارثي",
-            "عبيد بن دخيل العياضي الحربي",
-            "عبدالعزيز مفلح الرويثي",
-            "فيصل عواد أبو سلمي",
-            "عبدالله بن محمد القرني",
-            "كاتب مفلح الرشيدى",
-            "حبيب علي العمري الحربي",
-            "ابراهيم عايض الجابري",
-            "سلطان عويض السحيمي",
-            "عبدالهادي معيض الشاماني",
-            "عبدالعزيز غلاب المخلفي",
-            "سعد طالع الحربي",
+            "عبدالله بن مطر بن مصلح العمري",
+            "محمد بن عماري راضي الزهراني",
+            "موفق مرزوق سويرح السحيمي",
+            "فواز زايد لافي المهيمزي الرشيدي",
+            "فيصل عطالله حويمد الصاعدي",
+            "ابراهيم عياد عيد العلوي",
+            "عبدالله حمود حامد الحربي",
+            "ساير فيصل سعد الله العضيله المطيري",
+            "نافع شعوي نافع المطيري",
+            "اسامه منور مشعل العوفي",
+            "محمد عياد عليثه العوفي",
+            "أحمد إبراهيم فخري التركي",
+            "أحمد حامد هلال الحربي",
+            "نميان علي نميان الحربي",
+            "عبدالله صلاح صالح الرحيلى",
+            "مشعل بن هليل بن غالب العمري الحربي",
+            "علي متعب ناصر العلوي الحربي",
+            "سيف عبدالمنعم حمدان العارضي",
+            "محمد بن ذعار بن صالح العوفي",
+            "فؤاد بن محمد بن حماد العتيبي",
+            "حمزة صدقة حمزة اسلام",
+            "سلمان صالح أحمد الحارثي",
+            "عبيد بن دخيل بن دويهيس العياضي الحربي",
+            "عبدالعزيز مفلح نويعم الرويثي",
+            "فيصل عواد محمد أبو سلمي",
+            "عبدالله بن محمد بن سعيد ال بحران القرني",
+            "كاتب مفلح سليمان الرشيدى",
+            "حبيب علي نعيس العمري الحربي",
+            "ابراهيم عايض عوض الجابري",
+            "سلطان عويض معيض السحيمي",
+            "عبدالهادي معيض معلا الشاماني",
+            "عبدالعزيز عبدالرحمن غلاب المخلفي",
+            "سعد طالع حمود الحربي",
+            "ناهر مشعل عويد المطيري",
             "موسى غازي سفر الحربي",
-            "موسى مسعود الحيسوني",
-            "نواف منصور الصبحي",
-            "بدر عبدالعزيز السحيمي",
-            "فهد عويض الشاماني الحربي"
+            "موسى مسعود عايض الحيسوني",
+            "نواف منصور عواد الصبحي",
+            "بدر عبدالعزيز شائد السحيمي",
+            "فهد عويض عوض الشاماني الحربي"
         ];
 
-        // تهيئة النظام
-        function initializeSystem() {
-            if (confirm('هل تريد تهيئة النظام بجميع المعلمين وبيانات الانتظار؟')) {
-                teachers = [];
-                
-                // إضافة جميع المعلمين
-                excelTeachers.forEach(name => {
-                    const substitutionReq = teacherSubstitutionRequirements[name] || 0;
+        // دمج أسماء Excel مع البيانات الموجودة
+        function mergeExcelTeachers() {
+            const existingNames = new Set(teachers.map(t => t.name));
+            excelTeachers.forEach(name => {
+                if (!existingNames.has(name)) {
                     teachers.push({
                         id: Date.now() + Math.random(),
                         name: name,
                         subject: "غير محدد",
-                        substituteCount: 0,
-                        requiredSubstitutions: substitutionReq
+                        substituteCount: 0
                     });
-                });
-                
-                renderTeachers();
-                updateStats();
-                saveAllData(); // ✅ حفظ تلقائي بعد التهيئة
-                showNotification('تم تهيئة النظام بنجاح مع ' + teachers.length + ' معلم', 'success');
-            }
-        }
-
-        // حفظ جميع البيانات
-        function saveAllData() {
-            localStorage.setItem('teachers', JSON.stringify(teachers));
-            localStorage.setItem('absences', JSON.stringify(absences));
-            showNotification('تم حفظ البيانات بنجاح', 'success');
+                }
+            });
         }
 
         // تحميل البيانات من localStorage
         function loadData() {
             const savedTeachers = localStorage.getItem('teachers');
+            const savedSchedule = localStorage.getItem('schedule');
             const savedAbsences = localStorage.getItem('absences');
 
-            if (savedTeachers) {
-                teachers = JSON.parse(savedTeachers);
-                // ✅ دمج متطلبات الانتظار من المصدر الصحيح
-                teachers.forEach(t => {
-                    t.requiredSubstitutions = teacherSubstitutionRequirements[t.name] || 0;
-                });
-            }
+            if (savedTeachers) teachers = JSON.parse(savedTeachers);
+            if (savedSchedule) schedule = JSON.parse(savedSchedule);
             if (savedAbsences) absences = JSON.parse(savedAbsences);
+
+            // دمج أسماء Excel مع البيانات المحفوظة
+            mergeExcelTeachers();
             
             renderAll();
+        }
+
+        // حفظ جميع البيانات
+        function saveAllData() {
+            localStorage.setItem('teachers', JSON.stringify(teachers));
+            localStorage.setItem('schedule', JSON.stringify(schedule));
+            localStorage.setItem('absences', JSON.stringify(absences));
+            showNotification('تم حفظ البيانات بنجاح', 'success');
         }
 
         // مسح جميع البيانات
         function clearAllData() {
             if (confirm('هل أنت متأكد من حذف جميع البيانات؟ لا يمكن التراجع عن هذا الإجراء!')) {
                 teachers = [];
+                schedule = [];
                 absences = [];
                 localStorage.clear();
                 renderAll();
@@ -567,7 +298,7 @@
 
         // التبديل بين التبويبات
         function switchTab(tab) {
-            const tabs = ['teachers', 'substitution', 'absences'];
+            const tabs = ['teachers', 'schedule', 'absences'];
             tabs.forEach(t => {
                 const tabBtn = document.getElementById(`tab-${t}`);
                 const content = document.getElementById(`content-${t}`);
@@ -586,13 +317,11 @@
             const name = prompt('أدخل اسم المعلم:');
             const subject = prompt('أدخل التخصص:');
             if (name && subject) {
-                const substitutionReq = teacherSubstitutionRequirements[name] || 0;
                 teachers.push({
                     id: Date.now(),
                     name,
                     subject,
-                    substituteCount: 0,
-                    requiredSubstitutions: substitutionReq
+                    substituteCount: 0
                 });
                 renderTeachers();
                 updateStats();
@@ -610,936 +339,48 @@
             }
         }
 
-        // البحث عن أفضل بديل حسب الشروط
-        function findBestSubstitute() {
-            if (teachers.length === 0) {
-                showNotification('يرجى تهيئة النظام أولاً بإضافة المعلمين', 'error');
-                return;
-            }
+        // إضافة حصة للجدول
+        function addScheduleEntry() {
+            const teacherName = prompt('اسم المعلم:');
+            const day = prompt('اليوم (الأحد، الاثنين، الثلاثاء، الأربعاء، الخميس):');
+            const period = prompt('رقم الحصة (1-7):');
+            const subject = prompt('المادة:');
+            const className = prompt('الصف:');
 
-            const day = document.getElementById('substitution-day').value;
-            const period = document.getElementById('substitution-period').value;
-            
-            const absentTeacherName = prompt('أدخل اسم المعلم الغائب:');
-            if (!absentTeacherName) return;
-
-            const availableTeachers = getAvailableTeachers(day, period, absentTeacherName);
-            const rankedTeachers = rankTeachersByPriority(availableTeachers, day);
-
-            displaySubstitutionResults(rankedTeachers, day, period, absentTeacherName);
-        }
-
-        // الحصول على المعلمين المتاحين
-        function getAvailableTeachers(day, period, absentTeacher) {
-            // في النظام الحالي، نفترض أن جميع المعلمين متاحين
-            // في نظام حقيقي، سنتحقق من الجدول المدرسي
-            return teachers.filter(teacher => {
-                // الشروط الأساسية
-                const isAvailable = teacher.name !== absentTeacher;
-                
-                // لا يكون قد أخذ انتظار في نفس اليوم
-                const hasSubstitutionToday = absences.some(a => 
-                    a.day === day && a.substitute === teacher.name
-                );
-
-                return isAvailable && !hasSubstitutionToday;
-            });
-        }
-
-        // ترتيب المعلمين حسب الأولوية
-        function rankTeachersByPriority(availableTeachers, day) {
-            return availableTeachers.map(teacher => {
-                const requiredSubstitutions = teacher.requiredSubstitutions || 0;
-                const currentSubstitutions = teacher.substituteCount || 0;
-                const remainingSubstitutions = Math.max(0, requiredSubstitutions - currentSubstitutions);
-                
-                // حساب عدد الأيام بدون انتظار
-                const daysWithoutSubstitution = calculateDaysWithoutSubstitution(teacher.name);
-                
-                // حساب الأولوية
-                let priorityScore = 0;
-                
-                // الأولوية لمن لديه حصص انتظار مطلوبة أكثر
-                priorityScore += remainingSubstitutions * 10;
-                
-                // الأولوية لمن لم يأخذ انتظار في الأيام السابقة
-                priorityScore += daysWithoutSubstitution * 5;
-
-                return {
-                    ...teacher,
-                    priorityScore: priorityScore,
-                    remainingSubstitutions: remainingSubstitutions,
-                    daysWithoutSubstitution: daysWithoutSubstitution
-                };
-            }).sort((a, b) => b.priorityScore - a.priorityScore);
-        }
-
-        // حساب عدد الأيام بدون انتظار
-        function calculateDaysWithoutSubstitution(teacherName) {
-            const today = new Date();
-            const substitutionDays = absences
-                .filter(a => a.substitute === teacherName)
-                .map(a => new Date(a.date));
-            
-            if (substitutionDays.length === 0) return 7; // أسبوع كامل
-            
-            const lastSubstitution = new Date(Math.max(...substitutionDays));
-            const daysDiff = Math.floor((today - lastSubstitution) / (1000 * 60 * 60 * 24));
-            
-            return Math.min(7, daysDiff);
-        }
-
-        // عرض نتائج البحث عن البديل
-        function displaySubstitutionResults(rankedTeachers, day, period, absentTeacher) {
-            const resultsDiv = document.getElementById('substitution-results');
-            
-            if (rankedTeachers.length === 0) {
-                resultsDiv.innerHTML = `
-                    <div class="bg-red-50 p-4 rounded-lg border border-red-200">
-                        <p class="text-red-700 font-semibold">⚠️ لا يوجد معلمون متاحون للانتظار</p>
-                        <p class="text-red-600 text-sm mt-1">جميع المعلمين إما مشغولون أو لديهم أكثر من 5 حصص في اليوم</p>
-                    </div>
-                `;
-                return;
-            }
-
-            let html = `
-                <div class="bg-green-50 p-4 rounded-lg border border-green-200 mb-4">
-                    <h4 class="font-bold text-green-800">الغائب: ${absentTeacher}</h4>
-                    <p class="text-green-600">اليوم: ${day} - الحصة: ${period}</p>
-                </div>
-            `;
-
-            rankedTeachers.slice(0, 5).forEach((teacher, index) => {
-                const priorityClass = index === 0 ? 'priority-1' : 
-                                   index === 1 ? 'priority-2' : 'priority-3';
-                
-                                html += `
-                    <div class="p-4 rounded-lg ${priorityClass}">
-                        <div class="flex justify-between items-start">
-                            <div class="flex-1">
-                                <h4 class="font-bold text-lg ${index === 0 ? 'text-green-700' : 'text-gray-700'}">
-                                    ${index + 1}. ${teacher.name}
-                                </h4>
-                                <div class="grid grid-cols-2 gap-2 text-sm mt-2">
-                                    <div><span class="text-gray-600">الأولوية:</span> <span class="font-semibold">${teacher.priorityScore}</span></div>
-                                    <div><span class="text-gray-600">حصص الانتظار المتبقية:</span> <span class="font-semibold">${teacher.remainingSubstitutions}</span></div>
-                                    <div><span class="text-gray-600">أيام بدون انتظار:</span> <span class="font-semibold">${teacher.daysWithoutSubstitution}</span></div>
-                                    <div><span class="text-gray-600">الحصص المنجزة:</span> <span class="font-semibold">${teacher.substituteCount}/${teacher.requiredSubstitutions}</span></div>
-                                </div>
-                            </div>
-                            ${index === 0 ? `
-                                <button onclick="assignSubstitution('${teacher.name}', '${absentTeacher}', '${day}', '${period}')" 
-                                        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm">
-                                    تعيين
-                                </button>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-
-            resultsDiv.innerHTML = html;
-        }
-
-        // تعيين الانتظار
-        function assignSubstitution(substituteName, absentTeacher, day, period) {
-            // تحديث عدد حصص الانتظار للمعلم البديل
-            teachers = teachers.map(t =>
-                t.name === substituteName
-                    ? { ...t, substituteCount: (t.substituteCount || 0) + 1 }
-                    : t
-            );
-
-            // تسجيل حصة الانتظار
-            absences.push({
-                id: Date.now() + Math.random(),
-                date: new Date().toLocaleDateString('ar-SA'),
-                absentTeacher: absentTeacher,
-                substitute: substituteName,
-                day: day,
-                period: period,
-                subject: "حصة انتظار",
-                className: "مختلفة"
-            });
-
-            renderTeachers();
-            renderAbsences();
-            updateStats();
-            showNotification(`تم تعيين ${substituteName} بديلاً عن ${absentTeacher}`, 'success');
-            
-            // تحديث النتائج
-            document.getElementById('substitution-results').innerHTML = `
-                <div class="bg-green-100 p-4 rounded-lg border border-green-300">
-                    <p class=" class="text-gray-600 text-sm">جاهز للعمل</p>
-                        <p class="text-3xl font-bold text-gray-800">🚀</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let teachers = [];
-        let schedule = [];
-        let absences = [];
-
-        // بيانات حصص الانتظار المطلوبة لكل معلم - مصححة
-        const teacherSubstitutionRequirements = {
-            "عبدالمجيد الرشيدي": 1,
-            "عبدالهادي الشاماني": 3,
-            "عبيد بن دخيل العياضي الحربي": 1,
-            "علي متعب العلوي الحربي": 0,
-            "فهد عويض الشاماني الحربي": 7,
-            "فؤاد بن محمد العتيبي": 0,
-            "فيصل عطالله الصاعدي": 10,
-            "محمد بن ذعار العوفي": 2,
-            "محمد بن عماري الزهراني": 4,
-            "محمد عياد العوفي": 9,
-            "مشعل بن هليل العمري الحربي": 0,
-            "فيصل عواد أبو سلمي": 0,
-            "موسى غازي سفر الحربي": 3,
-            "موفق مرزوق السحيمي": 9,
-            "نافع شعوي المطيري": 3,
-            "نميان علي الحربي": 7,
-            "ابراهيم عايض الجابري": 10,
-            "ابراهيم عياد العلوي": 5,
-            "أحمد إبراهيم التركي": 8,
-            "أحمد حامد الحربي": 0,
-            "اسامه منور العوفي": 3,
-            "بدر عبدالعزيز السحيمي": 11,
-            "حبيب علي العمري الحربي": 7,
-            "حمزة صدقة اسلام": 0,
-            "ساير فيصل العضيله المطيري": 0,
-            "سعد طالع الحربي": 10,
-            "سلطان عويض السحيمي": 8,
-            "سلمان صالح الحارثي": 11,
-            "سيف عبدالمنعم العارضي": 3,
-            "عبدالعزيز غلاب المخلفي": 0,
-            "عبدالعزيز مفلح الرويثي": 9,
-            "عبدالله بن محمد القرني": 3,
-            "عبدالله بن مطر العمري": 8,
-            "عبدالله حمود الحربي": 0,
-            "عبدالله صلاح الرحيلى": 0,
-            "كاتب مفلح الرشيدى": 3,
-            "نواف منصور الصبحي": 3,
-            "موسى مسعود الحيسوني": 3
-        };
-
-        // قائمة المعلمين الأساسية - مصححة (بدون تكرار)
-        const excelTeachers = [
-            "عبدالله بن مطر العمري",
-            "محمد بن عماري الزهراني",
-            "موفق مرزوق السحيمي",
-            "فواز زايد المهيمزي الرشيدي",
-            "فيصل عطالله الصاعدي",
-            "ابراهيم عياد العلوي",
-            "عبدالله حمود الحربي",
-            "ساير فيصل العضيله المطيري",
-            "نافع شعوي المطيري",
-            "اسامه منور العوفي",
-            "محمد عياد العوفي",
-            "أحمد إبراهيم التركي",
-            "أحمد حامد الحربي",
-            "نميان علي الحربي",
-            "عبدالله صلاح الرحيلى",
-            "مشعل بن هليل العمري الحربي",
-            "علي متعب العلوي الحربي",
-            "سيف عبدالمنعم العارضي",
-            "محمد بن ذعار العوفي",
-            "فؤاد بن محمد العتيبي",
-            "حمزة صدقة اسلام",
-            "سلمان صالح الحارثي",
-            "عبيد بن دخيل العياضي الحربي",
-            "عبدالعزيز مفلح الرويثي",
-            "فيصل عواد أبو سلمي",
-            "عبدالله بن محمد القرني",
-            "كاتب مفلح الرشيدى",
-            "حبيب علي العمري الحربي",
-            "ابراهيم عايض الجابري",
-            "سلطان عويض السحيمي",
-            "عبدالهادي معيض الشاماني",
-            "عبدالعزيز غلاب المخلفي",
-            "سعد طالع الحربي",
-            "موسى غازي سفر الحربي",
-            "موسى مسعود الحيسوني",
-            "نواف منصور الصبحي",
-            "بدر عبدالعزيز السحيمي",
-            "فهد عويض الشاماني الحربي"
-        ];
-
-        // تهيئة النظام
-        function initializeSystem() {
-            if (confirm('هل تريد تهيئة النظام بجميع المعلمين وبيانات الانتظار؟')) {
-                teachers = [];
-
-                // إضافة جميع المعلمين
-                excelTeachers.forEach(name => {
-                    const substitutionReq = teacherSubstitutionRequirements[name] || 0;
-                    teachers.push({
-                        id: Date.now() + Math.random(),
-                        name: name,
-                        subject: "غير محدد",
-                        substituteCount: 0,
-                        requiredSubstitutions: substitutionReq
-                    });
-                });
-
-                renderTeachers();
-                updateStats();
-                saveAllData(); // حفظ تلقائي بعد التهيئة
-                showNotification('تم تهيئة النظام بنجاح مع ' + teachers.length + ' معلم', 'success');
-            }
-        }
-
-        // حفظ جميع البيانات
-        function saveAllData() {
-            localStorage.setItem('teachers', JSON.stringify(teachers));
-            localStorage.setItem('absences', JSON.stringify(absences));
-            showNotification('تم حفظ البيانات بنجاح', 'success');
-        }
-
-        // تحميل البيانات من localStorage
-        function loadData() {
-            const savedTeachers = localStorage.getItem('teachers');
-            const savedAbsences = localStorage.getItem('absences');
-
-            if (savedTeachers) {
-                teachers = JSON.parse(savedTeachers);
-                // دمج متطلبات الانتظار من المصدر الصحيح
-                teachers.forEach(t => {
-                    t.requiredSubstitutions = teacherSubstitutionRequirements[t.name] || 0;
-                });
-            }
-            if (savedAbsences) absences = JSON.parse(savedAbsences);
-
-            renderAll();
-        }
-
-        // مسح جميع البيانات
-        function clearAllData() {
-            if (confirm('هل أنت متأكد من حذف جميع البيانات؟ لا يمكن التراجع عن هذا الإجراء!')) {
-                teachers = [];
-                absences = [];
-                localStorage.clear();
-                renderAll();
-                showNotification('تم حذف جميع البيانات', 'success');
-            }
-        }
-
-        // إظهار الإشعارات
-        function showNotification(message, type) {
-            const notification = document.getElementById('notification');
-            notification.className = `mb-4 p-4 rounded-lg notification flex items-center gap-3 ${
-                type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-            }`;
-            notification.innerHTML = `
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${
-                        type === 'success'
-                            ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
-                            : 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-                    }"></path>
-                </svg>
-                <span class="font-semibold">${message}</span>
-            `;
-            notification.classList.remove('hidden');
-            setTimeout(() => notification.classList.add('hidden'), 3000);
-        }
-
-        // التبديل بين التبويبات
-        function switchTab(tab) {
-            const tabs = ['teachers', 'substitution', 'absences'];
-            tabs.forEach(t => {
-                const tabBtn = document.getElementById(`tab-${t}`);
-                const content = document.getElementById(`content-${t}`);
-                if (t === tab) {
-                    tabBtn.className = 'flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition tab-active';
-                    content.classList.remove('hidden');
-                } else {
-                    tabBtn.className = 'flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition tab-inactive';
-                    content.classList.add('hidden');
-                }
-            });
-        }
-
-        // إضافة معلم جديد
-        function addTeacher() {
-            const name = prompt('أدخل اسم المعلم:');
-            const subject = prompt('أدخل التخصص:');
-            if (name && subject) {
-                const substitutionReq = teacherSubstitutionRequirements[name] || 0;
-                teachers.push({
+            if (teacherName && day && period && subject && className) {
+                schedule.push({
                     id: Date.now(),
-                    name: name,
-                    subject: subject,
-                    substituteCount: 0,
-                    requiredSubstitutions: substitutionReq
-                });
-                renderTeachers();
-                updateStats();
-                showNotification('تم إضافة المعلم بنجاح', 'success');
-            }
-        }
-
-        // حذف معلم
-        function deleteTeacher(id) {
-            if (confirm('هل أنت متأكد من حذف هذا المعلم؟')) {
-                teachers = teachers.filter(t => t.id !== id);
-                renderTeachers();
-                updateStats();
-                showNotification('تم حذف المعلم', 'success');
-            }
-        }
-
-        // البحث عن أفضل بديل حسب الشروط
-        function findBestSubstitute() {
-            if (teachers.length === 0) {
-                showNotification('يرجى تهيئة النظام أولاً بإضافة المعلمين', 'error');
-                return;
-            }
-
-            const day = document.getElementById('substitution-day').value;
-            const period = document.getElementById('substitution-period').value;
-
-            const absentTeacherName = prompt('أدخل اسم المعلم الغائب:');
-            if (!absentTeacherName) return;
-
-            const availableTeachers = getAvailableTeachers(day, period, absentTeacherName);
-            const rankedTeachers = rankTeachersByPriority(availableTeachers, day);
-
-            displaySubstitutionResults(rankedTeachers, day, period, absentTeacherName);
-        }
-
-        // الحصول على المعلمين المتاحين
-        function getAvailableTeachers(day, period, absentTeacher) {
-            // في النظام الحالي، نفترض أن جميع المعلمين متاحين
-            // في نظام حقيقي، سنتحقق من الجدول المدرسي
-            return teachers.filter(teacher => {
-                // الشروط الأساسية
-                const isAvailable = teacher.name !== absentTeacher;
-
-                // لا يكون قد أخذ انتظار في نفس اليوم
-                const hasSubstitutionToday = absences.some(a =>
-                    a.day === day && a.substitute === teacher.name
-                );
-
-                return isAvailable && !hasSubstitutionToday;
-            });
-        }
-
-        // ترتيب المعلمين حسب الأولوية
-        function rankTeachersByPriority(availableTeachers, day) {
-            return availableTeachers.map(teacher => {
-                const requiredSubstitutions = teacher.requiredSubstitutions || 0;
-                const currentSubstitutions = teacher.substituteCount || 0;
-                const remainingSubstitutions = Math.max(0, requiredSubstitutions - currentSubstitutions);
-
-                // حساب عدد الأيام بدون انتظار
-                const daysWithoutSubstitution = calculateDaysWithoutSubstitution(teacher.name);
-
-                // حساب الأولوية
-                let priorityScore = 0;
-
-                // الأولوية لمن لديه حصص انتظار مطلوبة أكثر
-                priorityScore += remainingSubstitutions * 10;
-
-                // الأولوية لمن لم يأخذ انتظار في الأيام السابقة
-                priorityScore += daysWithoutSubstitution * 5;
-
-                return {
-                    ...teacher,
-                    priorityScore: priorityScore,
-                    remainingSubstitutions: remainingSubstitutions,
-                    daysWithoutSubstitution: daysWithoutSubstitution
-                };
-            }).sort((a, b) => b.priorityScore - a.priorityScore);
-        }
-
-        // حساب عدد الأيام بدون انتظار
-        function calculateDaysWithoutSubstitution(teacherName) {
-            const today = new Date();
-            const substitutionDays = absences
-                .filter(a => a.substitute === teacherName)
-                .map(a => new Date(a.date));
-
-            if (substitutionDays.length === 0) return 7; // أسبوع كامل
-
-            const lastSubstitution = new Date(Math.max(...substitutionDays));
-            const daysDiff = Math.floor((today - lastSubstitution) / (1000 * 60 * 60 * 24));
-
-            return Math.min(7, daysDiff);
-        }
-
-        // عرض نتائج البحث عن البديل
-        function displaySubstitutionResults(rankedTeachers, day, period, absentTeacher) {
-            const resultsDiv = document.getElementById('substitution-results');
-
-            if (rankedTeachers.length === 0) {
-                resultsDiv.innerHTML = `
-                    <div class="bg-red-50 p-4 rounded-lg border border-red-200">
-                        <p class="text-red-700 font-semibold">⚠️ لا يوجد معلمون متاحون للانتظار</p>
-                        <p class="text-red-600 text-sm mt-1">جميع المعلمين إما مشغولون أو لديهم أكثر من 5 حصص في اليوم</p>
-                    </div>
-                `;
-                return;
-            }
-
-            let html = `
-                <div class="bg-green-50 p-4 rounded-lg border border-green-200 mb-4">
-                    <h4 class="font-bold text-green-800">الغائب: ${absentTeacher}</h4>
-                    <p class="text-green-600">اليوم: ${day} - الحصة: ${period}</p>
-                </div>
-            `;
-
-            rankedTeachers.slice(0, 5).forEach((teacher, index) => {
-                const priorityClass = index === 0 ? 'priority-1' :
-                    index === 1 ? 'priority-2' : 'priority-3';
-
-                html += `
-                    <div class="p-4 rounded-lg ${priorityClass}">
-                        <div class="flex justify-between items-start">
-                            <div class="flex-1">
-                                <h4 class="font-bold text-lg ${index === 0 ? 'text-green-700' : 'text-gray-700'}">
-                                    ${index + 1}. ${teacher.name}
-                                </h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm mt-2">
-                                    <div><span class="text-gray-600">الأولوية:</span> <span class="font-semibold">${teacher.priorityScore}</span></div>
-                                    <div><span class="text-gray-600">حصص الانتظار المتبقية:</span> <span class="font-semibold">${teacher.remainingSubstitutions}</span></div>
-                                    <div><span class="text-gray-600">أيام بدون انتظار:</span> <span class="font-semibold">${teacher.daysWithoutSubstitution}</span></div>
-                                    <div><span class="text-gray-600">الحصص المنجزة:</span> <span class="font-semibold">${teacher.substituteCount}/${teacher.requiredSubstitutions}</span></div>
-                                </div>
-                            </div>
-                            ${index === 0 ? `
-                                <button onclick="assignSubstitution('${teacher.name}', '${absentTeacher}', '${day}', '${period}')"
-                                        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm">
-                                    تعيين
-                                </button>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-
-            resultsDiv.innerHTML = html;
-        }
-
-        // تعيين الانتظار
-        function assignSubstitution(substituteName, absentTeacher, day, period) {
-            // تحديث عدد حصص الانتظار للمعلم البديل
-            teachers = teachers.map(t =>
-                t.name === substituteName
-                    ? { ...t, substituteCount: (t.substituteCount || 0) + 1 }
-                    : t
-            );
-
-            // تسجيل حصة الانتظار
-            absences.push({
-                id: Date.now() + Math.random(),
-                date: new Date().toLocaleDateString('ar-SA'),
-                absentTeacher: absentTeacher,
-                substitute: substituteName,
-                day: day,
-                period: period,
-                subject: "حصة انتظار",
-                className: "مختلفة"
-            });
-
-            renderTeachers();
-            renderAbsences();
-            updateStats();
-            showNotification(`تم تعيين ${substituteName} بديلاً عن ${absentTeacher}`, 'success');
-
-            // تحديث النتائج
-            document.getElementById('substitution-results').innerHTML = `
-                <div class="bg-green-100 p-4 rounded-lg border border-green-300">
-                    <p class="text-green-700 font-semibold">✅ class="text-gray-600 text-sm">جاهز للعمل</p>
-                        <p class="text-3xl font-bold text-gray-800">🚀</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let teachers = [];
-        let schedule = [];
-        let absences = [];
-
-        // بيانات حصص الانتظار المطلوبة لكل معلم - مصححة
-        const teacherSubstitutionRequirements = {
-            "عبدالمجيد الرشيدي": 1,
-            "عبدالهادي الشاماني": 3,
-            "عبيد بن دخيل العياضي الحربي": 1,
-            "علي متعب العلوي الحربي": 0,
-            "فهد عويض الشاماني الحربي": 7,
-            "فؤاد بن محمد العتيبي": 0,
-            "فيصل عطالله الصاعدي": 10,
-            "محمد بن ذعار العوفي": 2,
-            "محمد بن عماري الزهراني": 4,
-            "محمد عياد العوفي": 9,
-            "مشعل بن هليل العمري الحربي": 0,
-            "فيصل عواد أبو سلمي": 0,
-            "موسى غازي سفر الحربي": 3,
-            "موفق مرزوق السحيمي": 9,
-            "نافع شعوي المطيري": 3,
-            "نميان علي الحربي": 7,
-            "ابراهيم عايض الجابري": 10,
-            "ابراهيم عياد العلوي": 5,
-            "أحمد إبراهيم التركي": 8,
-            "أحمد حامد الحربي": 0,
-            "اسامه منور العوفي": 3,
-            "بدر عبدالعزيز السحيمي": 11,
-            "حبيب علي العمري الحربي": 7,
-            "حمزة صدقة اسلام": 0,
-            "ساير فيصل العضيله المطيري": 0,
-            "سعد طالع الحربي": 10,
-            "سلطان عويض السحيمي": 8,
-            "سلمان صالح الحارثي": 11,
-            "سيف عبدالمنعم العارضي": 3,
-            "عبدالعزيز غلاب المخلفي": 0,
-            "عبدالعزيز مفلح الرويثي": 9,
-            "عبدالله بن محمد القرني": 3,
-            "عبدالله بن مطر العمري": 8,
-            "عبدالله حمود الحربي": 0,
-            "عبدالله صلاح الرحيلى": 0,
-            "كاتب مفلح الرشيدى": 3,
-            "نواف منصور الصبحي": 3,
-            "موسى مسعود الحيسوني": 3
-        };
-
-        // قائمة المعلمين الأساسية - مصححة (بدون تكرار)
-        const excelTeachers = [
-            "عبدالله بن مطر العمري",
-            "محمد بن عماري الزهراني", 
-            "موفق مرزوق السحيمي",
-            "فواز زايد المهيمزي الرشيدي",
-            "فيصل عطالله الصاعدي",
-            "ابراهيم عياد العلوي",
-            "عبدالله حمود الحربي",
-            "ساير فيصل العضيله المطيري",
-            "نافع شعوي المطيري",
-            "اسامه منور العوفي",
-            "محمد عياد العوفي",
-            "أحمد إبراهيم التركي",
-            "أحمد حامد الحربي",
-            "نميان علي الحربي",
-            "عبدالله صلاح الرحيلى",
-            "مشعل بن هليل العمري الحربي",
-            "علي متعب العلوي الحربي",
-            "سيف عبدالمنعم العارضي",
-            "محمد بن ذعار العوفي",
-            "فؤاد بن محمد العتيبي",
-            "حمزة صدقة اسلام",
-            "سلمان صالح الحارثي",
-            "عبيد بن دخيل العياضي الحربي",
-            "عبدالعزيز مفلح الرويثي",
-            "فيصل عواد أبو سلمي",
-            "عبدالله بن محمد القرني",
-            "كاتب مفلح الرشيدى",
-            "حبيب علي العمري الحربي",
-            "ابراهيم عايض الجابري",
-            "سلطان عويض السحيمي",
-            "عبدالهادي معيض الشاماني",
-            "عبدالعزيز غلاب المخلفي",
-            "سعد طالع الحربي",
-            "موسى غازي سفر الحربي",
-            "موسى مسعود الحيسوني",
-            "نواف منصور الصبحي",
-            "بدر عبدالعزيز السحيمي",
-            "فهد عويض الشاماني الحربي"
-        ];
-
-        // تهيئة النظام
-        function initializeSystem() {
-            if (confirm('هل تريد تهيئة النظام بجميع المعلمين وبيانات الانتظار؟')) {
-                teachers = [];
-                
-                // إضافة جميع المعلمين
-                excelTeachers.forEach(name => {
-                    const substitutionReq = teacherSubstitutionRequirements[name] || 0;
-                    teachers.push({
-                        id: Date.now() + Math.random(),
-                        name: name,
-                        subject: "غير محدد",
-                        substituteCount: 0,
-                        requiredSubstitutions: substitutionReq
-                    });
-                });
-                
-                renderTeachers();
-                updateStats();
-                saveAllData(); // ✅ حفظ تلقائي بعد التهيئة
-                showNotification('تم تهيئة النظام بنجاح مع ' + teachers.length + ' معلم', 'success');
-            }
-        }
-
-        // حفظ جميع البيانات
-        function saveAllData() {
-            localStorage.setItem('teachers', JSON.stringify(teachers));
-            localStorage.setItem('absences', JSON.stringify(absences));
-            showNotification('تم حفظ البيانات بنجاح', 'success');
-        }
-
-        // تحميل البيانات من localStorage
-        function loadData() {
-            const savedTeachers = localStorage.getItem('teachers');
-            const savedAbsences = localStorage.getItem('absences');
-
-            if (savedTeachers) {
-                teachers = JSON.parse(savedTeachers);
-                // ✅ دمج متطلبات الانتظار من المصدر الصحيح
-                teachers.forEach(t => {
-                    t.requiredSubstitutions = teacherSubstitutionRequirements[t.name] || 0;
-                });
-            }
-            if (savedAbsences) absences = JSON.parse(savedAbsences);
-            
-            renderAll();
-        }
-
-        // مسح جميع البيانات
-        function clearAllData() {
-            if (confirm('هل أنت متأكد من حذف جميع البيانات؟ لا يمكن التراجع عن هذا الإجراء!')) {
-                teachers = [];
-                absences = [];
-                localStorage.clear();
-                renderAll();
-                showNotification('تم حذف جميع البيانات', 'success');
-            }
-        }
-
-        // إظهار الإشعارات
-        function showNotification(message, type) {
-            const notification = document.getElementById('notification');
-            notification.className = `mb-4 p-4 rounded-lg notification flex items-center gap-3 ${
-                type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-            }`;
-            notification.innerHTML = `
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${
-                        type === 'success' 
-                            ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
-                            : 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-                    }"></path>
-                </svg>
-                <span class="font-semibold">${message}</span>
-            `;
-            notification.classList.remove('hidden');
-            setTimeout(() => notification.classList.add('hidden'), 3000);
-        }
-
-        // التبديل بين التبويبات
-        function switchTab(tab) {
-            const tabs = ['teachers', 'substitution', 'absences'];
-            tabs.forEach(t => {
-                const tabBtn = document.getElementById(`tab-${t}`);
-                const content = document.getElementById(`content-${t}`);
-                if (t === tab) {
-                    tabBtn.className = 'flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition tab-active';
-                    content.classList.remove('hidden');
-                } else {
-                    tabBtn.className = 'flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition tab-inactive';
-                    content.classList.add('hidden');
-                }
-            });
-        }
-
-        // إضافة معلم جديد
-        function addTeacher() {
-            const name = prompt('أدخل اسم المعلم:');
-            const subject = prompt('أدخل التخصص:');
-            if (name && subject) {
-                const substitutionReq = teacherSubstitutionRequirements[name] || 0;
-                teachers.push({
-                    id: Date.now(),
-                    name,
+                    teacherName,
+                    day,
+                    period,
                     subject,
-                    substituteCount: 0,
-                    requiredSubstitutions: substitutionReq
+                    className
                 });
-                renderTeachers();
+                renderSchedule();
                 updateStats();
-                showNotification('تم إضافة المعلم بنجاح', 'success');
+                showNotification('تم إضافة الحصة للجدول', 'success');
             }
         }
 
-        // حذف معلم
-        function deleteTeacher(id) {
-            if (confirm('هل أنت متأكد من حذف هذا المعلم؟')) {
-                teachers = teachers.filter(t => t.id !== id);
-                renderTeachers();
-                updateStats();
-                showNotification('تم حذف المعلم', 'success');
-            }
-        }
-
-        // البحث عن أفضل بديل حسب الشروط
-        function findBestSubstitute() {
-            if (teachers.length === 0) {
-                showNotification('يرجى تهيئة النظام أولاً بإضافة المعلمين', 'error');
-                return;
-            }
-
-            const day = document.getElementById('substitution-day').value;
-            const period = document.getElementById('substitution-period').value;
-            
-            const absentTeacherName = prompt('أدخل اسم المعلم الغائب:');
-            if (!absentTeacherName) return;
-
-            const availableTeachers = getAvailableTeachers(day, period, absentTeacherName);
-            const rankedTeachers = rankTeachersByPriority(availableTeachers, day);
-
-            displaySubstitutionResults(rankedTeachers, day, period, absentTeacherName);
-        }
-
-        // الحصول على المعلمين المتاحين
-        function getAvailableTeachers(day, period, absentTeacher) {
-            // في النظام الحالي، نفترض أن جميع المعلمين متاحين
-            // في نظام حقيقي، سنتحقق من الجدول المدرسي
-            return teachers.filter(teacher => {
-                // الشروط الأساسية
-                const isAvailable = teacher.name !== absentTeacher;
-                
-                // لا يكون قد أخذ انتظار في نفس اليوم
-                const hasSubstitutionToday = absences.some(a => 
-                    a.day === day && a.substitute === teacher.name
-                );
-
-                return isAvailable && !hasSubstitutionToday;
-            });
-        }
-
-        // ترتيب المعلمين حسب الأولوية
-        function rankTeachersByPriority(availableTeachers, day) {
-            return availableTeachers.map(teacher => {
-                const requiredSubstitutions = teacher.requiredSubstitutions || 0;
-                const currentSubstitutions = teacher.substituteCount || 0;
-                const remainingSubstitutions = Math.max(0, requiredSubstitutions - currentSubstitutions);
-                
-                // حساب عدد الأيام بدون انتظار
-                const daysWithoutSubstitution = calculateDaysWithoutSubstitution(teacher.name);
-                
-                // حساب الأولوية
-                let priorityScore = 0;
-                
-                // الأولوية لمن لديه حصص انتظار مطلوبة أكثر
-                priorityScore += remainingSubstitutions * 10;
-                
-                // الأولوية لمن لم يأخذ انتظار في الأيام السابقة
-                priorityScore += daysWithoutSubstitution * 5;
-
-                return {
-                    ...teacher,
-                    priorityScore: priorityScore,
-                    remainingSubstitutions: remainingSubstitutions,
-                    daysWithoutSubstitution: daysWithoutSubstitution
-                };
-            }).sort((a, b) => b.priorityScore - a.priorityScore);
-        }
-
-        // حساب عدد الأيام بدون انتظار
-        function calculateDaysWithoutSubstitution(teacherName) {
-            const today = new Date();
-            const substitutionDays = absences
-                .filter(a => a.substitute === teacherName)
-                .map(a => new Date(a.date));
-            
-            if (substitutionDays.length === 0) return 7; // أسبوع كامل
-            
-            const lastSubstitution = new Date(Math.max(...substitutionDays));
-            const daysDiff = Math.floor((today - lastSubstitution) / (1000 * 60 * 60 * 24));
-            
-            return Math.min(7, daysDiff);
-        }
-
-        // عرض نتائج البحث عن البديل
-        function displaySubstitutionResults(rankedTeachers, day, period, absentTeacher) {
-            const resultsDiv = document.getElementById('substitution-results');
-            
-            if (rankedTeachers.length === 0) {
-                resultsDiv.innerHTML = `
-                    <div class="bg-red-50 p-4 rounded-lg border border-red-200">
-                        <p class="text-red-700 font-semibold">⚠️ لا يوجد معلمون متاحون للانتظار</p>
-                        <p class="text-red-600 text-sm mt-1">جميع المعلمين إما مشغولون أو لديهم أكثر من 5 حصص في اليوم</p>
-                    </div>
-                `;
-                return;
-            }
-
-            let html = `
-                <div class="bg-green-50 p-4 rounded-lg border border-green-200 mb-4">
-                    <h4 class="font-bold text-green-800">الغائب: ${absentTeacher}</h4>
-                    <p class="text-green-600">اليوم: ${day} - الحصة: ${period}</p>
-                </div>
-            `;
-
-            rankedTeachers.slice(0, 5).forEach((teacher, index) => {
-                const priorityClass = index === 0 ? 'priority-1' : 
-                                   index === 1 ? 'priority-2' : 'priority-3';
-                
-                                html += `
-                    <div class="p-4 rounded-lg ${priorityClass}">
-                        <div class="flex justify-between items-start">
-                            <div class="flex-1">
-                                <h4 class="font-bold text-lg ${index === 0 ? 'text-green-700' : 'text-gray-700'}">
-                                    ${index + 1}. ${teacher.name}
-                                </h4>
-                                <div class="grid grid-cols-2 gap-2 text-sm mt-2">
-                                    <div><span class="text-gray-600">الأولوية:</span> <span class="font-semibold">${teacher.priorityScore}</span></div>
-                                    <div><span class="text-gray-600">حصص الانتظار المتبقية:</span> <span class="font-semibold">${teacher.remainingSubstitutions}</span></div>
-                                    <div><span class="text-gray-600">أيام بدون انتظار:</span> <span class="font-semibold">${teacher.daysWithoutSubstitution}</span></div>
-                                    <div><span class="text-gray-600">الحصص المنجزة:</span> <span class="font-semibold">${teacher.substituteCount}/${teacher.requiredSubstitutions}</span></div>
-                                </div>
-                            </div>
-                            ${index === 0 ? `
-                                <button onclick="assignSubstitution('${teacher.name}', '${absentTeacher}', '${day}', '${period}')" 
-                                        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm">
-                                    تعيين
-                                </button>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            });
-
-            resultsDiv.innerHTML = html;
-        }
-
-        // تعيين الانتظار
-        function assignSubstitution(substituteName, absentTeacher, day, period) {
-            // تحديث عدد حصص الانتظار للمعلم البديل
-            teachers = teachers.map(t =>
-                t.name === substituteName
-                    ? { ...t, substituteCount: (t.substituteCount || 0) + 1 }
-                    : t
-            );
-
-            // تسجيل حصة الانتظار
-            absences.push({
-                id: Date.now() + Math.random(),
-                date: new Date().toLocaleDateString('ar-SA'),
-                absentTeacher: absentTeacher,
-                substitute: substituteName,
-                day: day,
-                period: period,
-                subject: "حصة انتظار",
-                className: "مختلفة"
-            });
-
-            renderTeachers();
-            renderAbsences();
+        // حذف حصة من الجدول
+        function deleteSchedule(id) {
+            schedule = schedule.filter(s => s.id !== id);
+            renderSchedule();
             updateStats();
-            showNotification(`تم تعيين ${substituteName} بديلاً عن ${absentTeacher}`, 'success');
-            
-            // تحديث النتائج
-            document.getElementById('substitution-results').innerHTML = `
-                <div class="bg-green-100 p-4 rounded-lg border border-green-300">
-                    <p class="text-green-700 font-semibold">✅ تم التعيين بنجاح</p>
-                    <p class="text-green-600">المعلم ${substituteName} تم تعيينه للانتظار</p>
-                    <p class="text-green-500 text-sm mt-2">اليوم: ${day} - الحصة: ${period}</p>
-                </div>
-            `;
+            showNotification('تم حذف الحصة', 'success');
+        }
+
+        // البحث عن معلم بديل
+        function findSubstitute(absentTeacher, day, period) {
+            const busyTeachers = schedule
+                .filter(s => s.day === day && s.period === period)
+                .map(s => s.teacherName);
+
+            const availableTeachers = teachers
+                .filter(t => t.name !== absentTeacher && !busyTeachers.includes(t.name))
+                .sort((a, b) => a.substituteCount - b.substituteCount);
+
+            return availableTeachers[0] || null;
         }
 
         // تسجيل غياب معلم
@@ -1547,27 +388,20 @@
             const absentTeacherName = prompt('أدخل اسم المعلم الغائب:');
             if (!absentTeacherName) return;
 
-            // ✅ جدول الحصص الحقيقي (مثال بسيط يمكن توسيعه)
-            const realSchedule = [
-                {day: 'الأحد',   period: '1'},
-                {day: 'الأحد',   period: '2'},
-                {day: 'الاثنين', period: '3'},
-                {day: 'الثلاثاء',period: '4'},
-                {day: 'الأربعاء',period: '5'},
-                {day: 'الخميس',  period: '6'}
-            ];
+            const todaySchedule = schedule.filter(s => s.teacherName === absentTeacherName);
 
-            let assignedCount = 0;
+            if (todaySchedule.length === 0) {
+                showNotification('لا توجد حصص لهذا المعلم في الجدول', 'error');
+                return;
+            }
 
-            realSchedule.forEach(({day, period}) => {
-                const availableTeachers = getAvailableTeachers(day, period, absentTeacherName);
-                const rankedTeachers = rankTeachersByPriority(availableTeachers, day);
+            todaySchedule.forEach(entry => {
+                const substitute = findSubstitute(absentTeacherName, entry.day, entry.period);
 
-                if (rankedTeachers.length > 0) {
-                    const bestSubstitute = rankedTeachers[0];
+                if (substitute) {
                     teachers = teachers.map(t =>
-                        t.name === bestSubstitute.name
-                            ? {...t, substituteCount: (t.substituteCount || 0) + 1}
+                        t.id === substitute.id
+                            ? { ...t, substituteCount: t.substituteCount + 1 }
                             : t
                     );
 
@@ -1575,129 +409,40 @@
                         id: Date.now() + Math.random(),
                         date: new Date().toLocaleDateString('ar-SA'),
                         absentTeacher: absentTeacherName,
-                        substitute: bestSubstitute.name,
-                        day,
-                        period,
-                        subject: "حصة انتظار",
-                        className: "مختلفة"
+                        substitute: substitute.name,
+                        day: entry.day,
+                        period: entry.period,
+                        subject: entry.subject,
+                        className: entry.className
                     });
-                    assignedCount++;
+                } else {
+                    absences.push({
+                        id: Date.now() + Math.random(),
+                        date: new Date().toLocaleDateString('ar-SA'),
+                        absentTeacher: absentTeacherName,
+                        substitute: 'لا يوجد بديل متاح',
+                        day: entry.day,
+                        period: entry.period,
+                        subject: entry.subject,
+                        className: entry.className
+                    });
                 }
             });
 
             renderAbsences();
             renderTeachers();
             updateStats();
-            showNotification(`تم تعيين ${assignedCount} حصة انتظار للغياب`, 'success');
+            showNotification(`تم تعيين البدلاء لـ ${todaySchedule.length} حصة`, 'success');
         }
 
         // حذف سجل غياب
         function deleteAbsence(id) {
-            const absence = absences.find(a => a.id === id);
-            if (absence && absence.substitute !== 'لا يوجد بديل متاح') {
-                // ✅ تأكد أن المعلم لا يزال موجوداً
-                const teacherExists = teachers.some(t => t.name === absence.substitute);
-                if (teacherExists) {
-                    teachers = teachers.map(t =>
-                        t.name === absence.substitute && t.substituteCount > 0
-                            ? {...t, substituteCount: t.substituteCount - 1}
-                            : t
-                    );
-                }
-            }
-            
             absences = absences.filter(a => a.id !== id);
             renderAbsences();
-            renderTeachers();
             updateStats();
             showNotification('تم حذف سجل الغياب', 'success');
         }
 
-        // توليد تقرير الأولويات
-        function generatePriorityReport() {
-            let html = '<div class="space-y-3 max-h-96 overflow-y-auto">';
-            
-            // ترتيب المعلمين حسب الأولوية
-            const sortedTeachers = [...teachers].sort((a, b) => {
-                const aRemaining = Math.max(0, (a.requiredSubstitutions || 0) - (a.substituteCount || 0));
-                const bRemaining = Math.max(0, (b.requiredSubstitutions || 0) - (b.substituteCount || 0));
-                return bRemaining - aRemaining;
-            });
-            
-            sortedTeachers.forEach(teacher => {
-                const required = teacher.requiredSubstitutions || 0;
-                const current = teacher.substituteCount || 0;
-                const remaining = Math.max(0, required - current);
-                const percentage = required > 0 ? Math.round((current / required) * 100) : 0;
-                
-                let status = '';
-                let statusColor = '';
-                let progressColor = '';
-                
-                if (required === 0) {
-                    status = 'غير مطلوب';
-                    statusColor = 'text-gray-600';
-                    progressColor = 'bg-gray-200';
-                } else if (remaining === 0) {
-                    status = 'مكتمل ✅';
-                    statusColor = 'text-green-600';
-                    progressColor = 'bg-green-200';
-                } else if (percentage >= 50) {
-                    status = `متبقي ${remaining}`;
-                    statusColor = 'text-orange-600';
-                    progressColor = 'bg-orange-200';
-                } else {
-                    status = `متبقي ${remaining}`;
-                    statusColor = 'text-red-600';
-                    progressColor = 'bg-red-200';
-                }
-                
-                html += `
-                    <div class="bg-white p-4 rounded-lg border border-gray-200">
-                        <div class="flex justify-between items-center mb-2">
-                            <h4 class="font-semibold text-gray-800">${teacher.name}</h4>
-                            <span class="${statusColor} font-semibold text-sm">${status}</span>
-                        </div>
-                        <div class="flex justify-between items-center text-sm text-gray-600 mb-2">
-                            <span>حصص الانتظار: ${current}/${required}</span>
-                            <span>${percentage}% مكتمل</span>
-                        </div>
-                        ${required > 0 ? `
-                            <div class="w-full bg-gray-200 rounded-full h-1.5">
-                                <div class="${progressColor} h-1.5 rounded-full" style="width: ${percentage}%"></div>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            
-            // عرض التقرير في نافذة منبثقة
-            const reportWindow = window.open('', 'تقرير الأولويات', 'width=600,height=700');
-            reportWindow.document.write(`
-                <html dir="rtl">
-                <head>
-                    <title>تقرير أولويات المعلمين</title>
-                    <script src="https://cdn.tailwindcss.com"><\/script>
-                    <style>
-                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; }
-                    </style>
-                </head>
-                <body class="bg-gray-50">
-                    <div class="bg-white rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
-                        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">تقرير أولويات حصص الانتظار</h1>
-                        ${html}
-                        <div class="mt-6 text-center text-gray-500 text-sm">
-                            تم التحديث: ${new Date().toLocaleString('ar-SA')}
-                        </div>
-                    </div>
-                </body>
-                </html>
-            `);
-            reportWindow.document.close();
-        }
-
         // عرض قائمة المعلمين
         function renderTeachers() {
             const list = document.getElementById('teachers-list');
@@ -1707,213 +452,72 @@
                         <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                         </svg>
-                        <p class="text-lg">لا توجد معلمين بعد. ابدأ بتهيئة النظام!</p>
-                        <button onclick="initializeSystem()" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
-                            تهيئة النظام
-                        </button>
+                        <p class="text-lg">لا توجد معلمين بعد. ابدأ بإضافة معلم!</p>
                     </div>
                 `;
             } else {
-                list.innerHTML = teachers.map(teacher => {
-                    const required = teacher.requiredSubstitutions || 0;
-                    const current = teacher.substituteCount || 0;
-                    const remaining = Math.max(0, required - current);
-                    const percentage = required > 0 ? Math.round((current / required) * 100) : 0;
-                    
-                    let statusBadge = '';
-                    if (required === 0) {
-                        statusBadge = '<span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">غير مطلوب</span>';
-                    } else if (remaining === 0) {
-                        statusBadge = '<span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">مكتمل</span>';
-                    } else if (percentage >= 50) {
-                        statusBadge = `<span class="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs">متبقي ${remaining}</span>`;
-                    } else {
-                        statusBadge = `<span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">متبقي ${remaining}</span>`;
-                    }
-                    
-                    return `
-                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <h3 class="font-bold text-lg text-gray-800">${teacher.name}</h3>
-                                    ${statusBadge}
-                                </div>
-                                <p class="text-gray-600">التخصص: ${teacher.subject}</p>
-                                <div class="flex gap-4 text-sm mt-1">
-                                    <p class="text-indigo-600">حصص الانتظار: ${current}/${required}</p>
-                                    <p class="text-blue-600">الإنجاز: ${percentage}%</p>
-                                </div>
-                                ${required > 0 ? `
-                                    <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                                        <div class="bg-green-500 h-1.5 rounded-full" style="width: ${percentage}%"></div>
-                                    </div>
-                                ` : ''}
-                            </div>
-                            <button onclick="deleteTeacher(${teacher.id})" class="text-red-600 hover:bg-red-100 p-2 rounded-lg transition">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
+                list.innerHTML = teachers.map(teacher => `
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                        <div>
+                            <h3 class="font-bold text-lg text-gray-800">${teacher.name}</h3>
+                            <p class="text-gray-600">التخصص: ${teacher.subject}</p>
+                            <p class="text-sm text-indigo-600">عدد حصص الانتظار: ${teacher.substituteCount}</p>
                         </div>
-                    `;
-                }).join('');
+                        <button onclick="deleteTeacher(${teacher.id})" class="text-red-600 hover:bg-red-100 p-2 rounded-lg transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                `).join('');
             }
         }
 
-        // عرض سجلات الغياب
-        function renderAbsences() {
-            const list = document.getElementById('absences-list');
-            if (absences.length === 0) {
+        // عرض الجدول المدرسي
+        function renderSchedule() {
+            const list = document.getElementById('schedule-list');
+            if (schedule.length === 0) {
                 list.innerHTML = `
                     <div class="text-center py-12 text-gray-500">
                         <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zMاب', 'success');
-        }
-
-        // توليد تقرير الأولويات
-        function generatePriorityReport() {
-            let html = '<div class="space-y-3 max-h-96 overflow-y-auto">';
-            
-            // ترتيب المعلمين حسب الأولوية
-            const sortedTeachers = [...teachers].sort((a, b) => {
-                const aRemaining = Math.max(0, (a.requiredSubstitutions || 0) - (a.substituteCount || 0));
-                const bRemaining = Math.max(0, (b.requiredSubstitutions || 0) - (b.substituteCount || 0));
-                return bRemaining - aRemaining;
-            });
-            
-            sortedTeachers.forEach(teacher => {
-                const required = teacher.requiredSubstitutions || 0;
-                const current = teacher.substituteCount || 0;
-                const remaining = Math.max(0, required - current);
-                const percentage = required > 0 ? Math.round((current / required) * 100) : 0;
-                
-                let status = '';
-                let statusColor = '';
-                let progressColor = '';
-                
-                if (required === 0) {
-                    status = 'غير مطلوب';
-                    statusColor = 'text-gray-600';
-                    progressColor = 'bg-gray-200';
-                } else if (remaining === 0) {
-                    status = 'مكتمل ✅';
-                    statusColor = 'text-green-600';
-                    progressColor = 'bg-green-200';
-                } else if (percentage >= 50) {
-                    status = `متبقي ${remaining}`;
-                    statusColor = 'text-orange-600';
-                    progressColor = 'bg-orange-200';
-                } else {
-                    status = `متبقي ${remaining}`;
-                    statusColor = 'text-red-600';
-                    progressColor = 'bg-red-200';
-                }
-                
-                html += `
-                    <div class="bg-white p-4 rounded-lg border border-gray-200">
-                        <div class="flex justify-between items-center mb-2">
-                            <h4 class="font-semibold text-gray-800">${teacher.name}</h4>
-                            <span class="${statusColor} font-semibold text-sm">${status}</span>
-                        </div>
-                        <div class="flex justify-between items-center text-sm text-gray-600 mb-2">
-                            <span>حصص الانتظار: ${current}/${required}</span>
-                            <span>${percentage}% مكتمل</span>
-                        </div>
-                        ${required > 0 ? `
-                            <div class="w-full bg-gray-200 rounded-full h-1.5">
-                                <div class="${progressColor} h-1.5 rounded-full" style="width: ${percentage}%"></div>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            
-            // عرض التقرير في نافذة منبثقة
-            const reportWindow = window.open('', 'تقرير الأولويات', 'width=600,height=700');
-            reportWindow.document.write(`
-                <html dir="rtl">
-                <head>
-                    <title>تقرير أولويات المعلمين</title>
-                    <script src="https://cdn.tailwindcss.com"></script>
-                    <style>
-                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; }
-                    </style>
-                </head>
-                <body class="bg-gray-50">
-                    <div class="bg-white rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
-                        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">تقرير أولويات حصص الانتظار</h1>
-                        ${html}
-                        <div class="mt-6 text-center text-gray-500 text-sm">
-                            تم التحديث: ${new Date().toLocaleString('ar-SA')}
-                        </div>
-                    </div>
-                </body>
-                </html>
-            `);
-            reportWindow.document.close();
-        }
-
-        // عرض قائمة المعلمين
-        function renderTeachers() {
-            const list = document.getElementById('teachers-list');
-            if (teachers.length === 0) {
-                list.innerHTML = `
-                    <div class="text-center py-12 text-gray-500">
-                        <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <p class="text-lg">لا توجد معلمين بعد. ابدأ بتهيئة النظام!</p>
-                        <button onclick="initializeSystem()" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
-                            تهيئة النظام
-                        </button>
+                        <p class="text-lg">لا توجد حصص في الجدول. ابدأ بإضافة حصة!</p>
                     </div>
                 `;
             } else {
-                list.innerHTML = teachers.map(teacher => {
-                    const required = teacher.requiredSubstitutions || 0;
-                    const current = teacher.substituteCount || 0;
-                    const remaining = Math.max(0, required - current);
-                    const percentage = required > 0 ? Math.round((current / required) * 100) : 0;
-                    
-                    let statusBadge = '';
-                    if (required === 0) {
-                        statusBadge = '<span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">غير مطلوب</span>';
-                    } else if (remaining === 0) {
-                        statusBadge = '<span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">مكتمل</span>';
-                    } else if (percentage >= 50) {
-                        statusBadge = `<span class="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs">متبقي ${remaining}</span>`;
-                    } else {
-                        statusBadge = `<span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">متبقي ${remaining}</span>`;
-                    }
-                    
-                    return `
-                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <h3 class="font-bold text-lg text-gray-800">${teacher.name}</h3>
-                                    ${statusBadge}
-                                </div>
-                                <p class="text-gray-600">التخصص: ${teacher.subject}</p>
-                                <div class="flex gap-4 text-sm mt-1">
-                                    <p class="text-indigo-600">حصص الانتظار: ${current}/${required}</p>
-                                    <p class="text-blue-600">الإنجاز: ${percentage}%</p>
-                                </div>
-                                ${required > 0 ? `
-                                    <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                                        <div class="bg-green-500 h-1.5 rounded-full" style="width: ${percentage}%"></div>
-                                    </div>
-                                ` : ''}
-                            </div>
-                            <button onclick="deleteTeacher(${teacher.id})" class="text-red-600 hover:bg-red-100 p-2 rounded-lg transition">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    `;
-                }).join('');
+                list.innerHTML = `
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-indigo-600 text-white">
+                                <th class="p-3 text-right">اليوم</th>
+                                <th class="p-3 text-right">الحصة</th>
+                                <th class="p-3 text-right">المعلم</th>
+                                <th class="p-3 text-right">المادة</th>
+                                <th class="p-3 text-right">الصف</th>
+                                <th class="p-3 text-center">إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${schedule.map(entry => `
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-3">${entry.day}</td>
+                                    <td class="p-3">${entry.period}</td>
+                                    <td class="p-3 font-semibold">${entry.teacherName}</td>
+                                    <td class="p-3">${entry.subject}</td>
+                                    <td class="p-3">${entry.className}</td>
+                                    <td class="p-3 text-center">
+                                        <button onclick="deleteSchedule(${entry.id})" class="text-red-600 hover:bg-red-100 p-2 rounded-lg transition">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
             }
         }
 
@@ -1931,22 +535,20 @@
                 `;
             } else {
                 list.innerHTML = absences.map(absence => `
-                    <div class="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border-r-4 ${absence.substitute === 'لا يوجد بديل متاح' ? 'border-red-500' : 'border-orange-500'}">
+                    <div class="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border-r-4 border-orange-500">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <div class="flex items-center gap-2 mb-2 flex-wrap">
                                     <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">غائب</span>
                                     <span class="font-bold text-lg">${absence.absentTeacher}</span>
-                                    ${absence.substitute !== 'لا يوجد بديل متاح' ? 
-                                        `<span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">بديل: ${absence.substitute}</span>` :
-                                        `<span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">لا يوجد بديل</span>`
-                                    }
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                                    <div><span class="text-gray-600">البديل:</span> <span class="font-semibold text-green-700">${absence.substitute}</span></div>
                                     <div><span class="text-gray-600">التاريخ:</span> <span class="font-semibold">${absence.date}</span></div>
                                     <div><span class="text-gray-600">اليوم:</span> <span class="font-semibold">${absence.day}</span></div>
                                     <div><span class="text-gray-600">الحصة:</span> <span class="font-semibold">${absence.period}</span></div>
                                     <div><span class="text-gray-600">المادة:</span> <span class="font-semibold">${absence.subject}</span></div>
+                                    <div><span class="text-gray-600">الصف:</span> <span class="font-semibold">${absence.className}</span></div>
                                 </div>
                             </div>
                             <button onclick="deleteAbsence(${absence.id})" class="text-red-600 hover:bg-red-100 p-2 rounded-lg transition">
@@ -1963,17 +565,19 @@
         // تحديث الإحصائيات
         function updateStats() {
             document.getElementById('stat-teachers').textContent = teachers.length;
+            document.getElementById('stat-schedule').textContent = schedule.length;
             document.getElementById('stat-absences').textContent = absences.length;
         }
 
-        // عرض كل المحتوى
+        // عرض جميع البيانات
         function renderAll() {
             renderTeachers();
+            renderSchedule();
             renderAbsences();
             updateStats();
         }
 
-        // تهيئة الصفحة
+        // تحميل البيانات عند بدء التشغيل
         window.onload = function() {
             loadData();
         };
