@@ -182,7 +182,71 @@
         let schedule = [];
         let absences = [];
 
-        // Load data from localStorage
+        /* ========================================================= */
+        /* 1) قائمة المعلمين المستخرجة من ملف Excel                  */
+        /* ========================================================= */
+        const excelTeachers = [
+            "عبدالله بن مطر بن مصلح العمري",
+            "محمد بن عماري راضي الزهراني",
+            "موفق مرزوق سويرح السحيمي",
+            "فواز زايد لافي المهيمزي الرشيدي",
+            "فيصل عطالله حويمد الصاعدي",
+            "ابراهيم عياد عيد العلوي",
+            "عبدالله حمود حامد الحربي",
+            "ساير فيصل سعد الله العضيله المطيري",
+            "نافع شعوي نافع المطيري",
+            "اسامه منور مشعل العوفي",
+            "محمد عياد عليثه العوفي",
+            "أحمد إبراهيم فخري التركي",
+            "أحمد حامد هلال الحربي",
+            "نميان علي نميان الحربي",
+            "عبدالله صلاح صالح الرحيلى",
+            "مشعل بن هليل بن غالب العمري الحربي",
+            "علي متعب ناصر العلوي الحربي",
+            "سيف عبدالمنعم حمدان العارضي",
+            "محمد بن ذعار بن صالح العوفي",
+            "فؤاد بن محمد بن حماد العتيبي",
+            "حمزة صدقة حمزة اسلام",
+            "سلمان صالح أحمد الحارثي",
+            "عبيد بن دخيل بن دويهيس العياضي الحربي",
+            "عبدالعزيز مفلح نويعم الرويثي",
+            "فيصل عواد محمد أبو سلمي",
+            "عبدالله بن محمد بن سعيد ال بحران القرني",
+            "كاتب مفلح سليمان الرشيدى",
+            "حبيب علي نعيس العمري الحربي",
+            "ابراهيم عايض عوض الجابري",
+            "سلطان عويض معيض السحيمي",
+            "عبدالهادي معيض معلا الشاماني",
+            "عبدالعزيز عبدالرحمن غلاب المخلفي",
+            "سعد طالع حمود الحربي",
+            "ناهر مشعل عويد المطيري",
+            "موسى غازي سفر الحربي",
+            "موسى مسعود عايض الحيسوني",
+            "نواف منصور عواد الصبحي",
+            "بدر عبدالعزيز شائد السحيمي",
+            "فهد عويض عوض الشاماني الحربي"
+        ];
+
+        /* ========================================================= */
+        /* 2) دمج أسماء Excel مع الموجودين في localStorage           */
+        /* ========================================================= */
+        function mergeExcelTeachers() {
+            const existingNames = new Set(teachers.map(t => t.name));
+            excelTeachers.forEach(name => {
+                if (!existingNames.has(name)) {
+                    teachers.push({
+                        id: Date.now() + Math.random(),
+                        name: name,
+                        subject: "غير محدد",
+                        substituteCount: 0
+                    });
+                }
+            });
+        }
+
+        /* ========================================================= */
+        /* 3) تحميل البيانات عند بدء التشغيل                        */
+        /* ========================================================= */
         function loadData() {
             const savedTeachers = localStorage.getItem('teachers');
             const savedSchedule = localStorage.getItem('schedule');
@@ -192,18 +256,212 @@
             if (savedSchedule) schedule = JSON.parse(savedSchedule);
             if (savedAbsences) absences = JSON.parse(savedAbsences);
 
+            mergeExcelTeachers();   // إضافة أسماء Excel
             renderAll();
         }
 
-        // Save all data
+        /* ========================================================= */
+        /* 4) باقي دوال التطبيق (بدون تعديل)                        */
+        /* ========================================================= */
         function saveAllData() {
             localStorage.setItem('teachers', JSON.stringify(teachers));
             localStorage.setItem('schedule', JSON.stringify(schedule));
             localStorage.setItem('absences', JSON.stringify(absences));
             showNotification('تم حفظ البيانات بنجاح', 'success');
         }
+        function clearAllData() {
+            if (confirm('هل أنت متأكد من حذف جميع البيانات؟ لا يمكن التراجع عن هذا الإجراء!')) {
+                teachers = []; schedule = []; absences = [];
+                localStorage.clear();
+                renderAll();
+                showNotification('تم حذف جميع البيانات', 'success');
+            }
+        }
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.className = `mb-4 p-4 rounded-lg notification flex items-center gap-3 ${
+                type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            }`;
+            notification.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${
+                        type === 'success' 
+                            ? 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+                            : 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+                    }"></path>
+                </svg>
+                <span class="font-semibold">${message}</span>
+            `;
+            notification.classList.remove('hidden');
+            setTimeout(() => notification.classList.add('hidden'), 3000);
+        }
+        function switchTab(tab) {
+            const tabs = ['teachers', 'schedule', 'absences'];
+            tabs.forEach(t => {
+                const tabBtn = document.getElementById(`tab-${t}`);
+                const content = document.getElementById(`content-${t}`);
+                if (t === tab) {
+                    tabBtn.className = 'flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition tab-active';
+                    content.classList.remove('hidden');
+                } else {
+                    tabBtn.className = 'flex-1 flex items-center justify-center gap-2 px-6 py-4 font-semibold transition tab-inactive';
+                    content.classList.add('hidden');
+                }
+            });
+        }
+        function addTeacher() {
+            const name = prompt('أدخل اسم المعلم:');
+            const subject = prompt('أدخل التخصص:');
+            if (name && subject) {
+                teachers.push({
+                    id: Date.now(),
+                    name,
+                    subject,
+                    substituteCount: 0
+                });
+                renderTeachers();
+                updateStats();
+                showNotification('تم إضافة المعلم بنجاح', 'success');
+            }
+        }
+        function deleteTeacher(id) {
+            if (confirm('هل أنت متأكد من حذف هذا المعلم؟')) {
+                teachers = teachers.filter(t => t.id !== id);
+                renderTeachers();
+                updateStats();
+                showNotification('تم حذف المعلم', 'success');
+            }
+        }
+        function addScheduleEntry() {
+            const teacherName = prompt('اسم المعلم:');
+            const day = prompt('اليوم (الأحد، الاثنين، الثلاثاء، الأربعاء، الخميس):');
+            const period = prompt('رقم الحصة (1-7):');
+            const subject = prompt('المادة:');
+            const className = prompt('الصف:');
 
-        // Clear all data
+            if (teacherName && day && period && subject && className) {
+                schedule.push({
+                    id: Date.now(),
+                    teacherName,
+                    day,
+                    period,
+                    subject,
+                    className
+                });
+                renderSchedule();
+                updateStats();
+                showNotification('تم إضافة الحصة للجدول', 'success');
+            }
+        }
+        function deleteSchedule(id) {
+            schedule = schedule.filter(s => s.id !== id);
+            renderSchedule();
+            updateStats();
+            showNotification('تم حذف الحصة', 'success');
+        }
+        function findSubstitute(absentTeacher, day, period) {
+            const busyTeachers = schedule
+                .filter(s => s.day === day && s.period === period)
+                .map(s => s.teacherName);
+
+            const availableTeachers = teachers
+                .filter(t => t.name !== absentTeacher && !busyTeachers.includes(t.name))
+                .sort((a, b) => a.substituteCount - b.substituteCount);
+
+            return availableTeachers[0] || null;
+        }
+        function markAbsent() {
+            const absentTeacherName = prompt('أدخل اسم المعلم الغائب:');
+            if (!absentTeacherName) return;
+
+            const todaySchedule = schedule.filter(s => s.teacherName === absentTeacherName);
+
+            if (todaySchedule.length === 0) {
+                showNotification('لا توجد حصص لهذا المعلم في الجدول', 'error');
+                return;
+            }
+
+            let substitutesFound = 0;
+            todaySchedule.forEach(entry => {
+                const substitute = findSubstitute(absentTeacherName, entry.day, entry.period);
+
+                if (substitute) {
+                    teachers = teachers.map(t =>
+                        t.id === substitute.id
+                            ? { ...t, substituteCount: t.substituteCount + 1 }
+                            : t
+                    );
+
+                    absences.push({
+                        id: Date.now() + Math.random(),
+                        date: new Date().toLocaleDateString('ar-SA'),
+                        absentTeacher: absentTeacherName,
+                        substitute: substitute.name,
+                        day: entry.day,
+                        period: entry.period,
+                        subject: entry.subject,
+                        className: entry.className
+                    });
+                    substitutesFound++;
+                } else {
+                    absences.push({
+                        id: Date.now() + Math.random(),
+                        date: new Date().toLocaleDateString('ar-SA'),
+                        absentTeacher: absentTeacherName,
+                        substitute: 'لا يوجد بديل متاح',
+                        day: entry.day,
+                        period: entry.period,
+                        subject: entry.subject,
+                        className: entry.className
+                    });
+                }
+            });
+
+            renderAbsences();
+            renderTeachers();
+            updateStats();
+            showNotification(`تم تعيين البدلاء لـ ${todaySchedule.length} حصة`, 'success');
+        }
+        function deleteAbsence(id) {
+            absences = absences.filter(a => a.id !== id);
+            renderAbsences();
+            updateStats();
+            showNotification('تم حذف سجل الغياب', 'success');
+        }
+        function renderTeachers() {
+            const list = document.getElementById('teachers-list');
+            if (teachers.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-12 text-gray-500">
+                        <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <p class="text-lg">لا توجد معلمين بعد. ابدأ بإضافة معلم!</p>
+                    </div>
+                `;
+            } else {
+                list.innerHTML = teachers.map(teacher => `
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                        <div>
+                            <h3 class="font-bold text-lg text-gray-800">${teacher.name}</h3>
+                            <p class="text-gray-600">التخصص: ${teacher.subject}</p>
+                            <p class="text-sm text-indigo-600">عدد حصص الانتظار: ${teacher.substituteCount}</p>
+                        </div>
+                        <button onclick="deleteTeacher(${teacher.id})" class="text-red-600 hover:bg-red-100 p-2 rounded-lg transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+        function renderSchedule() {
+            const list = document.getElementById('schedule-list');
+(absences));
+            showNotification('تم حفظ البيانات بنجاح', 'success');
+        }
+
         function clearAllData() {
             if (confirm('هل أنت متأكد من حذف جميع البيانات؟ لا يمكن التراجع عن هذا الإجراء!')) {
                 teachers = [];
@@ -215,7 +473,6 @@
             }
         }
 
-        // Show notification
         function showNotification(message, type) {
             const notification = document.getElementById('notification');
             notification.className = `mb-4 p-4 rounded-lg notification flex items-center gap-3 ${
@@ -235,7 +492,6 @@
             setTimeout(() => notification.classList.add('hidden'), 3000);
         }
 
-        // Switch tabs
         function switchTab(tab) {
             const tabs = ['teachers', 'schedule', 'absences'];
             tabs.forEach(t => {
@@ -251,7 +507,6 @@
             });
         }
 
-        // Add teacher
         function addTeacher() {
             const name = prompt('أدخل اسم المعلم:');
             const subject = prompt('أدخل التخصص:');
@@ -268,7 +523,6 @@
             }
         }
 
-        // Delete teacher
         function deleteTeacher(id) {
             if (confirm('هل أنت متأكد من حذف هذا المعلم؟')) {
                 teachers = teachers.filter(t => t.id !== id);
@@ -278,7 +532,6 @@
             }
         }
 
-        // Add schedule entry
         function addScheduleEntry() {
             const teacherName = prompt('اسم المعلم:');
             const day = prompt('اليوم (الأحد، الاثنين، الثلاثاء، الأربعاء، الخميس):');
@@ -301,7 +554,6 @@
             }
         }
 
-        // Delete schedule entry
         function deleteSchedule(id) {
             schedule = schedule.filter(s => s.id !== id);
             renderSchedule();
@@ -309,7 +561,6 @@
             showNotification('تم حذف الحصة', 'success');
         }
 
-        // Find substitute teacher
         function findSubstitute(absentTeacher, day, period) {
             const busyTeachers = schedule
                 .filter(s => s.day === day && s.period === period)
@@ -322,7 +573,6 @@
             return availableTeachers[0] || null;
         }
 
-        // Mark teacher absent
         function markAbsent() {
             const absentTeacherName = prompt('أدخل اسم المعلم الغائب:');
             if (!absentTeacherName) return;
@@ -376,7 +626,6 @@
             showNotification(`تم تعيين البدلاء لـ ${todaySchedule.length} حصة`, 'success');
         }
 
-        // Delete absence
         function deleteAbsence(id) {
             absences = absences.filter(a => a.id !== id);
             renderAbsences();
@@ -384,7 +633,6 @@
             showNotification('تم حذف سجل الغياب', 'success');
         }
 
-        // Render teachers
         function renderTeachers() {
             const list = document.getElementById('teachers-list');
             if (teachers.length === 0) {
@@ -414,7 +662,6 @@
             }
         }
 
-        // Render schedule
         function renderSchedule() {
             const list = document.getElementById('schedule-list');
             if (schedule.length === 0) {
@@ -462,7 +709,6 @@
             }
         }
 
-        // Render absences
         function renderAbsences() {
             const list = document.getElementById('absences-list');
             if (absences.length === 0) {
@@ -503,14 +749,12 @@
             }
         }
 
-        // Update statistics
         function updateStats() {
             document.getElementById('stat-teachers').textContent = teachers.length;
             document.getElementById('stat-schedule').textContent = schedule.length;
             document.getElementById('stat-absences').textContent = absences.length;
         }
 
-        // Render all
         function renderAll() {
             renderTeachers();
             renderSchedule();
@@ -518,10 +762,7 @@
             updateStats();
         }
 
-        // Initialize
-        window.onload = function() {
-            loadData();
-        };
+        window.onload = () => loadData();
     </script>
 </body>
 </html>
