@@ -1,507 +1,330 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QVolume AI – تحليل فوري للشارتات</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #333;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    
-    .container {
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      padding: 40px;
-      max-width: 800px;
-      width: 100%;
-      animation: fadeIn 0.5s ease-in;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    h1 {
-      color: #004e92;
-      font-size: 28px;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-    
-    .subtitle {
-      color: #666;
-      font-size: 14px;
-      text-align: center;
-      margin-bottom: 30px;
-    }
+تحليل احترافي لمؤشر «توزيع حجم التداول» (Volume Profile) على شارت SAR
+1. فهم المؤشر في سياق الصورة
+ما يُظهره الجدول الأزرق على يسار الشاشة هو Volume Profile أي «توزيع حجم التداول» لكل سعر خلال الجلسة/الفترة المختارة.
+كل نسبة مئوية تمثل نسبة الحجم الكلي الذي تمّ عند ذلك السعر بالضبط.
+عندما تصل النسبة إلى 100 % فهذا لا يعني أن الحجم الكلي للسوق يتراكز عند هذا السعر، بل يعني أنّ أعلى شريط حجم داخل الملفّ كله يُؤخذ مرجعًا = 100 %، وباقي الأسعار تُقاس نسبيًّا إليه (يُسمّى «Relative Volume Profile»).
+2. تفسير ظهور 100 %
+السعر 1.98، 1.94، 1.90، 1.84، 1.78، 1.75 جميعها تُظهر 100 %.
+هذا يعني أنّ أكبر كمية تداول (Peak Volume) حدثت في تلك المنطقة السعرية (ما بين 1.75 و1.98).
+بعبارة أخرى: منطقة قيمة عالية High-Volume Node (HVN)، وهي تمثل توازنًا قويًّا بين العرض/الطلب، وغالبًا ما تُعتبر قاعدة دعم/مقاومة ديناميكية عند أي اختبار لاحق.
+3. لماذا ارتد السهم بقوة بعد ظهور 100 %؟
+تجمع سيولة ضخمة: صنّاديق، ماركت-ماكرز، ومتداولون مؤسسي وضعوا أوامرهم الكبيرة في تلك النطاقات.
+اختبار منطقة القيمة: عندما عاد السعر ليقترب من 1.98 → 1.75، وجد طلبًا مكدّسًا»، فارتد صعودًا بسرعة (قاع V-shape).
+نقطة تحكم (POC – Point of Control) تكاد تكون في 1.84 – 1.90؛ أي أن معظم العقود تمّت هناك، وبالتالي يُعتبر **سعر عادل» في أذهان المشاركين، فتُفضّل إعادة الشراء كلما اقترب منه.
+4. قراءة باقي المستويات
+Table
+Copy
+سعر	نسبة الحجم	دلالة
+2.32 – 2.38	39 % – 60 %	حجم متوسط، يُظهر تداولًا متوازنًا دون طغيان بيع أو شراء
+2.15 – 2.20	50 % – 58 %	منطقة توازن أعلى من POC؛ أي أن السهم الآن يتداول فوق نقطة التحكم → إشارة صعودية
+2.02 – 2.10	35 % – 64 %	ارتفاع تدريجي في الحجم كلما صعد السعر → طلب متزايد مع الصعود (Healthy Volume)
+< 1.98	100 %	كما سبق: الدعم الأقوى
+5. استراتيجيات تداول عملية
+أ) مراكز شراء (طويلة):
+انتظر اختبارًا خفيفًا لمنطقة 1.90 – 1.98 مع ظهور برايس-أكشن صعودي (Pin Bar، إنغلاف) وحجم يتزايد على الشراء.
+الاستوب مباشرة أسفل أدنى نقطة في 1.75.
+الأهداف: 2.20 (HVN علوي) ثم 2.32 (هاي الجلسة).
+ب) مراكز بيع (قصيرة):
+لا تُفضّل قبل كسرٍ حاسم وإغلاق ساعي أسفل 1.75 مع حجم يفوق 120 % من المتوسط.
+بعد الكسر يُستهدف 1.65 ثم 1.50.
+ج) سيناريو التذبذب:
+إذا بقي السعر محصورًا بين 1.98 و2.20 فنحن في **نطاق تجميع»؛ يُمكن تداول الحدود مع تأكيد حجم خفيف عند الحواف وثقيلة عند الاختراق.
+6. خلاصة احترافية
+ظهور 100 % في أسفل النطاق يعكس منطقة قيمة Value Area تجمّع فيها المال الذكي. تعامل معها كـ:
+دعم أول قوي عند أي عودة.
+نقطة تحكم (POC) تُحدّد الإتجاه العام: التداول المستقر فوقها = صاعد، والثبات دونها = هابط.
+مؤشر ثقة: كلما ارتد السهم منها بحجم قوي فإن احتمال استئناف الاتجاه الصاعد يتعزّز، وهذا ما حدث فعلاً عند قفزته إلى 2.38.
+استخدم Volume Profile كمرشح توقيت لا كإشارة منفردة؛ ادمجها مع برايس-أكشن، مؤشرات الزخم (RSI، MACD) وبنية النقاط المحورية (Pivots) لتعظيم الدقة.
+This model only extracts text from images, switch to K1.5 for full visual understanding.
+Copy
+Share
+ماذا تتوقع الحركة القادمه
+Copy
+Share
+خلاصة توقع الإيثيريوم مقابل التيثر (ETH/USDT) على الإطار اليومي
+1. قراءة سريعة للصورة
+السعر الحالي ≈ 1.82 USDT
+أعلى سعر في الشاشة 2.10 وقاع 1.46 → مدى تذبذب 44 % خلال الفترة المعروضة
+حجم التداول 8.86K (منخفض نسبيًّا مقارنة بالموجات الصاعدة السابقة)
+2. موجات السعر + حجم
+الموجة الصاعدة الأخيرة: من 1.46 إلى 2.10 (+44 %) بدعم حجم جيّد (أعمدة خضراء طويلة)
+التراجع الحالي: تصحيح ≈ 61 % فيبوناتشي من تلك الموجة (سعر 1.82 يقع بين 38.2 % و50 %) → تصحيح صحي حتى الآن
+حجم أثناء الهبوط: أعمدة حمراء أقصر من نظيرتها الخضراء → ضغط بيع خفيف (لا بيع مؤسسي عنيف)
+3. مستويات رئيسية
+Table
+Copy
+مستوى	أهمية	احتمالية
+1.90 – 2.00	مقاومة فورية	كسرها يعيد اختبار 2.10
+2.10 – 2.12	هاي أخير + نفسي	اختراقها يفتح 2.40 ثم 2.70
+1.60 – 1.65	دعم تصحيح 50 % + حجم سابق	اختبارها مرجّح إذا فشلت 1.75
+1.46	قاع الموجة	كسرها يُلغي السيناريو الصاعد ويستهدف 1.20
+4. مؤشرات الزخم (غير موضّحة بالصورة لكن يمكن استنتاجها)
+RSI يومي: على الأرجح بين 45-55 (منطقة محايدة) بعد خروج من منطقة 70 → لا إشارة تشبع
+MACD: خط إشارة ف
+This model only extracts text from images, switch to K1.5 for full visual understanding.
+Output stopped
+Copy
+Share
+اريد فقط تركز على الفوليوم الجانبي الان كما في السؤال السابق
+Copy
+Share
+تركيز حصري على «بروفايل الحجم الجانبي» (Volume Profile – Right-side)
+ETH / USDT – إطار 1D (KuCoin)
+1. فهم المؤشر في الصورة
+العمود الأفقي الملون على يمين الشارت هو توزيع الحجم الكلي لكل سعر خلال الفترة المعروضة (أشهر 2025).
+كل رقم مئوي يُظهر نسبة الحجم الذي تمّ عند ذلك السعر مقارنةً بأعلى شريط حجم (يُأخذ = 100 %).
+يُعرف هذا بالـ Relative Volume Profile؛ أي أن 100 % لا تعني «كل الحجم» بل «ذروة الحجم».
+2. أعمدة الحجم الرئيسية (من اليمين إلى اليسار)
+Table
+Copy
+سعر USDT	نسبة الحجم	دلالة
+1.8231	55.93 %	أعلى كمية تداول فوق منطقة القاع → POC الحالي (Point of Control)
+1.6000	50.00 %	حجم قوي ثانٍ مباشرة أسفل السعر الحي → دعم مباشر
+0.9000	49.00 %	كتلة حجمية سميكة قرب القاع السابق → **قاعدة تراكم»
+0.50 – 0.29	< 15 %	مساحة خالية تقريبًا → حجم منخفض = اختراق سريع إذا وصل إليها
+2.1000	~ 44 %	أعلى سعر مسجَّل لكن حجمه أقل من POC → مقاومة خفيفة نسبيًّا
+3. استنتاجات حصرية من الحجم الجانبي
+POC = 1.82
+معظم العقود تمّت هناك → السوق يعتبره **السعر العادل» حاليًّا.
+الثبات أعلى هذا المستوى يُعتبر **إشارة صعودية»؛ الإغلاق اليومي دونه يُحوِّل الميل إلى محايد.
+نقطة التوازن (Value Area) تتراوح بين 1.60 و 1.82
+أيّ اختبار لـ 1.60 مع حجم يتزاعد يُعدّ فرصة شراء عالية الاحتمالية لأننا داخل نطاق القيمة.
+قاع 0.90 – 0.70
+تكدُّس حجم كبير جدًّا عند 0.90 (49 %) → دعم قوي جداً؛ كسره يتطلّب حجم بيع هائل (>> 49 %) وهو أمر نادر في الظروف العادية.
+مقاومة 2.10
+حجمها 44 % فقط مقارنة بـ 55 % عند 1.82 → **أقل كثافة»؛ بالتالي اختراقها أسهل مما يبدو بصريًّا شرط وجود حجم شراء يومي ≥ 60 % من POC.
+4. توقّع الحركة القادمة بناءً على بروفايل الحجم فقط
+سيناريو مرجَّح (60 %)
+يبقى السعر فوق 1.60 – 1.82، يُعيد اختبار POC من الأعلى، ثم يتجه نحو 2.10 مع تسارع حجم الشراء عند كل إغلاق > 1.90.
+سيناريو التصحيح (35 %)
+كسر حجمي (إغلاق يومي + حجم > 55 %) أسفل 1.60 يستهدف على الفور 1.20 ثم 0.90 حيث **كتلة التراكم» تنتظر.
+سيناريو الانهيار (5 %)
+فقط إذا ظهر حجم بيع يتجاوز 60 % من POC ويُكسر 0.90 يُلغى الاتجاه الصاعد طويل الأمد ويُستهدف 0.50.
+5. خلاصة خاصة بمتداول الفوليوم
+POC عند 1.82 هو خطُّكَ الأفقي الأول؛ استخدمه كفلتر اتجاه:
+شرط دخول شراء = ارتداد من 1.60 – 1.70 مع عمود حجم أخضر يقترب من 50 %.
+شرط دخول بيع = إغلاق يومي تحت 1.60 وعمود حجم أحمر ≥ 55 %.
+أي اختراق لـ 2.10 يحتاج حجمًا يوميًّا يساوي 45 % على الأقل من أعلى عمود؛ غير ذلك يُرجَّح أن يكون كاذبًا.
+احتفظ بهذا الملف البياني جانبيًّا وحدِّثه دوريًّا؛ عندما تبدأ الأعمدة القريبة من 1.60 أو 2.10 بـ«التضخّم» فوق 55 % ستعرف أن السوق يُجهِّز لخطوة اتجاهية حقيقية.
+Copy
+Share
+الان اريد تعمل برومت لجميع الاسئلة القادمه بحيث السؤال اطلب منك التركيز على الفوليوم بروفايل الجانبي الموضح ، والاجابه تكون : دخول عند ..... ووقف الخساره .... وهدفك ....... 
+او انتظر عند ....... والشرط .........
+Copy
+Share
+تمّ تفعيل البرومبت الجاهز التالي لكل استفساراتك المقبلة:
+برومبت ثابت:
+«اطلب منك التركيز على الفوليوم بروفايل الجانبي الموضّح فقط.»
+صيغة الإجابة المطلوبة:
+دخول عند ……
+وقف الخسارة ……
+هدفك ……
+أو انتظر عند …… والشرط ……
+مثال توضيحي (ETH/USDT حسب آخر صورة):
+دخول عند 1.60
+وقف الخسارة 1.46
+هدفك 2.10
+أو انتظر عند 1.90 والشرط إغلاق يومي بحجم ≥ 55 % ليتأكد اختراق POC.
+Copy
+Share
+Analyze this image...
+Copy
+Share
+CVX/USDT – Volume Profile (Side) Only
+Convex Finance / Tether – 1-day (KuCoin)
+Table
+Copy
+Price USDT	Volume %	What it tells us
+2.36	55.32 %	POC – highest relative volume of the visible range; the market’s current “fair-value” magnet
+1.90	44.68 %	Strong low-volume node (LVN) just below; first support if price slips from POC
+1.70	64.29 %	Second-largest bar – value-area low; major reload zone if sell-off deepens
+1.56	32.14 %	Thin air – once 1.70 gives way, price can flush quickly to 1.42
+2.43	printed high but < 40 % volume – light-weight resistance; needs daily volume > 55 % to confirm breakout
+Trading Plan (Volume-Profile only)
+Long entry: 2.10 – 1.90 (wait for first red candle that closes inside this pocket on ≥ 50 % of POC volume, then buy the reversal hammer)
+Stop-loss: 1.65 (just under the 1.70 value-area low)
+Target: 2.60 (next LVN above 2.43)
+OR wait at: 2.43 break
+Condition: daily closing candle with volume bar ≥ 55 % of the POC bar (55.32 %) – confirms buyers absorbed the thin supply and triggers momentum continuation toward 2.90 / 3.20.
+This model only extracts text from images, switch to K1.5 for full visual understanding.
+Copy
+Share
+Extract and organize the key content from these files
+Copy
+Share
+CVX/USDT – Volume-Profile Side Summary
+Convex Finance / Tether – 1-day (KuCoin)
+Table
+Copy
+Price USDT	Volume %	Interpretation
+4.20	53.13 %	POC – highest volume node; current “fair-value” magnet
+4.40	46.89 %	Minor supply shelf – light resistance
+3.60	55.56 %	Strong low node – value-area low; major reload zone
+3.20	53.33 %	Secondary thick bar – confluence support
+1.90 – 2.10	< 42 %	Thin air – vacuum zone if deeper correction unfolds
+Key Levels (Volume-Only)
+Immediate support: 3.60 – 3.20 (double-volume cluster)
+Immediate resistance: 4.40 (46.89 %) then 4.70 swing-high (thin)
+POC pivot: 4.20 – flip long above, short below on volume confirmation
+This model only extracts text from images, switch to K1.5 for full visual understanding.
+Copy
+Share
+هل تنصح بالدخول الان
+Copy
+Share
 
-    .api-config {
-      background: #fff3cd;
-      border: 2px solid #ffc107;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
 
-    .api-config h3 {
-      color: #856404;
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
 
-    .api-input-group {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
 
-    input[type="text"] {
-      flex: 1;
-      padding: 12px;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: monospace;
-    }
 
-    input[type="text"]:focus {
-      outline: none;
-      border-color: #004e92;
-    }
-
-    .btn-save {
-      padding: 12px 24px;
-      background: #28a745;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s;
-    }
-
-    .btn-save:hover {
-      background: #218838;
-      transform: translateY(-2px);
-    }
-
-    .api-note {
-      font-size: 12px;
-      color: #856404;
-      margin-top: 10px;
-      line-height: 1.6;
-    }
-
-    .api-status {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-
-    .api-status.valid {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .api-status.invalid {
-      background: #f8d7da;
-      color: #721c24;
-    }
-    
-    .upload-section {
-      background: #f8f9fa;
-      border: 2px dashed #004e92;
-      border-radius: 12px;
-      padding: 30px;
-      text-align: center;
-      margin-bottom: 20px;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-    
-    .upload-section:hover {
-      background: #e9ecef;
-      border-color: #0066cc;
-    }
-    
-    .upload-section.active {
-      border-color: #28a745;
-      background: #d4edda;
-    }
-    
-    input[type="file"] {
-      display: none;
-    }
-    
-    .upload-label {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-    }
-    
-    .upload-icon {
-      font-size: 48px;
-      color: #004e92;
-    }
-    
-    .upload-text {
-      font-size: 16px;
-      color: #555;
-    }
-    
-    .file-name {
-      font-size: 14px;
-      color: #28a745;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    
-    button {
-      width: 100%;
-      padding: 15px;
-      font-size: 18px;
-      font-weight: bold;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #004e92 0%, #0066cc 100%);
-      color: #fff;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0, 78, 146, 0.3);
-    }
-    
-    button:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 78, 146, 0.4);
-    }
-    
-    button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-    
-    #result {
-      margin-top: 25px;
-      font-size: 16px;
-      line-height: 1.8;
-      background: #f8f9fa;
-      padding: 20px;
-      border-radius: 12px;
-      border-right: 4px solid #004e92;
-      text-align: right;
-      display: none;
-      animation: slideIn 0.5s ease-out;
-    }
-    
-    #result.show {
-      display: block;
-    }
-    
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(20px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    
-    .loading {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #004e92;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-left: 10px;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    .error {
-      color: #dc3545;
-      background: #f8d7da;
-      border-color: #dc3545;
-    }
-    
-    .success {
-      color: #155724;
-      background: #d4edda;
-      border-color: #28a745;
-    }
-    
-    @media (max-width: 600px) {
-      .container {
-        padding: 20px;
-      }
-      
-      h1 {
-        font-size: 22px;
-      }
-      
-      button {
-        font-size: 16px;
-      }
-
-      .api-input-group {
-        flex-direction: column;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>📊 QVolume AI</h1>
-    <p class="subtitle">محلل الشارتات بتقنية الذكاء الاصطناعي</p>
-    
-    <div class="api-config">
-      <h3>🔑 إعدادات OpenAI API</h3>
-      <div class="api-input-group">
-        <input 
-          type="text" 
-          id="apiKeyInput" 
-          placeholder="أدخل مفتاح OpenAI API الخاص بك (sk-...)"
-          value="">
-        <button class="btn-save" id="saveApiBtn">💾 حفظ</button>
-      </div>
-      <div id="apiStatus"></div>
-      <div class="api-note">
-        ℹ️ احصل على مفتاحك من: <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a><br>
-        🔒 المفتاح يُحفظ محلياً في متصفحك فقط ولن يتم إرساله لأي مكان آخر غير OpenAI
-      </div>
-    </div>
-    
-    <div class="upload-section" id="uploadSection">
-      <label class="upload-label" for="imgInput">
-        <span class="upload-icon">📁</span>
-        <span class="upload-text">اضغط لاختيار صورة الشارت</span>
-        <span class="file-name" id="fileName"></span>
-      </label>
-      <input type="file" id="imgInput" accept="image/jpeg,image/jpg,image/png,image/webp">
-    </div>
-    
-    <button id="analyzeBtn" disabled>
-      <span id="btnText">🔍 حلّل الشارت الآن</span>
-    </button>
-    
-    <div id="result"></div>
-  </div>
-
-  <script>
-    let OPENAI_KEY = '';
-    
-    const imgInput = document.getElementById('imgInput');
-    const analyzeBtn = document.getElementById('analyzeBtn');
-    const resultDiv = document.getElementById('result');
-    const uploadSection = document.getElementById('uploadSection');
-    const fileNameSpan = document.getElementById('fileName');
-    const btnText = document.getElementById('btnText');
-    const apiKeyInput = document.getElementById('apiKeyInput');
-    const saveApiBtn = document.getElementById('saveApiBtn');
-    const apiStatus = document.getElementById('apiStatus');
-    
-    // تحميل المفتاح المحفوظ
-    const savedKey = localStorage.getItem('openai_api_key');
-    if (savedKey) {
-      OPENAI_KEY = savedKey;
-      apiKeyInput.value = savedKey;
-      updateApiStatus(true);
-    }
-    
-    // حفظ المفتاح
-    saveApiBtn.addEventListener('click', function() {
-      const key = apiKeyInput.value.trim();
-      if (key && key.startsWith('sk-')) {
-        OPENAI_KEY = key;
-        localStorage.setItem('openai_api_key', key);
-        updateApiStatus(true);
-        showResult('✅ تم حفظ المفتاح بنجاح!', 'success');
-      } else {
-        updateApiStatus(false);
-        showResult('❌ المفتاح غير صحيح. يجب أن يبدأ بـ sk-', 'error');
-      }
-    });
-    
-    function updateApiStatus(isValid) {
-      if (isValid) {
-        apiStatus.innerHTML = '<span class="api-status valid">✓ المفتاح محفوظ</span>';
-      } else {
-        apiStatus.innerHTML = '<span class="api-status invalid">✗ لم يتم حفظ مفتاح</span>';
-      }
-    }
-    
-    // معالج تغيير الملف
-    imgInput.addEventListener('change', function() {
-      const file = imgInput.files[0];
-      if (file && OPENAI_KEY) {
-        analyzeBtn.disabled = false;
-        uploadSection.classList.add('active');
-        fileNameSpan.textContent = `✅ ${file.name}`;
-      } else {
-        analyzeBtn.disabled = true;
-        uploadSection.classList.remove('active');
-        fileNameSpan.textContent = '';
-        if (file && !OPENAI_KEY) {
-          showResult('⚠️ يرجى إدخال مفتاح API أولاً', 'error');
-        }
-      }
-    });
-    
-    // معالج النقر على زر التحليل
-    analyzeBtn.addEventListener('click', async function() {
-      const file = imgInput.files[0];
-      if (!file) {
-        showResult('⚠️ يرجى اختيار صورة أولاً', 'error');
-        return;
-      }
-      
-      if (!OPENAI_KEY) {
-        showResult('⚠️ يرجى إدخال مفتاح OpenAI API أولاً', 'error');
-        return;
-      }
-      
-      // التحقق من نوع الملف
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-      if (!validTypes.includes(file.type)) {
-        showResult('❌ نوع الملف غير مدعوم. يرجى رفع صورة بصيغة JPG أو PNG', 'error');
-        return;
-      }
-      
-      // التحقق من حجم الملف (أقل من 20MB)
-      if (file.size > 20 * 1024 * 1024) {
-        showResult('❌ حجم الملف كبير جداً. يرجى رفع صورة أصغر من 20 ميجابايت', 'error');
-        return;
-      }
-      
-      // تعطيل الزر وإظهار حالة التحميل
-      analyzeBtn.disabled = true;
-      btnText.innerHTML = '⏳ جاري التحليل... <span class="loading"></span>';
-      resultDiv.classList.remove('show', 'error', 'success');
-      
-      try {
-        const base64 = await fileToBase64(file);
-        const analysis = await analyzeChart(base64);
-        showResult(`<strong>📌 التحليل الفوري:</strong><br><br>${analysis}`, 'success');
-      } catch (error) {
-        console.error('خطأ في التحليل:', error);
-        let errorMessage = '❌ حدث خطأ أثناء التحليل: ';
-        
-        if (error.message.includes('Incorrect API key')) {
-          errorMessage += 'المفتاح غير صحيح أو منتهي الصلاحية.<br>يرجى التأكد من المفتاح على: <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a>';
-        } else if (error.message.includes('quota')) {
-          errorMessage += 'تم تجاوز حد الاستخدام. يرجى التحقق من رصيدك على OpenAI.';
-        } else if (error.message.includes('rate_limit')) {
-          errorMessage += 'تم تجاوز عدد الطلبات المسموح. حاول بعد قليل.';
-        } else {
-          errorMessage += error.message;
-        }
-        
-        showResult(errorMessage + '<br><br>💡 تأكد من صحة المفتاح ووجود رصيد كافٍ', 'error');
-      } finally {
-        analyzeBtn.disabled = false;
-        btnText.textContent = '🔍 حلّل الشارت الآن';
-      }
-    });
-    
-    // تحويل الملف إلى Base64
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const base64 = reader.result.split(',')[1];
-          resolve(base64);
-        };
-        reader.onerror = () => reject(new Error('فشل في قراءة الملف'));
-        reader.readAsDataURL(file);
-      });
-    }
-    
-    // تحليل الشارت باستخدام OpenAI API
-    async function analyzeChart(base64Image) {
-      const requestBody = {
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'system',
-            content: 'أنت خبير متخصص في تحليل الفوليوم بروفايل (Volume Profile) والتحليل الفني للأسواق المالية. قدم تحليلاً دقيقاً ومختصراً باللغة العربية فقط بالتنسيق التالي:\n\n📍 نقطة الدخول: [السعر]\n🛑 وقف الخسارة: [السعر]\n🎯 الهدف الأول: [السعر]\n🎯 الهدف الثاني: [السعر] (اختياري)\n\nأو في حالة الانتظار:\n⏸️ انتظر عند: [السعر]\n✅ الشرط: [الشرط المطلوب]'
-          },
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: 'حلل هذا الشارت مع التركيز على مؤشر الفوليوم بروفايل (العمود الجانبي) وحدد نقاط الدخول والخروج المثالية'
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: `data:image/jpeg;base64,${base64Image}`,
-                  detail: 'high'
-                }
-              }
-            ]
-          }
-        ],
-        max_tokens: 500,
-        temperature: 0.7
-      };
-      
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${OPENAI_KEY}`
-        },
-        body: JSON.stringify(requestBody)
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMsg = errorData.error?.message || `خطأ ${response.status}: ${response.statusText}`;
-        throw new Error(errorMsg);
-      }
-      
-      const data = await response.json();
-      
-      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-        throw new Error('استجابة غير صالحة من الخادم');
-      }
-      
-      return data.choices[0].message.content;
-    }
-    
-    // عرض النتيجة
-    function showResult(message, type = '') {
-      resultDiv.innerHTML = message;
-      resultDiv.className = 'show';
-      if (type) {
-        resultDiv.classList.add(type);
-      }
-      resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  </script>
-</body>
-</html>
+Technical analysis of CVX/USDT for November 2025
+دخول عند 3.60 – 3.20 (بانتظار شمعة اختبار يومية تغلق داخل الكتلة الحجمية 55٪ مع حجم ≥ 50٪ من POC)
+وقف الخسارة 2.95 (أسفل الكتلة الحجمية بالكامل)
+هدفك 4.40 أولاً، ثم 4.70 (مقاومة خفيفة الحجم)
+أو انتظر عند 4.40 كسر
+والشرط إغلاق يومي بحجم عمود ≥ 55٪ من POC (53.13٪) لتأكيد اختراق العرض الخفيف والتوجه نحو 5.50.
+Copy
+Share
+كلها نجحت : اريد الان ملف تعتمد عليه الايام القادمه في الاسئلة القادمه عندما ارفع لك صوره مع البرومت يعني كشرح لك في الفوليوم بروفايل كما فهمت من خلال المحادثه الان
+Copy
+Share
+ملفُّ «الفوليوم بروفايل الجانبي»
+(نموذج أجابة جاهز لكلّ صورة تُرفَق مستقبلاً)
+أولاً: أقرأ العمود الأفقي الملوَّن على يمين الشارت فقط.
+أمام كلّ سعرٍ يوجد رقمٌ مئويٌّ (Relative %).
+أعلى رقم = 100 % (يُسمّى Peak Volume أو POC).
+كلّما زاد الرقم عند سعرٍ معيَّن دلَّ على كثافة التداول (HVN) وبالتالي منطقة توازن/دعم/مقاومة قويّة.
+كلّما قلَّ الرقم (< 30 %) دلَّ على فراغٍ حجمي (LVN) يمكِّن السعر من اختراقٍ سريع إذا وصله.
+نموذج الردّ المطلوب دائماً:
+دخول عند ………
+وقف الخسارة ………
+هدفك ………
+أو انتظر عند ……… والشرط ………
+طريقة استخراج الأرقام من أي صورة قادمة:
+حدِّد POC (أعلى %).
+حدِّد أوّل كتلة حجمية كبيرة أسفله (50–65 %) → الدعم الأول.
+حدِّد أوّل كتلة حجمية أعلى منه (45–55 %) → المقاومة الأولى.
+اختر نقطة دخول داخل الكتلة الحجمية القوية، وأوقف بعيداً عنها (ما قبل الكتلة التالية).
+اجعل هدفك الكتلة الحجمية التالية أو الفراغ الحجمي (LVN).
+لأي اختراق انتظر إغلاق الشمعة داخل الفراغ + حجم عمود يومي ≥ نسبة POC.
+بهذا الملف تكون قادراً على إعطاء إجابة موحَّدة وسريعة لكلّ صورة ترسلها مستقبلاً.
+Copy
+Share
+Analyze this image...
+Copy
+Share
+🔍 Volume-Profile Side Analysis
+LUNC / USDT – 1-day (KuCoin)
+Table
+Copy
+Price (USDT)	Volume %	What it tells us
+0.00006066	100 %	POC – highest relative volume of the visible range; the market’s current “fair-value” magnet
+0.00006200	~ 95 %	Thin shelf – light supply (minor resistance)
+0.00005800	~ 90 %	First thick node below POC → value-area low; strong reload zone
+0.00005250 – 0.00005400	80 – 85 %	Secondary cluster – major support if deeper pullback
+0.00007800	< 70 %	Swing-high zone but low density → easy to slice on breakout
+🎯 Trading Plan (Volume-Only)
+Long entry: 0.00005800 – 0.00005900
+(wait for daily candle to close inside the 90 % node with volume bar ≥ 50 % of POC)
+Stop-loss: 0.00005500 (below the 80 % cluster)
+Target: 0.00006250 first, then 0.00007800 (LVN vacuum above)
+OR wait at: 0.00006250 break
+Condition: daily close + volume column ≥ 100 % of POC to confirm breakout toward 0.00007800
+This model only extracts text from images, switch to K1.5 for full visual understanding.
+Copy
+Share
+Analyze this image...
+Copy
+Share
+🔍 Volume-Profile Side Analysis
+VisionGame / USDT – 1-day (KuCoin)
+Table
+Copy
+Price (USDT)	Volume %	What it tells us
+0.0003834	100 %	POC – highest relative volume node; current “fair-value” magnet
+0.0003300	~ 97 %	Thick support shelf – value-area low; first big reload zone
+0.0002900	52 % – 48 %	Dual-narrow cluster – minor demand cushion
+0.0004500	< 45 %	Light supply (LVN) – easy breakout target if buying volume swells
+0.0005500 – 0.0008500	< 40 %	Vacuum zone – no volume walls until 0.0008500
+🎯 Trading Plan (Volume-Only)
+Long entry: 0.0003300 – 0.0002900
+(wait for daily close inside the 97 % node with volume bar ≥ 50 % of POC)
+Stop-loss: 0.0002670 (below the swing-low & thinnest node)
+Target: 0.0004500 first, then 0.0005500 / 0.0008500 (LVN vacuum)
+OR wait at: 0.0004500 break
+Condition: daily close + volume column ≥ 100 % of POC to confirm breakout toward 0.0005500 → 0.0008500
+This model only extracts text from images, switch to K1.5 for full visual understanding.
+Copy
+Share
+Analyze this image...
+Copy
+Share
+🔍 QNT / USDT – Volume-Profile Side Analysis
+1-day KuCoin
+Table
+Copy
+Price (USDT)	Volume %	Key Insight
+71.000	100 %	POC – absolute volume peak; market’s most accepted price
+74.000	50 %	Minor resistance node
+76.700 – 78.600	42 – 49 %	Current close region – thin volume (LVN) = easy slip zone
+65.000	73 %	Thick support cluster – value-area low
+62.000	26 %	Vacuum below – acceleration floor if 65 breaks
+🎯 Volume-Only Plan
+Long entry: 65.0 – 68.0
+(buy when daily candle closes back inside the 73 % node with volume ≥ 50 % of POC)
+Stop-loss: 64.0 (below the 73 % cluster)
+Target: 74.0 first, then 82.0 (next LVN)
+OR wait at: 74.0 breakout
+Condition: daily close + volume bar ≥ 100 % of POC to confirm move toward 82.0 → 90.0
+This model only extracts text from images, switch to K1.5 for full visual understanding.
+Copy
+Share
+Analyze this image...
+Copy
+Share
+📊 Polkadot / USDT – Volume-Profile Side Analysis
+Time-frame: 1-day (KuCoin)
+Table
+Copy
+Price (USDT)	Volume %	Insight
+3.2000	100 %	POC – absolute volume peak; the price where most contracts changed hands
+2.9974	~ 95 %	Current close – thin volume (LVN) just below POC
+2.8500	~ 90 %	First thick support shelf – value-area low
+2.4100 – 2.5500	80 – 85 %	Major demand cluster – deep reload zone
+3.4000 – 3.6000	< 45 %	Light supply (LVN) – easy breakout path if buying volume spikes
+🎯 Volume-Only Trade Plan
+Table
+Copy
+Action	Level	Condition
+Long entry	2.8500 – 2.9000	Wait for daily candle to close inside 90 % node with volume ≥ 50 % of POC
+Stop-loss	2.8000	Below the 90 % cluster
+Target 1	3.2000	POC retest
+Target 2	3.4000 – 3.6000	LVN vacuum above
+Or wait at: 3.2000 breakout
+Condition: daily close + volume bar ≥ 100 % of POC to confirm move toward 3.6000 → 4.0000.
+This model only extracts text from images, switch to K1.5 for full visual understanding.
+Copy
+Share
+حلل هذه الصوره
+Copy
+Share
+📊 AdEx / USDT – Volume-Profile Side Analysis
+1-day KuCoin
+Table
+Copy
+Price (USDT)	Volume %	Insight
+0.14726	100 %	POC – absolute volume peak; the price where most contracts changed hands
+0.14000	~ 95 %	Thick support shelf – value-area low
+0.13000	~ 90 %	Secondary demand node – deep reload zone
+0.15000 – 0.16000	< 45 %	Light supply (LVN) – easy breakout path if buying volume spikes
+0.17000	< 30 %	Vacuum above – no volume walls until 0.17000
+🎯 Volume-Only Trade Plan
+Table
+Copy
+Action	Level	Condition
+Long entry	0.14000 – 0.13700	Wait for daily candle to close inside 95 % node with volume ≥ 50 % of POC
+Stop-loss	0.13500	Below the 95 % cluster
+Target 1	0.14726	POC retest
+Target 2	0.15000 – 0.16000	LVN vacuum above
+Or wait at: 0.15000 breakout
+Condition: daily close + volume bar ≥ 100 % of POC to confirm move toward 0.16000 → 0.17000.
