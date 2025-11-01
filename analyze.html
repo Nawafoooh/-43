@@ -51,6 +51,82 @@
       text-align: center;
       margin-bottom: 30px;
     }
+
+    .api-config {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .api-config h3 {
+      color: #856404;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .api-input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: monospace;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #004e92;
+    }
+
+    .btn-save {
+      padding: 12px 24px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .btn-save:hover {
+      background: #218838;
+      transform: translateY(-2px);
+    }
+
+    .api-note {
+      font-size: 12px;
+      color: #856404;
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+
+    .api-status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .api-status.valid {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .api-status.invalid {
+      background: #f8d7da;
+      color: #721c24;
+    }
     
     .upload-section {
       background: #f8f9fa;
@@ -177,17 +253,6 @@
       border-color: #28a745;
     }
     
-    .warning {
-      background: #fff3cd;
-      border-right-color: #ffc107;
-      color: #856404;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-size: 14px;
-      text-align: center;
-    }
-    
     @media (max-width: 600px) {
       .container {
         padding: 20px;
@@ -200,6 +265,10 @@
       button {
         font-size: 16px;
       }
+
+      .api-input-group {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -208,8 +277,21 @@
     <h1>📊 QVolume AI</h1>
     <p class="subtitle">محلل الشارتات بتقنية الذكاء الاصطناعي</p>
     
-    <div class="warning">
-      ⚠️ تحذير: مفتاح API ظاهر في الكود. يُنصح بإخفائه في بيئة خادم آمنة
+    <div class="api-config">
+      <h3>🔑 إعدادات OpenAI API</h3>
+      <div class="api-input-group">
+        <input 
+          type="text" 
+          id="apiKeyInput" 
+          placeholder="أدخل مفتاح OpenAI API الخاص بك (sk-...)"
+          value="">
+        <button class="btn-save" id="saveApiBtn">💾 حفظ</button>
+      </div>
+      <div id="apiStatus"></div>
+      <div class="api-note">
+        ℹ️ احصل على مفتاحك من: <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a><br>
+        🔒 المفتاح يُحفظ محلياً في متصفحك فقط ولن يتم إرساله لأي مكان آخر غير OpenAI
+      </div>
     </div>
     
     <div class="upload-section" id="uploadSection">
@@ -229,8 +311,7 @@
   </div>
 
   <script>
-    // تحذير: يجب حماية مفتاح API هذا في بيئة إنتاجية حقيقية
-    const OPENAI_KEY = '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';
+    let OPENAI_KEY = '';
     
     const imgInput = document.getElementById('imgInput');
     const analyzeBtn = document.getElementById('analyzeBtn');
@@ -238,11 +319,44 @@
     const uploadSection = document.getElementById('uploadSection');
     const fileNameSpan = document.getElementById('fileName');
     const btnText = document.getElementById('btnText');
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    const saveApiBtn = document.getElementById('saveApiBtn');
+    const apiStatus = document.getElementById('apiStatus');
+    
+    // تحميل المفتاح المحفوظ
+    const savedKey = localStorage.getItem('openai_api_key');
+    if (savedKey) {
+      OPENAI_KEY = savedKey;
+      apiKeyInput.value = savedKey;
+      updateApiStatus(true);
+    }
+    
+    // حفظ المفتاح
+    saveApiBtn.addEventListener('click', function() {
+      const key = apiKeyInput.value.trim();
+      if (key && key.startsWith('sk-')) {
+        OPENAI_KEY = key;
+        localStorage.setItem('openai_api_key', key);
+        updateApiStatus(true);
+        showResult('✅ تم حفظ المفتاح بنجاح!', 'success');
+      } else {
+        updateApiStatus(false);
+        showResult('❌ المفتاح غير صحيح. يجب أن يبدأ بـ sk-', 'error');
+      }
+    });
+    
+    function updateApiStatus(isValid) {
+      if (isValid) {
+        apiStatus.innerHTML = '<span class="api-status valid">✓ المفتاح محفوظ</span>';
+      } else {
+        apiStatus.innerHTML = '<span class="api-status invalid">✗ لم يتم حفظ مفتاح</span>';
+      }
+    }
     
     // معالج تغيير الملف
     imgInput.addEventListener('change', function() {
       const file = imgInput.files[0];
-      if (file) {
+      if (file && OPENAI_KEY) {
         analyzeBtn.disabled = false;
         uploadSection.classList.add('active');
         fileNameSpan.textContent = `✅ ${file.name}`;
@@ -250,6 +364,9 @@
         analyzeBtn.disabled = true;
         uploadSection.classList.remove('active');
         fileNameSpan.textContent = '';
+        if (file && !OPENAI_KEY) {
+          showResult('⚠️ يرجى إدخال مفتاح API أولاً', 'error');
+        }
       }
     });
     
@@ -261,6 +378,11 @@
         return;
       }
       
+      if (!OPENAI_KEY) {
+        showResult('⚠️ يرجى إدخال مفتاح OpenAI API أولاً', 'error');
+        return;
+      }
+      
       // التحقق من نوع الملف
       const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
       if (!validTypes.includes(file.type)) {
@@ -268,9 +390,9 @@
         return;
       }
       
-      // التحقق من حجم الملف (أقل من 10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        showResult('❌ حجم الملف كبير جداً. يرجى رفع صورة أصغر من 10 ميجابايت', 'error');
+      // التحقق من حجم الملف (أقل من 20MB)
+      if (file.size > 20 * 1024 * 1024) {
+        showResult('❌ حجم الملف كبير جداً. يرجى رفع صورة أصغر من 20 ميجابايت', 'error');
         return;
       }
       
@@ -285,7 +407,19 @@
         showResult(`<strong>📌 التحليل الفوري:</strong><br><br>${analysis}`, 'success');
       } catch (error) {
         console.error('خطأ في التحليل:', error);
-        showResult(`❌ حدث خطأ أثناء التحليل: ${error.message}<br>يرجى المحاولة مرة أخرى`, 'error');
+        let errorMessage = '❌ حدث خطأ أثناء التحليل: ';
+        
+        if (error.message.includes('Incorrect API key')) {
+          errorMessage += 'المفتاح غير صحيح أو منتهي الصلاحية.<br>يرجى التأكد من المفتاح على: <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a>';
+        } else if (error.message.includes('quota')) {
+          errorMessage += 'تم تجاوز حد الاستخدام. يرجى التحقق من رصيدك على OpenAI.';
+        } else if (error.message.includes('rate_limit')) {
+          errorMessage += 'تم تجاوز عدد الطلبات المسموح. حاول بعد قليل.';
+        } else {
+          errorMessage += error.message;
+        }
+        
+        showResult(errorMessage + '<br><br>💡 تأكد من صحة المفتاح ووجود رصيد كافٍ', 'error');
       } finally {
         analyzeBtn.disabled = false;
         btnText.textContent = '🔍 حلّل الشارت الآن';
@@ -308,7 +442,7 @@
     // تحليل الشارت باستخدام OpenAI API
     async function analyzeChart(base64Image) {
       const requestBody = {
-        model: 'gpt-4-vision-preview',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',
@@ -331,7 +465,7 @@
             ]
           }
         ],
-        max_tokens: 300,
+        max_tokens: 500,
         temperature: 0.7
       };
       
@@ -345,8 +479,9 @@
       });
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'فشل الاتصال بخدمة التحليل');
+        const errorData = await response.json().catch(() => ({}));
+        const errorMsg = errorData.error?.message || `خطأ ${response.status}: ${response.statusText}`;
+        throw new Error(errorMsg);
       }
       
       const data = await response.json();
