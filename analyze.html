@@ -2,63 +2,371 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>QVolume AI – تحليل فوري</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QVolume AI – تحليل فوري للشارتات</title>
   <style>
-    body{font-family:'Segoe UI',Tahoma;background:#f5f7fa;color:#333;text-align:center;padding:30px}
-    #result{margin-top:25px;font-size:18px;line-height:32px;background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.15);max-width:700px;margin:auto;text-align:right}
-    button{padding:10px 22px;font-size:16px;border:none;border-radius:6px;background:#004e92;color:#fff;cursor:pointer}
-    input[type=file]{margin:15px auto}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      padding: 40px;
+      max-width: 800px;
+      width: 100%;
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    h1 {
+      color: #004e92;
+      font-size: 28px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    
+    .subtitle {
+      color: #666;
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .upload-section {
+      background: #f8f9fa;
+      border: 2px dashed #004e92;
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .upload-section:hover {
+      background: #e9ecef;
+      border-color: #0066cc;
+    }
+    
+    .upload-section.active {
+      border-color: #28a745;
+      background: #d4edda;
+    }
+    
+    input[type="file"] {
+      display: none;
+    }
+    
+    .upload-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    
+    .upload-icon {
+      font-size: 48px;
+      color: #004e92;
+    }
+    
+    .upload-text {
+      font-size: 16px;
+      color: #555;
+    }
+    
+    .file-name {
+      font-size: 14px;
+      color: #28a745;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    
+    button {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #004e92 0%, #0066cc 100%);
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 78, 146, 0.3);
+    }
+    
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 78, 146, 0.4);
+    }
+    
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    
+    #result {
+      margin-top: 25px;
+      font-size: 16px;
+      line-height: 1.8;
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 12px;
+      border-right: 4px solid #004e92;
+      text-align: right;
+      display: none;
+      animation: slideIn 0.5s ease-out;
+    }
+    
+    #result.show {
+      display: block;
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #004e92;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .error {
+      color: #dc3545;
+      background: #f8d7da;
+      border-color: #dc3545;
+    }
+    
+    .success {
+      color: #155724;
+      background: #d4edda;
+      border-color: #28a745;
+    }
+    
+    .warning {
+      background: #fff3cd;
+      border-right-color: #ffc107;
+      color: #856404;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      text-align: center;
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 22px;
+      }
+      
+      button {
+        font-size: 16px;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>📊 QVolume AI – ارفع شارتك واحصل على التحليل الفوري</h1>
-  <input type="file" id="imgInput" accept="image/*">
-  <button id="analyzeBtn" disabled>حلّل</button>
-  <div id="result"></div>
+  <div class="container">
+    <h1>📊 QVolume AI</h1>
+    <p class="subtitle">محلل الشارتات بتقنية الذكاء الاصطناعي</p>
+    
+    <div class="warning">
+      ⚠️ تحذير: مفتاح API ظاهر في الكود. يُنصح بإخفائه في بيئة خادم آمنة
+    </div>
+    
+    <div class="upload-section" id="uploadSection">
+      <label class="upload-label" for="imgInput">
+        <span class="upload-icon">📁</span>
+        <span class="upload-text">اضغط لاختيار صورة الشارت</span>
+        <span class="file-name" id="fileName"></span>
+      </label>
+      <input type="file" id="imgInput" accept="image/jpeg,image/jpg,image/png,image/webp">
+    </div>
+    
+    <button id="analyzeBtn" disabled>
+      <span id="btnText">🔍 حلّل الشارت الآن</span>
+    </button>
+    
+    <div id="result"></div>
+  </div>
 
-<script>
-const OPENAI_KEY = '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';const imgIn = document.getElementById('imgInput');
-const btn   = document.getElementById('analyzeBtn');
-const res   = document.getElementById('result');
-
-imgIn.onchange = () => btn.disabled = !imgIn.files[0];
-
-btn.onclick = async () => {
-  const file = imgIn.files[0];
-  if (!file) return;
-  res.textContent = '⏳ جاري التحليل...';
-
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = async () => {
-    const base64 = reader.result.split(',')[1];
-
-    const body = {
-      model: 'gpt-4-vision-preview',
-      messages: [
-        {role: 'system', content: 'أنت خبير فوليوم بروفايل، أجب بالعربية فقط بالتنسيق: دخول عند …… وقف الخسارة …… هدفك …… أو انتظر عند …… والشرط ……'},
-        {role: 'user', content: [
-          {type: 'text', text: 'صورة الشارت مع العمود الجانبي الأزرق للفوليوم بروفايل'},
-          {type: 'image_url', image_url: {url: `data:image/jpeg;base64,${base64}`}}
-        ]}
-      ],
-      max_tokens: 150
-    };
-
-    try {
-      const r = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${OPENAI_KEY}`},
-        body: JSON.stringify(body)
+  <script>
+    // تحذير: يجب حماية مفتاح API هذا في بيئة إنتاجية حقيقية
+    const OPENAI_KEY = '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';
+    
+    const imgInput = document.getElementById('imgInput');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const resultDiv = document.getElementById('result');
+    const uploadSection = document.getElementById('uploadSection');
+    const fileNameSpan = document.getElementById('fileName');
+    const btnText = document.getElementById('btnText');
+    
+    // معالج تغيير الملف
+    imgInput.addEventListener('change', function() {
+      const file = imgInput.files[0];
+      if (file) {
+        analyzeBtn.disabled = false;
+        uploadSection.classList.add('active');
+        fileNameSpan.textContent = `✅ ${file.name}`;
+      } else {
+        analyzeBtn.disabled = true;
+        uploadSection.classList.remove('active');
+        fileNameSpan.textContent = '';
+      }
+    });
+    
+    // معالج النقر على زر التحليل
+    analyzeBtn.addEventListener('click', async function() {
+      const file = imgInput.files[0];
+      if (!file) {
+        showResult('⚠️ يرجى اختيار صورة أولاً', 'error');
+        return;
+      }
+      
+      // التحقق من نوع الملف
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        showResult('❌ نوع الملف غير مدعوم. يرجى رفع صورة بصيغة JPG أو PNG', 'error');
+        return;
+      }
+      
+      // التحقق من حجم الملف (أقل من 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        showResult('❌ حجم الملف كبير جداً. يرجى رفع صورة أصغر من 10 ميجابايت', 'error');
+        return;
+      }
+      
+      // تعطيل الزر وإظهار حالة التحميل
+      analyzeBtn.disabled = true;
+      btnText.innerHTML = '⏳ جاري التحليل... <span class="loading"></span>';
+      resultDiv.classList.remove('show', 'error', 'success');
+      
+      try {
+        const base64 = await fileToBase64(file);
+        const analysis = await analyzeChart(base64);
+        showResult(`<strong>📌 التحليل الفوري:</strong><br><br>${analysis}`, 'success');
+      } catch (error) {
+        console.error('خطأ في التحليل:', error);
+        showResult(`❌ حدث خطأ أثناء التحليل: ${error.message}<br>يرجى المحاولة مرة أخرى`, 'error');
+      } finally {
+        analyzeBtn.disabled = false;
+        btnText.textContent = '🔍 حلّل الشارت الآن';
+      }
+    });
+    
+    // تحويل الملف إلى Base64
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64 = reader.result.split(',')[1];
+          resolve(base64);
+        };
+        reader.onerror = () => reject(new Error('فشل في قراءة الملف'));
+        reader.readAsDataURL(file);
       });
-      const j = await r.json();
-      const ans = j.choices[0].message.content;
-      res.innerHTML = `<strong>📌 التحليل الفوري:</strong><br>${ans}`;
-    } catch (e) {
-      res.textContent = '❌ حدث خطأ، حاول مرة أخرى.';
     }
-  };
-};
-</script>
+    
+    // تحليل الشارت باستخدام OpenAI API
+    async function analyzeChart(base64Image) {
+      const requestBody = {
+        model: 'gpt-4-vision-preview',
+        messages: [
+          {
+            role: 'system',
+            content: 'أنت خبير متخصص في تحليل الفوليوم بروفايل (Volume Profile) والتحليل الفني للأسواق المالية. قدم تحليلاً دقيقاً ومختصراً باللغة العربية فقط بالتنسيق التالي:\n\n📍 نقطة الدخول: [السعر]\n🛑 وقف الخسارة: [السعر]\n🎯 الهدف الأول: [السعر]\n🎯 الهدف الثاني: [السعر] (اختياري)\n\nأو في حالة الانتظار:\n⏸️ انتظر عند: [السعر]\n✅ الشرط: [الشرط المطلوب]'
+          },
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: 'حلل هذا الشارت مع التركيز على مؤشر الفوليوم بروفايل (العمود الجانبي) وحدد نقاط الدخول والخروج المثالية'
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: `data:image/jpeg;base64,${base64Image}`,
+                  detail: 'high'
+                }
+              }
+            ]
+          }
+        ],
+        max_tokens: 300,
+        temperature: 0.7
+      };
+      
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${OPENAI_KEY}`
+        },
+        body: JSON.stringify(requestBody)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || 'فشل الاتصال بخدمة التحليل');
+      }
+      
+      const data = await response.json();
+      
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        throw new Error('استجابة غير صالحة من الخادم');
+      }
+      
+      return data.choices[0].message.content;
+    }
+    
+    // عرض النتيجة
+    function showResult(message, type = '') {
+      resultDiv.innerHTML = message;
+      resultDiv.className = 'show';
+      if (type) {
+        resultDiv.classList.add(type);
+      }
+      resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  </script>
 </body>
 </html>
