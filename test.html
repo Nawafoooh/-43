@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نافس - لوحة تحكم المعلم</title>
+    <title>نافس - لوحة تحكم المعلمة</title>
     <style>
         * {
             margin: 0;
@@ -45,7 +45,7 @@
         .logo {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #2980b9, #3498db);
+            background: linear-gradient(135deg, #4CAF50, #45a049);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -53,7 +53,7 @@
             color: white;
             font-size: 32px;
             font-weight: bold;
-            box-shadow: 0 5px 15px rgba(41, 128, 185, 0.3);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
         }
 
         .title-section h1 {
@@ -66,7 +66,7 @@
         }
 
         .subtitle {
-            color: #3498db;
+            color: #e67e22;
             font-size: 1.2em;
             font-weight: 600;
             margin-bottom: 15px;
@@ -152,7 +152,7 @@
         }
 
         .icon.questions { background: linear-gradient(135deg, #3498db, #2980b9); }
-        .icon.students { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .icon.students { background: linear-gradient(135deg, #e74c3c, #c0392b); }
         .icon.reports { background: linear-gradient(135deg, #f39c12, #e67e22); }
         .icon.settings { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
         .icon.disq { background: linear-gradient(135deg, #e74c3c, #c0392b); }
@@ -167,7 +167,7 @@
             justify-content: space-between;
             align-items: center;
             transition: all 0.3s ease;
-            border-right: 5px solid #3498db;
+            border-right: 5px solid #e74c3c;
         }
 
         .student-item:hover {
@@ -196,8 +196,8 @@
         .student-score {
             font-size: 24px;
             font-weight: bold;
-            color: #3498db;
-            background: #e3f2fd;
+            color: #27ae60;
+            background: #d4edda;
             padding: 10px 20px;
             border-radius: 10px;
         }
@@ -286,10 +286,6 @@
 
         .stat-card.red {
             background: linear-gradient(135deg, #e74c3c, #c0392b);
-        }
-
-        .stat-card.blue {
-            background: linear-gradient(135deg, #3498db, #2980b9);
         }
 
         .stat-number {
@@ -600,11 +596,11 @@
 
         /* Honor Board Styles */
         .top-student-item {
-            background: linear-gradient(135deg, #e8f4fd, #f0f8ff);
+            background: linear-gradient(135deg, #fff9e6, #fffbf0);
             padding: 25px;
             border-radius: 15px;
             margin-bottom: 20px;
-            border-right: 5px solid #3498db;
+            border-right: 5px solid #f39c12;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -682,7 +678,7 @@
         .top-student-score {
             font-size: 32px;
             font-weight: bold;
-            color: #3498db;
+            color: #27ae60;
             background: white;
             padding: 15px 25px;
             border-radius: 15px;
@@ -723,21 +719,21 @@
                 <div class="logo">ن</div>
                 <div class="title-section">
                     <h1>نافس</h1>
-                    <div class="subtitle">لوحة تحكم المعلم</div>
+                    <div class="subtitle">لوحة تحكم المعلمة</div>
                 </div>
             </div>
             <div class="school-info">
-                <strong>🏫 متوسطة المنذر بن عمرو الأنصاري</strong><br>
+                <strong>🏫 المتوسطة الثالثة والأربعون</strong><br>
                 📍 المدينة المنورة - المملكة العربية السعودية<br>
-                👨‍💼 <strong>إشراف الأستاذ نواف الصبحي</strong>
+                👩‍💼 <strong>إشراف الأستاذة ريم العنزي</strong>
             </div>
         </div>
 
         <!-- Tabs -->
         <div class="tabs">
             <button class="tab active" onclick="switchTab('questions')">📝 إدارة الأسئلة</button>
-            <button class="tab" onclick="switchTab('students')">👥 الطلاب</button>
-            <button class="tab" onclick="switchTab('disqualified')">🚫 المستبعدون</button>
+            <button class="tab" onclick="switchTab('students')">👥 الطالبات</button>
+            <button class="tab" onclick="switchTab('disqualified')">🚫 المستبعدات</button>
             <button class="tab" onclick="switchTab('reports')">🏆 لوحة الشرف</button>
             <button class="tab" onclick="switchTab('messages')">💬 الرسائل</button>
             <button class="tab" onclick="switchTab('settings')">⚙️ الإعدادات</button>
@@ -768,7 +764,7 @@
                 <div class="action-buttons">
                     <button class="btn success" onclick="addManualQuestion()">➕ إضافة سؤال يدوياً</button>
                     <button class="btn info" onclick="downloadTemplate()">📥 تحميل قالب CSV</button>
-                    <button class="btn info" onclick="publishQuestions()">🚀 نشر الأسئلة للطلاب</button>
+                    <button class="btn info" onclick="publishQuestions()">🚀 نشر الأسئلة للطالبات</button>
                     <button class="btn warning" onclick="clearAllQuestions()">🗑️ حذف جميع الأسئلة</button>
                 </div>
 
@@ -842,7 +838,7 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-number" id="totalStudents">0</div>
-                    <div class="stat-label">إجمالي الطلاب</div>
+                    <div class="stat-label">إجمالي الطالبات</div>
                 </div>
                 <div class="stat-card green">
                     <div class="stat-number" id="grade1Count">0</div>
@@ -852,7 +848,7 @@
                     <div class="stat-number" id="grade2Count">0</div>
                     <div class="stat-label">الصف الثاني</div>
                 </div>
-                <div class="stat-card blue">
+                <div class="stat-card red">
                     <div class="stat-number" id="grade3Count">0</div>
                     <div class="stat-label">الصف الثالث</div>
                 </div>
@@ -861,10 +857,10 @@
             <div class="card">
                 <div class="card-title">
                     <div class="icon students">👥</div>
-                    <span>قائمة الطلاب</span>
+                    <span>قائمة الطالبات</span>
                 </div>
 
-                <div class="loading" id="studentsLoading"><p>جاري تحميل بيانات الطلاب...</p></div>
+                <div class="loading" id="studentsLoading"><p>جاري تحميل بيانات الطالبات...</p></div>
                 <div id="studentsList"></div>
             </div>
         </div>
@@ -874,25 +870,25 @@
             <div class="stats-grid">
                 <div class="stat-card red">
                     <div class="stat-number" id="disqualifiedCount">0</div>
-                    <div class="stat-label">عدد المستبعدين</div>
+                    <div class="stat-label">عدد المستبعدات</div>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-title">
                     <div class="icon disq">🚫</div>
-                    <span>الطلاب المستبعدون من المسابقة</span>
+                    <span>الطالبات المستبعدات من المسابقة</span>
                 </div>
 
                 <div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-right: 4px solid #f39c12;">
                     <h4 style="color: #856404; margin-bottom: 10px;">📌 معلومات هامة</h4>
                     <p style="color: #856404; line-height: 1.8;">
-                        • الطلاب المستبعدون هم من حصلوا على درجات أعلى من 204 (محاولة تلاعب)<br>
-                        • يمكنك إعادة أي طالب للمسابقة بالضغط على زر "إعادة للمسابقة"<br>
-                        • <strong>خيار جديد:</strong> يمكنك اختيار الحفاظ على نقاطه الحالية أو تصفيرها<br>
-                        • <strong>استئناف ذكي:</strong> سيستأنف الطالب من نفس السؤال الذي توقف عنده<br>
-                        • الإجابات السابقة محفوظة ولن يحتاج للإجابة عليها مرة أخرى<br>
-                        • إذا اخترت تصفير النقاط، سيبدأ من 0 نقطة لكن من نفس السؤال الحالي
+                        • الطالبات المستبعدات هن من حصلن على درجات أعلى من 204 (محاولة تلاعب)<br>
+                        • يمكنك إعادة أي طالبة للمسابقة بالضغط على زر "إعادة للمسابقة"<br>
+                        • <strong>خيار جديد:</strong> يمكنك اختيار الحفاظ على نقاطها الحالية أو تصفيرها<br>
+                        • <strong>استئناف ذكي:</strong> ستستأنف الطالبة من نفس السؤال الذي توقفت عنده<br>
+                        • الإجابات السابقة محفوظة ولن تحتاج للإجابة عليها مرة أخرى<br>
+                        • إذا اخترت تصفير النقاط، ستبدأ من 0 نقطة لكن من نفس السؤال الحالي
                     </p>
                 </div>
 
@@ -980,7 +976,7 @@
             <div class="card">
                 <div class="card-title">
                     <div class="icon messages">💬</div>
-                    <span>رسائل الطلاب</span>
+                    <span>رسائل الطالبات</span>
                 </div>
 
                 <div class="filter-buttons">
@@ -1023,10 +1019,10 @@
                         <strong>📝 عدد الأسئلة:</strong> <span id="totalQuestionsCount">0</span>
                     </p>
                     <p style="margin: 10px 0; color: #555;">
-                        <strong>👥 عدد الطلاب:</strong> <span id="totalStudentsCount">0</span>
+                        <strong>👥 عدد الطالبات:</strong> <span id="totalStudentsCount">0</span>
                     </p>
                     <p style="margin: 10px 0; color: #555;">
-                        <strong>🚫 عدد المستبعدين:</strong> <span id="totalDisqualifiedCount">0</span>
+                        <strong>🚫 عدد المستبعدات:</strong> <span id="totalDisqualifiedCount">0</span>
                     </p>
                     <p style="margin: 10px 0; color: #555;">
                         <strong>💬 عدد الرسائل:</strong> <span id="totalMessagesCount">0</span>
@@ -1040,7 +1036,7 @@
 
         <!-- Footer -->
         <div style="text-align: center; margin-top: 40px; color: white; font-size: 14px;">
-            <p>إشراف الأستاذ نواف الصبحي</p>
+            <p>إشراف الأستاذة ريم العنزي</p>
         </div>
     </div>
 
@@ -1054,15 +1050,15 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
         import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, writeBatch } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-        // Firebase Configuration - نفس الإعدادات للطلاب
+        // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyD28cfba2NmXlsfBci9jgbne21U9rZLJ2M",
-            authDomain: "nafis-new.firebaseapp.com",
-            projectId: "nafis-new",
-            storageBucket: "nafis-new.firebasestorage.app",
-            messagingSenderId: "366381122504",
-            appId: "1:366381122504:web:b76107c74d7d7ec82df6fd",
-            measurementId: "G-ZD3Z9LEGGM"
+            apiKey: "AIzaSyDX-CG9L4XaVPtqgexD0Da0owXEa0-I3YM",
+            authDomain: "nafis-girls-school.firebaseapp.com",
+            projectId: "nafis-girls-school",
+            storageBucket: "nafis-girls-school.firebasestorage.app",
+            messagingSenderId: "998478495565",
+            appId: "1:998478495565:web:67bb560b773ea1956ac104",
+            measurementId: "G-TPKDV51KNN"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -1243,7 +1239,7 @@
             if (!confirm(
                 `أسئلة جديدة: ${newQuestions.length}\n` +
                 `مكررة: ${duplicates.length}\n\n` +
-                `هل تريد إضافة الأسئلة الجديدة فقط؟`
+                `هل تريدين إضافة الأسئلة الجديدة فقط؟`
             )) return;
             
             showNotification('جارٍ إضافة الأسئلة الجديدة...', 'info');
@@ -1366,7 +1362,7 @@
         };
 
         window.deleteQuestion = async (id) => {
-            if (!confirm('هل أنت متأكد من حذف هذا السؤال؟')) return;
+            if (!confirm('هل أنت متأكدة من حذف هذا السؤال؟')) return;
             try {
                 await updateDoc(doc(db, 'questions', id), { active: false });
                 showNotification('تم حذف السؤال بنجاح', 'success');
@@ -1378,7 +1374,7 @@
         };
 
         window.clearAllQuestions = async () => {
-            if (!confirm('هل أنت متأكد من حذف جميع الأسئلة؟\n\n⚠️ هذا الإجراء لا يمكن التراجع عنه!')) return;
+            if (!confirm('هل أنت متأكدة من حذف جميع الأسئلة؟\n\n⚠️ هذا الإجراء لا يمكن التراجع عنه!')) return;
             try {
                 const batch = writeBatch(db);
                 currentQuestions.forEach(q => batch.update(doc(db, 'questions', q.id), { active: false }));
@@ -1393,7 +1389,7 @@
 
         window.publishQuestions = async () => {
             if (!currentQuestions.length) return showNotification('لا توجد أسئلة للنشر', 'error');
-            if (!confirm(`هل تريد نشر ${currentQuestions.length} سؤال للطلاب؟`)) return;
+            if (!confirm(`هل تريدين نشر ${currentQuestions.length} سؤال للطالبات؟`)) return;
             try {
                 const batch = writeBatch(db);
                 currentQuestions.forEach(q => batch.update(doc(db, 'questions', q.id), {
@@ -1401,7 +1397,7 @@
                     publishedAt: new Date()
                 }));
                 await batch.commit();
-                showNotification('تم نشر الأسئلة للطلاب بنجاح!', 'success');
+                showNotification('تم نشر الأسئلة للطالبات بنجاح!', 'success');
             } catch (e) {
                 console.error(e);
                 showNotification('حدث خطأ أثناء نشر الأسئلة', 'error');
@@ -1419,7 +1415,7 @@
                 displayStudents();
             } catch (e) {
                 console.error(e);
-                showNotification('حدث خطأ أثناء تحميل بيانات الطلاب', 'error');
+                showNotification('حدث خطأ أثناء تحميل بيانات الطالبات', 'error');
             } finally {
                 showLoading('studentsLoading', false);
             }
@@ -1447,7 +1443,7 @@
             if (!activeStudents.length) {
                 box.innerHTML = `
                     <div style="text-align:center;padding:40px;color:#7f8c8d">
-                        <p>لا يوجد طلاب مسجلون</p>
+                        <p>لا توجد طالبات مسجلات</p>
                     </div>`;
                 return;
             }
@@ -1455,7 +1451,7 @@
             box.innerHTML = activeStudents.map(st => {
                 const isCompleted = st.testCompleted === true;
                 const statusBadge = isCompleted 
-                    ? '<span style="background:#d4edda;color:#155724;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:5px">✅ أتم الاختبار</span>' 
+                    ? '<span style="background:#d4edda;color:#155724;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:5px">✅ أتمت الاختبار</span>' 
                     : (st.lastQuestion !== undefined && st.lastQuestion > 0 
                         ? '<span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:5px">⏳ قيد التقدم</span>' 
                         : '');
@@ -1464,7 +1460,7 @@
                 <div class="student-item">
                     <div class="student-info">
                         <h4>${st.name} ${statusBadge}</h4>
-                        <p>الصف ${st.grade} • رقم الطالب: ${st.code}</p>
+                        <p>الصف ${st.grade} • رقم الطالبة: ${st.code}</p>
                         <p style="font-size:12px;color:#7f8c8d">
                             آخر نشاط: ${st.lastActive ? new Date(st.lastActive.toDate()).toLocaleDateString('ar-SA') : 'غير متوفر'}
                         </p>
@@ -1491,7 +1487,7 @@
         }
 
         window.resetStudentTest = async (id, name) => {
-            if (!confirm(`إعادة اختبار الطالب ${name}؟\n\nسيتم إعادته للسؤال الأول مع الاحتفاظ بدرجته الحالية.`)) return;
+            if (!confirm(`إعادة اختبار الطالبة ${name}؟\n\nسيتم إعادتها للسؤال الأول مع الاحتفاظ بدرجتها الحالية.`)) return;
             try {
                 await updateDoc(doc(db, 'students', id), {
                     lastQuestion: 0,
@@ -1508,7 +1504,7 @@
         };
 
         window.fullResetStudent = async (id, name) => {
-            if (!confirm(`إعادة كاملة للطالب ${name}؟\n\n⚠️ سيتم حذف جميع بياناته (الدرجات والإجابات).`)) return;
+            if (!confirm(`إعادة كاملة للطالبة ${name}؟\n\n⚠️ سيتم حذف جميع بياناتها (الدرجات والإجابات).`)) return;
             try {
                 await updateDoc(doc(db, 'students', id), {
                     score: 0,
@@ -1528,14 +1524,14 @@
         };
 
         window.deleteStudent = async (id, name) => {
-            if (!confirm(`متأكد من حذف الطالب ${name} نهائياً من النظام؟`)) return;
+            if (!confirm(`متأكدة من حذف الطالبة ${name} نهائياً من النظام؟`)) return;
             try {
                 await deleteDoc(doc(db, 'students', id));
-                showNotification(`تم حذف الطالب ${name} بنجاح`, 'success');
+                showNotification(`تم حذف الطالبة ${name} بنجاح`, 'success');
                 loadStudents();
             } catch (e) {
                 console.error(e);
-                showNotification('خطأ أثناء حذف الطالب', 'error');
+                showNotification('خطأ أثناء حذف الطالبة', 'error');
             }
         };
 
@@ -1559,7 +1555,7 @@
                 displayDisqualified(disqualified);
             } catch (e) {
                 console.error(e);
-                showNotification('خطأ أثناء تحميل المستبعدين', 'error');
+                showNotification('خطأ أثناء تحميل المستبعدات', 'error');
             } finally {
                 showLoading('disqualifiedLoading', false);
             }
@@ -1571,8 +1567,8 @@
             if (!students.length) {
                 box.innerHTML = `
                     <div style="text-align:center;padding:40px;color:#27ae60;background:#d4edda;border-radius:15px">
-                        <h3 style="margin-bottom:10px">✅ لا يوجد طلاب مستبعدون</h3>
-                        <p>جميع الطلاب ملتزمون بقواعد المسابقة</p>
+                        <h3 style="margin-bottom:10px">✅ لا توجد طالبات مستبعدات</h3>
+                        <p>جميع الطالبات ملتزمات بقواعد المسابقة</p>
                     </div>`;
                 return;
             }
@@ -1594,16 +1590,16 @@
                 
                 const progressNote = currentQuestion > 0 
                     ? `<p style="font-size:12px;color:#3498db;margin-top:5px;font-weight:500">📝 السؤال الحالي: ${currentQuestion + 1} من ${totalQuestions}</p>`
-                    : '<p style="font-size:12px;color:#95a5a6;margin-top:5px">📝 لم يبدأ الاختبار بعد</p>';
+                    : '<p style="font-size:12px;color:#95a5a6;margin-top:5px">📝 لم تبدأ الاختبار بعد</p>';
                 
                 return `
                 <div class="student-item disqualified">
                     <div class="student-info">
                         <h4>
                             ${st.name} 
-                            <span class="disqualified-badge">⚠️ مستبعد</span>
+                            <span class="disqualified-badge">⚠️ مستبعدة</span>
                         </h4>
-                        <p>الصف ${st.grade} • رقم الطالب: ${st.code}</p>
+                        <p>الصف ${st.grade} • رقم الطالبة: ${st.code}</p>
                         <p style="color:#e74c3c;font-weight:bold;margin-top:5px">
                             سبب الاستبعاد: ${reason}
                         </p>
@@ -1632,11 +1628,11 @@
 
         window.reinstateStudent = async function(id, name, currentScore) {
             const choice = confirm(
-                `إعادة الطالب ${name} للمسابقة\n\n` +
-                `هل تريد الحفاظ على نقاطه الحالية؟\n\n` +
+                `إعادة الطالبة ${name} للمسابقة\n\n` +
+                `هل تريدين الحفاظ على نقاطها الحالية؟\n\n` +
                 `✅ موافق = الحفاظ على النقاط (${currentScore} نقطة)\n` +
                 `❌ إلغاء = إعادة النقاط إلى 0\n\n` +
-                `اختر الخيار المناسب:`
+                `اختاري الخيار المناسب:`
             );
             
             const keepScore = choice;
@@ -1645,14 +1641,14 @@
             const currentAnswers = studentDoc?.lastAnswers || [];
             
             const finalConfirm = confirm(
-                `تأكيد إعادة الطالب ${name}\n\n` +
+                `تأكيد إعادة الطالبة ${name}\n\n` +
                 `سيتم:\n` +
                 `✅ إزالة علامة الاستبعاد\n` +
                 `${keepScore ? `✅ الحفاظ على النقاط الحالية (${currentScore} نقطة)` : '⚠️ إعادة النقاط إلى 0'}\n` +
-                `✅ السماح له بالمشاركة مجدداً\n` +
+                `✅ السماح لها بالمشاركة مجدداً\n` +
                 `✅ استئناف الاختبار من السؤال رقم ${currentQuestion + 1}\n` +
-                `✅ الحفاظ على إجاباته السابقة\n\n` +
-                `هل تريد المتابعة؟`
+                `✅ الحفاظ على إجاباتها السابقة\n\n` +
+                `هل تريدين المتابعة؟`
             );
             
             if (!finalConfirm) return;
@@ -1678,8 +1674,8 @@
                 await updateDoc(doc(db, 'students', id), updateData);
                 
                 const message = keepScore 
-                    ? `✅ تم إعادة الطالب ${name} مع الحفاظ على ${currentScore} نقطة\n📝 سيستأنف من السؤال رقم ${currentQuestion + 1}` 
-                    : `✅ تم إعادة الطالب ${name} وتصفير النقاط\n📝 سيستأنف من السؤال رقم ${currentQuestion + 1}`;
+                    ? `✅ تم إعادة الطالبة ${name} مع الحفاظ على ${currentScore} نقطة\n📝 ستستأنف من السؤال رقم ${currentQuestion + 1}` 
+                    : `✅ تم إعادة الطالبة ${name} وتصفير النقاط\n📝 ستستأنف من السؤال رقم ${currentQuestion + 1}`;
                 
                 showNotification(message, 'success');
                 loadDisqualifiedStudents();
@@ -1687,7 +1683,7 @@
                 updateSystemInfo();
             } catch (e) {
                 console.error(e);
-                showNotification('❌ خطأ أثناء إعادة الطالب', 'error');
+                showNotification('❌ خطأ أثناء إعادة الطالبة', 'error');
             }
         };
 
@@ -1798,7 +1794,7 @@
         };
 
         window.markAsReplied = async function(id) {
-            if (!confirm('هل تريد تعليم هذه الرسالة كـ "تم الرد عليها"؟')) return;
+            if (!confirm('هل تريدين تعليم هذه الرسالة كـ "تم الرد عليها"؟')) return;
             try {
                 await updateDoc(doc(db, 'messages', id), { 
                     replied: true, 
@@ -1813,7 +1809,7 @@
         };
 
         window.deleteMessage = async function(id) {
-            if (!confirm('⚠️ هل أنت متأكد من حذف هذه الرسالة؟\n\nهذا الإجراء لا يمكن التراجع عنه!')) return;
+            if (!confirm('⚠️ هل أنت متأكدة من حذف هذه الرسالة؟\n\nهذا الإجراء لا يمكن التراجع عنه!')) return;
             try {
                 await deleteDoc(doc(db, 'messages', id));
                 showNotification('🗑️ تم حذف الرسالة', 'success');
@@ -1831,7 +1827,7 @@
                 return;
             }
             
-            if (!confirm(`هل تريد تعليم ${unread.length} رسالة كمقروءة؟`)) return;
+            if (!confirm(`هل تريدين تعليم ${unread.length} رسالة كمقروءة؟`)) return;
             
             try {
                 const batch = writeBatch(db);
@@ -1851,7 +1847,7 @@
         window.loadHonorBoard = async function() {
             showLoading('topStudentsLoading', true);
             try {
-                // جلب جميع الطلاب النشطين
+                // جلب جميع الطالبات النشطات
                 const snap = await getDocs(collection(db, 'students'));
                 const students = [];
                 
@@ -1859,7 +1855,7 @@
                     const data = d.data();
                     const score = data.score || 0;
                     
-                    // فقط الطلاب غير المستبعدين وذوي الدرجات الصحيحة
+                    // فقط الطالبات غير المستبعدات وذوات الدرجات الصحيحة
                     if (!data.disqualified && score <= MAX_SCORE && score > 0) {
                         students.push({ id: d.id, ...data });
                     }
@@ -1901,7 +1897,7 @@
                 box.innerHTML = `
                     <div style="text-align:center;padding:40px;color:#7f8c8d">
                         <p style="font-size:18px">🏆 لا توجد بيانات لعرضها</p>
-                        <p>ابدأ المسابقة وسيظهر الأوائل هنا</p>
+                        <p>ابدأي المسابقة وستظهر الأوائل هنا</p>
                     </div>`;
                 return;
             }
@@ -1918,10 +1914,10 @@
                     </div>
                     <div class="top-student-info">
                         <h3>${st.name}</h3>
-                        <p>الصف ${st.grade} • رقم الطالب: ${st.code}</p>
-                        <p style="color:#3498db;font-weight:500">
+                        <p>الصف ${st.grade} • رقم الطالبة: ${st.code}</p>
+                        <p style="color:#27ae60;font-weight:500">
                             ✅ ${st.questionsAnswered || 0} سؤال • 
-                            ${st.testCompleted ? '🎯 أتم الاختبار' : '⏳ قيد التقدم'}
+                            ${st.testCompleted ? '🎯 أتمت الاختبار' : '⏳ قيد التقدم'}
                         </p>
                     </div>
                     <div class="top-student-score">
@@ -1953,8 +1949,8 @@
                         <div style="font-size:28px;font-weight:bold">${medal}</div>
                         <div class="student-info">
                             <h4>${st.name}</h4>
-                            <p>رقم الطالب: ${st.code}</p>
-                            <p style="color:#3498db;font-size:12px">
+                            <p>رقم الطالبة: ${st.code}</p>
+                            <p style="color:#27ae60;font-size:12px">
                                 ${st.questionsAnswered || 0} سؤال • 
                                 ${st.testCompleted ? '✅ مكتمل' : '⏳ قيد التقدم'}
                             </p>
@@ -1992,7 +1988,7 @@
         };
 
         window.resetWeeklyScores = async () => {
-            if (!confirm('هل أنت متأكد من إعادة تعيين نقاط جميع الطلاب؟\n\n⚠️ ملاحظة: هذا سيعيد النقاط فقط ولن يسمح بإعادة الاختبار')) return;
+            if (!confirm('هل أنت متأكدة من إعادة تعيين نقاط جميع الطالبات؟\n\n⚠️ ملاحظة: هذا سيعيد النقاط فقط ولن يسمح بإعادة الاختبار')) return;
             try {
                 const batch = writeBatch(db);
                 allStudents.forEach(s => {
@@ -2012,9 +2008,9 @@
         };
 
         window.resetAllData = async () => {
-            if (!confirm('⚠️ تحذير خطير!\n\nهل أنت متأكد من إعادة تعيين النظام بالكامل؟\n\nسيتم حذف:\n- جميع بيانات الطلاب\n- جميع الدرجات\n- جميع التقدم في الاختبارات\n\nهذا الإجراء لا يمكن التراجع عنه!')) return;
+            if (!confirm('⚠️ تحذير خطير!\n\nهل أنت متأكدة من إعادة تعيين النظام بالكامل؟\n\nسيتم حذف:\n- جميع بيانات الطالبات\n- جميع الدرجات\n- جميع التقدم في الاختبارات\n\nهذا الإجراء لا يمكن التراجع عنه!')) return;
             
-            if (!confirm('⚠️ تأكيد أخير!\n\nاضغط موافق فقط إذا كنت متأكداً تماماً من إعادة تعيين النظام بالكامل.')) return;
+            if (!confirm('⚠️ تأكيد أخير!\n\nاضغطي موافق فقط إذا كنت متأكدة تماماً من إعادة تعيين النظام بالكامل.')) return;
 
             try {
                 const batch = writeBatch(db);
@@ -2056,7 +2052,7 @@
             setupFileUpload();
             loadQuestions();
             loadStudents();
-            console.log('✅ لوحة تحكم المعلم جاهزة بالكامل');
+            console.log('✅ لوحة تحكم المعلمة جاهزة بالكامل');
         });
 
     </script>
