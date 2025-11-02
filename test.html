@@ -158,143 +158,6 @@
         .icon.disq { background: linear-gradient(135deg, #e74c3c, #c0392b); }
         .icon.messages { background: linear-gradient(135deg, #16a085, #1abc9c); }
 
-        .upload-area {
-            border: 3px dashed #bdc3c7;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-
-        .upload-area:hover, .upload-area.dragover {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.05);
-        }
-
-        .upload-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-
-        .question-item {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            border-left: 5px solid #667eea;
-            transition: all 0.3s ease;
-        }
-
-        .question-item:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transform: translateX(-5px);
-        }
-
-        .question-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .question-subject {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .question-text {
-            font-size: 16px;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-
-        .question-options {
-            display: grid;
-            gap: 10px;
-        }
-
-        .option {
-            padding: 12px;
-            background: white;
-            border-radius: 10px;
-            border: 2px solid #ecf0f1;
-            transition: all 0.3s ease;
-        }
-
-        .option.correct {
-            background: #d4edda;
-            border-color: #28a745;
-            font-weight: 500;
-        }
-
-        .question-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .student-item {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s ease;
-            border-right: 5px solid #e74c3c;
-        }
-
-        .student-item:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transform: translateX(5px);
-        }
-
-        .student-item.disqualified {
-            background: linear-gradient(135deg, #ffe8ee, #ffd8e2);
-            border-right-color: #e74c3c;
-            border-left: 5px solid #e74c3c;
-        }
-
-        .student-info h4 {
-            color: #2c3e50;
-            margin-bottom: 5px;
-            font-size: 18px;
-        }
-
-        .student-info p {
-            color: #7f8c8d;
-            font-size: 14px;
-            margin-bottom: 3px;
-        }
-
-        .student-score {
-            font-size: 24px;
-            font-weight: bold;
-            color: #27ae60;
-            background: #d4edda;
-            padding: 10px 20px;
-            border-radius: 10px;
-        }
-
-        .student-score.invalid {
-            color: #e74c3c;
-            background: #ffe8ee;
-            text-decoration: line-through;
-        }
-
-        .student-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
         .btn {
             padding: 12px 24px;
             border: none;
@@ -404,21 +267,15 @@
             border-color: #667eea;
         }
 
-        .disqualified-badge {
-            display: inline-block;
-            background: #e74c3c;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.75em;
-            font-weight: bold;
-            margin-left: 8px;
-            animation: blinkBadge 1.5s infinite;
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
         }
 
-        @keyframes blinkBadge {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+        .loading.show {
+            display: block;
         }
 
         .notification {
@@ -444,97 +301,100 @@
         .notification.error { background: linear-gradient(135deg, #e74c3c, #c0392b); }
         .notification.info { background: linear-gradient(135deg, #3498db, #2980b9); }
 
-        .loading {
-            display: none;
-            text-align: center;
+        /* Messages Styles */
+        .message-item {
+            background: #f8f9fa;
             padding: 20px;
-            color: #7f8c8d;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-right: 5px solid #667eea;
+            transition: all 0.3s ease;
         }
 
-        .loading.show {
-            display: block;
+        .message-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateX(5px);
         }
 
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+        .message-item.unread {
+            background: #fff3cd;
+            border-right-color: #f39c12;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .message-item.replied {
+            background: #d4edda;
+            border-right-color: #28a745;
         }
 
-        .form-group {
-            margin-bottom: 20px;
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
+        .message-info {
+            flex: 1;
+        }
+
+        .message-info h4 {
             color: #2c3e50;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .message-info p {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin: 3px 0;
+        }
+
+        .message-content {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            line-height: 1.8;
+            color: #2c3e50;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .message-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 500;
         }
 
-        .form-group input, 
-        .form-group select, 
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ecf0f1;
-            border-radius: 10px;
-            font-size: 15px;
-            transition: border-color 0.3s ease;
-            font-family: inherit;
+        .message-badge.new {
+            background: #fff3cd;
+            color: #856404;
         }
 
-        .form-group input:focus, 
-        .form-group select:focus, 
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
+        .message-badge.read {
+            background: #d1ecf1;
+            color: #0c5460;
         }
 
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
+        .message-badge.replied {
+            background: #d4edda;
+            color: #155724;
         }
 
-        #manualQuestionForm {
-            display: none;
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 15px;
-            margin-top: 20px;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-top: 20px;
+        .hidden {
+            display: none !important;
         }
 
         @media (max-width: 768px) {
-            .student-item {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .student-actions {
-                width: 100%;
-                justify-content: center;
-            }
-
             .tabs {
                 flex-direction: column;
             }
@@ -565,197 +425,96 @@
 
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('questions')">📝 إدارة الأسئلة</button>
+            <button class="tab active" onclick="switchTab('messages')">💬 الرسائل</button>
+            <button class="tab" onclick="switchTab('questions')">📝 إدارة الأسئلة</button>
             <button class="tab" onclick="switchTab('students')">👥 الطالبات</button>
             <button class="tab" onclick="switchTab('disqualified')">🚫 المستبعدات</button>
-            <button class="tab" onclick="switchTab('messages')">💬 الرسائل</button>
             <button class="tab" onclick="switchTab('reports')">📊 التقارير</button>
             <button class="tab" onclick="switchTab('settings')">⚙️ الإعدادات</button>
         </div>
 
-        <!-- Questions Tab -->
-        <div id="questionsTab" class="tab-content active">
-            <div class="card">
-                <div class="card-title">
-                    <div class="icon questions">📝</div>
-                    <span>رفع ملف الأسئلة</span>
-                </div>
-                
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">📤</div>
-                    <h3>اسحب وأفلت ملف الأسئلة هنا</h3>
-                    <p style="color: #7f8c8d; margin: 10px 0;">أو</p>
-                    <button class="btn primary" onclick="document.getElementById('fileInput').click()">
-                        اختر ملف
-                    </button>
-                    <input type="file" id="fileInput" accept=".json,.csv">
-                    <p style="margin-top: 15px; color: #7f8c8d; font-size: 14px;">
-                        📄 يدعم النظام: <strong>CSV</strong> و <strong>JSON</strong><br>
-                        💡 تنسيق CSV: المادة, السؤال, الإجابة الصحيحة, خيار1, خيار2, خيار3, خيار4
-                    </p>
-                </div>
-
-                <div class="action-buttons">
-                    <button class="btn success" onclick="addManualQuestion()">➕ إضافة سؤال يدوياً</button>
-                    <button class="btn info" onclick="downloadTemplate()">📥 تحميل قالب CSV</button>
-                    <button class="btn info" onclick="publishQuestions()">🚀 نشر الأسئلة للطالبات</button>
-                    <button class="btn warning" onclick="clearAllQuestions()">🗑️ حذف جميع الأسئلة</button>
-                </div>
-
-                <!-- Manual Question Form -->
-                <div id="manualQuestionForm">
-                    <h3 style="margin-bottom: 20px; color: #2c3e50;">إضافة سؤال جديد</h3>
-                    <form id="questionForm">
-                        <div class="form-group">
-                            <label>نص السؤال:</label>
-                            <textarea id="questionText" placeholder="أدخل نص السؤال هنا..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>المادة:</label>
-                            <select id="questionSubject">
-                                <option value="">اختر المادة</option>
-                                <option value="رياضيات">رياضيات</option>
-                                <option value="علوم">علوم</option>
-                                <option value="لغة عربية">لغة عربية</option>
-                                <option value="لغة إنجليزية">لغة إنجليزية</option>
-                                <option value="اجتماعيات">اجتماعيات</option>
-                                <option value="دراسات إسلامية">دراسات إسلامية</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>الخيار الأول (A):</label>
-                            <input type="text" id="option1" placeholder="الخيار الأول">
-                        </div>
-                        <div class="form-group">
-                            <label>الخيار الثاني (B):</label>
-                            <input type="text" id="option2" placeholder="الخيار الثاني">
-                        </div>
-                        <div class="form-group">
-                            <label>الخيار الثالث (C):</label>
-                            <input type="text" id="option3" placeholder="الخيار الثالث">
-                        </div>
-                        <div class="form-group">
-                            <label>الخيار الرابع (D):</label>
-                            <input type="text" id="option4" placeholder="الخيار الرابع">
-                        </div>
-                        <div class="form-group">
-                            <label>الإجابة الصحيحة:</label>
-                            <select id="correctAnswer">
-                                <option value="">اختر الإجابة الصحيحة</option>
-                                <option value="0">A - الخيار الأول</option>
-                                <option value="1">B - الخيار الثاني</option>
-                                <option value="2">C - الخيار الثالث</option>
-                                <option value="3">D - الخيار الرابع</option>
-                            </select>
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button type="button" class="btn success" onclick="saveQuestion()">💾 حفظ السؤال</button>
-                            <button type="button" class="btn danger" onclick="cancelAddQuestion()">❌ إلغاء</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">
-                    <div class="icon questions">📋</div>
-                    <span>الأسئلة المتاحة</span>
-                </div>
-                
-                <div id="questionsLoading" class="loading">
-                    <div class="loading-spinner"></div>
-                    <p>جاري تحميل الأسئلة...</p>
-                </div>
-                
-                <div id="questionsList"></div>
-            </div>
-        </div>
-
-        <!-- Students Tab -->
-        <div id="studentsTab" class="tab-content">
+        <!-- Messages Tab -->
+        <div id="messagesTab" class="tab-content active">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-number" id="totalStudents">0</div>
-                    <div class="stat-label">إجمالي الطالبات</div>
-                </div>
-                <div class="stat-card green">
-                    <div class="stat-number" id="grade1Count">0</div>
-                    <div class="stat-label">الصف الأول</div>
+                    <div class="stat-number" id="totalMessages">0</div>
+                    <div class="stat-label">إجمالي الرسائل</div>
                 </div>
                 <div class="stat-card orange">
-                    <div class="stat-number" id="grade2Count">0</div>
-                    <div class="stat-label">الصف الثاني</div>
+                    <div class="stat-number" id="unreadMessages">0</div>
+                    <div class="stat-label">رسائل غير مقروءة</div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-number" id="readMessages">0</div>
+                    <div class="stat-label">رسائل مقروءة</div>
                 </div>
                 <div class="stat-card red">
-                    <div class="stat-number" id="grade3Count">0</div>
-                    <div class="stat-label">الصف الثالث</div>
+                    <div class="stat-number" id="repliedMessages">0</div>
+                    <div class="stat-label">تم الرد عليها</div>
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-title">
-                    <div class="icon students">👥</div>
-                    <span>قائمة الطالبات</span>
-                </div>
-
-                <div class="filter-buttons">
-                    <button class="filter-btn active" onclick="filterByGrade('all')">الكل</button>
-                    <button class="filter-btn" onclick="filterByGrade('1')">الصف الأول</button>
-                    <button class="filter-btn" onclick="filterByGrade('2')">الصف الثاني</button>
-                    <button class="filter-btn" onclick="filterByGrade('3')">الصف الثالث</button>
-                </div>
-
-                <div class="action-buttons">
-                    <button class="btn info" onclick="exportStudents()">📥 تصدير بيانات الطالبات</button>
-                    <button class="btn warning" onclick="resetWeeklyScores()">🔄 إعادة تعيين النقاط</button>
-                </div>
-
-                <div class="loading" id="studentsLoading"><p>جاري تحميل بيانات الطالبات...</p></div>
-                <div id="studentsList"></div>
-            </div>
-        </div>
-
-        <!-- Disqualified Tab -->
-        <div id="disqualifiedTab" class="tab-content">
-            <div class="stats-grid">
-                <div class="stat-card red">
-                    <div class="stat-number" id="disqualifiedCount">0</div>
-                    <div class="stat-label">عدد المستبعدات</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">
-                    <div class="icon disq">🚫</div>
-                    <span>الطالبات المستبعدات من المسابقة</span>
-                </div>
-
-                <div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-right: 4px solid #f39c12;">
-                    <h4 style="color: #856404; margin-bottom: 10px;">📌 معلومات هامة</h4>
-                    <p style="color: #856404; line-height: 1.8;">
-                        • الطالبات المستبعدات هن من حصلن على درجات أعلى من 204 (محاولة تلاعب)<br>
-                        • يمكنك إعادة أي طالبة للمسابقة بالضغط على زر "إعادة للمسابقة"<br>
-                        • <strong>خيار جديد:</strong> يمكنك اختيار الحفاظ على نقاطها الحالية أو تصفيرها<br>
-                        • <strong>استئناف ذكي:</strong> ستستأنف الطالبة من نفس السؤال الذي توقفت عنده<br>
-                        • الإجابات السابقة محفوظة ولن تحتاج للإجابة عليها مرة أخرى<br>
-                        • إذا اخترت تصفير النقاط، ستبدأ من 0 نقطة لكن من نفس السؤال الحالي
-                    </p>
-                </div>
-
-                <div class="loading" id="disqualifiedLoading"><p>جاري تحميل القائمة...</p></div>
-                <div id="disqualifiedList"></div>
-            </div>
-        </div>
-
-        <!-- Messages Tab -->
-        <div id="messagesTab" class="tab-content">
             <div class="card">
                 <div class="card-title">
                     <div class="icon messages">💬</div>
                     <span>رسائل الطالبات</span>
                 </div>
-                <p style="text-align:center;color:#7f8c8d;padding:40px">
-                    سيتم إضافة نظام الرسائل قريباً...
+
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="filterMessages('all')">الكل</button>
+                    <button class="filter-btn" onclick="filterMessages('unread')">غير مقروءة</button>
+                    <button class="filter-btn" onclick="filterMessages('read')">مقروءة</button>
+                    <button class="filter-btn" onclick="filterMessages('replied')">تم الرد</button>
+                </div>
+
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
+                    <button class="btn success" onclick="loadMessages()">🔄 تحديث الرسائل</button>
+                    <button class="btn warning" onclick="markAllAsRead()">✅ تعليم الكل كمقروء</button>
+                </div>
+
+                <div id="messagesLoading" class="loading">
+                    <p>جاري تحميل الرسائل...</p>
+                </div>
+
+                <div id="messagesList"></div>
+            </div>
+        </div>
+
+        <!-- Questions Tab -->
+        <div id="questionsTab" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <div class="icon questions">📝</div>
+                    <span>إدارة الأسئلة</span>
+                </div>
+                <p style="text-align:center;padding:40px;color:#7f8c8d">
+                    تبويب إدارة الأسئلة...
+                </p>
+            </div>
+        </div>
+
+        <!-- Students Tab -->
+        <div id="studentsTab" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <div class="icon students">👥</div>
+                    <span>إدارة الطالبات</span>
+                </div>
+                <p style="text-align:center;padding:40px;color:#7f8c8d">
+                    تبويب إدارة الطالبات...
+                </p>
+            </div>
+        </div>
+
+        <!-- Disqualified Tab -->
+        <div id="disqualifiedTab" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <div class="icon disq">🚫</div>
+                    <span>الطالبات المستبعدات</span>
+                </div>
+                <p style="text-align:center;padding:40px;color:#7f8c8d">
+                    تبويب الطالبات المستبعدات...
                 </p>
             </div>
         </div>
@@ -765,10 +524,10 @@
             <div class="card">
                 <div class="card-title">
                     <div class="icon reports">📊</div>
-                    <span>التقارير والإحصائيات</span>
+                    <span>التقارير</span>
                 </div>
-                <p style="text-align:center;color:#7f8c8d;padding:40px">
-                    سيتم إضافة التقارير المفصلة قريباً...
+                <p style="text-align:center;padding:40px;color:#7f8c8d">
+                    تبويب التقارير...
                 </p>
             </div>
         </div>
@@ -778,33 +537,11 @@
             <div class="card">
                 <div class="card-title">
                     <div class="icon settings">⚙️</div>
-                    <span>إعدادات النظام</span>
+                    <span>الإعدادات</span>
                 </div>
-
-                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <button class="btn success" onclick="backupData()">💾 تحميل نسخة احتياطية</button>
-                    <button class="btn warning" onclick="resetWeeklyScores()">🔄 إعادة تعيين النقاط</button>
-                    <button class="btn danger" onclick="resetAllData()">⚠️ إعادة تعيين النظام</button>
-                </div>
-
-                <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 15px;">
-                    <h3 style="color: #2c3e50; margin-bottom: 15px;">معلومات النظام</h3>
-                    <p style="margin: 10px 0; color: #555;">
-                        <strong>📅 آخر تحديث:</strong> <span id="lastUpdate">-</span>
-                    </p>
-                    <p style="margin: 10px 0; color: #555;">
-                        <strong>📝 عدد الأسئلة:</strong> <span id="totalQuestionsCount">0</span>
-                    </p>
-                    <p style="margin: 10px 0; color: #555;">
-                        <strong>👥 عدد الطالبات:</strong> <span id="totalStudentsCount">0</span>
-                    </p>
-                    <p style="margin: 10px 0; color: #555;">
-                        <strong>🚫 عدد المستبعدات:</strong> <span id="totalDisqualifiedCount">0</span>
-                    </p>
-                    <p style="margin: 10px 0; color: #555;">
-                        <strong>🔥 حالة الاتصال:</strong> <span id="connectionStatus" style="color: #27ae60;">متصل</span>
-                    </p>
-                </div>
+                <p style="text-align:center;padding:40px;color:#7f8c8d">
+                    تبويب الإعدادات...
+                </p>
             </div>
         </div>
 
@@ -822,7 +559,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-        import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, writeBatch } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        import { getFirestore, collection, getDocs, updateDoc, deleteDoc, doc, writeBatch } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
         // Firebase Configuration
         const firebaseConfig = {
@@ -838,11 +575,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const MAX_SCORE = 204;
-
-        let currentQuestions = [];
-        let allStudents = [];
-        let currentGradeFilter = 'all';
+        // Global Variables
+        let allMessages = [];
+        let currentMessageFilter = 'all';
 
         // Notification System
         window.showNotification = function(message, type = 'info') {
@@ -877,703 +612,170 @@
             event.target.classList.add('active');
             document.getElementById(tabName + 'Tab').classList.add('active');
 
-            if (tabName === 'questions') loadQuestions();
-            if (tabName === 'students') loadStudents();
-            if (tabName === 'disqualified') loadDisqualifiedStudents();
-            if (tabName === 'settings') updateSystemInfo();
+            if (tabName === 'messages') loadMessages();
         };
 
-        // File Upload Setup
-        function setupFileUpload() {
-            const uploadArea = document.getElementById('uploadArea');
-            const fileInput = document.getElementById('fileInput');
-            
-            uploadArea.addEventListener('click', () => fileInput.click());
-            uploadArea.addEventListener('dragover', e => { 
-                e.preventDefault(); 
-                uploadArea.classList.add('dragover'); 
-            });
-            uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
-            uploadArea.addEventListener('drop', e => {
-                e.preventDefault(); 
-                uploadArea.classList.remove('dragover');
-                if (e.dataTransfer.files.length) handleFileUpload(e.dataTransfer.files[0]);
-            });
-            fileInput.addEventListener('change', e => { 
-                if (e.target.files.length) handleFileUpload(e.target.files[0]); 
-            });
-        }
-
-        function handleFileUpload(file) {
-            const allowed = ['.csv', '.json'];
-            const ext = file.name.toLowerCase().substr(file.name.lastIndexOf('.'));
-            if (!allowed.includes(ext)) return showNotification('نوع الملف غير مدعوم. يرجى استخدام CSV أو JSON', 'error');
-            
-            const reader = new FileReader();
-            reader.onload = e => {
-                try {
-                    if (ext === '.json') processQuestions(JSON.parse(e.target.result));
-                    else if (ext === '.csv') processQuestions(parseCSV(e.target.result));
-                } catch { 
-                    showNotification('خطأ في معالجة الملف. تأكد من صحة التنسيق', 'error'); 
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function parseCSV(csvText) {
-            const lines = csvText.split('\n');
-            const questions = [];
-            
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue;
+        // Messages Management
+        window.loadMessages = async function() {
+            showLoading('messagesLoading', true);
+            try {
+                const snap = await getDocs(collection(db, 'messages'));
+                allMessages = [];
+                snap.forEach(d => allMessages.push({ id: d.id, ...d.data() }));
                 
-                const cols = line.split(',').map(c => c.trim().replace(/"/g, ''));
+                // ترتيب الرسائل من الأحدث للأقدم
+                allMessages.sort((a, b) => {
+                    const timeA = a.timestamp?.toDate() || new Date(0);
+                    const timeB = b.timestamp?.toDate() || new Date(0);
+                    return timeB - timeA;
+                });
                 
-                if (cols.length >= 7) {
-                    const subject = cols[0] || 'عام';
-                    const questionText = cols[1];
-                    const correct = cols[2];
-                    const options = [cols[3], cols[4], cols[5], cols[6]];
-                    
-                    if (!questionText) continue;
-                    
-                    const correctIndex = options.indexOf(correct);
-                    
-                    questions.push({
-                        question: questionText,
-                        options: options,
-                        correct: correctIndex >= 0 ? correctIndex : 0,
-                        subject: subject
-                    });
-                }
-            }
-            return questions;
-        }
-
-        async function processQuestions(questionsData) {
-            let questions = [];
-            
-            if (questionsData.nafes_exam) questions = questionsData.nafes_exam;
-            else if (Array.isArray(questionsData)) questions = questionsData;
-            else return showNotification('تنسيق البيانات غير صحيح', 'error');
-            
-            const valid = questions.filter(q => 
-                q.question && 
-                q.options && 
-                Array.isArray(q.options) && 
-                q.options.length === 4 && 
-                q.correct !== undefined && 
-                q.subject
-            );
-            
-            if (!valid.length) return showNotification('لم يتم العثور على أسئلة صحيحة في الملف', 'error');
-            
-            showNotification('جارٍ معالجة الأسئلة...', 'info');
-            
-            const existingSnapshot = await getDocs(query(collection(db, 'questions'), where('active', '==', true)));
-            const existingMap = new Map();
-            
-            existingSnapshot.forEach(doc => {
-                const normalized = doc.data().question
-                    .trim()
-                    .replace(/\s+/g, ' ')
-                    .replace(/[.,،؟?!]/g, '')
-                    .toLowerCase();
-                existingMap.set(normalized, doc.id);
-            });
-            
-            const newQuestions = [];
-            const duplicates = [];
-            
-            valid.forEach(q => {
-                const normalized = q.question
-                    .trim()
-                    .replace(/\s+/g, ' ')
-                    .replace(/[.,،؟?!]/g, '')
-                    .toLowerCase();
-                    
-                if (!existingMap.has(normalized)) {
-                    newQuestions.push(q);
-                } else {
-                    duplicates.push(q.question);
-                }
-            });
-            
-            if (!newQuestions.length) {
-                return showNotification(
-                    `جميع الأسئلة (${valid.length}) موجودة مسبقاً!\nلم يتم إضافة أي أسئلة جديدة.`, 
-                    'error'
-                );
-            }
-            
-            if (!confirm(
-                `أسئلة جديدة: ${newQuestions.length}\n` +
-                `مكررة: ${duplicates.length}\n\n` +
-                `هل تريدين إضافة الأسئلة الجديدة فقط؟`
-            )) return;
-            
-            showNotification('جارٍ إضافة الأسئلة الجديدة...', 'info');
-            
-            const batch = writeBatch(db);
-            newQuestions.forEach(q => {
-                batch.set(doc(collection(db, 'questions')), {
-                    question: q.question.trim(),
-                    options: q.options.map(opt => opt.trim()),
-                    correct: parseInt(q.correct),
-                    subject: q.subject.trim(),
-                    createdAt: new Date(),
-                    active: true,
-                    published: true
-                });
-            });
-            
-            await batch.commit();
-            showNotification(`✅ تم إضافة ${newQuestions.length} سؤال بنجاح!`, 'success');
-            loadQuestions();
-        }
-
-        window.downloadTemplate = () => {
-            const csv = `المادة,السؤال,الإجابة الصحيحة,الخيار1,الخيار2,الخيار3,الخيار4
-رياضيات,ما قيمة 7 × 8 ؟,56,54,56,58,60
-علوم,ما هو الغاز الذي نتنفسه؟,الأكسجين,الأكسجين,النيتروجين,الهيدروجين,الهيليوم`;
-            
-            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'قالب_الأسئلة_نافس.csv';
-            link.click();
-            showNotification('تم تحميل قالب الأسئلة بنجاح! 📥', 'success');
-        };
-
-        // Questions Management
-        async function loadQuestions() {
-            showLoading('questionsLoading', true);
-            try {
-                const q = query(collection(db, 'questions'), where('active', '==', true));
-                const snap = await getDocs(q);
-                currentQuestions = [];
-                snap.forEach(d => currentQuestions.push({ id: d.id, ...d.data() }));
-                displayQuestions();
+                updateMessagesStats();
+                displayMessages();
+                showNotification('تم تحديث الرسائل بنجاح', 'success');
             } catch (e) {
                 console.error(e);
-                showNotification('خطأ أثناء تحميل الأسئلة', 'error');
+                showNotification('حدث خطأ أثناء تحميل الرسائل', 'error');
             } finally {
-                showLoading('questionsLoading', false);
-            }
-        }
-
-        function displayQuestions() {
-            const box = document.getElementById('questionsList');
-            if (!currentQuestions.length) {
-                box.innerHTML = `
-                    <div style="text-align:center;padding:40px;color:#7f8c8d">
-                        <p style="font-size: 18px; margin-bottom: 10px;">📝 لا توجد أسئلة حالياً</p>
-                        <p>قم برفع ملف الأسئلة أو إضافة أسئلة يدوياً</p>
-                    </div>`;
-                return;
-            }
-
-            box.innerHTML = currentQuestions.map((q, i) => `
-                <div class="question-item">
-                    <div class="question-header">
-                        <span class="question-subject">${q.subject}</span>
-                        <div class="question-actions">
-                            <button class="btn danger" onclick="deleteQuestion('${q.id}')">🗑️ حذف</button>
-                        </div>
-                    </div>
-                    <div class="question-text">${i + 1}. ${q.question}</div>
-                    <div class="question-options">
-                        ${q.options.map((opt, j) => `
-                            <div class="option ${j === q.correct ? 'correct' : ''}">
-                                ${String.fromCharCode(65 + j)}) ${opt}
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        window.addManualQuestion = () => {
-            document.getElementById('manualQuestionForm').style.display = 'block';
-            document.getElementById('questionForm').reset();
-        };
-
-        window.cancelAddQuestion = () => {
-            document.getElementById('manualQuestionForm').style.display = 'none';
-        };
-
-        window.saveQuestion = async () => {
-            const text = document.getElementById('questionText').value.trim();
-            const subject = document.getElementById('questionSubject').value;
-            const opts = [1, 2, 3, 4].map(n => document.getElementById('option' + n).value.trim());
-            const correct = parseInt(document.getElementById('correctAnswer').value);
-
-            if (!text) return showNotification('يرجى إدخال نص السؤال', 'error');
-            if (!subject) return showNotification('يرجى اختيار المادة', 'error');
-            if (opts.some(o => !o)) return showNotification('يرجى إدخال جميع الخيارات', 'error');
-            if (isNaN(correct) || correct < 0 || correct > 3) return showNotification('يرجى اختيار الإجابة الصحيحة', 'error');
-
-            try {
-                await addDoc(collection(db, 'questions'), {
-                    question: text,
-                    options: opts,
-                    correct,
-                    subject,
-                    createdAt: new Date(),
-                    active: true,
-                    published: true
-                });
-                showNotification('تم حفظ السؤال بنجاح!', 'success');
-                cancelAddQuestion();
-                loadQuestions();
-            } catch (e) {
-                console.error(e);
-                showNotification('حدث خطأ أثناء حفظ السؤال', 'error');
+                showLoading('messagesLoading', false);
             }
         };
 
-        window.deleteQuestion = async (id) => {
-            if (!confirm('هل أنت متأكدة من حذف هذا السؤال؟')) return;
-            try {
-                await updateDoc(doc(db, 'questions', id), { active: false });
-                showNotification('تم حذف السؤال بنجاح', 'success');
-                loadQuestions();
-            } catch (e) {
-                console.error(e);
-                showNotification('حدث خطأ أثناء حذف السؤال', 'error');
-            }
-        };
-
-        window.clearAllQuestions = async () => {
-            if (!confirm('هل أنت متأكدة من حذف جميع الأسئلة؟\n\n⚠️ هذا الإجراء لا يمكن التراجع عنه!')) return;
-            try {
-                const batch = writeBatch(db);
-                currentQuestions.forEach(q => batch.update(doc(db, 'questions', q.id), { active: false }));
-                await batch.commit();
-                showNotification('تم حذف جميع الأسئلة', 'success');
-                loadQuestions();
-            } catch (e) {
-                console.error(e);
-                showNotification('حدث خطأ أثناء حذف الأسئلة', 'error');
-            }
-        };
-
-        window.publishQuestions = async () => {
-            if (!currentQuestions.length) return showNotification('لا توجد أسئلة للنشر', 'error');
-            if (!confirm(`هل تريدين نشر ${currentQuestions.length} سؤال للطالبات؟`)) return;
-            try {
-                const batch = writeBatch(db);
-                currentQuestions.forEach(q => batch.update(doc(db, 'questions', q.id), {
-                    published: true,
-                    publishedAt: new Date()
-                }));
-                await batch.commit();
-                showNotification('تم نشر الأسئلة للطالبات بنجاح!', 'success');
-            } catch (e) {
-                console.error(e);
-                showNotification('حدث خطأ أثناء نشر الأسئلة', 'error');
-            }
-        };
-
-        // Students Management
-        async function loadStudents() {
-            showLoading('studentsLoading', true);
-            try {
-                const snap = await getDocs(collection(db, 'students'));
-                allStudents = [];
-                snap.forEach(d => allStudents.push({ id: d.id, ...d.data() }));
-                updateStudentsStats();
-                displayStudents();
-            } catch (e) {
-                console.error(e);
-                showNotification('حدث خطأ أثناء تحميل بيانات الطالبات', 'error');
-            } finally {
-                showLoading('studentsLoading', false);
-            }
-        }
-
-        function updateStudentsStats() {
-            const activeStudents = allStudents.filter(s => !s.disqualified && (s.score || 0) <= MAX_SCORE);
+        function updateMessagesStats() {
             const stats = {
-                total: activeStudents.length,
-                grade1: activeStudents.filter(s => s.grade === '1').length,
-                grade2: activeStudents.filter(s => s.grade === '2').length,
-                grade3: activeStudents.filter(s => s.grade === '3').length
+                total: allMessages.length,
+                unread: allMessages.filter(m => !m.read).length,
+                read: allMessages.filter(m => m.read && !m.replied).length,
+                replied: allMessages.filter(m => m.replied).length
             };
-            document.getElementById('totalStudents').textContent = stats.total;
-            document.getElementById('grade1Count').textContent = stats.grade1;
-            document.getElementById('grade2Count').textContent = stats.grade2;
-            document.getElementById('grade3Count').textContent = stats.grade3;
+            
+            document.getElementById('totalMessages').textContent = stats.total;
+            document.getElementById('unreadMessages').textContent = stats.unread;
+            document.getElementById('readMessages').textContent = stats.read;
+            document.getElementById('repliedMessages').textContent = stats.replied;
         }
 
-        function displayStudents() {
-            const activeStudents = allStudents.filter(s => !s.disqualified && (s.score || 0) <= MAX_SCORE);
-            const filtered = currentGradeFilter === 'all' ? activeStudents : activeStudents.filter(s => s.grade === currentGradeFilter);
-            filtered.sort((a, b) => (b.score || 0) - (a.score || 0));
+        function displayMessages() {
+            let filtered = allMessages;
             
-            const box = document.getElementById('studentsList');
+            if (currentMessageFilter === 'unread') {
+                filtered = allMessages.filter(m => !m.read);
+            } else if (currentMessageFilter === 'read') {
+                filtered = allMessages.filter(m => m.read && !m.replied);
+            } else if (currentMessageFilter === 'replied') {
+                filtered = allMessages.filter(m => m.replied);
+            }
+            
+            const box = document.getElementById('messagesList');
+            
             if (!filtered.length) {
                 box.innerHTML = `
                     <div style="text-align:center;padding:40px;color:#7f8c8d">
-                        <p>لا توجد طالبات مسجلات</p>
+                        <p style="font-size:18px">📭 لا توجد رسائل</p>
                     </div>`;
                 return;
             }
-
-            box.innerHTML = filtered.map(st => {
-                const isCompleted = st.testCompleted === true;
-                const statusBadge = isCompleted 
-                    ? '<span style="background:#d4edda;color:#155724;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:5px">✅ أتمت الاختبار</span>' 
-                    : (st.lastQuestion !== undefined && st.lastQuestion > 0 
-                        ? '<span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:5px">⏳ قيد التقدم</span>' 
-                        : '');
+            
+            box.innerHTML = filtered.map(msg => {
+                const messageClass = msg.replied ? 'replied' : !msg.read ? 'unread' : '';
+                const badge = msg.replied ? '<span class="message-badge replied">✅ تم الرد</span>' : 
+                             !msg.read ? '<span class="message-badge new">🔔 جديدة</span>' : 
+                             '<span class="message-badge read">👁️ مقروءة</span>';
+                
+                const timestamp = msg.timestamp?.toDate() || new Date();
+                const dateStr = timestamp.toLocaleString('ar-SA');
                 
                 return `
-                <div class="student-item">
-                    <div class="student-info">
-                        <h4>${st.name} ${statusBadge}</h4>
-                        <p>الصف ${st.grade} • رقم الطالبة: ${st.code}</p>
-                        <p style="font-size:12px;color:#7f8c8d">
-                            آخر نشاط: ${st.lastActive ? new Date(st.lastActive.toDate()).toLocaleDateString('ar-SA') : 'غير متوفر'}
-                        </p>
-                        ${st.lastQuestion !== undefined && st.lastQuestion > 0 ? 
-                            `<p style="font-size:12px;color:#3498db">📝 السؤال الحالي: ${st.lastQuestion + 1}</p>` : ''}
-                    </div>
-                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-                        <div class="student-score">${st.score || 0} نقطة</div>
-                        <div class="student-actions">
-                            ${isCompleted ? 
-                                `<button class="btn info" onclick="resetStudentTest('${st.id}','${st.name}')" title="إعادة للسؤال الأول">
-                                    🔄 إعادة الاختبار
-                                </button>` : ''}
-                            <button class="btn warning" onclick="fullResetStudent('${st.id}','${st.name}')" title="إعادة كاملة">
-                                ⚡ إعادة كاملة
-                            </button>
-                            <button class="btn danger" onclick="deleteStudent('${st.id}','${st.name}')">
-                                🗑️ حذف
-                            </button>
+                <div class="message-item ${messageClass}">
+                    <div class="message-header">
+                        <div class="message-info">
+                            <h4>${msg.studentName} ${badge}</h4>
+                            <p>الصف ${msg.grade} - الشعبة ${msg.class} • ${msg.studentCode}</p>
+                            <p style="color:#999;font-size:12px;">📅 ${dateStr} • 📝 ${msg.wordCount || 0} كلمة</p>
                         </div>
+                    </div>
+                    <div class="message-content">${msg.message}</div>
+                    <div class="message-actions">
+                        ${!msg.read ? `<button class="btn info" onclick="markAsRead('${msg.id}')">✅ تعليم كمقروء</button>` : ''}
+                        ${msg.read && !msg.replied ? `<button class="btn success" onclick="markAsReplied('${msg.id}')">💬 تعليم كتم الرد</button>` : ''}
+                        <button class="btn danger" onclick="deleteMessage('${msg.id}')">🗑️ حذف</button>
                     </div>
                 </div>`;
             }).join('');
         }
 
-        window.filterByGrade = function(grade) {
-            currentGradeFilter = grade;
+        window.filterMessages = function(filter) {
+            currentMessageFilter = filter;
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            displayStudents();
+            displayMessages();
         };
 
-        window.resetStudentTest = async (id, name) => {
-            if (!confirm(`إعادة اختبار الطالبة ${name}؟\n\nسيتم إعادتها للسؤال الأول مع الاحتفاظ بدرجتها الحالية.`)) return;
+        window.markAsRead = async function(id) {
             try {
-                await updateDoc(doc(db, 'students', id), {
-                    lastQuestion: 0,
-                    lastAnswers: [],
-                    testCompleted: false,
-                    resetAt: new Date()
+                await updateDoc(doc(db, 'messages', id), { read: true });
+                showNotification('✅ تم تعليم الرسالة كمقروءة', 'success');
+                loadMessages();
+            } catch (e) {
+                console.error(e);
+                showNotification('❌ حدث خطأ', 'error');
+            }
+        };
+
+        window.markAsReplied = async function(id) {
+            if (!confirm('هل تريدين تعليم هذه الرسالة كـ "تم الرد عليها"؟')) return;
+            try {
+                await updateDoc(doc(db, 'messages', id), { 
+                    replied: true, 
+                    repliedAt: new Date() 
                 });
-                showNotification(`تم إعادة اختبار ${name}`, 'success');
-                loadStudents();
+                showNotification('✅ تم تعليم الرسالة', 'success');
+                loadMessages();
             } catch (e) {
                 console.error(e);
-                showNotification('حدث خطأ', 'error');
+                showNotification('❌ حدث خطأ', 'error');
             }
         };
 
-        window.fullResetStudent = async (id, name) => {
-            if (!confirm(`إعادة كاملة للطالبة ${name}؟\n\n⚠️ سيتم حذف جميع بياناتها (الدرجات والإجابات).`)) return;
+        window.deleteMessage = async function(id) {
+            if (!confirm('⚠️ هل أنت متأكدة من حذف هذه الرسالة؟\n\nهذا الإجراء لا يمكن التراجع عنه!')) return;
             try {
-                await updateDoc(doc(db, 'students', id), {
-                    score: 0,
-                    lastQuestion: 0,
-                    lastAnswers: [],
-                    questionsAnswered: 0,
-                    testCompleted: false,
-                    disqualified: false,
-                    fullResetAt: new Date()
-                });
-                showNotification(`تم إعادة ${name} بالكامل`, 'success');
-                loadStudents();
+                await deleteDoc(doc(db, 'messages', id));
+                showNotification('🗑️ تم حذف الرسالة', 'success');
+                loadMessages();
             } catch (e) {
                 console.error(e);
-                showNotification('حدث خطأ', 'error');
+                showNotification('❌ حدث خطأ أثناء الحذف', 'error');
             }
         };
 
-        window.deleteStudent = async (id, name) => {
-            if (!confirm(`متأكدة من حذف الطالبة ${name} نهائياً من النظام؟`)) return;
-            try {
-                await deleteDoc(doc(db, 'students', id));
-                showNotification(`تم حذف الطالبة ${name} بنجاح`, 'success');
-                loadStudents();
-            } catch (e) {
-                console.error(e);
-                showNotification('خطأ أثناء حذف الطالبة', 'error');
-            }
-        };
-
-        window.exportStudents = () => {
-            if (!allStudents.length) return showNotification('لا توجد بيانات للتصدير', 'error');
-            
-            const csv = 'الاسم,الصف,رقم الطالبة,النقاط,حالة الاختبار,تاريخ التسجيل\n' + 
-                allStudents.map(s => 
-                    `"${s.name}","${s.grade}","${s.code}","${s.score || 0}","${s.testCompleted ? 'مكتمل' : 'غير مكتمل'}","${s.createdAt ? new Date(s.createdAt.toDate()).toLocaleDateString('ar-SA') : 'غير متاح'}"`
-                ).join('\n');
-            
-            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `طالبات_نافس_${new Date().toLocaleDateString('ar-SA')}.csv`;
-            link.click();
-            showNotification('تم تصدير قائمة الطالبات', 'success');
-        };
-
-        window.resetWeeklyScores = async () => {
-            if (!confirm('هل أنت متأكدة من إعادة تعيين نقاط جميع الطالبات؟\n\n⚠️ ملاحظة: هذا سيعيد النقاط فقط ولن يسمح بإعادة الاختبار')) return;
-            try {
-                const batch = writeBatch(db);
-                allStudents.forEach(s => {
-                    batch.update(doc(db, 'students', s.id), {
-                        score: 0,
-                        questionsAnswered: 0,
-                        weeklyReset: new Date()
-                    });
-                });
-                await batch.commit();
-                showNotification('تم إعادة تعيين النقاط بنجاح', 'success');
-                loadStudents();
-            } catch (e) {
-                console.error(e);
-                showNotification('حدث خطأ أثناء إعادة التعيين', 'error');
-            }
-        };
-
-        // 🌟 Disqualified Students Management
-        async function loadDisqualifiedStudents() {
-            showLoading('disqualifiedLoading', true);
-            try {
-                const snap = await getDocs(collection(db, 'students'));
-                const disqualified = [];
-                
-                snap.forEach(d => {
-                    const data = d.data();
-                    const score = data.score || 0;
-                    
-                    if (data.disqualified === true || score > MAX_SCORE) {
-                        disqualified.push({ id: d.id, ...data });
-                    }
-                });
-                
-                document.getElementById('disqualifiedCount').textContent = disqualified.length;
-                displayDisqualified(disqualified);
-            } catch (e) {
-                console.error(e);
-                showNotification('خطأ أثناء تحميل المستبعدات', 'error');
-            } finally {
-                showLoading('disqualifiedLoading', false);
-            }
-        }
-
-        function displayDisqualified(students) {
-            const box = document.getElementById('disqualifiedList');
-            
-            if (!students.length) {
-                box.innerHTML = `
-                    <div style="text-align:center;padding:40px;color:#27ae60;background:#d4edda;border-radius:15px">
-                        <h3 style="margin-bottom:10px">✅ لا توجد طالبات مستبعدات</h3>
-                        <p>جميع الطالبات ملتزمات بقواعد المسابقة</p>
-                    </div>`;
+        window.markAllAsRead = async function() {
+            const unread = allMessages.filter(m => !m.read);
+            if (!unread.length) {
+                showNotification('✅ جميع الرسائل مقروءة بالفعل', 'info');
                 return;
             }
-
-            box.innerHTML = students.map(st => {
-                const score = st.score || 0;
-                const isScoreValid = score <= MAX_SCORE;
-                const currentQuestion = st.lastQuestion || 0;
-                const totalQuestions = 204;
-                
-                const reason = score > MAX_SCORE 
-                    ? `درجة غير صحيحة: ${score}/${MAX_SCORE} ❌` 
-                    : (st.disqualificationReason || 'محاولة تلاعب بالدرجات');
-                
-                const scoreClass = isScoreValid ? 'student-score' : 'student-score invalid';
-                const scoreNote = isScoreValid 
-                    ? '<p style="font-size:11px;color:#27ae60;margin-top:3px">✓ النقاط صحيحة - يمكن الحفاظ عليها عند الاسترجاع</p>'
-                    : '<p style="font-size:11px;color:#e74c3c;margin-top:3px">✗ نقاط غير صحيحة - يُنصح بتصفيرها</p>';
-                
-                const progressNote = currentQuestion > 0 
-                    ? `<p style="font-size:12px;color:#3498db;margin-top:5px;font-weight:500">📝 السؤال الحالي: ${currentQuestion + 1} من ${totalQuestions}</p>`
-                    : '<p style="font-size:12px;color:#95a5a6;margin-top:5px">📝 لم تبدأ الاختبار بعد</p>';
-                
-                return `
-                <div class="student-item disqualified">
-                    <div class="student-info">
-                        <h4>
-                            ${st.name} 
-                            <span class="disqualified-badge">⚠️ مستبعدة</span>
-                        </h4>
-                        <p>الصف ${st.grade} • رقم الطالبة: ${st.code}</p>
-                        <p style="color:#e74c3c;font-weight:bold;margin-top:5px">
-                            سبب الاستبعاد: ${reason}
-                        </p>
-                        ${progressNote}
-                        <p style="font-size:12px;color:#95a5a6;margin-top:3px">
-                            تم الاستبعاد: ${st.disqualifiedAt ? new Date(st.disqualifiedAt.toDate()).toLocaleString('ar-SA') : 'غير متاح'}
-                        </p>
-                    </div>
-                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;flex-direction:column">
-                        <div>
-                            <div class="${scoreClass}">${score} نقطة</div>
-                            ${scoreNote}
-                        </div>
-                        <div class="student-actions">
-                            <button class="btn success" onclick="reinstateStudent('${st.id}','${st.name}',${score})" title="إعادة للمسابقة مع استئناف من نفس السؤال">
-                                ✅ إعادة للمسابقة
-                            </button>
-                            <button class="btn danger" onclick="deleteStudent('${st.id}','${st.name}')">
-                                🗑️ حذف نهائياً
-                            </button>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        // 🌟 دالة إعادة الطالبة المستبعدة للمسابقة (مع خيار الحفاظ على النقاط والتقدم)
-        window.reinstateStudent = async function(id, name, currentScore) {
-            const choice = confirm(
-                `إعادة الطالبة ${name} للمسابقة\n\n` +
-                `هل تريدين الحفاظ على نقاطها الحالية؟\n\n` +
-                `✅ موافق = الحفاظ على النقاط (${currentScore} نقطة)\n` +
-                `❌ إلغاء = إعادة النقاط إلى 0\n\n` +
-                `اختاري الخيار المناسب:`
-            );
             
-            const keepScore = choice;
+            if (!confirm(`هل تريدين تعليم ${unread.length} رسالة كمقروءة؟`)) return;
             
-            const studentDoc = allStudents.find(s => s.id === id);
-            const currentQuestion = studentDoc?.lastQuestion || 0;
-            const currentAnswers = studentDoc?.lastAnswers || [];
-            
-            const finalConfirm = confirm(
-                `تأكيد إعادة الطالبة ${name}\n\n` +
-                `سيتم:\n` +
-                `✅ إزالة علامة الاستبعاد\n` +
-                `${keepScore ? `✅ الحفاظ على النقاط الحالية (${currentScore} نقطة)` : '⚠️ إعادة النقاط إلى 0'}\n` +
-                `✅ السماح لها بالمشاركة مجدداً\n` +
-                `✅ استئناف الاختبار من السؤال رقم ${currentQuestion + 1}\n` +
-                `✅ الحفاظ على إجاباتها السابقة\n\n` +
-                `هل تريدين المتابعة؟`
-            );
-            
-            if (!finalConfirm) return;
-            
-            try {
-                const updateData = {
-                    disqualified: false,
-                    disqualificationReason: '',
-                    testCompleted: false,
-                    lastQuestion: currentQuestion,
-                    lastAnswers: currentAnswers,
-                    reinstatedAt: new Date(),
-                    reinstatedWithScore: keepScore,
-                    reinstatedFromQuestion: currentQuestion,
-                    lastActive: new Date()
-                };
-                
-                if (!keepScore) {
-                    updateData.score = 0;
-                    updateData.questionsAnswered = 0;
-                }
-                
-                await updateDoc(doc(db, 'students', id), updateData);
-                
-                const message = keepScore 
-                    ? `✅ تم إعادة الطالبة ${name} مع الحفاظ على ${currentScore} نقطة\n📝 ستستأنف من السؤال رقم ${currentQuestion + 1}` 
-                    : `✅ تم إعادة الطالبة ${name} وتصفير النقاط\n📝 ستستأنف من السؤال رقم ${currentQuestion + 1}`;
-                
-                showNotification(message, 'success');
-                loadDisqualifiedStudents();
-                loadStudents();
-                updateSystemInfo();
-            } catch (e) {
-                console.error(e);
-                showNotification('❌ خطأ أثناء إعادة الطالبة', 'error');
-            }
-        };
-
-        // Settings
-        window.backupData = async () => {
-            try {
-                const stSnap = await getDocs(collection(db, 'students'));
-                const qSnap = await getDocs(collection(db, 'questions'));
-                
-                const backup = {
-                    timestamp: new Date().toISOString(),
-                    students: stSnap.docs.map(d => ({ id: d.id, ...d.data() })),
-                    questions: qSnap.docs.map(d => ({ id: d.id, ...d.data() }))
-                };
-
-                const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = `نسخة_احتياطية_نافس_${new Date().toLocaleDateString('ar-SA')}.json`;
-                link.click();
-                showNotification('تم تحميل النسخة الاحتياطية', 'success');
-            } catch (e) {
-                console.error(e);
-                showNotification('حدث خطأ أثناء إنشاء النسخة الاحتياطية', 'error');
-            }
-        };
-
-        window.resetAllData = async () => {
-            if (!confirm('⚠️ تحذير خطير!\n\nهل أنت متأكدة من إعادة تعيين النظام بالكامل؟\n\nسيتم حذف:\n- جميع بيانات الطالبات\n- جميع الدرجات\n- جميع التقدم في الاختبارات\n\nهذا الإجراء لا يمكن التراجع عنه!')) return;
-            
-            if (!confirm('⚠️ تأكيد أخير!\n\nاضغطي موافق فقط إذا كنت متأكدة تماماً من إعادة تعيين النظام بالكامل.')) return;
-
             try {
                 const batch = writeBatch(db);
-                allStudents.forEach(s => {
-                    batch.update(doc(db, 'students', s.id), {
-                        score: 0,
-                        lastQuestion: 0,
-                        lastAnswers: [],
-                        questionsAnswered: 0,
-                        testCompleted: false,
-                        disqualified: false,
-                        systemReset: new Date()
-                    });
+                unread.forEach(m => {
+                    batch.update(doc(db, 'messages', m.id), { read: true });
                 });
                 await batch.commit();
-                showNotification('تم إعادة تعيين النظام بنجاح', 'success');
-                loadStudents();
-                loadDisqualifiedStudents();
+                showNotification(`✅ تم تعليم ${unread.length} رسالة كمقروءة`, 'success');
+                loadMessages();
             } catch (e) {
                 console.error(e);
-                showNotification('حدث خطأ أثناء إعادة التعيين', 'error');
+                showNotification('❌ حدث خطأ', 'error');
             }
         };
-
-        function updateSystemInfo() {
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ar-SA');
-            document.getElementById('totalQuestionsCount').textContent = currentQuestions.length;
-            
-            const activeStudents = allStudents.filter(s => !s.disqualified && (s.score || 0) <= MAX_SCORE);
-            const disqualifiedStudents = allStudents.filter(s => s.disqualified === true || (s.score || 0) > MAX_SCORE);
-            
-            document.getElementById('totalStudentsCount').textContent = activeStudents.length;
-            document.getElementById('totalDisqualifiedCount').textContent = disqualifiedStudents.length;
-        }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            setupFileUpload();
-            loadQuestions();
-            console.log('✅ لوحة تحكم المعلمة جاهزة');
+            loadMessages();
+            console.log('✅ نظام الرسائل جاهز');
         });
 
     </script>
