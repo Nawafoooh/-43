@@ -711,7 +711,7 @@
             <div class="cheating-warning-results">
                 <h3>⚠️ تحذير هام لجميع الطالبات</h3>
                 <p style="font-size: 1.1em; line-height: 1.6; margin-top: 10px;">
-                    أي محاولة للتلاعب بالدرجات أو الحصول على درجات أعلى من 107 ستؤدي إلى:<br>
+                    أي محاولة للتلاعب بالدرجات أو الحصول على درجات أعلى من 204 ستؤدي إلى:<br>
                     🚫 الاستبعاد الفوري من المسابقة<br>
                     ⛔ إلغاء جميع النقاط المكتسبة<br>
                     📢 ثقي بقدراتك واعتمدي على نفسك
@@ -805,7 +805,8 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const MAX_SCORE = 107;
+        // 🌟 تم التحديث: الحد الأقصى الجديد للنقاط هو 204 سؤال
+        const MAX_SCORE = 204;
 
         let currentStudent = null;
         let currentQuestion = 0;
@@ -1138,7 +1139,6 @@
 
             try {
                 console.log('🔄 جاري تحميل الأسئلة من Firebase...');
-                // تحميل الأسئلة النشطة
                 const questionsQuery = query(
                     collection(db, 'questions'), 
                     where('active', '==', true)
@@ -1371,7 +1371,6 @@
                 return;
             }
 
-            // 🔀 إذا كان هناك ترتيب مخلوط محفوظ، استخدمه
             if (currentStudent.questionsOrder && currentStudent.questionsOrder.length > 0) {
                 const orderedQuestions = [];
                 currentStudent.questionsOrder.forEach(questionId => {
@@ -1381,7 +1380,6 @@
                     }
                 });
                 
-                // استخدام الترتيب المخلوط المحفوظ
                 if (orderedQuestions.length > 0) {
                     questions = orderedQuestions;
                     console.log('🔀 تم تحميل الأسئلة بالترتيب المخلوط المحفوظ');
@@ -1391,7 +1389,6 @@
             startSession();
 
             if (currentStudent.lastQuestion !== undefined && currentStudent.lastQuestion < questions.length && !currentStudent.testCompleted) {
-                // المتابعة تلقائياً من حيث توقفت - بدون خيار البدء من جديد
                 currentQuestion = currentStudent.lastQuestion;
                 studentAnswers = currentStudent.lastAnswers || [];
                 showNotification(`✅ تم استئناف الاختبار من السؤال ${currentQuestion + 1} من ${questions.length}`, 'success');
@@ -1591,28 +1588,23 @@
                 if (!querySnapshot.empty) {
                     const studentDocRef = doc(db, 'students', querySnapshot.docs[0].id);
                     
-                    // 🔀 خلط الأسئلة المتبقية (الحل الذكي ضد الغش!)
-                    const answeredQuestions = questions.slice(0, currentQuestion + 1); // الأسئلة المجابة
-                    const remainingQuestions = questions.slice(currentQuestion + 1);   // الأسئلة المتبقية
+                    const answeredQuestions = questions.slice(0, currentQuestion + 1);
+                    const remainingQuestions = questions.slice(currentQuestion + 1);
                     
-                    // خلط الأسئلة المتبقية بترتيب عشوائي
                     for (let i = remainingQuestions.length - 1; i > 0; i--) {
                         const j = Math.floor(Math.random() * (i + 1));
                         [remainingQuestions[i], remainingQuestions[j]] = [remainingQuestions[j], remainingQuestions[i]];
                     }
                     
-                    // دمج الأسئلة: المجابة (بترتيبها) + المتبقية (مخلوطة)
                     questions = [...answeredQuestions, ...remainingQuestions];
                     
-                    // حفظ ترتيب الأسئلة المخلوط مع معرفات الأسئلة
                     const shuffledQuestionsOrder = questions.map(q => q.id);
                     
-                    // حفظ التقدم + ترتيب الأسئلة الجديد
                     await updateDoc(studentDocRef, {
                         lastQuestion: currentQuestion,
                         lastAnswers: studentAnswers,
                         score: currentStudent.score,
-                        questionsOrder: shuffledQuestionsOrder,  // حفظ الترتيب المخلوط
+                        questionsOrder: shuffledQuestionsOrder,
                         lastActive: new Date(),
                         savedAt: new Date(),
                         testCompleted: false
@@ -1734,30 +1726,26 @@
             }
         };
 
-        // Contact Functions
         window.showContactForm = function () {
     if (!currentStudent) {
         showNotification('يرجى تسجيل الدخول أولاً', 'error');
         return;
     }
 
-    // أسند البيانات
     document.getElementById('contactName').value = currentStudent.name;
     document.getElementById('contactGrade').value = 'الصف ' + currentStudent.grade + ' المتوسط';
     document.getElementById('contactMessage').value = '';
     document.getElementById('wordCount').textContent = '0';
 
-    // عدد الشعب حسب الصف
-    const gradeNum = currentStudent.grade;   // '1' أو '2' أو '3'
+    const gradeNum = currentStudent.grade;
     let numClasses = 0;
     if (gradeNum === '1')      numClasses = 9;
     else if (gradeNum === '2') numClasses = 11;
     else if (gradeNum === '3') numClasses = 10;
 
-    // املأ القائمة
     const classSelect = document.getElementById('contactClass');
     classSelect.innerHTML = '<option value="">اختر الشعبة</option>';
-    const arabicNumbers = ['١','٢','٣','٤','٥ـ','٦','٧','٨','٩','١٠','١١'];
+    const arabicNumbers = ['١','٢','٣','٤','٥','٦','٧','٨','٩','١٠','١١'];
     for (let i = 0; i < numClasses; i++) {
         const opt = document.createElement('option');
         opt.value = arabicNumbers[i];
@@ -1768,7 +1756,6 @@
     showSection('contactSection');
 };
 
-        // Word counter
         document.addEventListener('DOMContentLoaded', function() {
             const messageInput = document.getElementById('contactMessage');
             if (messageInput) {
@@ -1789,7 +1776,6 @@
             }
         });
 
-        // Contact form submission
         document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
