@@ -3,31 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة حجز جلسات Nawaf </title>
+    <title>منصة حجز لقاء  </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap' );
         body {
             font-family: 'Cairo', sans-serif;
-            box-sizing: border-box;
             background-color: #f8fafc;
+            color: #1e293b;
         }
         .booking-card {
             transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
         }
         .booking-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
         }
         .time-slot {
             transition: all 0.2s ease;
         }
         .time-slot:hover:not(.booked) {
             transform: scale(1.05);
+            border-color: #3b82f6;
         }
         .time-slot.booked {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
+            background-color: #f1f5f9;
         }
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
@@ -41,7 +44,7 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 16px 24px;
+            padding: 12px 24px;
             border-radius: 8px;
             color: white;
             font-weight: 600;
@@ -55,30 +58,38 @@
         @keyframes fadeOut {
             to { opacity: 0; }
         }
-        .loading-spinner {
-            border: 3px solid rgba(0,0,0,0.1);
-            border-top: 3px solid #3b82f6;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 0.8s linear infinite;
-            display: inline-block;
+        .modal-overlay {
+            animation: fadeIn 0.2s ease;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .modal-content {
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .progress-bar {
+            background-color: #e5e7eb;
+            border-radius: 99px;
+            overflow: hidden;
+            height: 8px;
+        }
+        .progress-bar-inner {
+            height: 100%;
+            background-color: #3b82f6;
+            transition: width 0.5s ease;
         }
     </style>
 </head>
-<body class="min-h-screen text-slate-800">
+<body class="min-h-screen">
     <div id="app" class="min-h-screen"></div>
 
     <script>
         // --- الإعدادات الرئيسية ---
         const config = {
-            platform_title: "منصة حجز جلسات Nawaf ",
-            trainer_name: "Nawaf ",
-            session_duration: "مدة الجلسة: ساعة وربع",
+            platform_title: "منصة حجز الجلسات الفردية",
+            subtitle: "خبير وايكوف والتحليل الحجمي",
+            motivational_quote: "لنبدأ رحلة إتقان قراءة السوق.",
             booking_button_text: "احجز الآن",
             admin_title: "لوحة تحكم المدرب",
             primary_color: "#3b82f6",
@@ -86,33 +97,26 @@
         };
 
         const DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'];
-        // تعديل الأوقات لتكون المدة ساعة وربع (75 دقيقة)
         const TIME_SLOTS = [
-            { time: '4:00 PM', label: '4:00 عصراً' },
-            { time: '5:15 PM', label: '5:15 مساءً' },
-            { time: '6:30 PM', label: '6:30 مساءً' },
-            { time: '7:45 PM', label: '7:45 مساءً' },
-            { time: '9:00 PM', label: '9:00 مساءً' }
+            { time: '16:00', label: '4:00 عصراً' },
+            { time: '17:15', label: '5:15 مساءً' },
+            { time: '18:30', label: '6:30 مساءً' },
+            { time: '19:45', label: '7:45 مساءً' },
+            { time: '21:00', label: '9:00 مساءً' }
         ];
-        const ADMIN_PASSWORD = 'wyckoff2024'; // كلمة مرور المدرب
+        const SESSION_DURATION_MINUTES = 75;
+        const ADMIN_PASSWORD = 'wyckoff2024';
 
         // --- إدارة الحالة والتخزين ---
         let state = {
             bookings: [],
-            currentView: 'student', // 'student' or 'admin'
+            currentView: 'student',
             selectedDay: null,
-            isLoading: false,
         };
 
-        // محاكاة قاعدة البيانات باستخدام LocalStorage
         const db = {
-            load: () => {
-                const data = localStorage.getItem('wyckoffBookings');
-                return data ? JSON.parse(data) : [];
-            },
-            save: (data) => {
-                localStorage.setItem('wyckoffBookings', JSON.stringify(data));
-            }
+            load: () => JSON.parse(localStorage.getItem('wyckoffBookings_v2') || '[]'),
+            save: (data) => localStorage.setItem('wyckoffBookings_v2', JSON.stringify(data)),
         };
 
         // --- الدوال المساعدة ---
@@ -127,61 +131,120 @@
         function isSlotBooked(day, time) {
             return state.bookings.some(b => b.day === day && b.time === time);
         }
+        
+        function generateICS(booking) {
+            const slot = TIME_SLOTS.find(s => s.time === booking.time);
+            const dayIndex = DAYS.indexOf(booking.day);
+            
+            // Calculate the correct date for the upcoming weekday
+            const now = new Date();
+            const currentDay = now.getDay(); // Sunday = 0, Monday = 1...
+            const targetDay = (dayIndex + 0) % 7; // Assuming الأحد is 0
+            let dayDifference = targetDay - currentDay;
+            if (dayDifference < 0) {
+                dayDifference += 7;
+            }
+            const eventDate = new Date(now.setDate(now.getDate() + dayDifference));
+            
+            const [hours, minutes] = slot.time.split(':');
+            eventDate.setHours(hours, minutes, 0, 0);
+
+            const toUTC = (date) => new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+            const startDate = eventDate;
+            const endDate = new Date(startDate.getTime() + SESSION_DURATION_MINUTES * 60000);
+
+            const icsContent = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//NawafWyckoff//BookingPlatform//EN',
+                'BEGIN:VEVENT',
+                `UID:${booking.id}@wyckoffnawaf.com`,
+                `DTSTAMP:${toUTC(new Date())}`,
+                `DTSTART:${toUTC(startDate)}`,
+                `DTEND:${toUTC(endDate)}`,
+                'SUMMARY:جلسة تحليل مع المدرب نواف وايكوف',
+                `DESCRIPTION:جلسة فردية مع الطالب ${booking.studentName}.`,
+                'LOCATION:عبر الإنترنت',
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\r\n');
+
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'booking.ics';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
 
         // --- دوال التعامل مع الحجوزات ---
-        async function handleBooking(day, time) {
+        function handleBooking(day, time) {
             if (isSlotBooked(day, time)) return;
 
-            const nameInputDiv = document.createElement('div');
-            nameInputDiv.id = 'modal-overlay';
-            nameInputDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-            nameInputDiv.innerHTML = `
-                <div class="bg-white rounded-lg p-6 max-w-sm mx-4 w-full" id="modal-content">
-                    <h3 class="text-xl font-bold mb-4 text-center">إتمام الحجز</h3>
-                    <p class="mb-4 text-center text-slate-600">الرجاء إدخال اسمك المستعار للمتابعة</p>
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="modal-content bg-white rounded-xl p-6 max-w-sm w-full">
+                    <h3 class="text-xl font-bold mb-2 text-center">تأكيد الحجز</h3>
+                    <p class="mb-4 text-center text-slate-600">الرجاء إدخال اسمك المستعار للمتابعة.</p>
                     <input type="text" id="studentNameInput" placeholder="اكتب اسمك هنا..." 
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4 text-right">
+                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg mb-4 text-right focus:border-blue-500 focus:ring-0 outline-none">
                     <div class="flex gap-3">
-                        <button id="confirmName" class="flex-1 px-4 py-2 rounded-lg text-white font-semibold" style="background-color: ${config.primary_color}">تأكيد الحجز</button>
-                        <button id="cancelName" class="flex-1 px-4 py-2 rounded-lg font-semibold bg-gray-300">إلغاء</button>
+                        <button id="confirmName" class="flex-1 px-4 py-3 rounded-lg text-white font-semibold transition" style="background-color: ${config.primary_color};">تأكيد الحجز</button>
+                        <button id="cancelName" class="flex-1 px-4 py-3 rounded-lg font-semibold bg-gray-200 hover:bg-gray-300 transition">إلغاء</button>
                     </div>
                 </div>
             `;
-            document.body.appendChild(nameInputDiv);
+            document.body.appendChild(modal);
             document.getElementById('studentNameInput').focus();
 
-            // إغلاق النافذة عند الضغط خارجها
-            nameInputDiv.addEventListener('click', (e) => {
-                if (e.target.id === 'modal-overlay') {
-                    nameInputDiv.remove();
-                }
-            });
-
+            modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+            document.getElementById('cancelName').onclick = () => modal.remove();
             document.getElementById('confirmName').onclick = () => {
                 const studentName = document.getElementById('studentNameInput').value.trim();
                 if (!studentName) {
                     showToast('يجب إدخال اسم مستعار', 'error');
                     return;
                 }
-                nameInputDiv.remove();
+                modal.remove();
                 processBooking(day, time, studentName);
             };
-
-            document.getElementById('cancelName').onclick = () => nameInputDiv.remove();
         }
 
         function processBooking(day, time, studentName) {
-            const newBooking = {
-                id: Date.now().toString(),
-                day,
-                time,
-                studentName,
-            };
+            const newBooking = { id: Date.now().toString(), day, time, studentName };
             state.bookings.push(newBooking);
             db.save(state.bookings);
-            showToast('تم الحجز بنجاح! ✓');
             state.selectedDay = null;
-            render();
+            render(); // Re-render to show the main page
+            showConfirmation(newBooking); // Show the new confirmation modal
+        }
+        
+        function showConfirmation(booking) {
+            const slot = TIME_SLOTS.find(s => s.time === booking.time);
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="modal-content bg-white rounded-xl p-6 max-w-sm w-full text-center">
+                    <div class="mx-auto bg-green-100 rounded-full h-16 w-16 flex items-center justify-center mb-4">
+                        <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">تم الحجز بنجاح!</h3>
+                    <p class="mb-4 text-slate-600">
+                        رائع يا ${booking.studentName}! جلستك مؤكدة يوم <strong>${booking.day}</strong> الساعة <strong>${slot.label}</strong>.
+                    </p>
+                    <button id="addToCalendar" class="w-full mb-2 px-4 py-3 rounded-lg text-white font-semibold transition" style="background-color: ${config.primary_color};">
+                        📅 أضف إلى التقويم
+                    </button>
+                    <button id="closeConfirm" class="w-full px-4 py-3 rounded-lg font-semibold bg-gray-200 hover:bg-gray-300 transition">حسناً</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            document.getElementById('closeConfirm').onclick = () => modal.remove();
+            document.getElementById('addToCalendar').onclick = () => generateICS(booking);
         }
 
         function handleCancelBooking(bookingId) {
@@ -201,48 +264,54 @@
             }
         }
 
-        // --- دوال عرض الواجهة (Render) ---
+        // --- دوال عرض الواجهة ---
         function renderStudentView() {
-            const availableSlotsCount = (day) => TIME_SLOTS.filter(slot => !isSlotBooked(day, slot.time)).length;
+            const bookedSlotsCount = (day) => state.bookings.filter(b => b.day === day).length;
+            const totalSlots = TIME_SLOTS.length;
 
             return `
-                <div class="min-h-screen p-4 sm:p-6">
-                    <div class="max-w-6xl mx-auto">
-                        <header class="text-center mb-8 fade-in">
-                            <h1 class="text-3xl sm:text-4xl font-bold mb-2 text-slate-900">${config.platform_title}</h1>
-                            <p class="text-lg text-slate-600 mb-4">احجز جلستك مع الخبير ${config.trainer_name}</p>
-                            <div class="inline-block px-4 py-2 rounded-full text-white" style="background-color: ${config.primary_color};">${config.session_duration}</div>
+                <div class="min-h-screen p-4 sm:p-8">
+                    <div class="max-w-7xl mx-auto">
+                        <header class="text-center mb-10 fade-in">
+                            <h2 class="text-2xl font-bold text-slate-500">${config.subtitle}</h2>
+                            <h1 class="text-4xl sm:text-5xl font-bold my-2 text-slate-900">${config.platform_title}</h1>
+                            <p class="text-lg text-slate-600">${config.motivational_quote}</p>
                         </header>
 
-                        <div class="text-center mb-8">
-                            <button onclick="handleAdminLogin()" class="px-4 py-2 rounded-lg text-white font-semibold transition hover:opacity-90" style="background-color: ${config.secondary_color};">دخول المدرب</button>
+                        <div class="text-center mb-10">
+                            <button onclick="handleAdminLogin()" class="px-5 py-2 rounded-full text-sm text-white font-semibold transition hover:opacity-90" style="background-color: ${config.secondary_color};">دخول المدرب</button>
                         </div>
 
                         ${!state.selectedDay ? `
-                            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                                ${DAYS.map(day => `
-                                    <div class="booking-card bg-white p-6 rounded-xl cursor-pointer shadow-md" onclick="state.selectedDay = '${day}'; render();">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+                                ${DAYS.map(day => {
+                                    const bookedCount = bookedSlotsCount(day);
+                                    const occupancy = (bookedCount / totalSlots) * 100;
+                                    return `
+                                    <div class="booking-card bg-white p-5 rounded-xl cursor-pointer" onclick="state.selectedDay = '${day}'; render();">
                                         <div class="text-center">
-                                            <div class="text-4xl mb-3">📅</div>
-                                            <h3 class="text-xl font-bold text-slate-800">${day}</h3>
-                                            <p class="text-slate-500">${availableSlotsCount(day)} موعد متاح</p>
+                                            <h3 class="text-2xl font-bold text-slate-800 mb-3">${day}</h3>
+                                            <div class="progress-bar mb-2"><div class="progress-bar-inner" style="width: ${occupancy}%;"></div></div>
+                                            <p class="text-sm text-slate-500">${totalSlots - bookedCount} موعد متبقي</p>
                                         </div>
                                     </div>
-                                `).join('')}
+                                `}).join('')}
                             </div>
                         ` : `
                             <div class="fade-in">
-                                <button onclick="state.selectedDay = null; render();" class="mb-6 px-4 py-2 rounded-lg font-semibold text-white transition hover:opacity-90" style="background-color: ${config.secondary_color};">← العودة للأيام</button>
-                                <h2 class="text-2xl font-bold mb-6 text-center">اختر موعدك ليوم ${state.selectedDay}</h2>
+                                <button onclick="state.selectedDay = null; render();" class="mb-6 px-4 py-2 rounded-lg font-semibold text-white transition hover:opacity-90 flex items-center gap-2" style="background-color: ${config.secondary_color};">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 12h14"></path></svg>
+                                    العودة للأيام
+                                </button>
+                                <h2 class="text-3xl font-bold mb-6 text-center">اختر موعدك ليوم ${state.selectedDay}</h2>
                                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                                     ${TIME_SLOTS.map(slot => {
                                         const booked = isSlotBooked(state.selectedDay, slot.time);
                                         return `
-                                            <div class="time-slot bg-white p-4 rounded-xl shadow-md ${booked ? 'booked' : 'cursor-pointer'}" ${!booked ? `onclick="handleBooking('${state.selectedDay}', '${slot.time}')"` : ''}>
+                                            <div class="time-slot bg-white p-4 rounded-xl border-2 border-transparent ${booked ? 'booked' : 'cursor-pointer'}" ${!booked ? `onclick="handleBooking('${state.selectedDay}', '${slot.time}')"` : ''}>
                                                 <div class="text-center">
-                                                    <div class="text-3xl mb-2">${booked ? '🔒' : '⏰'}</div>
-                                                    <h3 class="font-bold">${slot.label}</h3>
-                                                    <p class="font-semibold" style="color: ${booked ? '#ef4444' : config.primary_color};">${booked ? 'محجوز' : config.booking_button_text}</p>
+                                                    <h3 class="font-bold text-lg">${slot.label}</h3>
+                                                    <p class="font-semibold text-sm" style="color: ${booked ? '#ef4444' : config.primary_color};">${booked ? 'محجوز' : config.booking_button_text}</p>
                                                 </div>
                                             </div>
                                         `;
@@ -256,6 +325,7 @@
         }
 
         function renderAdminView() {
+            // Admin view remains unchanged as requested
             const totalSlots = DAYS.length * TIME_SLOTS.length;
             const bookedSlots = state.bookings.length;
             const bookingsByDay = DAYS.map(day => ({
@@ -270,13 +340,11 @@
                             <h1 class="text-3xl font-bold">${config.admin_title}</h1>
                             <button onclick="state.currentView = 'student'; render();" class="px-4 py-2 rounded-lg text-white font-semibold transition hover:opacity-90" style="background-color: ${config.secondary_color};">عودة للمنصة</button>
                         </header>
-
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                             <div class="bg-white p-4 rounded-xl shadow-md"><p class="text-slate-500">إجمالي الحجوزات</p><p class="text-2xl font-bold" style="color: ${config.primary_color};">${bookedSlots}</p></div>
                             <div class="bg-white p-4 rounded-xl shadow-md"><p class="text-slate-500">المواعيد المتاحة</p><p class="text-2xl font-bold" style="color: ${config.primary_color};">${totalSlots - bookedSlots}</p></div>
                             <div class="bg-white p-4 rounded-xl shadow-md"><p class="text-slate-500">نسبة الإشغال</p><p class="text-2xl font-bold" style="color: ${config.primary_color};">${totalSlots > 0 ? ((bookedSlots / totalSlots) * 100).toFixed(0) : 0}%</p></div>
                         </div>
-
                         ${bookingsByDay.length > 0 ? bookingsByDay.map(({ day, bookings }) => `
                             <div class="mb-6 fade-in">
                                 <h2 class="text-xl font-bold mb-4">${day} (${bookings.length} حجوزات)</h2>
@@ -308,7 +376,6 @@
             app.innerHTML = state.currentView === 'student' ? renderStudentView() : renderAdminView();
         }
 
-        // --- بدء تشغيل التطبيق ---
         function init() {
             state.bookings = db.load();
             render();
@@ -318,4 +385,5 @@
     </script>
 </body>
 </html>
+
 
