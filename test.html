@@ -1,895 +1,605 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة المهارات الرقمية - تدريب وتطوير</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* الأساسيات */
-        :root {
-            --primary: #4361ee;
-            --secondary: #3a0ca3;
-            --accent: #f72585;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --success: #4cc9f0;
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منصة حجز جلسات Nawaf Wyckoff</title>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+        body {
+            box-sizing: border-box;
         }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
         
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Cairo', sans-serif;
         }
         
-        body {
-            background-color: #f5f7fb;
-            color: var(--dark);
-            line-height: 1.6;
+        .booking-card {
+            transition: all 0.3s ease;
         }
         
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-        
-        /* الشريط العلوي */
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 1rem 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        
-        .logo i {
-            color: var(--accent);
-        }
-        
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 1.5rem;
-        }
-        
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-            position: relative;
-        }
-        
-        nav a:hover {
-            color: var(--accent);
-        }
-        
-        nav a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: var(--accent);
-            transition: width 0.3s;
-        }
-        
-        nav a:hover::after {
-            width: 100%;
-        }
-        
-        .auth-buttons {
-            display: flex;
-            gap: 1rem;
-        }
-        
-        .btn {
-            padding: 0.5rem 1.5rem;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-        
-        .btn-outline {
-            background: transparent;
-            border: 2px solid white;
-            color: white;
-        }
-        
-        .btn-outline:hover {
-            background: white;
-            color: var(--primary);
-        }
-        
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #d91a6e;
+        .booking-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
         
-        .mobile-menu {
-            display: none;
-            font-size: 1.5rem;
-            cursor: pointer;
+        .time-slot {
+            transition: all 0.2s ease;
         }
         
-        /* قسم البطل */
-        .hero {
-            padding: 5rem 0;
-            background: linear-gradient(rgba(67, 97, 238, 0.9), rgba(58, 12, 163, 0.9)), url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
-            background-size: cover;
-            background-position: center;
+        .time-slot:hover:not(.booked) {
+            transform: scale(1.05);
+        }
+        
+        .time-slot.booked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 16px 24px;
+            border-radius: 8px;
             color: white;
-            text-align: center;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideDown 0.3s ease-out;
         }
         
-        .hero-content {
-            max-width: 800px;
-            margin: 0 auto;
+        @keyframes slideDown {
+            from { transform: translate(-50%, -100%); }
+            to { transform: translate(-50%, 0); }
         }
         
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-            line-height: 1.2;
-        }
-        
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-        
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        /* قسم الميزات */
-        .features {
-            padding: 5rem 0;
-            background-color: white;
-        }
-        
-        .section-title {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-        
-        .section-title h2 {
-            font-size: 2.5rem;
-            color: var(--secondary);
-            margin-bottom: 1rem;
-        }
-        
-        .section-title p {
-            color: var(--gray);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-        
-        .feature-card {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s, box-shadow 0.3s;
-            text-align: center;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .feature-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .loading-spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-            color: white;
-            font-size: 1.8rem;
-        }
-        
-        .feature-card h3 {
-            margin-bottom: 1rem;
-            color: var(--secondary);
-        }
-        
-        /* قسم الدورات */
-        .courses {
-            padding: 5rem 0;
-            background-color: #f5f7fb;
-        }
-        
-        .courses-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-        
-        .course-card {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .course-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .course-image {
-            height: 200px;
-            background-color: var(--primary);
-            background-size: cover;
-            background-position: center;
-        }
-        
-        .course-content {
-            padding: 1.5rem;
-        }
-        
-        .course-category {
+            width: 20px;
+            height: 20px;
+            animation: spin 0.8s linear infinite;
             display: inline-block;
-            background: var(--accent);
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            margin-bottom: 1rem;
+            margin-left: 8px;
         }
         
-        .course-card h3 {
-            margin-bottom: 0.5rem;
-            color: var(--secondary);
-        }
-        
-        .course-info {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 1rem;
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-        
-        .course-rating {
-            color: #ffc107;
-        }
-        
-        /* قسم الإحصائيات */
-        .stats {
-            padding: 4rem 0;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            text-align: center;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-        }
-        
-        .stat-item h3 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        /* قسم الشهادات */
-        .testimonials {
-            padding: 5rem 0;
-            background-color: white;
-        }
-        
-        .testimonials-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-        
-        .testimonial-card {
-            background: #f5f7fb;
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-        
-        .testimonial-content {
-            margin-bottom: 1.5rem;
-            font-style: italic;
-            position: relative;
-        }
-        
-        .testimonial-content::before {
-            content: """;
-            font-size: 4rem;
-            color: var(--primary);
-            opacity: 0.2;
-            position: absolute;
-            top: -1.5rem;
-            right: -0.5rem;
-        }
-        
-        .testimonial-author {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .author-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
-        
-        /* قسم النشرة البريدية */
-        .newsletter {
-            padding: 4rem 0;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            text-align: center;
-        }
-        
-        .newsletter-content {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .newsletter-form {
-            display: flex;
-            margin-top: 2rem;
-            gap: 1rem;
-        }
-        
-        .newsletter-input {
-            flex: 1;
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 30px;
-            font-size: 1rem;
-        }
-        
-        /* التذييل */
-        footer {
-            background-color: var(--dark);
-            color: white;
-            padding: 4rem 0 2rem;
-        }
-        
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-        
-        .footer-column h3 {
-            margin-bottom: 1.5rem;
-            color: var(--accent);
-            font-size: 1.2rem;
-        }
-        
-        .footer-links {
-            list-style: none;
-        }
-        
-        .footer-links li {
-            margin-bottom: 0.8rem;
-        }
-        
-        .footer-links a {
-            color: #adb5bd;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .footer-links a:hover {
-            color: white;
-        }
-        
-        .social-links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-        
-        .social-links a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            color: white;
-            transition: background 0.3s;
-        }
-        
-        .social-links a:hover {
-            background: var(--accent);
-        }
-        
-        .copyright {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #adb5bd;
-            font-size: 0.9rem;
-        }
-        
-        /* التجاوب مع الشاشات المختلفة */
-        @media (max-width: 992px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            nav ul {
-                gap: 1rem;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .mobile-menu {
-                display: block;
-            }
-            
-            nav ul {
-                display: none;
-                position: absolute;
-                top: 100%;
-                right: 0;
-                width: 100%;
-                background: var(--secondary);
-                flex-direction: column;
-                padding: 1rem;
-                text-align: center;
-                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-            }
-            
-            nav ul.show {
-                display: flex;
-            }
-            
-            .hero h1 {
-                font-size: 2rem;
-            }
-            
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .newsletter-form {
-                flex-direction: column;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .hero {
-                padding: 3rem 0;
-            }
-            
-            .features, .courses, .testimonials {
-                padding: 3rem 0;
-            }
-            
-            .section-title h2 {
-                font-size: 2rem;
-            }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
-</head>
-<body>
-    <!-- الشريط العلوي -->
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-laptop-code"></i>
-                    <span>المهارات الرقمية</span>
-                </div>
-                
-                <nav>
-                    <div class="mobile-menu">
-                        <i class="fas fa-bars"></i>
-                    </div>
-                    <ul>
-                        <li><a href="#home">الرئيسية</a></li>
-                        <li><a href="#courses">الدورات</a></li>
-                        <li><a href="#features">المميزات</a></li>
-                        <li><a href="#testimonials">التقييمات</a></li>
-                        <li><a href="#contact">اتصل بنا</a></li>
-                    </ul>
-                </nav>
-                
-                <div class="auth-buttons">
-                    <a href="#" class="btn btn-outline">تسجيل الدخول</a>
-                    <a href="#" class="btn btn-primary">انضم إلينا</a>
-                </div>
-            </div>
-        </div>
-    </header>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="min-h-full">
+  <div id="app" class="min-h-full"></div>
+  <script>
+        const defaultConfig = {
+            platform_title: "منصة حجز جلسات Nawaf Wyckoff",
+            trainer_name: "Nawaf Wyckoff",
+            session_duration: "75 دقيقة + 15 دقيقة راحة",
+            booking_button: "احجز الآن",
+            admin_title: "لوحة تحكم المدرب",
+            background_color: "#f8fafc",
+            surface_color: "#ffffff",
+            text_color: "#1e293b",
+            primary_action_color: "#3b82f6",
+            secondary_action_color: "#64748b",
+            font_family: "Cairo",
+            font_size: 16
+        };
 
-    <!-- قسم البطل -->
-    <section class="hero" id="home">
-        <div class="container">
-            <div class="hero-content">
-                <h1>طور مهاراتك الرقمية لمستقبل أفضل</h1>
-                <p>انضم إلى آلاف المتعلمين واكتسب المهارات الرقمية الأكثر طلبًا في سوق العمل من خلال دوراتنا المكثفة والتدريبات العملية.</p>
-                <div class="hero-buttons">
-                    <a href="#courses" class="btn btn-primary">استعرض الدورات</a>
-                    <a href="#" class="btn btn-outline">تعرف علينا</a>
-                </div>
-            </div>
-        </div>
-    </section>
+        let currentBookings = [];
+        let currentView = 'student';
+        let selectedDay = null;
+        let isLoading = false;
 
-    <!-- قسم الميزات -->
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-title">
-                <h2>لماذا تختار منصتنا؟</h2>
-                <p>نقدم تجربة تعليمية فريدة تجمع بين الجودة والمرونة والدعم المستمر</p>
-            </div>
+        const DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'];
+        const TIME_SLOTS = [
+            { time: '4:00 PM', label: '4:00 عصراً' },
+            { time: '5:30 PM', label: '5:30 مساءً' },
+            { time: '7:00 PM', label: '7:00 مساءً' },
+            { time: '8:30 PM', label: '8:30 مساءً' }
+        ];
+
+        const ADMIN_PASSWORD = 'wyckoff2024';
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
             
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                    </div>
-                    <h3>مدربون خبراء</h3>
-                    <p>تعلم من أفضل المدربين المحترفين في مجالهم مع سنوات من الخبرة العملية</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-laptop-code"></i>
-                    </div>
-                    <h3>مشاريع عملية</h3>
-                    <p>طبق ما تتعلمه في مشاريع حقيقية تبني بها ملفك الشخصي المهني</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-user-clock"></i>
-                    </div>
-                    <h3>مرنة بالكامل</h3>
-                    <p>ادرس في أي وقت ومن أي مكان وفقًا لجدولك الخاص وبسرعتك المناسبة</p>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-certificate"></i>
-                    </div>
-                    <h3>شهادات معتمدة</h3>
-                    <p>احصل على شهادات معترف بها في سوق العمل بعد إتمام كل دورة بنجاح</p>
-                </div>
-            </div>
-        </div>
-    </section>
+            setTimeout(() => {
+                toast.style.animation = 'slideDown 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
 
-    <!-- قسم الدورات -->
-    <section class="courses" id="courses">
-        <div class="container">
-            <div class="section-title">
-                <h2>دوراتنا الشائعة</h2>
-                <p>اكتشف مجموعة واسعة من الدورات المصممة لتطوير مهاراتك الرقمية</p>
-            </div>
+        function isSlotBooked(day, time) {
+            return currentBookings.some(booking => 
+                booking.day === day && booking.time === time && booking.status === 'active'
+            );
+        }
+
+        function getStudentBookingCount(studentName) {
+            return currentBookings.filter(booking => 
+                booking.studentName === studentName && booking.status === 'active'
+            ).length;
+        }
+
+        async function handleBooking(day, time) {
+            if (isSlotBooked(day, time)) {
+                showToast('هذا الموعد محجوز بالفعل', 'error');
+                return;
+            }
+
+            // إنشاء نافذة مخصصة لإدخال الاسم المستعار
+            const config = window.elementSdk?.config || defaultConfig;
+            const nameInputDiv = document.createElement('div');
+            nameInputDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            nameInputDiv.innerHTML = `
+                <div class="bg-white rounded-lg p-6 max-w-sm mx-4 w-full">
+                    <h3 class="text-xl font-bold mb-4 text-center" style="color: ${config.text_color}">
+                        يجب إدخال اسم مستعار
+                    </h3>
+                    <p class="mb-4 text-center" style="color: ${config.text_color}; opacity: 0.8;">
+                        الرجاء إدخال اسمك المستعار للمتابعة
+                    </p>
+                    <input type="text" id="studentNameInput" placeholder="اسمك المستعار..." 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4 text-right"
+                           style="font-family: Cairo, sans-serif; direction: rtl;">
+                    <div class="flex gap-3">
+                        <button id="confirmName" class="flex-1 px-4 py-2 rounded-lg text-white font-semibold" 
+                                style="background-color: ${config.primary_action_color}">
+                            تأكيد الحجز
+                        </button>
+                        <button id="cancelName" class="flex-1 px-4 py-2 rounded-lg font-semibold" 
+                                style="background-color: ${config.secondary_action_color}; color: white;">
+                            إلغاء
+                        </button>
+                    </div>
+                </div>
+            `;
             
-            <div class="courses-grid">
-                <div class="course-card">
-                    <div class="course-image" style="background-color: #4361ee;"></div>
-                    <div class="course-content">
-                        <span class="course-category">تطوير الويب</span>
-                        <h3>تطوير الويب المتكامل</h3>
-                        <p>تعلم HTML, CSS, JavaScript وإنشاء تطبيقات ويب تفاعلية</p>
-                        <div class="course-info">
-                            <span><i class="far fa-clock"></i> 12 أسبوع</span>
-                            <span class="course-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                                (4.8)
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="course-card">
-                    <div class="course-image" style="background-color: #3a0ca3;"></div>
-                    <div class="course-content">
-                        <span class="course-category">علم البيانات</span>
-                        <h3>تحليل البيانات باستخدام Python</h3>
-                        <p>استخراج الرؤى من البيانات باستخدام مكتبات Python الشهيرة</p>
-                        <div class="course-info">
-                            <span><i class="far fa-clock"></i> 10 أسابيع</span>
-                            <span class="course-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                (5.0)
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="course-card">
-                    <div class="course-image" style="background-color: #f72585;"></div>
-                    <div class="course-content">
-                        <span class="course-category">التسويق الرقمي</span>
-                        <h3>إستراتيجيات التسويق الإلكتروني</h3>
-                        <p>تعلم أحدث استراتيجيات التسويق عبر منصات التواصل الاجتماعي</p>
-                        <div class="course-info">
-                            <span><i class="far fa-clock"></i> 8 أسابيع</span>
-                            <span class="course-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="far fa-star"></i>
-                                (4.2)
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- قسم الإحصائيات -->
-    <section class="stats">
-        <div class="container">
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <h3>10,000+</h3>
-                    <p>متعلم نشط</p>
-                </div>
-                <div class="stat-item">
-                    <h3>150+</h3>
-                    <p>دورة تدريبية</p>
-                </div>
-                <div class="stat-item">
-                    <h3>95%</h3>
-                    <p>معدل رضا المتعلمين</p>
-                </div>
-                <div class="stat-item">
-                    <h3>50+</h3>
-                    <p>مدرب محترف</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- قسم الشهادات -->
-    <section class="testimonials" id="testimonials">
-        <div class="container">
-            <div class="section-title">
-                <h2>ماذا يقول متعلمونا؟</h2>
-                <p>انضم إلى آلاف المتعلمين الراضين عن تجربتهم التعليمية معنا</p>
-            </div>
+            document.body.appendChild(nameInputDiv);
             
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <p>لقد غيرت هذه المنصة مساري المهني بالكامل. بعد إكمال دورة تطوير الويب، حصلت على وظيفة أحلامي في شركة تقنية رائدة.</p>
-                    </div>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">أ</div>
-                        <div>
-                            <h4>أحمد محمد</h4>
-                            <p>مطور ويب</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <p>المحتوى المقدم في الدورات كان عمليًا وواقعيًا. المدربون كانوا دائمًا متاحين للإجابة على استفساراتي وتقديم الدعم.</p>
-                    </div>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">س</div>
-                        <div>
-                            <h4>سارة الخالد</h4>
-                            <p>محللة بيانات</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <p>كأم عاملة، كانت المرونة في التعلم هي العامل الحاسم بالنسبة لي. استطعت دراسة الدورات في الوقت المناسب لي وتطبيق ما تعلمته.</p>
-                    </div>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">ف</div>
-                        <div>
-                            <h4>فاطمة العلي</h4>
-                            <p>مسوقة رقمية</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+            // التركيز على حقل الإدخال مع تأخير بسيط
+            setTimeout(() => {
+                const nameInput = document.getElementById('studentNameInput');
+                if (nameInput) {
+                    nameInput.focus();
+                }
+            }, 100);
 
-    <!-- قسم النشرة البريدية -->
-    <section class="newsletter">
-        <div class="container">
-            <div class="newsletter-content">
-                <h2>اشترك في نشرتنا البريدية</h2>
-                <p>ابق على اطلاع بأحدث الدورات والعروض الخاصة والأخبار في عالم المهارات الرقمية</p>
-                <form class="newsletter-form">
-                    <input type="email" class="newsletter-input" placeholder="أدخل بريدك الإلكتروني" required>
-                    <button type="submit" class="btn btn-primary">اشترك الآن</button>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <!-- التذييل -->
-    <footer id="contact">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-column">
-                    <h3>منصة المهارات الرقمية</h3>
-                    <p>نهدف إلى تمكين الأفراد بالمهارات الرقمية اللازمة لمواكبة متطلبات سوق العمل المتغير.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                
-                <div class="footer-column">
-                    <h3>روابط سريعة</h3>
-                    <ul class="footer-links">
-                        <li><a href="#home">الرئيسية</a></li>
-                        <li><a href="#courses">الدورات</a></li>
-                        <li><a href="#features">المميزات</a></li>
-                        <li><a href="#testimonials">التقييمات</a></li>
-                        <li><a href="#contact">اتصل بنا</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h3>الدورات</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">تطوير الويب</a></li>
-                        <li><a href="#">علم البيانات</a></li>
-                        <li><a href="#">التسويق الرقمي</a></li>
-                        <li><a href="#">التصميم الجرافيكي</a></li>
-                        <li><a href="#">الأمن السيبراني</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h3>اتصل بنا</h3>
-                    <ul class="footer-links">
-                        <li><i class="fas fa-map-marker-alt"></i> الرياض، المملكة العربية السعودية</li>
-                        <li><i class="fas fa-phone"></i> +966 123 456 789</li>
-                        <li><i class="fas fa-envelope"></i> info@digitalskills.com</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="copyright">
-                <p>جميع الحقوق محفوظة &copy; 2023 منصة المهارات الرقمية</p>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // تفعيل القائمة المتنقلة
-        document.querySelector('.mobile-menu').addEventListener('click', function() {
-            document.querySelector('nav ul').classList.toggle('show');
-        });
-        
-        // إغلاق القائمة عند النقر على رابط
-        document.querySelectorAll('nav a').forEach(link => {
-            link.addEventListener('click', function() {
-                document.querySelector('nav ul').classList.remove('show');
-            });
-        });
-        
-        // تأثير التمرير السلس للروابط
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                if(targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if(targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
+            // التعامل مع الضغط على Enter
+            document.getElementById('studentNameInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('confirmName').click();
                 }
             });
-        });
-        
-        // تأثير التمرير لإظهار العناصر
-        window.addEventListener('scroll', function() {
-            const elements = document.querySelectorAll('.feature-card, .course-card, .testimonial-card');
-            
-            elements.forEach(element => {
-                const elementTop = element.getBoundingClientRect().top;
-                const windowHeight = window.innerHeight;
-                
-                if(elementTop < windowHeight - 100) {
-                    element.style.opacity = '1';
-                    element.style.transform = 'translateY(0)';
+
+            document.getElementById('confirmName').onclick = async () => {
+                const studentName = document.getElementById('studentNameInput').value.trim();
+                if (!studentName) {
+                    showToast('يجب إدخال اسم مستعار', 'error');
+                    document.getElementById('studentNameInput').focus();
+                    return;
                 }
+                
+                nameInputDiv.remove();
+                await processBooking(day, time, studentName);
+            };
+
+            document.getElementById('cancelName').onclick = () => {
+                nameInputDiv.remove();
+            };
+        }
+
+        async function processBooking(day, time, studentName) {
+            // فحص حد الحجوزات للطالب الواحد (3 أيام كحد أقصى)
+            if (getStudentBookingCount(studentName) >= 3) {
+                showToast('عذراً، لا يمكن الحجز لأكثر من 3 أيام', 'error');
+                return;
+            }
+
+            if (currentBookings.length >= 999) {
+                showToast('عذراً، تم الوصول للحد الأقصى من الحجوزات', 'error');
+                return;
+            }
+
+            isLoading = true;
+            renderApp();
+
+            const newBooking = {
+                id: Date.now().toString(),
+                day: day,
+                time: time,
+                studentName: studentName,
+                createdAt: new Date().toISOString(),
+                status: 'active'
+            };
+
+            const result = await window.dataSdk.create(newBooking);
+            
+            isLoading = false;
+
+            if (result.isOk) {
+                showToast('تم الحجز بنجاح! ✓');
+                selectedDay = null;
+            } else {
+                showToast('حدث خطأ أثناء الحجز، حاول مرة أخرى', 'error');
+            }
+            
+            renderApp();
+        }
+
+        async function handleCancelBooking(bookingId) {
+            const booking = currentBookings.find(b => b.__backendId === bookingId);
+            if (!booking) return;
+
+            const confirmDiv = document.createElement('div');
+            confirmDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            confirmDiv.innerHTML = `
+                <div class="bg-white rounded-lg p-6 max-w-sm mx-4">
+                    <h3 class="text-xl font-bold mb-4" style="color: ${window.elementSdk.config.text_color || defaultConfig.text_color}">تأكيد الإلغاء</h3>
+                    <p class="mb-6" style="color: ${window.elementSdk.config.text_color || defaultConfig.text_color}">هل أنت متأكد من إلغاء حجز ${booking.studentName}؟</p>
+                    <div class="flex gap-3">
+                        <button id="confirmCancel" class="flex-1 px-4 py-2 rounded-lg text-white font-semibold" style="background-color: ${window.elementSdk.config.primary_action_color || defaultConfig.primary_action_color}">
+                            نعم، إلغاء
+                        </button>
+                        <button id="cancelCancel" class="flex-1 px-4 py-2 rounded-lg font-semibold" style="background-color: ${window.elementSdk.config.secondary_action_color || defaultConfig.secondary_action_color}; color: white;">
+                            تراجع
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(confirmDiv);
+
+            document.getElementById('confirmCancel').onclick = async () => {
+                confirmDiv.remove();
+                isLoading = true;
+                renderApp();
+
+                const result = await window.dataSdk.delete(booking);
+                
+                isLoading = false;
+
+                if (result.isOk) {
+                    showToast('تم إلغاء الحجز بنجاح');
+                } else {
+                    showToast('حدث خطأ أثناء الإلغاء', 'error');
+                }
+                
+                renderApp();
+            };
+
+            document.getElementById('cancelCancel').onclick = () => {
+                confirmDiv.remove();
+            };
+        }
+
+        function handleAdminLogin() {
+            const password = prompt('أدخل كلمة المرور:');
+            if (password === ADMIN_PASSWORD) {
+                currentView = 'admin';
+                renderApp();
+            } else if (password !== null) {
+                showToast('كلمة مرور خاطئة', 'error');
+            }
+        }
+
+        function renderStudentView() {
+            const config = window.elementSdk?.config || defaultConfig;
+            const customFont = config.font_family || defaultConfig.font_family;
+            const baseFontSize = config.font_size || defaultConfig.font_size;
+            const fontStack = `${customFont}, Cairo, sans-serif`;
+
+            return `
+                <div class="min-h-full p-6" style="background-color: ${config.background_color || defaultConfig.background_color}; font-family: ${fontStack};">
+                    <div class="max-w-6xl mx-auto">
+                        <!-- Header -->
+                        <div class="text-center mb-8 fade-in">
+                            <h1 class="font-bold mb-2" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseFontSize * 2}px;">
+                                ${config.platform_title || defaultConfig.platform_title}
+                            </h1>
+                            <p class="mb-4" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseFontSize}px; opacity: 0.8;">
+                                احجز جلستك التعليمية مع ${config.trainer_name || defaultConfig.trainer_name}
+                            </p>
+                            <div class="inline-block px-4 py-2 rounded-full" style="background-color: ${config.primary_action_color || defaultConfig.primary_action_color}; color: white; font-size: ${baseFontSize * 0.85}px;">
+                                مدة الجلسة: ${config.session_duration || defaultConfig.session_duration}
+                            </div>
+                        </div>
+
+                        <!-- Admin Button -->
+                        <div class="text-center mb-6">
+                            <button onclick="handleAdminLogin()" class="px-4 py-2 rounded-lg text-white font-semibold transition-all hover:opacity-90" style="background-color: ${config.secondary_action_color || defaultConfig.secondary_action_color}; font-size: ${baseFontSize * 0.9}px;">
+                                دخول المدرب
+                            </button>
+                        </div>
+
+                        ${!selectedDay ? `
+                            <!-- Days Selection -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                                ${DAYS.map(day => `
+                                    <div class="booking-card p-6 rounded-xl cursor-pointer" 
+                                         style="background-color: ${config.surface_color || defaultConfig.surface_color}; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
+                                         onclick="selectedDay = '${day}'; renderApp();">
+                                        <div class="text-center">
+                                            <div class="text-4xl mb-3">📅</div>
+                                            <h3 class="font-bold mb-2" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseFontSize * 1.25}px;">
+                                                ${day}
+                                            </h3>
+                                            <p style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseFontSize * 0.85}px; opacity: 0.7;">
+                                                ${TIME_SLOTS.filter(slot => !isSlotBooked(day, slot.time)).length} موعد متاح
+                                            </p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <!-- Time Slots -->
+                            <div class="fade-in">
+                                <button onclick="selectedDay = null; renderApp();" 
+                                        class="mb-6 px-4 py-2 rounded-lg font-semibold transition-all hover:opacity-90"
+                                        style="background-color: ${config.secondary_action_color || defaultConfig.secondary_action_color}; color: white; font-size: ${baseFontSize * 0.9}px;">
+                                    ← العودة للأيام
+                                </button>
+                                
+                                <h2 class="font-bold mb-6 text-center" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseFontSize * 1.5}px;">
+                                    اختر موعدك - ${selectedDay}
+                                </h2>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    ${TIME_SLOTS.map(slot => {
+                                        const booked = isSlotBooked(selectedDay, slot.time);
+                                        return `
+                                            <div class="time-slot p-6 rounded-xl ${booked ? 'booked' : 'cursor-pointer'}"
+                                                 style="background-color: ${config.surface_color || defaultConfig.surface_color}; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
+                                                 ${!booked ? `onclick="handleBooking('${selectedDay}', '${slot.time}')"` : ''}>
+                                                <div class="text-center">
+                                                    <div class="text-3xl mb-3">${booked ? '🔒' : '⏰'}</div>
+                                                    <h3 class="font-bold mb-2" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseFontSize * 1.1}px;">
+                                                        ${slot.label}
+                                                    </h3>
+                                                    <p style="color: ${booked ? '#ef4444' : config.primary_action_color || defaultConfig.primary_action_color}; font-size: ${baseFontSize * 0.85}px; font-weight: 600;">
+                                                        ${booked ? 'محجوز' : config.booking_button || defaultConfig.booking_button}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAdminView() {
+            const config = window.elementSdk?.config || defaultConfig;
+            const customFont = config.font_family || defaultConfig.font_family;
+            const baseFontSize = config.font_size || defaultConfig.font_size;
+            const fontStack = `${customFont}, Cairo, sans-serif`;
+
+            const bookingsByDay = {};
+            DAYS.forEach(day => {
+                bookingsByDay[day] = currentBookings.filter(b => b.day === day && b.status === 'active');
             });
-        });
-        
-        // تهيئة العناصر للتحريك
-        document.querySelectorAll('.feature-card, .course-card, .testimonial-card').forEach(element => {
-            element.style.opacity = '0';
-            element.style.transform = 'translateY(20px)';
-            element.style.transition = 'opacity 0.5s, transform 0.5s';
-        });
-        
-        // تشغيل تأثير التمرير عند التحميل
-        window.dispatchEvent(new Event('scroll'));
+
+            return `
+                <div class="min-h-full p-6" style="background-color: ${config.background_color || defaultConfig.background_color}; font-family: ${fontStack};">
+                    <div class="max-w-6xl mx-auto">
+                        <!-- Header -->
+                        <div class="flex justify-between items-center mb-8 fade-in">
+                            <h1 class="font-bold" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseFontSize * 2}px;">
+                                ${config.admin_title || defaultConfig.admin_title}
+                            </h1>
+                            <button onclick="currentView = 'student'; renderApp();" 
+                                    class="px-4 py-2 rounded-lg text-white font-semibold transition-all hover:opacity-90"
+                                    style="background-color: ${config.secondary_action_color || defaultConfig.secondary_action_color}; font-size: ${baseFontSize * 0.9}px;">
+                                عودة للمنصة
+                            </button>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                            <div class="p-6 rounded-xl" style="background-color: ${config.surface_color || defaultConfig.surface_color}; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <div class="text-3xl mb-2">📊</div>
+                                <p style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseFontSize * 0.85}px; opacity: 0.7;">إجمالي الحجوزات</p>
+                                <p class="font-bold" style="color: ${config.primary_action_color || defaultConfig.primary_action_color}; font-size: ${baseFontSize * 1.5}px;">
+                                    ${currentBookings.filter(b => b.status === 'active').length}
+                                </p>
+                            </div>
+                            <div class="p-6 rounded-xl" style="background-color: ${config.surface_color || defaultConfig.surface_color}; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <div class="text-3xl mb-2">✅</div>
+                                <p style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseFontSize * 0.85}px; opacity: 0.7;">المواعيد المحجوزة</p>
+                                <p class="font-bold" style="color: ${config.primary_action_color || defaultConfig.primary_action_color}; font-size: ${baseFontSize * 1.5}px;">
+                                    ${currentBookings.filter(b => b.status === 'active').length}
+                                </p>
+                            </div>
+                            <div class="p-6 rounded-xl" style="background-color: ${config.surface_color || defaultConfig.surface_color}; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <div class="text-3xl mb-2">📅</div>
+                                <p style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseFontSize * 0.85}px; opacity: 0.7;">المواعيد المتاحة</p>
+                                <p class="font-bold" style="color: ${config.primary_action_color || defaultConfig.primary_action_color}; font-size: ${baseFontSize * 1.5}px;">
+                                    ${(DAYS.length * TIME_SLOTS.length) - currentBookings.filter(b => b.status === 'active').length}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Bookings by Day -->
+                        ${DAYS.map(day => {
+                            const dayBookings = bookingsByDay[day];
+                            if (dayBookings.length === 0) return '';
+                            
+                            return `
+                                <div class="mb-6 fade-in">
+                                    <h2 class="font-bold mb-4" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseFontSize * 1.25}px;">
+                                        ${day} (${dayBookings.length} حجز)
+                                    </h2>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        ${dayBookings.map(booking => `
+                                            <div class="p-4 rounded-lg" style="background-color: ${config.surface_color || defaultConfig.surface_color}; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                                <div class="flex justify-between items-start mb-3">
+                                                    <div>
+                                                        <p class="font-bold mb-1" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseFontSize}px;">
+                                                            ${booking.studentName}
+                                                        </p>
+                                                        <p style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseFontSize * 0.85}px; opacity: 0.7;">
+                                                            ${TIME_SLOTS.find(s => s.time === booking.time)?.label || booking.time}
+                                                        </p>
+                                                    </div>
+                                                    <span class="text-2xl">👤</span>
+                                                </div>
+                                                <button onclick="handleCancelBooking('${booking.__backendId}')" 
+                                                        class="w-full px-3 py-2 rounded-lg text-white font-semibold transition-all hover:opacity-90"
+                                                        style="background-color: #ef4444; font-size: ${baseFontSize * 0.85}px;">
+                                                    إلغاء الحجز
+                                                </button>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+
+                        ${currentBookings.filter(b => b.status === 'active').length === 0 ? `
+                            <div class="text-center py-12">
+                                <div class="text-6xl mb-4">📭</div>
+                                <p class="font-bold" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseFontSize * 1.25}px;">
+                                    لا توجد حجوزات حالياً
+                                </p>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderApp() {
+            const app = document.getElementById('app');
+            const html = currentView === 'student' ? renderStudentView() : renderAdminView();
+            app.innerHTML = html;
+
+            if (isLoading) {
+                const loadingOverlay = document.createElement('div');
+                loadingOverlay.className = 'fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50';
+                loadingOverlay.innerHTML = `
+                    <div class="bg-white rounded-lg p-6 flex items-center gap-3">
+                        <div class="loading-spinner" style="border-top-color: ${window.elementSdk?.config?.primary_action_color || defaultConfig.primary_action_color}"></div>
+                        <span class="font-semibold" style="color: ${window.elementSdk?.config?.text_color || defaultConfig.text_color}">جاري المعالجة...</span>
+                    </div>
+                `;
+                document.body.appendChild(loadingOverlay);
+            }
+        }
+
+        const dataHandler = {
+            onDataChanged(data) {
+                currentBookings = data;
+                renderApp();
+            }
+        };
+
+        async function onConfigChange(config) {
+            renderApp();
+        }
+
+        async function init() {
+            const initResult = await window.dataSdk.init(dataHandler);
+            if (!initResult.isOk) {
+                showToast('حدث خطأ في تحميل البيانات', 'error');
+                return;
+            }
+
+            if (window.elementSdk) {
+                window.elementSdk.init({
+                    defaultConfig,
+                    onConfigChange,
+                    mapToCapabilities: (config) => ({
+                        recolorables: [
+                            {
+                                get: () => config.background_color || defaultConfig.background_color,
+                                set: (value) => {
+                                    config.background_color = value;
+                                    window.elementSdk.setConfig({ background_color: value });
+                                }
+                            },
+                            {
+                                get: () => config.surface_color || defaultConfig.surface_color,
+                                set: (value) => {
+                                    config.surface_color = value;
+                                    window.elementSdk.setConfig({ surface_color: value });
+                                }
+                            },
+                            {
+                                get: () => config.text_color || defaultConfig.text_color,
+                                set: (value) => {
+                                    config.text_color = value;
+                                    window.elementSdk.setConfig({ text_color: value });
+                                }
+                            },
+                            {
+                                get: () => config.primary_action_color || defaultConfig.primary_action_color,
+                                set: (value) => {
+                                    config.primary_action_color = value;
+                                    window.elementSdk.setConfig({ primary_action_color: value });
+                                }
+                            },
+                            {
+                                get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+                                set: (value) => {
+                                    config.secondary_action_color = value;
+                                    window.elementSdk.setConfig({ secondary_action_color: value });
+                                }
+                            }
+                        ],
+                        borderables: [],
+                        fontEditable: {
+                            get: () => config.font_family || defaultConfig.font_family,
+                            set: (value) => {
+                                config.font_family = value;
+                                window.elementSdk.setConfig({ font_family: value });
+                            }
+                        },
+                        fontSizeable: {
+                            get: () => config.font_size || defaultConfig.font_size,
+                            set: (value) => {
+                                config.font_size = value;
+                                window.elementSdk.setConfig({ font_size: value });
+                            }
+                        }
+                    }),
+                    mapToEditPanelValues: (config) => new Map([
+                        ["platform_title", config.platform_title || defaultConfig.platform_title],
+                        ["trainer_name", config.trainer_name || defaultConfig.trainer_name],
+                        ["session_duration", config.session_duration || defaultConfig.session_duration],
+                        ["booking_button", config.booking_button || defaultConfig.booking_button],
+                        ["admin_title", config.admin_title || defaultConfig.admin_title]
+                    ])
+                });
+            }
+
+            renderApp();
+        }
+
+        init();
     </script>
-</body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99b5cc0d33ed2cfc',t:'MTc2MjYxMjUyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
