@@ -416,25 +416,21 @@
             text-align: center;
         }
 
-        .cheating-warning-results {
-            background: linear-gradient(135deg, #e7b4c4, #d7a4b4);
-            color: white;
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd, #ffe8a1);
+            border: 2px solid #f39c12;
+            color: #856404;
             padding: 20px;
             border-radius: 15px;
             margin: 20px 0;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(231, 180, 196, 0.3);
-            animation: warningPulse 2s infinite;
+            box-shadow: 0 10px 30px rgba(243, 156, 18, 0.2);
         }
 
-        @keyframes warningPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        .cheating-warning-results h3 {
+        .warning-box h3 {
             font-size: 1.3em;
             margin-bottom: 10px;
+            color: #f39c12;
         }
 
         .leaderboard-item {
@@ -465,37 +461,6 @@
             color: white;
         }
 
-        .leaderboard-item.disqualified {
-            background: linear-gradient(135deg, #ffe8ee, #ffd8e2);
-            border: 2px solid #e7b4c4;
-            border-right: 5px solid #d7a4b4;
-        }
-
-        .disqualified-badge {
-            display: inline-block;
-            background: #e7b4c4;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.75em;
-            font-weight: bold;
-            margin-left: 8px;
-            animation: blinkBadge 1.5s infinite;
-        }
-
-        @keyframes blinkBadge {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .cheating-indicator {
-            color: #d7a4b4;
-            font-weight: bold;
-            font-size: 0.85em;
-            display: block;
-            margin-top: 3px;
-        }
-
         .rank {
             font-size: 1.2em;
             font-weight: bold;
@@ -510,11 +475,6 @@
         .student-score {
             font-weight: bold;
             font-size: 1.1em;
-        }
-
-        .student-score.invalid {
-            color: #e7b4c4;
-            text-decoration: line-through;
         }
 
         .progress-bar {
@@ -666,6 +626,17 @@
                 <div class="icon test">🎯</div>
                 لوحة الطالبة
             </h2>
+
+            <div class="warning-box">
+                <h3>⚠️ تنبيه هام قبل البدء</h3>
+                <p style="font-size: 1.1em; line-height: 1.8; margin-top: 10px;">
+                    🌟 اعتمدي على نفسك وقدراتك<br>
+                    📚 كل سؤال تجيبينه بنفسك يزيد من معرفتك<br>
+                    🎯 النجاح الحقيقي يأتي من الفهم والجهد الذاتي<br>
+                    💪 ثقي بإمكانياتك ولا تبحثي عن طرق مختصرة
+                </p>
+            </div>
+
             <div id="competitionStatusDashboard"></div>
             <div id="studentInfo"></div>
             <div class="score-display">
@@ -707,16 +678,6 @@
                 <div class="icon results">🏆</div>
                 النتائج والترتيب
             </h2>
-
-            <div class="cheating-warning-results">
-                <h3>⚠️ تحذير هام لجميع الطالبات</h3>
-                <p style="font-size: 1.1em; line-height: 1.6; margin-top: 10px;">
-                    أي محاولة للتلاعب بالدرجات أو الحصول على درجات أعلى من 204 ستؤدي إلى:<br>
-                    🚫 الاستبعاد الفوري من المسابقة<br>
-                    ⛔ إلغاء جميع النقاط المكتسبة<br>
-                    📢 ثقي بقدراتك واعتمدي على نفسك
-                </p>
-            </div>
             
             <div class="leaderboard">
                 <div class="leaderboard-header">
@@ -804,9 +765,6 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
-        // 🌟 تم التحديث: الحد الأقصى الجديد للنقاط هو 204 سؤال
-        const MAX_SCORE = 204;
 
         let currentStudent = null;
         let currentQuestion = 0;
@@ -1674,22 +1632,17 @@
                 classLeaderboard.innerHTML = classStudents.slice(0, 10).map((student, index) => {
                     const isCurrentStudent = student.code === currentStudent.code;
                     const score = student.score || 0;
-                    const isCheating = score > MAX_SCORE || student.disqualified === true;
                     
                     let rankClass = '';
-                    if (!isCheating) {
-                        rankClass = index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : '';
-                    }
+                    rankClass = index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : '';
                     
                     return `
-                        <div class="leaderboard-item ${rankClass} ${isCheating ? 'disqualified' : ''}" style="${isCurrentStudent ? 'border: 3px solid #d4a5c4;' : ''}">
-                            <div class="rank">${isCheating ? '🚫' : index + 1}</div>
+                        <div class="leaderboard-item ${rankClass}" style="${isCurrentStudent ? 'border: 3px solid #d4a5c4;' : ''}">
+                            <div class="rank">${index + 1}</div>
                             <div class="student-name">
                                 ${student.name} ${isCurrentStudent ? '(أنت) 🌟' : ''}
-                                ${isCheating ? '<span class="disqualified-badge">⚠️ مستبعدة - تلاعب</span>' : ''}
-                                ${isCheating ? `<span class="cheating-indicator">درجة غير صحيحة: ${score}/${MAX_SCORE}</span>` : ''}
                             </div>
-                            <div class="student-score ${isCheating ? 'invalid' : ''}">${score} نقطة</div>
+                            <div class="student-score">${score} نقطة</div>
                         </div>
                     `;
                 }).join('');
@@ -1698,22 +1651,17 @@
                 schoolLeaderboard.innerHTML = allStudents.slice(0, 10).map((student, index) => {
                     const isCurrentStudent = student.code === currentStudent.code;
                     const score = student.score || 0;
-                    const isCheating = score > MAX_SCORE || student.disqualified === true;
                     
                     let rankClass = '';
-                    if (!isCheating) {
-                        rankClass = index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : '';
-                    }
+                    rankClass = index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : '';
                     
                     return `
-                        <div class="leaderboard-item ${rankClass} ${isCheating ? 'disqualified' : ''}" style="${isCurrentStudent ? 'border: 3px solid #d4a5c4;' : ''}">
-                            <div class="rank">${isCheating ? '🚫' : index + 1}</div>
+                        <div class="leaderboard-item ${rankClass}" style="${isCurrentStudent ? 'border: 3px solid #d4a5c4;' : ''}">
+                            <div class="rank">${index + 1}</div>
                             <div class="student-name">
                                 ${student.name} - الصف ${student.grade} ${isCurrentStudent ? '(أنت) 🌟' : ''}
-                                ${isCheating ? '<span class="disqualified-badge">⚠️ مستبعدة - تلاعب</span>' : ''}
-                                ${isCheating ? `<span class="cheating-indicator">درجة غير صحيحة: ${score}/${MAX_SCORE}</span>` : ''}
                             </div>
-                            <div class="student-score ${isCheating ? 'invalid' : ''}">${score} نقطة</div>
+                            <div class="student-score">${score} نقطة</div>
                         </div>
                     `;
                 }).join('');
@@ -1727,34 +1675,34 @@
         };
 
         window.showContactForm = function () {
-    if (!currentStudent) {
-        showNotification('يرجى تسجيل الدخول أولاً', 'error');
-        return;
-    }
+            if (!currentStudent) {
+                showNotification('يرجى تسجيل الدخول أولاً', 'error');
+                return;
+            }
 
-    document.getElementById('contactName').value = currentStudent.name;
-    document.getElementById('contactGrade').value = 'الصف ' + currentStudent.grade + ' المتوسط';
-    document.getElementById('contactMessage').value = '';
-    document.getElementById('wordCount').textContent = '0';
+            document.getElementById('contactName').value = currentStudent.name;
+            document.getElementById('contactGrade').value = 'الصف ' + currentStudent.grade + ' المتوسط';
+            document.getElementById('contactMessage').value = '';
+            document.getElementById('wordCount').textContent = '0';
 
-    const gradeNum = currentStudent.grade;
-    let numClasses = 0;
-    if (gradeNum === '1')      numClasses = 9;
-    else if (gradeNum === '2') numClasses = 11;
-    else if (gradeNum === '3') numClasses = 10;
+            const gradeNum = currentStudent.grade;
+            let numClasses = 0;
+            if (gradeNum === '1')      numClasses = 9;
+            else if (gradeNum === '2') numClasses = 11;
+            else if (gradeNum === '3') numClasses = 10;
 
-    const classSelect = document.getElementById('contactClass');
-    classSelect.innerHTML = '<option value="">اختر الشعبة</option>';
-    const arabicNumbers = ['١','٢','٣','٤','٥','٦','٧','٨','٩','١٠','١١'];
-    for (let i = 0; i < numClasses; i++) {
-        const opt = document.createElement('option');
-        opt.value = arabicNumbers[i];
-        opt.textContent = arabicNumbers[i];
-        classSelect.appendChild(opt);
-    }
+            const classSelect = document.getElementById('contactClass');
+            classSelect.innerHTML = '<option value="">اختر الشعبة</option>';
+            const arabicNumbers = ['١','٢','٣','٤','٥','٦','٧','٨','٩','١٠','١١'];
+            for (let i = 0; i < numClasses; i++) {
+                const opt = document.createElement('option');
+                opt.value = arabicNumbers[i];
+                opt.textContent = arabicNumbers[i];
+                classSelect.appendChild(opt);
+            }
 
-    showSection('contactSection');
-};
+            showSection('contactSection');
+        };
 
         document.addEventListener('DOMContentLoaded', function() {
             const messageInput = document.getElementById('contactMessage');
