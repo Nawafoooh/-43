@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة حجز لقاء  </title>
+    <title>منصة حجز جلسات Nawaf Wyckoff</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap' );
@@ -32,9 +32,7 @@
             cursor: not-allowed;
             background-color: #f1f5f9;
         }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -55,15 +53,9 @@
             from { transform: translate(-50%, -100%); }
             to { transform: translate(-50%, 0); }
         }
-        @keyframes fadeOut {
-            to { opacity: 0; }
-        }
-        .modal-overlay {
-            animation: fadeIn 0.2s ease;
-        }
-        .modal-content {
-            animation: slideUp 0.3s ease;
-        }
+        @keyframes fadeOut { to { opacity: 0; } }
+        .modal-overlay { animation: fadeIn 0.2s ease; }
+        .modal-content { animation: slideUp 0.3s ease; }
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -87,9 +79,9 @@
     <script>
         // --- الإعدادات الرئيسية ---
         const config = {
-            platform_title: "منصة حجز الجلسات الفردية",
+            platform_title: "منصة حجز الجلسات الأسبوعية",
             subtitle: "خبير وايكوف والتحليل الحجمي",
-            motivational_quote: "لنبدأ رحلة إتقان قراءة السوق.",
+            motivational_quote: "ابدأ أسبوعك بخطوة نحو إتقان السوق.",
             booking_button_text: "احجز الآن",
             admin_title: "لوحة تحكم المدرب",
             primary_color: "#3b82f6",
@@ -97,26 +89,51 @@
         };
 
         const DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'];
+        // تعديل الأوقات: جلسة 75 دقيقة + 15 دقيقة راحة = 90 دقيقة بين كل جلسة
         const TIME_SLOTS = [
             { time: '16:00', label: '4:00 عصراً' },
-            { time: '17:15', label: '5:15 مساءً' },
-            { time: '18:30', label: '6:30 مساءً' },
-            { time: '19:45', label: '7:45 مساءً' },
-            { time: '21:00', label: '9:00 مساءً' }
+            { time: '17:30', label: '5:30 مساءً' },
+            { time: '19:00', label: '7:00 مساءً' },
+            { time: '20:30', label: '8:30 مساءً' }
         ];
         const SESSION_DURATION_MINUTES = 75;
         const ADMIN_PASSWORD = 'wyckoff2024';
 
-        // --- إدارة الحالة والتخزين ---
+        // --- إدارة الحالة والتخزين الأسبوعي ---
         let state = {
             bookings: [],
             currentView: 'student',
             selectedDay: null,
+            weekId: '',
+            weekStartDate: ''
         };
 
+        // دالة للحصول على معرف الأسبوع الحالي (مثال: "45-2025")
+        // يبدأ الأسبوع يوم السبت
+        function getWeekId(date = new Date()) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = d.getUTCDay();
+            // Set to previous Saturday
+            d.setUTCDate(d.getUTCDate() - dayNum - 1);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+            const weekStartDate = d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+            return {
+                id: `${weekNo}-${d.getUTCFullYear()}`,
+                startDate: weekStartDate
+            };
+        }
+
         const db = {
-            load: () => JSON.parse(localStorage.getItem('wyckoffBookings_v2') || '[]'),
-            save: (data) => localStorage.setItem('wyckoffBookings_v2', JSON.stringify(data)),
+            load: (weekId) => {
+                const allData = JSON.parse(localStorage.getItem('wyckoffBookings_v3') || '{}');
+                return allData[weekId] || [];
+            },
+            save: (weekId, data) => {
+                const allData = JSON.parse(localStorage.getItem('wyckoffBookings_v3') || '{}');
+                allData[weekId] = data;
+                localStorage.setItem('wyckoffBookings_v3', JSON.stringify(allData));
+            }
         };
 
         // --- الدوال المساعدة ---
@@ -136,15 +153,14 @@
             const slot = TIME_SLOTS.find(s => s.time === booking.time);
             const dayIndex = DAYS.indexOf(booking.day);
             
-            // Calculate the correct date for the upcoming weekday
             const now = new Date();
-            const currentDay = now.getDay(); // Sunday = 0, Monday = 1...
-            const targetDay = (dayIndex + 0) % 7; // Assuming الأحد is 0
+            const currentDay = now.getDay();
+            const targetDay = (dayIndex + 0) % 7;
             let dayDifference = targetDay - currentDay;
-            if (dayDifference < 0) {
-                dayDifference += 7;
-            }
-            const eventDate = new Date(now.setDate(now.getDate() + dayDifference));
+            if (dayDifference < 0) dayDifference += 7;
+            
+            const eventDate = new Date();
+            eventDate.setDate(now.getDate() + dayDifference);
             
             const [hours, minutes] = slot.time.split(':');
             eventDate.setHours(hours, minutes, 0, 0);
@@ -154,30 +170,14 @@
             const startDate = eventDate;
             const endDate = new Date(startDate.getTime() + SESSION_DURATION_MINUTES * 60000);
 
-            const icsContent = [
-                'BEGIN:VCALENDAR',
-                'VERSION:2.0',
-                'PRODID:-//NawafWyckoff//BookingPlatform//EN',
-                'BEGIN:VEVENT',
-                `UID:${booking.id}@wyckoffnawaf.com`,
-                `DTSTAMP:${toUTC(new Date())}`,
-                `DTSTART:${toUTC(startDate)}`,
-                `DTEND:${toUTC(endDate)}`,
-                'SUMMARY:جلسة تحليل مع المدرب نواف وايكوف',
-                `DESCRIPTION:جلسة فردية مع الطالب ${booking.studentName}.`,
-                'LOCATION:عبر الإنترنت',
-                'END:VEVENT',
-                'END:VCALENDAR'
-            ].join('\r\n');
+            const icsContent = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//NawafWyckoff//BookingPlatform//EN\r\nBEGIN:VEVENT\r\nUID:${booking.id}@wyckoffnawaf.com\r\nDTSTAMP:${toUTC(new Date())}\r\nDTSTART:${toUTC(startDate)}\r\nDTEND:${toUTC(endDate)}\r\nSUMMARY:جلسة تحليل مع المدرب نواف وايكوف\r\nDESCRIPTION:جلسة فردية مع الطالب ${booking.studentName}.\r\nLOCATION:عبر الإنترنت\r\nEND:VEVENT\r\nEND:VCALENDAR`;
 
             const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
+            a.href = URL.createObjectURL(blob);
             a.download = 'booking.ics';
-            document.body.appendChild(a);
             a.click();
-            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
         }
 
         // --- دوال التعامل مع الحجوزات ---
@@ -217,10 +217,10 @@
         function processBooking(day, time, studentName) {
             const newBooking = { id: Date.now().toString(), day, time, studentName };
             state.bookings.push(newBooking);
-            db.save(state.bookings);
+            db.save(state.weekId, state.bookings);
             state.selectedDay = null;
-            render(); // Re-render to show the main page
-            showConfirmation(newBooking); // Show the new confirmation modal
+            render();
+            showConfirmation(newBooking);
         }
         
         function showConfirmation(booking) {
@@ -249,7 +249,7 @@
 
         function handleCancelBooking(bookingId) {
             state.bookings = state.bookings.filter(b => b.id !== bookingId);
-            db.save(state.bookings);
+            db.save(state.weekId, state.bookings);
             showToast('تم إلغاء الحجز بنجاح');
             render();
         }
@@ -276,6 +276,9 @@
                             <h2 class="text-2xl font-bold text-slate-500">${config.subtitle}</h2>
                             <h1 class="text-4xl sm:text-5xl font-bold my-2 text-slate-900">${config.platform_title}</h1>
                             <p class="text-lg text-slate-600">${config.motivational_quote}</p>
+                            <div class="mt-4 inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-4 py-2 rounded-full">
+                                الأسبوع يبدأ من: ${state.weekStartDate}
+                            </div>
                         </header>
 
                         <div class="text-center mb-10">
@@ -304,7 +307,7 @@
                                     العودة للأيام
                                 </button>
                                 <h2 class="text-3xl font-bold mb-6 text-center">اختر موعدك ليوم ${state.selectedDay}</h2>
-                                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                     ${TIME_SLOTS.map(slot => {
                                         const booked = isSlotBooked(state.selectedDay, slot.time);
                                         return `
@@ -325,7 +328,6 @@
         }
 
         function renderAdminView() {
-            // Admin view remains unchanged as requested
             const totalSlots = DAYS.length * TIME_SLOTS.length;
             const bookedSlots = state.bookings.length;
             const bookingsByDay = DAYS.map(day => ({
@@ -337,7 +339,10 @@
                 <div class="min-h-screen p-4 sm:p-6">
                     <div class="max-w-6xl mx-auto">
                         <header class="flex justify-between items-center mb-8 fade-in">
-                            <h1 class="text-3xl font-bold">${config.admin_title}</h1>
+                            <div>
+                                <h1 class="text-3xl font-bold">${config.admin_title}</h1>
+                                <p class="text-slate-500">حجوزات الأسبوع الذي يبدأ من: ${state.weekStartDate}</p>
+                            </div>
                             <button onclick="state.currentView = 'student'; render();" class="px-4 py-2 rounded-lg text-white font-semibold transition hover:opacity-90" style="background-color: ${config.secondary_color};">عودة للمنصة</button>
                         </header>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -363,7 +368,7 @@
                         `).join('') : `
                             <div class="text-center py-16 bg-white rounded-lg shadow-md">
                                 <div class="text-6xl mb-4">📭</div>
-                                <p class="font-bold text-xl">لا توجد حجوزات حالياً</p>
+                                <p class="font-bold text-xl">لا توجد حجوزات لهذا الأسبوع بعد</p>
                             </div>
                         `}
                     </div>
@@ -377,7 +382,10 @@
         }
 
         function init() {
-            state.bookings = db.load();
+            const { id, startDate } = getWeekId();
+            state.weekId = id;
+            state.weekStartDate = startDate;
+            state.bookings = db.load(state.weekId);
             render();
         }
 
@@ -385,5 +393,4 @@
     </script>
 </body>
 </html>
-
 
