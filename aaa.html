@@ -802,6 +802,16 @@
                     <span>تقرير الطالبات الأوائل</span>
                 </div>
 
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <button class="btn success" onclick="refreshTopStudents()">🔄 تحديث الترتيب</button>
+                    <button class="btn info" onclick="showTopStudentsStats()">📊 إحصائيات مفصلة</button>
+                </div>
+
+                <div id="topStudentsDebug" style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; color: #666;">
+                    <strong>📌 معلومات التحديث:</strong><br>
+                    <span id="debugInfo">جاري التحميل...</span>
+                </div>
+
                 <!-- School Top 3 -->
                 <div style="margin-bottom: 30px;">
                     <h3 style="color: #2c3e50; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #ecf0f1;">
@@ -1327,46 +1337,125 @@
             const questionsAnswered = student.questionsAnswered || 0;
             
             // استبعاد الطالبات اللواتي حصلن على درجات أعلى من عدد الأسئلة
-            if (score > totalQuestions) {
+            if (totalQuestions > 0 && score > totalQuestions) {
+                console.log(`❌ استبعاد ${student.name}: النقاط (${score}) أكبر من عدد الأسئلة (${totalQuestions})`);
                 return false;
             }
             
             // استبعاد الطالبات اللواتي حصلن على درجات أعلى من عدد الأسئلة المجاب عليها
-            if (score > questionsAnswered) {
+            if (questionsAnswered > 0 && score > questionsAnswered) {
+                console.log(`❌ استبعاد ${student.name}: النقاط (${score}) أكبر من الأسئلة المجابة (${questionsAnswered})`);
                 return false;
             }
             
-            return true;
+            // قبول فقط الطالبات اللواتي لديهن نقاط
+            if (score > 0) {
+                console.log(`✅ قبول ${student.name}: ${score} نقطة من ${questionsAnswered} سؤال`);
+                return true;
+            }
+            
+            return false;
         }
 
         function displayTopStudents() {
             const totalQuestions = currentQuestions.length;
             
+            console.log('🔍 بدء عرض الأوائل...');
+            console.log(`📝 عدد الأسئلة الكلي: ${totalQuestions}`);
+            console.log(`👥 عدد الطالبات الكلي: ${allStudents.length}`);
+            
             // تصفية الطالبات الصالحات فقط
             const validStudents = allStudents.filter(student => isValidStudent(student, totalQuestions));
+            
+            console.log(`✅ عدد الطالبات المؤهلات: ${validStudents.length}`);
             
             // ترتيب حسب النقاط
             validStudents.sort((a, b) => (b.score || 0) - (a.score || 0));
             
+            // عرض معلومات التصحيح
+            const debugInfo = document.getElementById('debugInfo');
+            if (debugInfo) {
+                debugInfo.innerHTML = `
+                    آخر تحديث: ${new Date().toLocaleTimeString('ar-SA')}<br>
+                    📝 عدد الأسئلة: ${totalQuestions}<br>
+                    👥 إجمالي الطالبات: ${allStudents.length}<br>
+                    ✅ الطالبات المؤهلات: ${validStudents.length}<br>
+                    ❌ المستبعدات: ${allStudents.length - validStudents.length}
+                `;
+            }
+            
             // الثلاثة الأوائل على المدرسة
             const schoolTop3 = validStudents.slice(0, 3);
+            console.log('🏫 الأوائل على المدرسة:', schoolTop3.length);
             displayTop3List('schoolTop3', schoolTop3);
             
             // الثلاثة الأوائل للصف الأول
             const grade1Students = validStudents.filter(s => s.grade === '1');
             const grade1Top3 = grade1Students.slice(0, 3);
+            console.log('📚 الأوائل للصف الأول:', grade1Top3.length);
             displayTop3List('grade1Top3', grade1Top3);
             
             // الثلاثة الأوائل للصف الثاني
             const grade2Students = validStudents.filter(s => s.grade === '2');
             const grade2Top3 = grade2Students.slice(0, 3);
+            console.log('📚 الأوائل للصف الثاني:', grade2Top3.length);
             displayTop3List('grade2Top3', grade2Top3);
             
             // الثلاثة الأوائل للصف الثالث
             const grade3Students = validStudents.filter(s => s.grade === '3');
             const grade3Top3 = grade3Students.slice(0, 3);
+            console.log('📚 الأوائل للصف الثالث:', grade3Top3.length);
             displayTop3List('grade3Top3', grade3Top3);
         }
+
+        window.refreshTopStudents = async function() {
+            showNotification('🔄 جاري تحديث الترتيب...', 'info');
+            
+            try {
+                // تحميل البيانات من جديد
+                const studentsSnap = await getDocs(collection(db, 'students'));
+                allStudents = [];
+                studentsSnap.forEach(d => allStudents.push({ id: d.id, ...d.data() }));
+                
+                const questionsSnap = await getDocs(query(collection(db, 'questions'), where('active', '==', true)));
+                currentQuestions = [];
+                questionsSnap.forEach(d => currentQuestions.push({ id: d.id, ...d.data() }));
+                
+                // تحديث العرض
+                displayTopStudents();
+                updateStudentsStats();
+                
+                showNotification('✅ تم تحديث الترتيب بنجاح!', 'success');
+            } catch (e) {
+                console.error('خطأ في تحديث الترتيب:', e);
+                showNotification('❌ حدث خطأ أثناء التحديث', 'error');
+            }
+        };
+
+        window.showTopStudentsStats = function() {
+            const totalQuestions = currentQuestions.length;
+            const validStudents = allStudents.filter(s => isValidStudent(s, totalQuestions));
+            const invalidStudents = allStudents.filter(s => !isValidStudent(s, totalQuestions));
+            
+            let statsMessage = `📊 إحصائيات مفصلة\n\n`;
+            statsMessage += `📝 عدد الأسئلة المتاحة: ${totalQuestions}\n`;
+            statsMessage += `👥 إجمالي الطالبات: ${allStudents.length}\n`;
+            statsMessage += `✅ الطالبات المؤهلات: ${validStudents.length}\n`;
+            statsMessage += `❌ المستبعدات: ${invalidStudents.length}\n\n`;
+            
+            if (validStudents.length > 0) {
+                statsMessage += `🏆 أعلى نقاط: ${validStudents[0].score} - ${validStudents[0].name}\n`;
+            }
+            
+            if (invalidStudents.length > 0) {
+                statsMessage += `\n❌ أمثلة على المستبعدات:\n`;
+                invalidStudents.slice(0, 3).forEach(s => {
+                    statsMessage += `   • ${s.name}: ${s.score || 0} نقطة من ${s.questionsAnswered || 0} سؤال\n`;
+                });
+            }
+            
+            alert(statsMessage);
+        };
 
         function displayTop3List(elementId, students) {
             const container = document.getElementById(elementId);
