@@ -432,6 +432,77 @@
             color: #155724;
         }
 
+        .top-student-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border-right: 5px solid #667eea;
+        }
+
+        .top-student-item.first {
+            background: linear-gradient(135deg, #f4daa5, #e4ca95);
+            border-right-color: #f39c12;
+            box-shadow: 0 5px 20px rgba(243, 156, 18, 0.3);
+        }
+
+        .top-student-item.second {
+            background: linear-gradient(135deg, #d4d4d4, #c4c4c4);
+            border-right-color: #95a5a6;
+            box-shadow: 0 5px 20px rgba(149, 165, 166, 0.3);
+        }
+
+        .top-student-item.third {
+            background: linear-gradient(135deg, #d4b4a4, #c4a494);
+            border-right-color: #d35400;
+            box-shadow: 0 5px 20px rgba(211, 84, 0, 0.3);
+        }
+
+        .top-student-item:hover {
+            transform: translateX(5px);
+        }
+
+        .rank-badge {
+            font-size: 2em;
+            font-weight: bold;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: white;
+            color: #2c3e50;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .top-student-item.first .rank-badge {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .top-student-item.second .rank-badge {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            color: white;
+        }
+
+        .top-student-item.third .rank-badge {
+            background: linear-gradient(135deg, #d35400, #c0392b);
+            color: white;
+        }
+
+        .no-top-students {
+            text-align: center;
+            padding: 30px;
+            color: #7f8c8d;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
         .upload-area {
             border: 3px dashed #bdc3c7;
             border-radius: 15px;
@@ -721,6 +792,46 @@
                 <div class="stat-card red">
                     <div class="stat-number" id="grade3Count">0</div>
                     <div class="stat-label">الصف الثالث</div>
+                </div>
+            </div>
+
+            <!-- Top Students Report -->
+            <div class="card">
+                <div class="card-title">
+                    <div class="icon" style="background: linear-gradient(135deg, #f39c12, #e67e22);">🏆</div>
+                    <span>تقرير الطالبات الأوائل</span>
+                </div>
+
+                <!-- School Top 3 -->
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #ecf0f1;">
+                        🏫 الثلاثة الأوائل على مستوى المدرسة
+                    </h3>
+                    <div id="schoolTop3"></div>
+                </div>
+
+                <!-- Grade 1 Top 3 -->
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #27ae60; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #ecf0f1;">
+                        📚 الثلاثة الأوائل - الصف الأول المتوسط
+                    </h3>
+                    <div id="grade1Top3"></div>
+                </div>
+
+                <!-- Grade 2 Top 3 -->
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #f39c12; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #ecf0f1;">
+                        📚 الثلاثة الأوائل - الصف الثاني المتوسط
+                    </h3>
+                    <div id="grade2Top3"></div>
+                </div>
+
+                <!-- Grade 3 Top 3 -->
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: #e74c3c; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #ecf0f1;">
+                        📚 الثلاثة الأوائل - الصف الثالث المتوسط
+                    </h3>
+                    <div id="grade3Top3"></div>
                 </div>
             </div>
 
@@ -1189,12 +1300,99 @@
                 snap.forEach(d => allStudents.push({ id: d.id, ...d.data() }));
                 updateStudentsStats();
                 displayStudents();
+                displayTopStudents();
             } catch (e) {
                 console.error(e);
                 showNotification('حدث خطأ أثناء تحميل بيانات الطالبات', 'error');
             } finally {
                 showLoading('studentsLoading', false);
             }
+        }
+
+        function isValidStudent(student, totalQuestions) {
+            const score = student.score || 0;
+            const questionsAnswered = student.questionsAnswered || 0;
+            
+            // استبعاد الطالبات اللواتي حصلن على درجات أعلى من عدد الأسئلة
+            if (score > totalQuestions) {
+                return false;
+            }
+            
+            // استبعاد الطالبات اللواتي حصلن على درجات أعلى من عدد الأسئلة المجاب عليها
+            if (score > questionsAnswered) {
+                return false;
+            }
+            
+            return true;
+        }
+
+        function displayTopStudents() {
+            const totalQuestions = currentQuestions.length;
+            
+            // تصفية الطالبات الصالحات فقط
+            const validStudents = allStudents.filter(student => isValidStudent(student, totalQuestions));
+            
+            // ترتيب حسب النقاط
+            validStudents.sort((a, b) => (b.score || 0) - (a.score || 0));
+            
+            // الثلاثة الأوائل على المدرسة
+            const schoolTop3 = validStudents.slice(0, 3);
+            displayTop3List('schoolTop3', schoolTop3);
+            
+            // الثلاثة الأوائل للصف الأول
+            const grade1Students = validStudents.filter(s => s.grade === '1');
+            const grade1Top3 = grade1Students.slice(0, 3);
+            displayTop3List('grade1Top3', grade1Top3);
+            
+            // الثلاثة الأوائل للصف الثاني
+            const grade2Students = validStudents.filter(s => s.grade === '2');
+            const grade2Top3 = grade2Students.slice(0, 3);
+            displayTop3List('grade2Top3', grade2Top3);
+            
+            // الثلاثة الأوائل للصف الثالث
+            const grade3Students = validStudents.filter(s => s.grade === '3');
+            const grade3Top3 = grade3Students.slice(0, 3);
+            displayTop3List('grade3Top3', grade3Top3);
+        }
+
+        function displayTop3List(elementId, students) {
+            const container = document.getElementById(elementId);
+            
+            if (!students || students.length === 0) {
+                container.innerHTML = `
+                    <div class="no-top-students">
+                        <p style="font-size: 18px; margin-bottom: 10px;">📝 لا توجد طالبات مؤهلات حالياً</p>
+                        <p style="font-size: 14px; color: #95a5a6;">لا توجد طالبات حصلن على نقاط صحيحة بعد</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const medals = ['🥇', '🥈', '🥉'];
+            const rankClasses = ['first', 'second', 'third'];
+            
+            container.innerHTML = students.map((student, index) => {
+                const rankClass = rankClasses[index] || '';
+                const medal = medals[index] || '🏅';
+                
+                return `
+                    <div class="top-student-item ${rankClass}">
+                        <div class="rank-badge">${medal}</div>
+                        <div class="student-info" style="flex: 1; margin: 0 20px;">
+                            <h4 style="margin-bottom: 5px;">${student.name}</h4>
+                            <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 3px;">
+                                الصف ${student.grade} • رقم الطالبة: ${student.code}
+                            </p>
+                            <p style="font-size: 12px; color: #3498db;">
+                                📊 أجابت على ${student.questionsAnswered || 0} سؤال
+                            </p>
+                        </div>
+                        <div class="student-score" style="font-size: 28px;">
+                            ${student.score || 0} نقطة
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function updateStudentsStats() {
