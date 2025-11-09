@@ -900,8 +900,21 @@
 
                 <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                     <button class="btn success" onclick="backupData()">💾 تحميل نسخة احتياطية</button>
+                    <button class="btn info" onclick="reopenTestForAll()">🔓 إعادة فتح الاختبار للجميع</button>
                     <button class="btn warning" onclick="resetWeeklyScores()">🔄 إعادة تعيين النقاط</button>
                     <button class="btn danger" onclick="resetAllData()">⚠️ إعادة تعيين النظام</button>
+                </div>
+
+                <div style="margin-top: 20px; padding: 20px; background: #fff3cd; border-radius: 15px; border: 2px solid #f39c12;">
+                    <h3 style="color: #856404; margin-bottom: 10px;">💡 ملاحظة هامة - إضافة أسئلة جديدة</h3>
+                    <p style="color: #856404; line-height: 1.8;">
+                        عند إضافة أسئلة جديدة، يجب عليك الضغط على زر <strong>"🔓 إعادة فتح الاختبار للجميع"</strong> حتى تتمكن الطالبات اللواتي أتممن الاختبار من الدخول مرة أخرى لحل الأسئلة الجديدة.
+                        <br><br>
+                        <strong>هذا الزر سيقوم بـ:</strong><br>
+                        • إلغاء حالة "إتمام الاختبار" لجميع الطالبات<br>
+                        • الاحتفاظ بنقاطهن الحالية<br>
+                        • السماح لهن بحل الأسئلة الجديدة فقط
+                    </p>
                 </div>
 
                 <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 15px;">
@@ -1703,6 +1716,54 @@
             } catch (e) {
                 console.error(e);
                 showNotification('حدث خطأ أثناء إعادة التعيين', 'error');
+            }
+        };
+
+        window.reopenTestForAll = async () => {
+            if (!confirm(
+                '🔓 إعادة فتح الاختبار للجميع\n\n' +
+                'هذا الإجراء سيقوم بـ:\n\n' +
+                '✅ إلغاء حالة "إتمام الاختبار" لجميع الطالبات\n' +
+                '✅ الاحتفاظ بنقاطهن الحالية\n' +
+                '✅ السماح لهن بالدخول لحل الأسئلة الجديدة\n\n' +
+                'هل تريدين المتابعة؟'
+            )) return;
+            
+            try {
+                showNotification('جاري إعادة فتح الاختبار...', 'info');
+                
+                const batch = writeBatch(db);
+                const completedStudents = allStudents.filter(s => s.testCompleted === true);
+                
+                if (completedStudents.length === 0) {
+                    showNotification('لا توجد طالبات أتممن الاختبار', 'info');
+                    return;
+                }
+                
+                completedStudents.forEach(s => {
+                    batch.update(doc(db, 'students', s.id), {
+                        testCompleted: false,
+                        lastQuestion: s.lastQuestion || 0,
+                        reopenedAt: new Date()
+                    });
+                });
+                
+                await batch.commit();
+                
+                showNotification(
+                    `✅ تم إعادة فتح الاختبار بنجاح!\n\n` +
+                    `عدد الطالبات: ${completedStudents.length}\n` +
+                    `يمكنهن الآن الدخول لحل الأسئلة الجديدة`,
+                    'success'
+                );
+                
+                setTimeout(() => {
+                    loadStudents();
+                }, 2000);
+                
+            } catch (e) {
+                console.error(e);
+                showNotification('حدث خطأ أثناء إعادة فتح الاختبار', 'error');
             }
         };
 
