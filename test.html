@@ -6,7 +6,7 @@
     <title>منصة حجز جلسات Nawaf Wyckoff</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Firebase SDKs (Updated and using compat for simplicity ) -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
@@ -62,7 +62,9 @@
             secondary_color: "#64748b",
         };
 
-        const DAYS = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'];
+        // ********  تم التعديل هنا  ********
+        const DAYS = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء'];
+        
         const TIME_SLOTS = [
             { time: '16:00', label: '4:00 عصراً' },
             { time: '17:30', label: '5:30 مساءً' },
@@ -125,11 +127,12 @@
         
         function generateICS(booking) {
             const slot = TIME_SLOTS.find(s => s.time === booking.time);
-            const dayIndex = DAYS.indexOf(booking.day);
+            // تعديل بسيط هنا ليتوافق مع وجود يوم السبت
+            const dayIndex = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'].indexOf(booking.day);
+            
             const now = new Date();
             const currentDay = now.getDay();
-            const targetDay = (dayIndex + 0) % 7;
-            let dayDifference = targetDay - currentDay;
+            let dayDifference = dayIndex - currentDay;
             if (dayDifference < 0) dayDifference += 7;
             
             const eventDate = new Date();
@@ -198,7 +201,6 @@
             } catch (error) {
                 console.error("Error processing booking: ", error);
                 showToast('حدث خطأ. قد يكون الموعد حُجز للتو.', 'error');
-                // Reload data to ensure sync
                 await init();
             }
         }
@@ -360,7 +362,7 @@
                 render();
             } catch (error) {
                 console.error("Failed to load data from Firestore:", error);
-                document.getElementById('app').innerHTML = `<p class="text-lg font-semibold text-red-500">فشل الاتصال بقاعدة البيانات. يرجى المحاولة مرة أخرى.</p>`;
+                document.getElementById('app').innerHTML = `<p class="text-lg font-semibold text-red-500">فشل الاتصال بقاعدة البيانات. يرجى مراجعة قواعد الأمان في Firebase.</p>`;
             }
         }
 
@@ -369,5 +371,4 @@
     </script>
 </body>
 </html>
-
 
