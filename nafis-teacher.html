@@ -802,6 +802,16 @@
                     <span>تقرير الطالبات الأوائل</span>
                 </div>
 
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <button class="btn success" onclick="refreshTopStudents()">🔄 تحديث الترتيب</button>
+                    <button class="btn info" onclick="showTopStudentsStats()">📊 إحصائيات مفصلة</button>
+                </div>
+
+                <div id="topStudentsDebug" style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; color: #666;">
+                    <strong>📌 معلومات التحديث:</strong><br>
+                    <span id="debugInfo">جاري التحميل...</span>
+                </div>
+
                 <!-- School Top 3 -->
                 <div style="margin-bottom: 30px;">
                     <h3 style="color: #2c3e50; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #ecf0f1;">
@@ -1326,47 +1336,129 @@
             const score = student.score || 0;
             const questionsAnswered = student.questionsAnswered || 0;
             
-            // استبعاد الطالبات اللواتي حصلن على درجات أعلى من عدد الأسئلة
-            if (score > totalQuestions) {
+            // يجب أن يكون لديها نقاط
+            if (score === 0) {
+                console.log(`❌ استبعاد ${student.name}: لا توجد نقاط`);
                 return false;
             }
             
-            // استبعاد الطالبات اللواتي حصلن على درجات أعلى من عدد الأسئلة المجاب عليها
-            if (score > questionsAnswered) {
+            // إذا كان عدد الأسئلة معروف، تحقق من أن النقاط لا تتجاوزه
+            if (totalQuestions > 0 && score > totalQuestions) {
+                console.log(`❌ استبعاد ${student.name}: النقاط (${score}) أكبر من عدد الأسئلة (${totalQuestions})`);
                 return false;
             }
             
+            // إذا كان questionsAnswered موثوق (أكبر من النقاط)، استخدمه للتحقق
+            // وإلا تجاهله (قد يكون غير محدث)
+            if (questionsAnswered >= score && score > questionsAnswered) {
+                console.log(`❌ استبعاد ${student.name}: النقاط (${score}) أكبر من الأسئلة المجابة (${questionsAnswered})`);
+                return false;
+            }
+            
+            // إذا كان questionsAnswered صفر أو أقل من النقاط، تجاهله واقبل الطالبة
+            console.log(`✅ قبول ${student.name}: ${score} نقطة`);
             return true;
         }
 
         function displayTopStudents() {
             const totalQuestions = currentQuestions.length;
             
+            console.log('🔍 بدء عرض الأوائل...');
+            console.log(`📝 عدد الأسئلة الكلي: ${totalQuestions}`);
+            console.log(`👥 عدد الطالبات الكلي: ${allStudents.length}`);
+            
             // تصفية الطالبات الصالحات فقط
             const validStudents = allStudents.filter(student => isValidStudent(student, totalQuestions));
+            
+            console.log(`✅ عدد الطالبات المؤهلات: ${validStudents.length}`);
             
             // ترتيب حسب النقاط
             validStudents.sort((a, b) => (b.score || 0) - (a.score || 0));
             
+            // عرض معلومات التصحيح
+            const debugInfo = document.getElementById('debugInfo');
+            if (debugInfo) {
+                debugInfo.innerHTML = `
+                    آخر تحديث: ${new Date().toLocaleTimeString('ar-SA')}<br>
+                    📝 عدد الأسئلة: ${totalQuestions}<br>
+                    👥 إجمالي الطالبات: ${allStudents.length}<br>
+                    ✅ الطالبات المؤهلات: ${validStudents.length}<br>
+                    ❌ المستبعدات: ${allStudents.length - validStudents.length}
+                `;
+            }
+            
             // الثلاثة الأوائل على المدرسة
             const schoolTop3 = validStudents.slice(0, 3);
+            console.log('🏫 الأوائل على المدرسة:', schoolTop3.length);
             displayTop3List('schoolTop3', schoolTop3);
             
             // الثلاثة الأوائل للصف الأول
             const grade1Students = validStudents.filter(s => s.grade === '1');
             const grade1Top3 = grade1Students.slice(0, 3);
+            console.log('📚 الأوائل للصف الأول:', grade1Top3.length);
             displayTop3List('grade1Top3', grade1Top3);
             
             // الثلاثة الأوائل للصف الثاني
             const grade2Students = validStudents.filter(s => s.grade === '2');
             const grade2Top3 = grade2Students.slice(0, 3);
+            console.log('📚 الأوائل للصف الثاني:', grade2Top3.length);
             displayTop3List('grade2Top3', grade2Top3);
             
             // الثلاثة الأوائل للصف الثالث
             const grade3Students = validStudents.filter(s => s.grade === '3');
             const grade3Top3 = grade3Students.slice(0, 3);
+            console.log('📚 الأوائل للصف الثالث:', grade3Top3.length);
             displayTop3List('grade3Top3', grade3Top3);
         }
+
+        window.refreshTopStudents = async function() {
+            showNotification('🔄 جاري تحديث الترتيب...', 'info');
+            
+            try {
+                // تحميل البيانات من جديد
+                const studentsSnap = await getDocs(collection(db, 'students'));
+                allStudents = [];
+                studentsSnap.forEach(d => allStudents.push({ id: d.id, ...d.data() }));
+                
+                const questionsSnap = await getDocs(query(collection(db, 'questions'), where('active', '==', true)));
+                currentQuestions = [];
+                questionsSnap.forEach(d => currentQuestions.push({ id: d.id, ...d.data() }));
+                
+                // تحديث العرض
+                displayTopStudents();
+                updateStudentsStats();
+                
+                showNotification('✅ تم تحديث الترتيب بنجاح!', 'success');
+            } catch (e) {
+                console.error('خطأ في تحديث الترتيب:', e);
+                showNotification('❌ حدث خطأ أثناء التحديث', 'error');
+            }
+        };
+
+        window.showTopStudentsStats = function() {
+            const totalQuestions = currentQuestions.length;
+            const validStudents = allStudents.filter(s => isValidStudent(s, totalQuestions));
+            const invalidStudents = allStudents.filter(s => !isValidStudent(s, totalQuestions));
+            
+            let statsMessage = `📊 إحصائيات مفصلة\n\n`;
+            statsMessage += `📝 عدد الأسئلة المتاحة: ${totalQuestions}\n`;
+            statsMessage += `👥 إجمالي الطالبات: ${allStudents.length}\n`;
+            statsMessage += `✅ الطالبات المؤهلات: ${validStudents.length}\n`;
+            statsMessage += `❌ المستبعدات: ${invalidStudents.length}\n\n`;
+            
+            if (validStudents.length > 0) {
+                statsMessage += `🏆 أعلى نقاط: ${validStudents[0].score} - ${validStudents[0].name}\n`;
+            }
+            
+            if (invalidStudents.length > 0) {
+                statsMessage += `\n❌ أمثلة على المستبعدات:\n`;
+                invalidStudents.slice(0, 3).forEach(s => {
+                    statsMessage += `   • ${s.name}: ${s.score || 0} نقطة من ${s.questionsAnswered || 0} سؤال\n`;
+                });
+            }
+            
+            alert(statsMessage);
+        };
 
         function displayTop3List(elementId, students) {
             const container = document.getElementById(elementId);
@@ -1376,6 +1468,7 @@
                     <div class="no-top-students">
                         <p style="font-size: 18px; margin-bottom: 10px;">📝 لا توجد طالبات مؤهلات حالياً</p>
                         <p style="font-size: 14px; color: #95a5a6;">لا توجد طالبات حصلن على نقاط صحيحة بعد</p>
+                        <button class="btn info" onclick="showDetailedDebug()" style="margin-top: 10px;">🔍 عرض التفاصيل الكاملة</button>
                     </div>
                 `;
                 return;
@@ -1407,6 +1500,72 @@
                 `;
             }).join('');
         }
+
+        window.showDetailedDebug = function() {
+            const totalQuestions = currentQuestions.length;
+            let debugMessage = `🔍 تقرير التشخيص الكامل\n\n`;
+            debugMessage += `📝 عدد الأسئلة المتاحة: ${totalQuestions}\n`;
+            debugMessage += `👥 إجمالي الطالبات: ${allStudents.length}\n\n`;
+            
+            if (allStudents.length === 0) {
+                debugMessage += `❌ لا توجد طالبات مسجلات في النظام!\n`;
+                alert(debugMessage);
+                return;
+            }
+            
+            debugMessage += `📊 تفاصيل جميع الطالبات:\n`;
+            debugMessage += `${'='.repeat(50)}\n\n`;
+            
+            allStudents.forEach((student, index) => {
+                const score = student.score || 0;
+                const questionsAnswered = student.questionsAnswered || 0;
+                const isValid = isValidStudent(student, totalQuestions);
+                
+                debugMessage += `${index + 1}. ${student.name}\n`;
+                debugMessage += `   الصف: ${student.grade}\n`;
+                debugMessage += `   النقاط: ${score}\n`;
+                debugMessage += `   الأسئلة المجابة: ${questionsAnswered}\n`;
+                debugMessage += `   الحالة: ${isValid ? '✅ مؤهلة' : '❌ مستبعدة'}\n`;
+                
+                if (!isValid) {
+                    if (score === 0) {
+                        debugMessage += `   السبب: لا توجد نقاط\n`;
+                    } else if (totalQuestions > 0 && score > totalQuestions) {
+                        debugMessage += `   السبب: النقاط أكبر من عدد الأسئلة\n`;
+                    } else if (questionsAnswered > 0 && score > questionsAnswered) {
+                        debugMessage += `   السبب: النقاط أكبر من الأسئلة المجابة\n`;
+                    }
+                }
+                debugMessage += `\n`;
+            });
+            
+            // عرض في console
+            console.log(debugMessage);
+            
+            // عرض في alert (مختصر)
+            let shortMessage = `🔍 تقرير مختصر:\n\n`;
+            shortMessage += `📝 أسئلة: ${totalQuestions}\n`;
+            shortMessage += `👥 طالبات: ${allStudents.length}\n`;
+            
+            const studentsWithScore = allStudents.filter(s => (s.score || 0) > 0);
+            shortMessage += `💯 لديهن نقاط: ${studentsWithScore.length}\n\n`;
+            
+            if (studentsWithScore.length > 0) {
+                shortMessage += `أعلى النقاط:\n`;
+                studentsWithScore
+                    .sort((a, b) => (b.score || 0) - (a.score || 0))
+                    .slice(0, 5)
+                    .forEach((s, i) => {
+                        shortMessage += `${i + 1}. ${s.name}: ${s.score} نقطة\n`;
+                    });
+            } else {
+                shortMessage += `❌ لا توجد طالبات حصلن على نقاط!\n`;
+            }
+            
+            shortMessage += `\n📋 التفاصيل الكاملة في Console (F12)`;
+            
+            alert(shortMessage);
+        };
 
         function updateStudentsStats() {
             const stats = {
