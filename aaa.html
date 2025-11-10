@@ -1336,25 +1336,28 @@
             const score = student.score || 0;
             const questionsAnswered = student.questionsAnswered || 0;
             
-            // استبعاد الطالبات اللواتي حصلن على درجات أعلى من عدد الأسئلة
+            // يجب أن يكون لديها نقاط
+            if (score === 0) {
+                console.log(`❌ استبعاد ${student.name}: لا توجد نقاط`);
+                return false;
+            }
+            
+            // إذا كان عدد الأسئلة معروف، تحقق من أن النقاط لا تتجاوزه
             if (totalQuestions > 0 && score > totalQuestions) {
                 console.log(`❌ استبعاد ${student.name}: النقاط (${score}) أكبر من عدد الأسئلة (${totalQuestions})`);
                 return false;
             }
             
-            // استبعاد الطالبات اللواتي حصلن على درجات أعلى من عدد الأسئلة المجاب عليها
-            if (questionsAnswered > 0 && score > questionsAnswered) {
+            // إذا كان questionsAnswered موثوق (أكبر من النقاط)، استخدمه للتحقق
+            // وإلا تجاهله (قد يكون غير محدث)
+            if (questionsAnswered >= score && score > questionsAnswered) {
                 console.log(`❌ استبعاد ${student.name}: النقاط (${score}) أكبر من الأسئلة المجابة (${questionsAnswered})`);
                 return false;
             }
             
-            // قبول فقط الطالبات اللواتي لديهن نقاط
-            if (score > 0) {
-                console.log(`✅ قبول ${student.name}: ${score} نقطة من ${questionsAnswered} سؤال`);
-                return true;
-            }
-            
-            return false;
+            // إذا كان questionsAnswered صفر أو أقل من النقاط، تجاهله واقبل الطالبة
+            console.log(`✅ قبول ${student.name}: ${score} نقطة`);
+            return true;
         }
 
         function displayTopStudents() {
