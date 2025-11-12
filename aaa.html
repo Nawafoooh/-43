@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نافس - لوحة تحكم المعلمة</title>
+    <title>نافس - لوحة تحكم المعلم</title>
     <style>
         * {
             margin: 0;
@@ -45,7 +45,7 @@
         .logo {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #4CAF50, #45a049);
+            background: linear-gradient(135deg, #2980b9, #3498db);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -53,7 +53,7 @@
             color: white;
             font-size: 32px;
             font-weight: bold;
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 5px 15px rgba(41, 128, 185, 0.3);
         }
 
         .title-section h1 {
@@ -66,7 +66,7 @@
         }
 
         .subtitle {
-            color: #e67e22;
+            color: #3498db;
             font-size: 1.2em;
             font-weight: 600;
             margin-bottom: 15px;
@@ -152,7 +152,7 @@
         }
 
         .icon.questions { background: linear-gradient(135deg, #3498db, #2980b9); }
-        .icon.students { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .icon.students { background: linear-gradient(135deg, #3498db, #2980b9); }
         .icon.reports { background: linear-gradient(135deg, #f39c12, #e67e22); }
         .icon.settings { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
         .icon.messages { background: linear-gradient(135deg, #16a085, #1abc9c); }
@@ -166,7 +166,7 @@
             justify-content: space-between;
             align-items: center;
             transition: all 0.3s ease;
-            border-right: 5px solid #667eea;
+            border-right: 5px solid #3498db;
         }
 
         .student-item:hover {
@@ -189,8 +189,8 @@
         .student-score {
             font-size: 24px;
             font-weight: bold;
-            color: #27ae60;
-            background: #d4edda;
+            color: #3498db;
+            background: #e3f2fd;
             padding: 10px 20px;
             border-radius: 10px;
         }
@@ -273,6 +273,10 @@
 
         .stat-card.red {
             background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .stat-card.blue {
+            background: linear-gradient(135deg, #3498db, #2980b9);
         }
 
         .stat-number {
@@ -662,20 +666,20 @@
                 <div class="logo">ن</div>
                 <div class="title-section">
                     <h1>نافس</h1>
-                    <div class="subtitle">لوحة تحكم المعلمة</div>
+                    <div class="subtitle">لوحة تحكم المعلم</div>
                 </div>
             </div>
             <div class="school-info">
-                <strong>🏫 المتوسطة الثالثة والأربعون</strong><br>
+                <strong>🏫 متوسطة المنذر بن عمرو الأنصاري</strong><br>
                 📍 المدينة المنورة - المملكة العربية السعودية<br>
-                👩‍💼 <strong>إشراف الأستاذة ريم العنزي</strong>
+                👨‍💼 <strong>إشراف الأستاذ نواف الصبحي</strong>
             </div>
         </div>
 
         <!-- Tabs -->
         <div class="tabs">
             <button class="tab active" onclick="switchTab('questions')">📝 إدارة الأسئلة</button>
-            <button class="tab" onclick="switchTab('students')">👥 الطالبات</button>
+            <button class="tab" onclick="switchTab('students')">👥 الطلاب</button>
             <button class="tab" onclick="switchTab('messages')">💬 الرسائل</button>
             <button class="tab" onclick="switchTab('settings')">⚙️ الإعدادات</button>
         </div>
@@ -705,7 +709,7 @@
                 <div class="action-buttons">
                     <button class="btn success" onclick="addManualQuestion()">➕ إضافة سؤال يدوياً</button>
                     <button class="btn info" onclick="downloadTemplate()">📥 تحميل قالب CSV</button>
-                    <button class="btn info" onclick="publishQuestions()">🚀 نشر الأسئلة للطالبات</button>
+                    <button class="btn info" onclick="publishQuestions()">🚀 نشر الأسئلة للطلاب</button>
                     <button class="btn warning" onclick="clearAllQuestions()">🗑️ حذف جميع الأسئلة</button>
                 </div>
 
@@ -779,7 +783,7 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-number" id="totalStudents">0</div>
-                    <div class="stat-label">إجمالي الطالبات</div>
+                    <div class="stat-label">إجمالي الطلاب</div>
                 </div>
                 <div class="stat-card green">
                     <div class="stat-number" id="grade1Count">0</div>
@@ -789,7 +793,7 @@
                     <div class="stat-number" id="grade2Count">0</div>
                     <div class="stat-label">الصف الثاني</div>
                 </div>
-                <div class="stat-card red">
+                <div class="stat-card blue">
                     <div class="stat-number" id="grade3Count">0</div>
                     <div class="stat-label">الصف الثالث</div>
                 </div>
@@ -799,7 +803,7 @@
             <div class="card">
                 <div class="card-title">
                     <div class="icon" style="background: linear-gradient(135deg, #f39c12, #e67e22);">🏆</div>
-                    <span>تقرير الطالبات الأوائل</span>
+                    <span>تقرير الطلاب الأوائل</span>
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
@@ -848,10 +852,10 @@
             <div class="card">
                 <div class="card-title">
                     <div class="icon students">👥</div>
-                    <span>قائمة الطالبات</span>
+                    <span>قائمة الطلاب</span>
                 </div>
 
-                <div class="loading" id="studentsLoading"><p>جاري تحميل بيانات الطالبات...</p></div>
+                <div class="loading" id="studentsLoading"><p>جاري تحميل بيانات الطلاب...</p></div>
                 <div id="studentsList"></div>
             </div>
         </div>
@@ -880,7 +884,7 @@
             <div class="card">
                 <div class="card-title">
                     <div class="icon messages">💬</div>
-                    <span>رسائل الطالبات</span>
+                    <span>رسائل الطلاب</span>
                 </div>
 
                 <div class="filter-buttons">
@@ -911,6 +915,7 @@
                 <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                     <button class="btn success" onclick="backupData()">💾 تحميل نسخة احتياطية</button>
                     <button class="btn info" onclick="reopenTestForAll()">🔓 إعادة فتح الاختبار للجميع</button>
+                    <button class="btn info" onclick="fixQuestionsAnswered()">🔧 إصلاح عدد الأسئلة المجابة</button>
                     <button class="btn warning" onclick="resetWeeklyScores()">🔄 إعادة تعيين النقاط</button>
                     <button class="btn danger" onclick="resetAllData()">⚠️ إعادة تعيين النظام</button>
                 </div>
@@ -918,12 +923,12 @@
                 <div style="margin-top: 20px; padding: 20px; background: #fff3cd; border-radius: 15px; border: 2px solid #f39c12;">
                     <h3 style="color: #856404; margin-bottom: 10px;">💡 ملاحظة هامة - إضافة أسئلة جديدة</h3>
                     <p style="color: #856404; line-height: 1.8;">
-                        عند إضافة أسئلة جديدة، يجب عليك الضغط على زر <strong>"🔓 إعادة فتح الاختبار للجميع"</strong> حتى تتمكن الطالبات اللواتي أتممن الاختبار من الدخول مرة أخرى لحل الأسئلة الجديدة.
+                        عند إضافة أسئلة جديدة، يجب عليك الضغط على زر <strong>"🔓 إعادة فتح الاختبار للجميع"</strong> حتى يتمكن الطلاب الذين أتموا الاختبار من الدخول مرة أخرى لحل الأسئلة الجديدة.
                         <br><br>
                         <strong>هذا الزر سيقوم بـ:</strong><br>
-                        • إلغاء حالة "إتمام الاختبار" لجميع الطالبات<br>
-                        • الاحتفاظ بنقاطهن الحالية<br>
-                        • السماح لهن بحل الأسئلة الجديدة فقط
+                        • إلغاء حالة "إتمام الاختبار" لجميع الطلاب<br>
+                        • الاحتفاظ بنقاطهم الحالية<br>
+                        • السماح لهم بحل الأسئلة الجديدة فقط
                     </p>
                 </div>
 
@@ -936,7 +941,7 @@
                         <strong>📝 عدد الأسئلة:</strong> <span id="totalQuestionsCount">0</span>
                     </p>
                     <p style="margin: 10px 0; color: #555;">
-                        <strong>👥 عدد الطالبات:</strong> <span id="totalStudentsCount">0</span>
+                        <strong>👥 عدد الطلاب:</strong> <span id="totalStudentsCount">0</span>
                     </p>
                     <p style="margin: 10px 0; color: #555;">
                         <strong>💬 عدد الرسائل:</strong> <span id="totalMessagesCount">0</span>
@@ -950,7 +955,7 @@
 
         <!-- Footer -->
         <div style="text-align: center; margin-top: 40px; color: white; font-size: 14px;">
-            <p>إشراف الأستاذة ريم العنزي</p>
+            <p>إشراف الأستاذ نواف الصبحي</p>
         </div>
     </div>
 
@@ -966,13 +971,13 @@
 
         // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyDX-CG9L4XaVPtqgexD0Da0owXEa0-I3YM",
-            authDomain: "nafis-girls-school.firebaseapp.com",
-            projectId: "nafis-girls-school",
-            storageBucket: "nafis-girls-school.firebasestorage.app",
-            messagingSenderId: "998478495565",
-            appId: "1:998478495565:web:67bb560b773ea1956ac104",
-            measurementId: "G-TPKDV51KNN"
+            apiKey: "AIzaSyD28cfba2NmXlsfBci9jgbne21U9rZLJ2M",
+            authDomain: "nafis-new.firebaseapp.com",
+            projectId: "nafis-new",
+            storageBucket: "nafis-new.firebasestorage.app",
+            messagingSenderId: "366381122504",
+            appId: "1:366381122504:web:b76107c74d7d7ec82df6fd",
+            measurementId: "G-ZD3Z9LEGGM"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -1149,7 +1154,7 @@
             if (!confirm(
                 `أسئلة جديدة: ${newQuestions.length}\n` +
                 `مكررة: ${duplicates.length}\n\n` +
-                `هل تريدين إضافة الأسئلة الجديدة فقط؟`
+                `هل تريد إضافة الأسئلة الجديدة فقط؟`
             )) return;
             
             showNotification('جارٍ إضافة الأسئلة الجديدة...', 'info');
@@ -1272,7 +1277,7 @@
         };
 
         window.deleteQuestion = async (id) => {
-            if (!confirm('هل أنت متأكدة من حذف هذا السؤال؟')) return;
+            if (!confirm('هل أنت متأكد من حذف هذا السؤال؟')) return;
             try {
                 await updateDoc(doc(db, 'questions', id), { active: false });
                 showNotification('تم حذف السؤال بنجاح', 'success');
@@ -1284,7 +1289,7 @@
         };
 
         window.clearAllQuestions = async () => {
-            if (!confirm('هل أنت متأكدة من حذف جميع الأسئلة؟\n\n⚠️ هذا الإجراء لا يمكن التراجع عنه!')) return;
+            if (!confirm('هل أنت متأكد من حذف جميع الأسئلة؟\n\n⚠️ هذا الإجراء لا يمكن التراجع عنه!')) return;
             try {
                 const batch = writeBatch(db);
                 currentQuestions.forEach(q => batch.update(doc(db, 'questions', q.id), { active: false }));
@@ -1299,7 +1304,7 @@
 
         window.publishQuestions = async () => {
             if (!currentQuestions.length) return showNotification('لا توجد أسئلة للنشر', 'error');
-            if (!confirm(`هل تريدين نشر ${currentQuestions.length} سؤال للطالبات؟`)) return;
+            if (!confirm(`هل تريد نشر ${currentQuestions.length} سؤال للطلاب؟`)) return;
             try {
                 const batch = writeBatch(db);
                 currentQuestions.forEach(q => batch.update(doc(db, 'questions', q.id), {
@@ -1307,7 +1312,7 @@
                     publishedAt: new Date()
                 }));
                 await batch.commit();
-                showNotification('تم نشر الأسئلة للطالبات بنجاح!', 'success');
+                showNotification('تم نشر الأسئلة للطلاب بنجاح!', 'success');
             } catch (e) {
                 console.error(e);
                 showNotification('حدث خطأ أثناء نشر الأسئلة', 'error');
@@ -1326,7 +1331,7 @@
                 displayTopStudents();
             } catch (e) {
                 console.error(e);
-                showNotification('حدث خطأ أثناء تحميل بيانات الطالبات', 'error');
+                showNotification('حدث خطأ أثناء تحميل بيانات الطلاب', 'error');
             } finally {
                 showLoading('studentsLoading', false);
             }
@@ -1336,26 +1341,21 @@
             const score = student.score || 0;
             const questionsAnswered = student.questionsAnswered || 0;
             
-            // يجب أن يكون لديها نقاط
             if (score === 0) {
                 console.log(`❌ استبعاد ${student.name}: لا توجد نقاط`);
                 return false;
             }
             
-            // إذا كان عدد الأسئلة معروف، تحقق من أن النقاط لا تتجاوزه
             if (totalQuestions > 0 && score > totalQuestions) {
                 console.log(`❌ استبعاد ${student.name}: النقاط (${score}) أكبر من عدد الأسئلة (${totalQuestions})`);
                 return false;
             }
             
-            // إذا كان questionsAnswered موثوق (أكبر من النقاط)، استخدمه للتحقق
-            // وإلا تجاهله (قد يكون غير محدث)
             if (questionsAnswered >= score && score > questionsAnswered) {
                 console.log(`❌ استبعاد ${student.name}: النقاط (${score}) أكبر من الأسئلة المجابة (${questionsAnswered})`);
                 return false;
             }
             
-            // إذا كان questionsAnswered صفر أو أقل من النقاط، تجاهله واقبل الطالبة
             console.log(`✅ قبول ${student.name}: ${score} نقطة`);
             return true;
         }
@@ -1365,46 +1365,39 @@
             
             console.log('🔍 بدء عرض الأوائل...');
             console.log(`📝 عدد الأسئلة الكلي: ${totalQuestions}`);
-            console.log(`👥 عدد الطالبات الكلي: ${allStudents.length}`);
+            console.log(`👥 عدد الطلاب الكلي: ${allStudents.length}`);
             
-            // تصفية الطالبات الصالحات فقط
             const validStudents = allStudents.filter(student => isValidStudent(student, totalQuestions));
             
-            console.log(`✅ عدد الطالبات المؤهلات: ${validStudents.length}`);
+            console.log(`✅ عدد الطلاب المؤهلين: ${validStudents.length}`);
             
-            // ترتيب حسب النقاط
             validStudents.sort((a, b) => (b.score || 0) - (a.score || 0));
             
-            // عرض معلومات التصحيح
             const debugInfo = document.getElementById('debugInfo');
             if (debugInfo) {
                 debugInfo.innerHTML = `
                     آخر تحديث: ${new Date().toLocaleTimeString('ar-SA')}<br>
                     📝 عدد الأسئلة: ${totalQuestions}<br>
-                    👥 إجمالي الطالبات: ${allStudents.length}<br>
-                    ✅ الطالبات المؤهلات: ${validStudents.length}<br>
-                    ❌ المستبعدات: ${allStudents.length - validStudents.length}
+                    👥 إجمالي الطلاب: ${allStudents.length}<br>
+                    ✅ الطلاب المؤهلون: ${validStudents.length}<br>
+                    ❌ المستبعدون: ${allStudents.length - validStudents.length}
                 `;
             }
             
-            // الثلاثة الأوائل على المدرسة
             const schoolTop3 = validStudents.slice(0, 3);
             console.log('🏫 الأوائل على المدرسة:', schoolTop3.length);
             displayTop3List('schoolTop3', schoolTop3);
             
-            // الثلاثة الأوائل للصف الأول
             const grade1Students = validStudents.filter(s => s.grade === '1');
             const grade1Top3 = grade1Students.slice(0, 3);
             console.log('📚 الأوائل للصف الأول:', grade1Top3.length);
             displayTop3List('grade1Top3', grade1Top3);
             
-            // الثلاثة الأوائل للصف الثاني
             const grade2Students = validStudents.filter(s => s.grade === '2');
             const grade2Top3 = grade2Students.slice(0, 3);
             console.log('📚 الأوائل للصف الثاني:', grade2Top3.length);
             displayTop3List('grade2Top3', grade2Top3);
             
-            // الثلاثة الأوائل للصف الثالث
             const grade3Students = validStudents.filter(s => s.grade === '3');
             const grade3Top3 = grade3Students.slice(0, 3);
             console.log('📚 الأوائل للصف الثالث:', grade3Top3.length);
@@ -1415,7 +1408,6 @@
             showNotification('🔄 جاري تحديث الترتيب...', 'info');
             
             try {
-                // تحميل البيانات من جديد
                 const studentsSnap = await getDocs(collection(db, 'students'));
                 allStudents = [];
                 studentsSnap.forEach(d => allStudents.push({ id: d.id, ...d.data() }));
@@ -1424,7 +1416,6 @@
                 currentQuestions = [];
                 questionsSnap.forEach(d => currentQuestions.push({ id: d.id, ...d.data() }));
                 
-                // تحديث العرض
                 displayTopStudents();
                 updateStudentsStats();
                 
@@ -1442,532 +1433,6 @@
             
             let statsMessage = `📊 إحصائيات مفصلة\n\n`;
             statsMessage += `📝 عدد الأسئلة المتاحة: ${totalQuestions}\n`;
-            statsMessage += `👥 إجمالي الطالبات: ${allStudents.length}\n`;
-            statsMessage += `✅ الطالبات المؤهلات: ${validStudents.length}\n`;
-            statsMessage += `❌ المستبعدات: ${invalidStudents.length}\n\n`;
-            
-            if (validStudents.length > 0) {
-                statsMessage += `🏆 أعلى نقاط: ${validStudents[0].score} - ${validStudents[0].name}\n`;
-            }
-            
-            if (invalidStudents.length > 0) {
-                statsMessage += `\n❌ أمثلة على المستبعدات:\n`;
-                invalidStudents.slice(0, 3).forEach(s => {
-                    statsMessage += `   • ${s.name}: ${s.score || 0} نقطة من ${s.questionsAnswered || 0} سؤال\n`;
-                });
-            }
-            
-            alert(statsMessage);
-        };
-
-        function displayTop3List(elementId, students) {
-            const container = document.getElementById(elementId);
-            
-            if (!students || students.length === 0) {
-                container.innerHTML = `
-                    <div class="no-top-students">
-                        <p style="font-size: 18px; margin-bottom: 10px;">📝 لا توجد طالبات مؤهلات حالياً</p>
-                        <p style="font-size: 14px; color: #95a5a6;">لا توجد طالبات حصلن على نقاط صحيحة بعد</p>
-                        <button class="btn info" onclick="showDetailedDebug()" style="margin-top: 10px;">🔍 عرض التفاصيل الكاملة</button>
-                    </div>
-                `;
-                return;
-            }
-            
-            const medals = ['🥇', '🥈', '🥉'];
-            const rankClasses = ['first', 'second', 'third'];
-            
-            container.innerHTML = students.map((student, index) => {
-                const rankClass = rankClasses[index] || '';
-                const medal = medals[index] || '🏅';
-                
-                return `
-                    <div class="top-student-item ${rankClass}">
-                        <div class="rank-badge">${medal}</div>
-                        <div class="student-info" style="flex: 1; margin: 0 20px;">
-                            <h4 style="margin-bottom: 5px;">${student.name}</h4>
-                            <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 3px;">
-                                الصف ${student.grade} • رقم الطالبة: ${student.code}
-                            </p>
-                            <p style="font-size: 12px; color: #3498db;">
-                                📊 أجابت على ${student.questionsAnswered || 0} سؤال
-                            </p>
-                        </div>
-                        <div class="student-score" style="font-size: 28px;">
-                            ${student.score || 0} نقطة
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        window.showDetailedDebug = function() {
-            const totalQuestions = currentQuestions.length;
-            let debugMessage = `🔍 تقرير التشخيص الكامل\n\n`;
-            debugMessage += `📝 عدد الأسئلة المتاحة: ${totalQuestions}\n`;
-            debugMessage += `👥 إجمالي الطالبات: ${allStudents.length}\n\n`;
-            
-            if (allStudents.length === 0) {
-                debugMessage += `❌ لا توجد طالبات مسجلات في النظام!\n`;
-                alert(debugMessage);
-                return;
-            }
-            
-            debugMessage += `📊 تفاصيل جميع الطالبات:\n`;
-            debugMessage += `${'='.repeat(50)}\n\n`;
-            
-            allStudents.forEach((student, index) => {
-                const score = student.score || 0;
-                const questionsAnswered = student.questionsAnswered || 0;
-                const isValid = isValidStudent(student, totalQuestions);
-                
-                debugMessage += `${index + 1}. ${student.name}\n`;
-                debugMessage += `   الصف: ${student.grade}\n`;
-                debugMessage += `   النقاط: ${score}\n`;
-                debugMessage += `   الأسئلة المجابة: ${questionsAnswered}\n`;
-                debugMessage += `   الحالة: ${isValid ? '✅ مؤهلة' : '❌ مستبعدة'}\n`;
-                
-                if (!isValid) {
-                    if (score === 0) {
-                        debugMessage += `   السبب: لا توجد نقاط\n`;
-                    } else if (totalQuestions > 0 && score > totalQuestions) {
-                        debugMessage += `   السبب: النقاط أكبر من عدد الأسئلة\n`;
-                    } else if (questionsAnswered > 0 && score > questionsAnswered) {
-                        debugMessage += `   السبب: النقاط أكبر من الأسئلة المجابة\n`;
-                    }
-                }
-                debugMessage += `\n`;
-            });
-            
-            // عرض في console
-            console.log(debugMessage);
-            
-            // عرض في alert (مختصر)
-            let shortMessage = `🔍 تقرير مختصر:\n\n`;
-            shortMessage += `📝 أسئلة: ${totalQuestions}\n`;
-            shortMessage += `👥 طالبات: ${allStudents.length}\n`;
-            
-            const studentsWithScore = allStudents.filter(s => (s.score || 0) > 0);
-            shortMessage += `💯 لديهن نقاط: ${studentsWithScore.length}\n\n`;
-            
-            if (studentsWithScore.length > 0) {
-                shortMessage += `أعلى النقاط:\n`;
-                studentsWithScore
-                    .sort((a, b) => (b.score || 0) - (a.score || 0))
-                    .slice(0, 5)
-                    .forEach((s, i) => {
-                        shortMessage += `${i + 1}. ${s.name}: ${s.score} نقطة\n`;
-                    });
-            } else {
-                shortMessage += `❌ لا توجد طالبات حصلن على نقاط!\n`;
-            }
-            
-            shortMessage += `\n📋 التفاصيل الكاملة في Console (F12)`;
-            
-            alert(shortMessage);
-        };
-
-        function updateStudentsStats() {
-            const stats = {
-                total: allStudents.length,
-                grade1: allStudents.filter(s => s.grade === '1').length,
-                grade2: allStudents.filter(s => s.grade === '2').length,
-                grade3: allStudents.filter(s => s.grade === '3').length
-            };
-            document.getElementById('totalStudents').textContent = stats.total;
-            document.getElementById('grade1Count').textContent = stats.grade1;
-            document.getElementById('grade2Count').textContent = stats.grade2;
-            document.getElementById('grade3Count').textContent = stats.grade3;
-        }
-
-        function displayStudents() {
-            allStudents.sort((a, b) => (b.score || 0) - (a.score || 0));
-            
-            const box = document.getElementById('studentsList');
-            if (!allStudents.length) {
-                box.innerHTML = `
-                    <div style="text-align:center;padding:40px;color:#7f8c8d">
-                        <p>لا توجد طالبات مسجلات</p>
-                    </div>`;
-                return;
-            }
-
-            box.innerHTML = allStudents.map(st => {
-                const isCompleted = st.testCompleted === true;
-                const statusBadge = isCompleted 
-                    ? '<span style="background:#d4edda;color:#155724;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:5px">✅ أتمت الاختبار</span>' 
-                    : (st.lastQuestion !== undefined && st.lastQuestion > 0 
-                        ? '<span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:5px">⏳ قيد التقدم</span>' 
-                        : '');
-                
-                return `
-                <div class="student-item">
-                    <div class="student-info">
-                        <h4>${st.name} ${statusBadge}</h4>
-                        <p>الصف ${st.grade} • رقم الطالبة: ${st.code}</p>
-                        <p style="font-size:12px;color:#7f8c8d">
-                            آخر نشاط: ${st.lastActive ? new Date(st.lastActive.toDate()).toLocaleDateString('ar-SA') : 'غير متوفر'}
-                        </p>
-                        ${st.lastQuestion !== undefined && st.lastQuestion > 0 ? 
-                            `<p style="font-size:12px;color:#3498db">📝 السؤال الحالي: ${st.lastQuestion + 1}</p>` : ''}
-                    </div>
-                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-                        <div class="student-score">${st.score || 0} نقطة</div>
-                        <div class="student-actions">
-                            ${isCompleted ? 
-                                `<button class="btn info" onclick="resetStudentTest('${st.id}','${st.name}')" title="إعادة للسؤال الأول">
-                                    🔄 إعادة الاختبار
-                                </button>` : ''}
-                            <button class="btn warning" onclick="fullResetStudent('${st.id}','${st.name}')" title="إعادة كاملة">
-                                ⚡ إعادة كاملة
-                            </button>
-                            <button class="btn danger" onclick="deleteStudent('${st.id}','${st.name}')">
-                                🗑️ حذف
-                            </button>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        window.resetStudentTest = async (id, name) => {
-            if (!confirm(`إعادة اختبار الطالبة ${name}؟\n\nسيتم إعادتها للسؤال الأول مع الاحتفاظ بدرجتها الحالية.`)) return;
-            try {
-                await updateDoc(doc(db, 'students', id), {
-                    lastQuestion: 0,
-                    lastAnswers: [],
-                    testCompleted: false,
-                    resetAt: new Date()
-                });
-                showNotification(`تم إعادة اختبار ${name}`, 'success');
-                loadStudents();
-            } catch (e) {
-                console.error(e);
-                showNotification('حدث خطأ', 'error');
-            }
-        };
-
-        window.fullResetStudent = async (id, name) => {
-            if (!confirm(`إعادة كاملة للطالبة ${name}؟\n\n⚠️ سيتم حذف جميع بياناتها (الدرجات والإجابات).`)) return;
-            try {
-                await updateDoc(doc(db, 'students', id), {
-                    score: 0,
-                    lastQuestion: 0,
-                    lastAnswers: [],
-                    questionsAnswered: 0,
-                    testCompleted: false,
-                    fullResetAt: new Date()
-                });
-                showNotification(`تم إعادة ${name} بالكامل`, 'success');
-                loadStudents();
-            } catch (e) {
-                console.error(e);
-                showNotification('حدث خطأ', 'error');
-            }
-        };
-
-        window.deleteStudent = async (id, name) => {
-            if (!confirm(`متأكدة من حذف الطالبة ${name} نهائياً من النظام؟`)) return;
-            try {
-                await deleteDoc(doc(db, 'students', id));
-                showNotification(`تم حذف الطالبة ${name} بنجاح`, 'success');
-                loadStudents();
-            } catch (e) {
-                console.error(e);
-                showNotification('خطأ أثناء حذف الطالبة', 'error');
-            }
-        };
-
-        // Messages Management
-        window.loadMessages = async function() {
-            showLoading('messagesLoading', true);
-            try {
-                const snap = await getDocs(collection(db, 'messages'));
-                allMessages = [];
-                snap.forEach(d => allMessages.push({ id: d.id, ...d.data() }));
-                
-                allMessages.sort((a, b) => {
-                    const timeA = a.timestamp?.toDate() || new Date(0);
-                    const timeB = b.timestamp?.toDate() || new Date(0);
-                    return timeB - timeA;
-                });
-                
-                updateMessagesStats();
-                displayMessages();
-                showNotification('تم تحديث الرسائل بنجاح', 'success');
-            } catch (e) {
-                console.error(e);
-                showNotification('حدث خطأ أثناء تحميل الرسائل', 'error');
-            } finally {
-                showLoading('messagesLoading', false);
-            }
-        };
-
-        function updateMessagesStats() {
-            const stats = {
-                total: allMessages.length,
-                unread: allMessages.filter(m => !m.read).length,
-                read: allMessages.filter(m => m.read && !m.replied).length,
-                replied: allMessages.filter(m => m.replied).length
-            };
-            
-            document.getElementById('totalMessages').textContent = stats.total;
-            document.getElementById('unreadMessages').textContent = stats.unread;
-            document.getElementById('readMessages').textContent = stats.read;
-            document.getElementById('repliedMessages').textContent = stats.replied;
-        }
-
-        function displayMessages() {
-            let filtered = allMessages;
-            
-            if (currentMessageFilter === 'unread') {
-                filtered = allMessages.filter(m => !m.read);
-            } else if (currentMessageFilter === 'read') {
-                filtered = allMessages.filter(m => m.read && !m.replied);
-            } else if (currentMessageFilter === 'replied') {
-                filtered = allMessages.filter(m => m.replied);
-            }
-            
-            const box = document.getElementById('messagesList');
-            
-            if (!filtered.length) {
-                box.innerHTML = `
-                    <div style="text-align:center;padding:40px;color:#7f8c8d">
-                        <p style="font-size:18px">📭 لا توجد رسائل</p>
-                    </div>`;
-                return;
-            }
-            
-            box.innerHTML = filtered.map(msg => {
-                const messageClass = msg.replied ? 'replied' : !msg.read ? 'unread' : '';
-                const badge = msg.replied ? '<span class="message-badge replied">✅ تم الرد</span>' : 
-                             !msg.read ? '<span class="message-badge new">🔔 جديدة</span>' : 
-                             '<span class="message-badge read">👁️ مقروءة</span>';
-                
-                const timestamp = msg.timestamp?.toDate() || new Date();
-                const dateStr = timestamp.toLocaleString('ar-SA');
-                
-                return `
-                <div class="message-item ${messageClass}">
-                    <div class="message-header">
-                        <div class="message-info">
-                            <h4>${msg.studentName} ${badge}</h4>
-                            <p>الصف ${msg.grade} - الشعبة ${msg.class} • ${msg.studentCode}</p>
-                            <p style="color:#999;font-size:12px;">📅 ${dateStr} • 📝 ${msg.wordCount || 0} كلمة</p>
-                        </div>
-                    </div>
-                    <div class="message-content">${msg.message}</div>
-                    <div class="message-actions">
-                        ${!msg.read ? `<button class="btn info" onclick="markAsRead('${msg.id}')">✅ تعليم كمقروء</button>` : ''}
-                        ${msg.read && !msg.replied ? `<button class="btn success" onclick="markAsReplied('${msg.id}')">💬 تعليم كتم الرد</button>` : ''}
-                        <button class="btn danger" onclick="deleteMessage('${msg.id}')">🗑️ حذف</button>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        window.filterMessages = function(filter) {
-            currentMessageFilter = filter;
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            displayMessages();
-        };
-
-        window.markAsRead = async function(id) {
-            try {
-                await updateDoc(doc(db, 'messages', id), { read: true });
-                showNotification('✅ تم تعليم الرسالة كمقروءة', 'success');
-                loadMessages();
-            } catch (e) {
-                console.error(e);
-                showNotification('❌ حدث خطأ', 'error');
-            }
-        };
-
-        window.markAsReplied = async function(id) {
-            if (!confirm('هل تريدين تعليم هذه الرسالة كـ "تم الرد عليها"؟')) return;
-            try {
-                await updateDoc(doc(db, 'messages', id), { 
-                    replied: true, 
-                    repliedAt: new Date() 
-                });
-                showNotification('✅ تم تعليم الرسالة', 'success');
-                loadMessages();
-            } catch (e) {
-                console.error(e);
-                showNotification('❌ حدث خطأ', 'error');
-            }
-        };
-
-        window.deleteMessage = async function(id) {
-            if (!confirm('⚠️ هل أنت متأكدة من حذف هذه الرسالة؟\n\nهذا الإجراء لا يمكن التراجع عنه!')) return;
-            try {
-                await deleteDoc(doc(db, 'messages', id));
-                showNotification('🗑️ تم حذف الرسالة', 'success');
-                loadMessages();
-            } catch (e) {
-                console.error(e);
-                showNotification('❌ حدث خطأ أثناء الحذف', 'error');
-            }
-        };
-
-        window.markAllAsRead = async function() {
-            const unread = allMessages.filter(m => !m.read);
-            if (!unread.length) {
-                showNotification('✅ جميع الرسائل مقروءة بالفعل', 'info');
-                return;
-            }
-            
-            if (!confirm(`هل تريدين تعليم ${unread.length} رسالة كمقروءة؟`)) return;
-            
-            try {
-                const batch = writeBatch(db);
-                unread.forEach(m => {
-                    batch.update(doc(db, 'messages', m.id), { read: true });
-                });
-                await batch.commit();
-                showNotification(`✅ تم تعليم ${unread.length} رسالة كمقروءة`, 'success');
-                loadMessages();
-            } catch (e) {
-                console.error(e);
-                showNotification('❌ حدث خطأ', 'error');
-            }
-        };
-
-        // Settings
-        window.backupData = async () => {
-            try {
-                const stSnap = await getDocs(collection(db, 'students'));
-                const msgSnap = await getDocs(collection(db, 'messages'));
-                
-                const backup = {
-                    timestamp: new Date().toISOString(),
-                    students: stSnap.docs.map(d => ({ id: d.id, ...d.data() })),
-                    messages: msgSnap.docs.map(d => ({ id: d.id, ...d.data() }))
-                };
-
-                const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = `نسخة_احتياطية_نافس_${new Date().toLocaleDateString('ar-SA')}.json`;
-                link.click();
-                showNotification('تم تحميل النسخة الاحتياطية', 'success');
-            } catch (e) {
-                console.error(e);
-                showNotification('حدث خطأ أثناء إنشاء النسخة الاحتياطية', 'error');
-            }
-        };
-
-        window.resetWeeklyScores = async () => {
-            if (!confirm('هل أنت متأكدة من إعادة تعيين نقاط جميع الطالبات؟\n\n⚠️ ملاحظة: هذا سيعيد النقاط فقط ولن يسمح بإعادة الاختبار')) return;
-            try {
-                const batch = writeBatch(db);
-                allStudents.forEach(s => {
-                    batch.update(doc(db, 'students', s.id), {
-                        score: 0,
-                        questionsAnswered: 0,
-                        weeklyReset: new Date()
-                    });
-                });
-                await batch.commit();
-                showNotification('تم إعادة تعيين النقاط بنجاح', 'success');
-                loadStudents();
-            } catch (e) {
-                console.error(e);
-                showNotification('حدث خطأ أثناء إعادة التعيين', 'error');
-            }
-        };
-
-        window.reopenTestForAll = async () => {
-            if (!confirm(
-                '🔓 إعادة فتح الاختبار للجميع\n\n' +
-                'هذا الإجراء سيقوم بـ:\n\n' +
-                '✅ إلغاء حالة "إتمام الاختبار" لجميع الطالبات\n' +
-                '✅ الاحتفاظ بنقاطهن الحالية\n' +
-                '✅ السماح لهن بالدخول لحل الأسئلة الجديدة\n\n' +
-                'هل تريدين المتابعة؟'
-            )) return;
-            
-            try {
-                showNotification('جاري إعادة فتح الاختبار...', 'info');
-                
-                const batch = writeBatch(db);
-                const completedStudents = allStudents.filter(s => s.testCompleted === true);
-                
-                if (completedStudents.length === 0) {
-                    showNotification('لا توجد طالبات أتممن الاختبار', 'info');
-                    return;
-                }
-                
-                completedStudents.forEach(s => {
-                    batch.update(doc(db, 'students', s.id), {
-                        testCompleted: false,
-                        lastQuestion: s.lastQuestion || 0,
-                        reopenedAt: new Date()
-                    });
-                });
-                
-                await batch.commit();
-                
-                showNotification(
-                    `✅ تم إعادة فتح الاختبار بنجاح!\n\n` +
-                    `عدد الطالبات: ${completedStudents.length}\n` +
-                    `يمكنهن الآن الدخول لحل الأسئلة الجديدة`,
-                    'success'
-                );
-                
-                setTimeout(() => {
-                    loadStudents();
-                }, 2000);
-                
-            } catch (e) {
-                console.error(e);
-                showNotification('حدث خطأ أثناء إعادة فتح الاختبار', 'error');
-            }
-        };
-
-        window.resetAllData = async () => {
-            if (!confirm('⚠️ تحذير خطير!\n\nهل أنت متأكدة من إعادة تعيين النظام بالكامل؟\n\nسيتم حذف:\n- جميع بيانات الطالبات\n- جميع الدرجات\n- جميع التقدم في الاختبارات\n\nهذا الإجراء لا يمكن التراجع عنه!')) return;
-            
-            if (!confirm('⚠️ تأكيد أخير!\n\nاضغطي موافق فقط إذا كنت متأكدة تماماً من إعادة تعيين النظام بالكامل.')) return;
-
-            try {
-                const batch = writeBatch(db);
-                allStudents.forEach(s => {
-                    batch.update(doc(db, 'students', s.id), {
-                        score: 0,
-                        lastQuestion: 0,
-                        lastAnswers: [],
-                        questionsAnswered: 0,
-                        testCompleted: false,
-                        systemReset: new Date()
-                    });
-                });
-                await batch.commit();
-                showNotification('تم إعادة تعيين النظام بنجاح', 'success');
-                loadStudents();
-            } catch (e) {
-                console.error(e);
-                showNotification('حدث خطأ أثناء إعادة التعيين', 'error');
-            }
-        };
-
-        function updateSystemInfo() {
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ar-SA');
-            
-            document.getElementById('totalStudentsCount').textContent = allStudents.length;
-            document.getElementById('totalMessagesCount').textContent = allMessages.length;
-            document.getElementById('totalQuestionsCount').textContent = currentQuestions.length;
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            setupFileUpload();
-            loadQuestions();
-            loadStudents();
-            console.log('✅ لوحة تحكم المعلمة جاهزة بالكامل');
-        });
-
-    </script>
-</body>
-</html>
+            statsMessage += `👥 إجمالي الطلاب: ${allStudents.length}\n`;
+            statsMessage += `✅ الطلاب المؤهلون: ${validStudents.length}\n`;
+            statsMessage += `
