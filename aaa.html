@@ -420,6 +420,123 @@
             font-size: 1.1em;
         }
 
+        .subjects-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .subjects-table-header {
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .subjects-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .subjects-table th {
+            background: #EBF5FB;
+            color: #2c3e50;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 2px solid #D6EAF8;
+        }
+
+        .subjects-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #D6EAF8;
+        }
+
+        .subjects-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .subjects-table tr:hover {
+            background: #F8FBFD;
+        }
+
+        .subject-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .subject-badge.math {
+            background: linear-gradient(135deg, #E74C3C, #C0392B);
+        }
+
+        .subject-badge.science {
+            background: linear-gradient(135deg, #52BE80, #27AE60);
+        }
+
+        .subject-badge.reading {
+            background: linear-gradient(135deg, #F39C12, #E67E22);
+        }
+
+        .progress-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+            background: #EBF5FB;
+            color: #4A90E2;
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #F4D03F, #F39C12);
+            color: white;
+            box-shadow: 0 3px 10px rgba(244, 208, 63, 0.3);
+        }
+
+        .grade-badge.pending {
+            background: #BDC3C7;
+            box-shadow: none;
+        }
+
+        .time-spent-card {
+            background: linear-gradient(135deg, #9B59B6, #8E44AD);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(155, 89, 182, 0.3);
+        }
+
+        .time-spent-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .time-display {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .time-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
         .timer-container {
             background: linear-gradient(135deg, #E74C3C, #C0392B);
             color: white;
@@ -608,6 +725,45 @@
 
             <div id="competitionStatusDashboard"></div>
             <div id="studentInfo"></div>
+            
+            <div id="timeSpentDisplay" class="time-spent-card">
+                <h3>⏱️ الوقت الإجمالي المستغرق</h3>
+                <div class="time-display" id="totalTimeSpent">0 دقيقة</div>
+                <div class="time-label">وقت حل الأسئلة</div>
+            </div>
+
+            <div class="subjects-table">
+                <div class="subjects-table-header">
+                    📊 جدول المواد والدرجات
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>المادة</th>
+                            <th>الأسئلة المحلولة</th>
+                            <th>الدرجة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subjectsTableBody">
+                        <tr>
+                            <td><span class="subject-badge math">📐 الرياضيات</span></td>
+                            <td><span class="progress-badge" id="mathProgress">0 / 5</span></td>
+                            <td><span class="grade-badge pending" id="mathGrade">-</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="subject-badge science">🔬 العلوم</span></td>
+                            <td><span class="progress-badge" id="scienceProgress">0 / 5</span></td>
+                            <td><span class="grade-badge pending" id="scienceGrade">-</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="subject-badge reading">📚 القراءة</span></td>
+                            <td><span class="progress-badge" id="readingProgress">0 / 5</span></td>
+                            <td><span class="grade-badge pending" id="readingGrade">-</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
             <div class="score-display">
                 <h3>نقاطك الحالية</h3>
                 <div class="score-number" id="currentScore">0</div>
@@ -706,6 +862,13 @@
         let questionTimer = null;
         let timeRemaining = 120;
         let competitionStatusInterval = null;
+        let sessionStartTime = null;
+        let totalTimeSpent = 0;
+        let subjectStats = {
+            'رياضيات': { solved: 0, grade: 0 },
+            'علوم': { solved: 0, grade: 0 },
+            'قراءة': { solved: 0, grade: 0 }
+        };
 
         const defaultQuestions = [
             {
@@ -721,7 +884,7 @@
                 question: "ما هي عاصمة المملكة العربية السعودية؟",
                 options: ["جدة", "الرياض", "الدمام", "مكة المكرمة"],
                 correct: 1,
-                subject: "جغرافيا",
+                subject: "قراءة",
                 active: true
             },
             {
@@ -729,7 +892,23 @@
                 question: "كم عدد أركان الإسلام؟",
                 options: ["4", "5", "6", "7"],
                 correct: 1,
-                subject: "تربية إسلامية",
+                subject: "قراءة",
+                active: true
+            },
+            {
+                id: 4,
+                question: "ما هو الكوكب الأقرب إلى الشمس؟",
+                options: ["الأرض", "عطارد", "الزهرة", "المريخ"],
+                correct: 1,
+                subject: "علوم",
+                active: true
+            },
+            {
+                id: 5,
+                question: "ما هو ناتج 15 + 27؟",
+                options: ["40", "42", "44", "46"],
+                correct: 1,
+                subject: "رياضيات",
                 active: true
             }
         ];
@@ -1064,10 +1243,22 @@
                     grade: grade,
                     code: code,
                     score: 0,
+                    totalTimeSpent: 0,
+                    subjectStats: {
+                        'رياضيات': { solved: 0, grade: 0 },
+                        'علوم': { solved: 0, grade: 0 },
+                        'قراءة': { solved: 0, grade: 0 }
+                    },
                     createdAt: new Date()
                 });
 
                 currentStudent = { name, grade, code, score: 0 };
+                subjectStats = {
+                    'رياضيات': { solved: 0, grade: 0 },
+                    'علوم': { solved: 0, grade: 0 },
+                    'قراءة': { solved: 0, grade: 0 }
+                };
+                totalTimeSpent = 0;
                 
                 document.getElementById('studentInfo').innerHTML = `
                     <div class="student-code">
@@ -1105,6 +1296,18 @@
 
                 const studentDoc = snap.docs[0];
                 currentStudent = { id: studentDoc.id, ...studentDoc.data() };
+
+                if (currentStudent.subjectStats) {
+                    subjectStats = currentStudent.subjectStats;
+                } else {
+                    subjectStats = {
+                        'رياضيات': { solved: 0, grade: 0 },
+                        'علوم': { solved: 0, grade: 0 },
+                        'قراءة': { solved: 0, grade: 0 }
+                    };
+                }
+
+                totalTimeSpent = currentStudent.totalTimeSpent || 0;
 
                 if (currentStudent.lastQuestion !== undefined) {
                     currentQuestion = currentStudent.lastQuestion;
@@ -1150,6 +1353,78 @@
             }
             
             document.getElementById('currentScore').textContent = currentStudent.score || 0;
+            
+            updateTimeDisplay();
+            updateSubjectsTable();
+        }
+
+        function updateTimeDisplay() {
+            const timeInMinutes = Math.floor(totalTimeSpent / 60);
+            const timeInSeconds = totalTimeSpent % 60;
+            
+            let timeText = '';
+            if (timeInMinutes > 0) {
+                timeText = `${timeInMinutes} دقيقة`;
+                if (timeInSeconds > 0) {
+                    timeText += ` و ${timeInSeconds} ثانية`;
+                }
+            } else {
+                timeText = `${timeInSeconds} ثانية`;
+            }
+            
+            const timeDisplay = document.getElementById('totalTimeSpent');
+            if (timeDisplay) {
+                timeDisplay.textContent = timeText;
+            }
+        }
+
+        function updateSubjectsTable() {
+            const mathProgress = document.getElementById('mathProgress');
+            const scienceProgress = document.getElementById('scienceProgress');
+            const readingProgress = document.getElementById('readingProgress');
+            
+            const mathGrade = document.getElementById('mathGrade');
+            const scienceGrade = document.getElementById('scienceGrade');
+            const readingGrade = document.getElementById('readingGrade');
+
+            if (mathProgress) {
+                const mathSolved = subjectStats['رياضيات'].solved;
+                mathProgress.textContent = `${mathSolved} / 5`;
+                
+                if (mathSolved >= 5) {
+                    mathGrade.textContent = subjectStats['رياضيات'].grade;
+                    mathGrade.classList.remove('pending');
+                } else {
+                    mathGrade.textContent = '-';
+                    mathGrade.classList.add('pending');
+                }
+            }
+
+            if (scienceProgress) {
+                const scienceSolved = subjectStats['علوم'].solved;
+                scienceProgress.textContent = `${scienceSolved} / 5`;
+                
+                if (scienceSolved >= 5) {
+                    scienceGrade.textContent = subjectStats['علوم'].grade;
+                    scienceGrade.classList.remove('pending');
+                } else {
+                    scienceGrade.textContent = '-';
+                    scienceGrade.classList.add('pending');
+                }
+            }
+
+            if (readingProgress) {
+                const readingSolved = subjectStats['قراءة'].solved;
+                readingProgress.textContent = `${readingSolved} / 5`;
+                
+                if (readingSolved >= 5) {
+                    readingGrade.textContent = subjectStats['قراءة'].grade;
+                    readingGrade.classList.remove('pending');
+                } else {
+                    readingGrade.textContent = '-';
+                    readingGrade.classList.add('pending');
+                }
+            }
         }
 
         window.startTest = async function() {
@@ -1179,6 +1454,7 @@
                 studentAnswers = [];
             }
 
+            sessionStartTime = Date.now();
             showSection('testSection');
             displayQuestion();
         };
@@ -1256,7 +1532,9 @@
                     await updateDoc(studentDocRef, {
                         testCompleted: true,
                         completedAt: new Date(),
-                        finalScore: currentStudent.score
+                        finalScore: currentStudent.score,
+                        totalTimeSpent: totalTimeSpent,
+                        subjectStats: subjectStats
                     });
                     
                     currentStudent.testCompleted = true;
@@ -1307,6 +1585,23 @@
                 showNotification('إجابة خاطئة!', 'error');
             }
 
+            const questionSubject = question.subject;
+            if (subjectStats[questionSubject]) {
+                subjectStats[questionSubject].solved += 1;
+                
+                if (subjectStats[questionSubject].solved === 5) {
+                    const subjectCorrect = calculateSubjectGrade(questionSubject);
+                    subjectStats[questionSubject].grade = subjectCorrect;
+                    showNotification(`🎉 أتممت 5 أسئلة في ${questionSubject}! درجتك: ${subjectCorrect}/5`, 'success');
+                }
+            }
+
+            if (sessionStartTime) {
+                const sessionTime = Math.floor((Date.now() - sessionStartTime) / 1000);
+                totalTimeSpent += sessionTime;
+                sessionStartTime = Date.now();
+            }
+
             document.getElementById('currentScore').textContent = currentStudent.score;
 
             setTimeout(() => {
@@ -1314,6 +1609,18 @@
                 displayQuestion();
             }, 2000);
         };
+
+        function calculateSubjectGrade(subject) {
+            let correctCount = 0;
+            questions.forEach((q, index) => {
+                if (q.subject === subject && index < studentAnswers.length) {
+                    if (studentAnswers[index] === q.correct) {
+                        correctCount++;
+                    }
+                }
+            });
+            return correctCount;
+        }
 
         window.saveAndExit = async function() {
             if (!currentStudent) return;
@@ -1330,6 +1637,8 @@
                         lastQuestion: currentQuestion,
                         lastAnswers: studentAnswers,
                         score: currentStudent.score,
+                        totalTimeSpent: totalTimeSpent,
+                        subjectStats: subjectStats,
                         lastActive: new Date()
                     });
                     
@@ -1441,6 +1750,8 @@
                             lastQuestion: currentQuestion,
                             lastAnswers: studentAnswers,
                             score: currentStudent.score,
+                            totalTimeSpent: totalTimeSpent,
+                            subjectStats: subjectStats,
                             lastActive: new Date()
                         });
                     }
