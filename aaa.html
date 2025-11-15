@@ -1448,19 +1448,27 @@
             document.getElementById('contactMessage').value = '';
             document.getElementById('wordCount').textContent = '0';
 
+            const gradeNum = currentStudent.grade;
+            let numClasses = 8;
+            if (gradeNum === '1') numClasses = 8;
+            else if (gradeNum === '2') numClasses = 9;
+            else if (gradeNum === '3') numClasses = 7;
+
             const classSelect = document.getElementById('contactClass');
             classSelect.innerHTML = '<option value="">اختر الشعبة</option>';
-            for (let i = 1; i <= 8; i++) {
+            const arabicNumbers = ['١','٢','٣','٤','٥','٦','٧','٨','٩','١٠'];
+            for (let i = 0; i < numClasses; i++) {
                 const opt = document.createElement('option');
-                opt.value = i;
-                opt.textContent = i;
+                opt.value = arabicNumbers[i];
+                opt.textContent = arabicNumbers[i];
                 classSelect.appendChild(opt);
             }
 
             showSection('contactSection');
         };
 
-        document.addEventListener('DOMContentLoaded', function() {
+        // Initialize contact form listeners
+        function initializeContactForm() {
             const messageInput = document.getElementById('contactMessage');
             if (messageInput) {
                 messageInput.addEventListener('input', function() {
@@ -1468,51 +1476,78 @@
                     const words = text ? text.split(/\s+/).filter(word => word.length > 0) : [];
                     const wordCount = words.length;
                     
-                    document.getElementById('wordCount').textContent = wordCount;
-                    
-                    if (wordCount > 500) {
-                        document.getElementById('wordCount').style.color = '#e74c3c';
-                    } else {
-                        document.getElementById('wordCount').style.color = '#4A90E2';
+                    const wordCountElement = document.getElementById('wordCount');
+                    if (wordCountElement) {
+                        wordCountElement.textContent = wordCount;
+                        
+                        if (wordCount > 500) {
+                            wordCountElement.style.color = '#e74c3c';
+                            showNotification('تجاوزت الحد المسموح (500 كلمة)', 'warning');
+                        } else {
+                            wordCountElement.style.color = '#4A90E2';
+                        }
                     }
                 });
             }
-        });
 
-        document.getElementById('contactForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const className = document.getElementById('contactClass').value;
-            const message = document.getElementById('contactMessage').value.trim();
-            
-            if (!className || !message) {
-                showNotification('يرجى إكمال جميع الحقول', 'error');
-                return;
-            }
-            
-            const words = message.split(/\s+/).filter(word => word.length > 0);
-            if (words.length > 500) {
-                showNotification('الرسالة تتجاوز 500 كلمة', 'error');
-                return;
-            }
-            
-            try {
-                await addDoc(collection(db, 'messages'), {
-                    studentName: currentStudent.name,
-                    studentCode: currentStudent.code,
-                    grade: currentStudent.grade,
-                    class: className,
-                    message: message,
-                    timestamp: new Date(),
-                    read: false
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    if (!currentStudent) {
+                        showNotification('يرجى تسجيل الدخول أولاً', 'error');
+                        return;
+                    }
+
+                    const className = document.getElementById('contactClass').value;
+                    const message = document.getElementById('contactMessage').value.trim();
+                    
+                    if (!className) {
+                        showNotification('يرجى اختيار الشعبة', 'error');
+                        return;
+                    }
+                    
+                    if (!message) {
+                        showNotification('يرجى كتابة رسالة', 'error');
+                        return;
+                    }
+                    
+                    const words = message.split(/\s+/).filter(word => word.length > 0);
+                    if (words.length > 500) {
+                        showNotification('الرسالة تتجاوز 500 كلمة. يرجى الاختصار', 'error');
+                        return;
+                    }
+                    
+                    try {
+                        await addDoc(collection(db, 'messages'), {
+                            studentName: currentStudent.name,
+                            studentCode: currentStudent.code,
+                            grade: currentStudent.grade,
+                            class: className,
+                            message: message,
+                            wordCount: words.length,
+                            timestamp: new Date(),
+                            read: false,
+                            replied: false
+                        });
+                        
+                        document.getElementById('contactForm').reset();
+                        document.getElementById('wordCount').textContent = '0';
+                        
+                        showNotification('✅ تم إرسال رسالتك بنجاح!\n\nشكراً لتواصلك معنا 💚\nسيتم الرد عليك قريباً إن شاء الله', 'success');
+                        
+                        setTimeout(() => {
+                            backToDashboard();
+                        }, 3000);
+                        
+                    } catch (error) {
+                        console.error('Error sending message:', error);
+                        showNotification('حدث خطأ أثناء إرسال الرسالة. حاول مرة أخرى', 'error');
+                    }
                 });
-                
-                showNotification('✅ تم إرسال رسالتك بنجاح!', 'success');
-                setTimeout(() => backToDashboard(), 2000);
-            } catch (error) {
-                showNotification('حدث خطأ أثناء الإرسال', 'error');
             }
-        });
+        }
 
         window.backToDashboard = function() {
             updateDashboardInfo();
@@ -1600,6 +1635,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             showSection('registration');
             updateHeaderStats();
+            initializeContactForm();
             
             competitionStatusInterval = setInterval(() => {
                 if (!document.getElementById('dashboard').classList.contains('hidden')) {
