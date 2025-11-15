@@ -102,13 +102,12 @@
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease;
             margin-bottom: 20px;
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
         }
 
         .card-title {
@@ -163,11 +162,6 @@
             box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
         }
 
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
         .btn {
             background: linear-gradient(135deg, #4A90E2, #357ABD);
             color: white;
@@ -196,10 +190,6 @@
 
         .btn.warning {
             background: linear-gradient(135deg, #F39C12, #E67E22);
-        }
-
-        .btn.primary {
-            background: linear-gradient(135deg, #4A90E2, #357ABD);
         }
 
         .btn:disabled {
@@ -250,59 +240,67 @@
             margin: 10px 0;
         }
 
+        .score-display {
+            background: linear-gradient(135deg, #F39C12, #E67E22);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .score-number {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .motivational-banner {
+            background: linear-gradient(135deg, #52BE80, #27AE60);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(82, 190, 128, 0.3);
+        }
+
+        .motivational-banner h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .motivational-banner p {
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons .btn {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .alert-info {
+            background: #EBF5FB;
+            border: 1px solid #D6EAF8;
+            color: #21618C;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
         .question-card {
             border: 2px solid #D6EAF8;
             border-radius: 15px;
             padding: 25px;
             margin: 20px 0;
             background: #F8FBFD;
-        }
-
-        .timer-container {
-            background: linear-gradient(135deg, #E74C3C, #C0392B);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
-        }
-
-        .timer-number {
-            font-size: 2.5em;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .timer-label {
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-
-        .competition-status {
-            background: linear-gradient(135deg, #4A90E2, #357ABD);
-            color: white;
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            margin: 20px 0;
-            box-shadow: 0 10px 30px rgba(74, 144, 226, 0.3);
-        }
-
-        .competition-status.closed {
-            background: linear-gradient(135deg, #95A5A6, #7F8C8D);
-        }
-
-        .countdown-display {
-            font-size: 2em;
-            font-weight: bold;
-            margin: 15px 0;
-        }
-
-        .motivational-message {
-            font-size: 1.2em;
-            margin: 15px 0;
-            line-height: 1.6;
         }
 
         .question-text {
@@ -338,8 +336,8 @@
         }
 
         .option.correct {
-            border-color: #27AE60;
-            background: #27AE60;
+            border-color: #52BE80;
+            background: #52BE80;
             color: white;
         }
 
@@ -349,18 +347,20 @@
             color: white;
         }
 
-        .score-display {
-            background: linear-gradient(135deg, #F39C12, #E67E22);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #D6EAF8;
+            border-radius: 10px;
+            overflow: hidden;
             margin: 20px 0;
         }
 
-        .score-number {
-            font-size: 2.5em;
-            font-weight: bold;
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+            width: 0%;
+            transition: width 0.3s ease;
         }
 
         .leaderboard {
@@ -375,27 +375,6 @@
             color: white;
             padding: 20px;
             text-align: center;
-        }
-
-        .motivational-banner {
-            background: linear-gradient(135deg, #52BE80, #27AE60);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin: 20px 0;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(82, 190, 128, 0.3);
-        }
-
-        .motivational-banner h3 {
-            font-size: 1.5em;
-            margin-bottom: 15px;
-        }
-
-        .motivational-banner p {
-            font-size: 1.1em;
-            line-height: 1.8;
-            margin: 10px 0;
         }
 
         .leaderboard-item {
@@ -441,41 +420,79 @@
             font-size: 1.1em;
         }
 
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #D6EAF8;
-            border-radius: 10px;
-            overflow: hidden;
+        .timer-container {
+            background: linear-gradient(135deg, #E74C3C, #C0392B);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .timer-container.warning {
+            animation: timerWarning 0.5s infinite;
+        }
+
+        @keyframes timerWarning {
+            0%, 100% { background: linear-gradient(135deg, #E74C3C, #C0392B); }
+            50% { background: linear-gradient(135deg, #C0392B, #E74C3C); }
+        }
+
+        .timer-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .timer-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd, #ffe8a1);
+            border: 2px solid #f39c12;
+            color: #856404;
+            padding: 20px;
+            border-radius: 15px;
             margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(243, 156, 18, 0.2);
         }
 
-        .progress-fill {
-            height: 100%;
+        .warning-box h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #f39c12;
+        }
+
+        .competition-status {
             background: linear-gradient(135deg, #4A90E2, #357ABD);
-            width: 0%;
-            transition: width 0.3s ease;
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(74, 144, 226, 0.3);
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
+        .competition-status.closed {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
         }
 
-        .action-buttons .btn {
-            flex: 1;
-            min-width: 150px;
-        }
-
-        .alert-info {
-            background: #EBF5FB;
-            border: 1px solid #D6EAF8;
-            color: #21618C;
-            padding: 15px;
-            border-radius: 10px;
+        .countdown-display {
+            font-size: 2em;
+            font-weight: bold;
             margin: 15px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .motivational-message {
+            font-size: 1.2em;
+            margin: 15px 0;
+            line-height: 1.6;
         }
 
         @media (max-width: 768px) {
@@ -561,15 +578,8 @@
 
             <div class="alert-info" style="margin-top: 25px; text-align: center;">
                 <h4 style="color: #21618C; margin-bottom: 10px;">📌 نسيت رقم الطالب؟</h4>
-                <p style="line-height: 1.8; margin-bottom: 15px;">
-                    للحصول على رقمك، يرجى التواصل مع:
-                </p>
-                <div style="background: white; padding: 15px; border-radius: 10px; margin: 10px 0;">
-                    <strong style="color: #4A90E2; font-size: 1.1em;">الأستاذ نواف الصبحي</strong><br>
-                    <span style="color: #666;">📍 مكتب الأستاذ نواف الصبحي - المبنى الرئيسي</span>
-                </div>
-                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
-                    ⏰ أوقات الدوام: الأحد - الخميس (7:00 ص - 2:00 م)
+                <p style="line-height: 1.8;">
+                    للحصول على رقمك، يرجى التواصل مع الأستاذ نواف الصبحي
                 </p>
             </div>
 
@@ -586,13 +596,13 @@
                 لوحة الطالب
             </h2>
 
-            <div class="motivational-banner">
-                <h3>💪 ثق بقدراتك واعتمد على نفسك</h3>
-                <p>
-                    🌟 النجاح الحقيقي يأتي من الجهد الشخصي والمثابرة<br>
-                    📚 كل سؤال تحله بنفسك يزيد من قوتك العلمية<br>
-                    🎯 المنافسة الشريفة هي طريقك نحو التميز<br>
-                    ✨ قدراتك أكبر مما تتصور، فقط آمن بنفسك
+            <div class="warning-box">
+                <h3>⚠️ تنبيه هام قبل البدء</h3>
+                <p style="font-size: 1.1em; line-height: 1.8; margin-top: 10px;">
+                    🌟 اعتمد على نفسك وقدراتك<br>
+                    📚 كل سؤال تجيبه بنفسك يزيد من معرفتك<br>
+                    🎯 النجاح الحقيقي يأتي من الفهم والجهد الذاتي<br>
+                    💪 ثق بإمكانياتك ولا تبحث عن طرق مختصرة
                 </p>
             </div>
 
@@ -605,7 +615,7 @@
             <div class="action-buttons">
                 <button class="btn success" onclick="startTest()" id="startTestBtn">بدء الاختبار</button>
                 <button class="btn warning" onclick="showResults()">عرض النتائج</button>
-                <button class="btn primary" onclick="showContactForm()">💬 التواصل مع الأستاذ نواف الصبحي</button>
+                <button class="btn" onclick="showContactForm()">💬 التواصل مع المشرف</button>
                 <button class="btn secondary" onclick="logout()">تسجيل الخروج</button>
             </div>
         </div>
@@ -642,9 +652,7 @@
                 <h3>🎓 رسالة تربوية هامة</h3>
                 <p>
                     💚 كل نقطة حصلت عليها بجهدك هي إنجاز حقيقي<br>
-                    🌱 التعلم رحلة مستمرة، والمهم أن تتقدم كل يوم<br>
-                    🤝 المنافسة الشريفة تصنع القادة<br>
-                    ⭐ قيمتك الحقيقية في ما تتعلمه، ليس فقط في الدرجات
+                    🤝 المنافسة الشريفة تصنع القادة
                 </p>
             </div>
             
@@ -662,7 +670,7 @@
                 <div id="schoolLeaderboard"></div>
             </div>
 
-            <button class="btn" onclick="backToDashboard()">العودة للوحة الطالب</button>
+            <button class="btn" onclick="backToDashboard()">العودة</button>
         </div>
 
         <!-- Contact Section -->
@@ -674,13 +682,13 @@
 
             <form id="contactForm" style="margin-top: 25px;">
                 <div class="form-group">
-                    <label>الاسم الثلاثي:</label>
-                    <input type="text" id="contactName" readonly style="background: #f5f5f5; cursor: not-allowed;">
+                    <label>الاسم:</label>
+                    <input type="text" id="contactName" readonly style="background: #f5f5f5;">
                 </div>
 
                 <div class="form-group">
                     <label>الصف:</label>
-                    <input type="text" id="contactGrade" readonly style="background: #f5f5f5; cursor: not-allowed;">
+                    <input type="text" id="contactGrade" readonly style="background: #f5f5f5;">
                 </div>
 
                 <div class="form-group">
@@ -691,15 +699,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label>نص الرسالة (حد أقصى 500 كلمة):</label>
-                    <textarea id="contactMessage" rows="10" required placeholder="اكتب رسالتك هنا..."></textarea>
-                    <div style="text-align: left; font-size: 13px; color: #666; margin-top: 8px; font-weight: 500;">
+                    <label>نص الرسالة:</label>
+                    <textarea id="contactMessage" rows="8" required placeholder="اكتب رسالتك هنا..."></textarea>
+                    <div style="text-align: left; font-size: 13px; color: #666; margin-top: 8px;">
                         <span id="wordCount" style="color: #4A90E2; font-weight: bold;">0</span> / 500 كلمة
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px;">
-                    <button type="submit" class="btn primary">📤 إرسال الرسالة</button>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button type="submit" class="btn">📤 إرسال</button>
                     <button type="button" class="btn secondary" onclick="backToDashboard()">العودة</button>
                 </div>
             </form>
@@ -718,7 +726,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, updateDoc, doc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD28cfba2NmXlsfBci9jgbne21U9rZLJ2M",
@@ -726,8 +734,7 @@
             projectId: "nafis-new",
             storageBucket: "nafis-new.firebasestorage.app",
             messagingSenderId: "366381122504",
-            appId: "1:366381122504:web:b76107c74d7d7ec82df6fd",
-            measurementId: "G-ZD3Z9LEGGM"
+            appId: "1:366381122504:web:b76107c74d7d7ec82df6fd"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -739,6 +746,7 @@
         let studentAnswers = [];
         let questionTimer = null;
         let timeRemaining = 120;
+        let competitionStatusInterval = null;
 
         const defaultQuestions = [
             {
@@ -767,10 +775,6 @@
             }
         ];
 
-        function generateStudentCode() {
-            return Math.floor(100000 + Math.random() * 900000).toString();
-        }
-
         function showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
             const notificationText = document.getElementById('notificationText');
@@ -791,3 +795,819 @@
             });
             document.getElementById(sectionId).classList.remove('hidden');
         }
+
+        function checkCompetitionStatus() {
+            const now = new Date();
+            const riyadhTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Riyadh' }));
+            const dayOfWeek = riyadhTime.getDay();
+            const hours = riyadhTime.getHours();
+
+            let isOpen = false;
+            let nextEventDate = null;
+            let eventType = '';
+
+            if (dayOfWeek === 0) {
+                if (hours >= 10) {
+                    isOpen = true;
+                } else {
+                    nextEventDate = new Date(riyadhTime);
+                    nextEventDate.setHours(10, 0, 0, 0);
+                    eventType = 'start';
+                }
+            } else if (dayOfWeek >= 1 && dayOfWeek <= 2) {
+                isOpen = true;
+            } else if (dayOfWeek === 3) {
+                if (hours < 22) {
+                    isOpen = true;
+                } else {
+                    isOpen = false;
+                    nextEventDate = getNextSunday(riyadhTime);
+                    nextEventDate.setHours(10, 0, 0, 0);
+                    eventType = 'start';
+                }
+            } else {
+                isOpen = false;
+                nextEventDate = getNextSunday(riyadhTime);
+                nextEventDate.setHours(10, 0, 0, 0);
+                eventType = 'start';
+            }
+
+            if (isOpen && !nextEventDate) {
+                nextEventDate = getNextWednesday(riyadhTime);
+                nextEventDate.setHours(22, 0, 0, 0);
+                eventType = 'end';
+            }
+
+            return { isOpen, nextEventDate, eventType, riyadhTime };
+        }
+
+        function getNextSunday(currentDate) {
+            const result = new Date(currentDate);
+            const dayOfWeek = result.getDay();
+            const daysUntilSunday = dayOfWeek === 0 ? 7 : (7 - dayOfWeek);
+            result.setDate(result.getDate() + daysUntilSunday);
+            return result;
+        }
+
+        function getNextWednesday(currentDate) {
+            const result = new Date(currentDate);
+            const dayOfWeek = result.getDay();
+            let daysUntilWednesday;
+            
+            if (dayOfWeek <= 3) {
+                daysUntilWednesday = 3 - dayOfWeek;
+            } else {
+                daysUntilWednesday = 7 - dayOfWeek + 3;
+            }
+            
+            result.setDate(result.getDate() + daysUntilWednesday);
+            return result;
+        }
+
+        function formatTimeRemaining(nextEventDate, currentTime) {
+            const diff = nextEventDate - currentTime;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            if (days > 0) {
+                return `${days} يوم و ${hours} ساعة`;
+            } else if (hours > 0) {
+                return `${hours} ساعة و ${minutes} دقيقة`;
+            } else if (minutes > 0) {
+                return `${minutes} دقيقة و ${seconds} ثانية`;
+            } else {
+                return `${seconds} ثانية`;
+            }
+        }
+
+        function getMotivationalMessage(eventType, timeLeft) {
+            const diff = timeLeft;
+            const hours = diff / (1000 * 60 * 60);
+
+            if (eventType === 'end') {
+                if (hours <= 1) {
+                    const messages = [
+                        '⚡ الوقت ينفد! اللحظات الأخيرة لتحقيق أعلى النقاط!',
+                        '🔥 أقل من ساعة متبقية! أثبت تفوقك الآن!',
+                        '💪 الفرصة الأخيرة لكسر الأرقام القياسية!',
+                        '⏰ دقائق معدودة! كل سؤال يحسب!',
+                        '🏆 السباق الأخير نحو القمة!'
+                    ];
+                    return messages[Math.floor(Math.random() * messages.length)];
+                } else if (hours <= 6) {
+                    return '⏱️ ساعات قليلة متبقية! استغل الوقت وحقق أكبر عدد من النقاط!';
+                } else if (hours <= 24) {
+                    return '🎯 يوم واحد متبقي! لا تفوت فرصة التفوق هذا الأسبوع!';
+                } else {
+                    return '📚 المسابقة مستمرة! واصل التقدم واكسب المزيد من النقاط!';
+                }
+            } else {
+                if (hours <= 24) {
+                    const messages = [
+                        '🎉 غداً ينطلق التحدي الأسبوعي! هل أنت مستعد؟',
+                        '⭐ أقل من يوم على انطلاق المسابقة! جهز نفسك!',
+                        '🚀 العد التنازلي بدأ! استعد لتحدي جديد!',
+                        '💫 ساعات قليلة وينطلق السباق نحو القمة!'
+                    ];
+                    return messages[Math.floor(Math.random() * messages.length)];
+                } else if (hours <= 48) {
+                    return '🌟 يومان فقط! استعد لأسبوع مليء بالتحديات والإنجازات!';
+                } else {
+                    const messages = [
+                        '🖐️ استمتع بوقتك! المسابقة تعود يوم الأحد مع تحديات جديدة!',
+                        '💪 فترة راحة مستحقة! عد أقوى يوم الأحد!',
+                        '🎯 المسابقة مؤجلة مؤقتاً - نلتقي بتحديات أقوى يوم الأحد!',
+                        '⚡ اشحن طاقتك! موعدنا الأحد الساعة 10:00 صباحاً لتحديات جديدة!'
+                    ];
+                    return messages[Math.floor(Math.random() * messages.length)];
+                }
+            }
+        }
+
+        function updateCompetitionStatusDisplay(containerId) {
+            const status = checkCompetitionStatus();
+            const container = document.getElementById(containerId);
+            
+            if (!container) return;
+
+            const timeLeft = status.nextEventDate - status.riyadhTime;
+            const formattedTime = formatTimeRemaining(status.nextEventDate, status.riyadhTime);
+            const message = getMotivationalMessage(status.eventType, timeLeft);
+
+            if (status.isOpen) {
+                container.innerHTML = `
+                    <div class="competition-status">
+                        <h3>✅ المسابقة الأسبوعية مفتوحة الآن!</h3>
+                        <div class="motivational-message">${message}</div>
+                        <div class="countdown-display">⏰ ${formattedTime}</div>
+                        <p style="font-size: 0.9em; opacity: 0.9; margin-top: 10px;">
+                            تنتهي يوم الأربعاء الساعة 10:00 مساءً
+                        </p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="competition-status closed">
+                        <h3>⏸️ المسابقة مغلقة مؤقتاً</h3>
+                        <div class="motivational-message">${message}</div>
+                        <div class="countdown-display">🚀 ${formattedTime}</div>
+                        <p style="font-size: 0.9em; opacity: 0.9; margin-top: 10px;">
+                            المسابقة تفتح يوم الأحد الساعة 10:00 صباحاً
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+        function startQuestionTimer() {
+            clearInterval(questionTimer);
+            timeRemaining = 120;
+            updateTimerDisplay();
+
+            questionTimer = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+
+                if (timeRemaining <= 0) {
+                    clearInterval(questionTimer);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            const timerElement = document.getElementById('timerDisplay');
+            const timerContainer = document.getElementById('questionTimer');
+            const timerMessage = document.getElementById('timerMessage');
+            
+            if (timerElement) {
+                timerElement.textContent = display;
+            }
+
+            if (timerContainer && timerMessage) {
+                if (timeRemaining <= 30) {
+                    timerContainer.classList.add('warning');
+                    if (timeRemaining <= 10) {
+                        timerMessage.textContent = '⚠️ الوقت ينفد! أسرع!';
+                    } else {
+                        timerMessage.textContent = '⏰ أقل من 30 ثانية!';
+                    }
+                } else if (timeRemaining <= 60) {
+                    timerMessage.textContent = '🏃 دقيقة واحدة متبقية!';
+                } else {
+                    timerContainer.classList.remove('warning');
+                    timerMessage.textContent = 'أجب قبل انتهاء الوقت!';
+                }
+            }
+        }
+
+        function stopQuestionTimer() {
+            clearInterval(questionTimer);
+        }
+
+        async function handleTimeOut() {
+            const status = checkCompetitionStatus();
+            if (!status.isOpen) {
+                stopQuestionTimer();
+                showNotification('⛔ المسابقة أغلقت! تم إيقاف الاختبار', 'error');
+                alert('🚫 انتهى وقت المسابقة.\nتم إيقاف الاختبار تلقائياً.');
+                await saveAndExit();
+                return;
+            }
+
+            showNotification('⏰ انتهى الوقت! الانتقال للسؤال التالي', 'warning');
+            
+            if (studentAnswers[currentQuestion] === undefined) {
+                studentAnswers[currentQuestion] = -1;
+            }
+
+            setTimeout(() => {
+                currentQuestion++;
+                displayQuestion();
+            }, 2000);
+        }
+
+        const CACHE_DURATION = 5 * 60 * 1000;
+        let cachedQuestions = null;
+        let cacheTimestamp = null;
+
+        async function loadQuestions() {
+            const now = Date.now();
+            if (cachedQuestions && cacheTimestamp && (now - cacheTimestamp < CACHE_DURATION)) {
+                questions = [...cachedQuestions];
+                return true;
+            }
+
+            try {
+                const questionsQuery = query(
+                    collection(db, 'questions'), 
+                    where('active', '==', true)
+                );
+                const questionsSnapshot = await getDocs(questionsQuery);
+                
+                if (!questionsSnapshot.empty) {
+                    questions = [];
+                    questionsSnapshot.forEach((doc) => {
+                        questions.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    cachedQuestions = [...questions];
+                    cacheTimestamp = now;
+                    return true;
+                } else {
+                    questions = [...defaultQuestions];
+                    cachedQuestions = [...defaultQuestions];
+                    cacheTimestamp = now;
+                    return false;
+                }
+            } catch (error) {
+                questions = [...defaultQuestions];
+                showNotification('خطأ في الاتصال، استخدام الأسئلة الافتراضية', 'error');
+                return false;
+            }
+        }
+
+        window.registerStudent = async function() {
+            const name = document.getElementById('studentName').value.trim();
+            const grade = document.getElementById('studentGrade').value;
+
+            if (!name || !grade) {
+                showNotification('يرجى إدخال جميع البيانات', 'error');
+                return;
+            }
+
+            const nameParts = name.split(' ').filter(part => part.length > 0);
+            if (nameParts.length < 3) {
+                showNotification('يرجى إدخال الاسم الرباعي كاملاً', 'error');
+                return;
+            }
+
+            try {
+                const nameQuery = query(collection(db, 'students'), where('name', '==', name));
+                const existingStudents = await getDocs(nameQuery);
+
+                if (!existingStudents.empty) {
+                    showNotification('هذا الاسم مسجل مسبقاً', 'error');
+                    setTimeout(() => switchToLogin(), 1000);
+                    return;
+                }
+
+                const code = Math.floor(100000 + Math.random() * 900000).toString();
+                
+                await addDoc(collection(db, 'students'), {
+                    name: name,
+                    grade: grade,
+                    code: code,
+                    score: 0,
+                    createdAt: new Date()
+                });
+
+                currentStudent = { name, grade, code, score: 0 };
+                
+                document.getElementById('studentInfo').innerHTML = `
+                    <div class="student-code">
+                        <h3>تم التسجيل بنجاح!</h3>
+                        <p>رقم الطالب:</p>
+                        <div class="code-display">${code}</div>
+                        <p style="font-size: 0.9em; margin-top: 10px;">احفظ هذا الرقم</p>
+                    </div>
+                `;
+
+                showNotification('تم التسجيل بنجاح!', 'success');
+                updateDashboardInfo();
+                showSection('dashboard');
+            } catch (error) {
+                showNotification('حدث خطأ', 'error');
+            }
+        };
+
+        window.loginStudent = async function() {
+            const code = document.getElementById('loginCode').value.trim();
+
+            if (!code || code.length !== 6) {
+                showNotification('رقم غير صحيح', 'error');
+                return;
+            }
+
+            try {
+                const q = query(collection(db, 'students'), where('code', '==', code));
+                const snap = await getDocs(q);
+
+                if (snap.empty) {
+                    showNotification('رقم غير موجود', 'error');
+                    return;
+                }
+
+                const studentDoc = snap.docs[0];
+                currentStudent = { id: studentDoc.id, ...studentDoc.data() };
+
+                if (currentStudent.lastQuestion !== undefined) {
+                    currentQuestion = currentStudent.lastQuestion;
+                    studentAnswers = currentStudent.lastAnswers || [];
+                }
+
+                await updateDoc(doc(db, 'students', studentDoc.id), {
+                    lastActive: new Date()
+                });
+
+                updateDashboardInfo();
+                showNotification(`مرحباً ${currentStudent.name}!`, 'success');
+                showSection('dashboard');
+            } catch (error) {
+                showNotification('حدث خطأ', 'error');
+            }
+        };
+
+        window.switchToLogin = () => showSection('login');
+        window.switchToRegister = () => showSection('registration');
+
+        function updateDashboardInfo() {
+            if (!currentStudent) return;
+            
+            updateCompetitionStatusDisplay('competitionStatusDashboard');
+            
+            const status = checkCompetitionStatus();
+            const startTestBtn = document.getElementById('startTestBtn');
+            if (startTestBtn) {
+                if (currentStudent.testCompleted === true) {
+                    startTestBtn.disabled = true;
+                    startTestBtn.textContent = '✅ تم إتمام الاختبار';
+                    startTestBtn.style.opacity = '0.6';
+                } else if (!status.isOpen) {
+                    startTestBtn.disabled = true;
+                    startTestBtn.textContent = '🔒 المسابقة مغلقة';
+                    startTestBtn.style.opacity = '0.6';
+                } else {
+                    startTestBtn.disabled = false;
+                    startTestBtn.textContent = 'بدء الاختبار';
+                    startTestBtn.style.opacity = '1';
+                }
+            }
+            
+            document.getElementById('currentScore').textContent = currentStudent.score || 0;
+        }
+
+        window.startTest = async function() {
+            if (!currentStudent) {
+                showNotification('يرجى تسجيل الدخول أولاً', 'error');
+                return;
+            }
+
+            if (currentStudent.testCompleted === true) {
+                showNotification('❌ لقد أتممت الاختبار مسبقاً', 'error');
+                return;
+            }
+
+            const status = checkCompetitionStatus();
+            if (!status.isOpen) {
+                showNotification('❌ المسابقة مغلقة حالياً', 'error');
+                return;
+            }
+
+            await loadQuestions();
+
+            if (currentStudent.lastQuestion !== undefined && !currentStudent.testCompleted) {
+                currentQuestion = currentStudent.lastQuestion;
+                studentAnswers = currentStudent.lastAnswers || [];
+            } else {
+                currentQuestion = 0;
+                studentAnswers = [];
+            }
+
+            showSection('testSection');
+            displayQuestion();
+        };
+
+        function displayQuestion() {
+            const status = checkCompetitionStatus();
+            if (!status.isOpen) {
+                stopQuestionTimer();
+                showNotification('⛔ المسابقة مغلقة!', 'error');
+                saveAndExit();
+                return;
+            }
+
+            if (currentQuestion >= questions.length) {
+                stopQuestionTimer();
+                showNotification('🎉 تم الانتهاء من جميع الأسئلة!', 'success');
+                markTestAsCompleted();
+                showSection('dashboard');
+                return;
+            }
+
+            startQuestionTimer();
+
+            const question = questions[currentQuestion];
+            const container = document.getElementById('questionContainer');
+            const previousAnswer = studentAnswers[currentQuestion];
+            
+            container.innerHTML = `
+                <div class="question-card">
+                    <div style="margin-bottom: 15px;">
+                        <span style="background: #4A90E2; color: white; padding: 5px 15px; border-radius: 15px;">
+                            ${question.subject}
+                        </span>
+                        <span style="float: left; color: #666;">
+                            ${currentQuestion + 1} / ${questions.length}
+                        </span>
+                    </div>
+                    <div class="question-text">
+                        ${question.question}
+                    </div>
+                    ${previousAnswer !== undefined && previousAnswer !== -1 ? 
+                        '<div style="background: #EBF5FB; padding: 10px; border-radius: 8px; margin: 10px 0; color: #21618C;">✓ تمت الإجابة مسبقاً</div>' : 
+                        ''
+                    }
+                    <div class="options">
+                        ${question.options.map((opt, i) => `
+                            <div class="option ${previousAnswer === i ? 'selected' : ''}" onclick="selectOption(${i})">
+                                ${String.fromCharCode(65 + i)}) ${opt}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('progressFill').style.width = 
+                ((currentQuestion + 1) / questions.length * 100) + '%';
+
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.textContent = 'إنهاء الاختبار';
+            } else {
+                nextBtn.textContent = 'التالي';
+            }
+        }
+
+        async function markTestAsCompleted() {
+            if (!currentStudent) return;
+            
+            try {
+                const studentQuery = query(collection(db, 'students'), where('code', '==', currentStudent.code));
+                const querySnapshot = await getDocs(studentQuery);
+                
+                if (!querySnapshot.empty) {
+                    const studentDocRef = doc(db, 'students', querySnapshot.docs[0].id);
+                    await updateDoc(studentDocRef, {
+                        testCompleted: true,
+                        completedAt: new Date(),
+                        finalScore: currentStudent.score
+                    });
+                    
+                    currentStudent.testCompleted = true;
+                    updateDashboardInfo();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        window.selectOption = function(index) {
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            options[index].classList.add('selected');
+            studentAnswers[currentQuestion] = index;
+        };
+
+        window.nextQuestion = async function() {
+            if (studentAnswers[currentQuestion] === undefined) {
+                showNotification('يرجى اختيار إجابة', 'error');
+                return;
+            }
+
+            const status = checkCompetitionStatus();
+            if (!status.isOpen) {
+                stopQuestionTimer();
+                showNotification('⛔ المسابقة أغلقت!', 'error');
+                await saveAndExit();
+                return;
+            }
+
+            stopQuestionTimer();
+
+            const question = questions[currentQuestion];
+            const selectedAnswer = studentAnswers[currentQuestion];
+            const isCorrect = selectedAnswer === question.correct;
+
+            const options = document.querySelectorAll('.option');
+            options[question.correct].classList.add('correct');
+            if (!isCorrect && selectedAnswer !== -1) {
+                options[selectedAnswer].classList.add('wrong');
+            }
+
+            if (isCorrect) {
+                currentStudent.score += 1;
+                showNotification('إجابة صحيحة! +1 نقطة', 'success');
+            } else {
+                showNotification('إجابة خاطئة!', 'error');
+            }
+
+            document.getElementById('currentScore').textContent = currentStudent.score;
+
+            setTimeout(() => {
+                currentQuestion++;
+                displayQuestion();
+            }, 2000);
+        };
+
+        window.saveAndExit = async function() {
+            if (!currentStudent) return;
+
+            stopQuestionTimer();
+
+            try {
+                const studentQuery = query(collection(db, 'students'), where('code', '==', currentStudent.code));
+                const querySnapshot = await getDocs(studentQuery);
+                
+                if (!querySnapshot.empty) {
+                    const studentDocRef = doc(db, 'students', querySnapshot.docs[0].id);
+                    await updateDoc(studentDocRef, {
+                        lastQuestion: currentQuestion,
+                        lastAnswers: studentAnswers,
+                        score: currentStudent.score,
+                        lastActive: new Date()
+                    });
+                    
+                    showNotification('✅ تم حفظ تقدمك بنجاح!', 'success');
+                    
+                    setTimeout(() => {
+                        updateDashboardInfo();
+                        showSection('dashboard');
+                    }, 1500);
+                }
+            } catch (error) {
+                showNotification('حدث خطأ أثناء الحفظ', 'error');
+            }
+        };
+
+        window.showResults = async function() {
+            try {
+                const studentsSnapshot = await getDocs(collection(db, 'students'));
+                const allStudents = studentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                allStudents.sort((a, b) => (b.score || 0) - (a.score || 0));
+
+                const classStudents = allStudents.filter(student => student.grade === currentStudent.grade);
+                
+                const classLeaderboard = document.getElementById('classLeaderboard');
+                classLeaderboard.innerHTML = classStudents.slice(0, 10).map((student, index) => {
+                    const isCurrentStudent = student.code === currentStudent.code;
+                    const score = student.score || 0;
+                    
+                    let rankClass = index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : '';
+                    
+                    return `
+                        <div class="leaderboard-item ${rankClass}" style="${isCurrentStudent ? 'border: 3px solid #4A90E2;' : ''}">
+                            <div class="rank">${index + 1}</div>
+                            <div class="student-name">
+                                ${student.name} ${isCurrentStudent ? '(أنت) 🌟' : ''}
+                            </div>
+                            <div class="student-score">${score} نقطة</div>
+                        </div>
+                    `;
+                }).join('');
+
+                const schoolLeaderboard = document.getElementById('schoolLeaderboard');
+                schoolLeaderboard.innerHTML = allStudents.slice(0, 10).map((student, index) => {
+                    const isCurrentStudent = student.code === currentStudent.code;
+                    const score = student.score || 0;
+                    
+                    let rankClass = index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : '';
+                    
+                    return `
+                        <div class="leaderboard-item ${rankClass}" style="${isCurrentStudent ? 'border: 3px solid #4A90E2;' : ''}">
+                            <div class="rank">${index + 1}</div>
+                            <div class="student-name">
+                                ${student.name} - الصف ${student.grade} ${isCurrentStudent ? '(أنت) 🌟' : ''}
+                            </div>
+                            <div class="student-score">${score} نقطة</div>
+                        </div>
+                    `;
+                }).join('');
+
+                showSection('resultsSection');
+            } catch (error) {
+                showNotification('حدث خطأ أثناء تحميل النتائج', 'error');
+            }
+        };
+
+        window.showContactForm = function() {
+            if (!currentStudent) {
+                showNotification('يرجى تسجيل الدخول أولاً', 'error');
+                return;
+            }
+
+            document.getElementById('contactName').value = currentStudent.name;
+            document.getElementById('contactGrade').value = 'الصف ' + currentStudent.grade + ' المتوسط';
+            document.getElementById('contactMessage').value = '';
+            document.getElementById('wordCount').textContent = '0';
+
+            const classSelect = document.getElementById('contactClass');
+            classSelect.innerHTML = '<option value="">اختر الشعبة</option>';
+            for (let i = 1; i <= 8; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = i;
+                classSelect.appendChild(opt);
+            }
+
+            showSection('contactSection');
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('contactMessage');
+            if (messageInput) {
+                messageInput.addEventListener('input', function() {
+                    const text = this.value.trim();
+                    const words = text ? text.split(/\s+/).filter(word => word.length > 0) : [];
+                    const wordCount = words.length;
+                    
+                    document.getElementById('wordCount').textContent = wordCount;
+                    
+                    if (wordCount > 500) {
+                        document.getElementById('wordCount').style.color = '#e74c3c';
+                    } else {
+                        document.getElementById('wordCount').style.color = '#4A90E2';
+                    }
+                });
+            }
+        });
+
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const className = document.getElementById('contactClass').value;
+            const message = document.getElementById('contactMessage').value.trim();
+            
+            if (!className || !message) {
+                showNotification('يرجى إكمال جميع الحقول', 'error');
+                return;
+            }
+            
+            const words = message.split(/\s+/).filter(word => word.length > 0);
+            if (words.length > 500) {
+                showNotification('الرسالة تتجاوز 500 كلمة', 'error');
+                return;
+            }
+            
+            try {
+                await addDoc(collection(db, 'messages'), {
+                    studentName: currentStudent.name,
+                    studentCode: currentStudent.code,
+                    grade: currentStudent.grade,
+                    class: className,
+                    message: message,
+                    timestamp: new Date(),
+                    read: false
+                });
+                
+                showNotification('✅ تم إرسال رسالتك بنجاح!', 'success');
+                setTimeout(() => backToDashboard(), 2000);
+            } catch (error) {
+                showNotification('حدث خطأ أثناء الإرسال', 'error');
+            }
+        });
+
+        window.backToDashboard = function() {
+            updateDashboardInfo();
+            showSection('dashboard');
+        };
+
+        window.logout = function() {
+            stopQuestionTimer();
+            currentStudent = null;
+            currentQuestion = 0;
+            studentAnswers = [];
+            showNotification('تم تسجيل الخروج', 'info');
+            showSection('registration');
+        };
+
+        async function updateHeaderStats() {
+            try {
+                await loadQuestions();
+                document.getElementById('headerTotalQuestions').textContent = questions.length;
+
+                const studentsSnapshot = await getDocs(collection(db, 'students'));
+                let totalPoints = 0;
+                studentsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    totalPoints += data.score || 0;
+                });
+                
+                document.getElementById('headerActiveStudents').textContent = studentsSnapshot.size;
+                document.getElementById('headerTotalPoints').textContent = totalPoints;
+            } catch (error) {
+                console.error('Error updating header stats:', error);
+            }
+        }
+
+        // Auto-save every 5 minutes
+        setInterval(async () => {
+            if (currentStudent && !document.getElementById('testSection').classList.contains('hidden')) {
+                try {
+                    const studentQuery = query(collection(db, 'students'), where('code', '==', currentStudent.code));
+                    const querySnapshot = await getDocs(studentQuery);
+                    if (!querySnapshot.empty) {
+                        const studentDocRef = doc(db, 'students', querySnapshot.docs[0].id);
+                        await updateDoc(studentDocRef, {
+                            lastQuestion: currentQuestion,
+                            lastAnswers: studentAnswers,
+                            score: currentStudent.score,
+                            lastActive: new Date()
+                        });
+                    }
+                } catch (error) {
+                    console.error('Auto-save error:', error);
+                }
+            }
+        }, 300000);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (event) => {
+            if (!document.getElementById('testSection').classList.contains('hidden')) {
+                if (event.key >= '1' && event.key <= '4') {
+                    const optionIndex = parseInt(event.key) - 1;
+                    const options = document.querySelectorAll('.option');
+                    if (options[optionIndex]) {
+                        selectOption(optionIndex);
+                    }
+                }
+                if (event.key === 'Enter') {
+                    nextQuestion();
+                }
+                if (event.key === 'Escape') {
+                    saveAndExit();
+                }
+            }
+        });
+
+        // Prevent accidental page close during test
+        window.addEventListener('beforeunload', (event) => {
+            if (currentStudent && !document.getElementById('testSection').classList.contains('hidden')) {
+                event.preventDefault();
+                event.returnValue = 'لديك اختبار جاري. هل أنت متأكد من الخروج؟';
+                return event.returnValue;
+            }
+        });
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            showSection('registration');
+            updateHeaderStats();
+            
+            competitionStatusInterval = setInterval(() => {
+                if (!document.getElementById('dashboard').classList.contains('hidden')) {
+                    updateCompetitionStatusDisplay('competitionStatusDashboard');
+                }
+            }, 10000);
+        });
+
+    </script>
+</body>
+</html>
