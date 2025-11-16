@@ -387,7 +387,7 @@
                     <tbody id="studentTableBody">
                         <tr>
                             <td>1</td>
-                            <td><input type="text" placeholder="اسم الطالب" style="width: 100%;"></td>
+                            <td><input type="text" class="student-name-input" data-id="1" placeholder="اسم الطالب" style="width: 100%;" onchange="updateTreatmentTable()"></td>
                             <td>
                                 <div class="checkbox-group">
                                     <label class="checkbox-label">
@@ -415,6 +415,75 @@
                     </tbody>
                 </table>
                 <button class="add-student-btn" onclick="addStudent()">➕ إضافة طالب جديد</button>
+            </div>
+
+            <!-- طرق العلاج -->
+            <div class="form-section">
+                <h2>🎯 طرق العلاج المقترحة من المعلم</h2>
+                <p style="color: #6c757d; margin-bottom: 20px; font-style: italic;">
+                    اختر الطرق العلاجية المناسبة لكل طالب لتحسين مستواه الدراسي والسلوكي
+                </p>
+
+                <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <table class="student-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 5%;">م</th>
+                                <th style="width: 15%;">اسم الطالب</th>
+                                <th style="width: 60%;">طرق العلاج المطبقة</th>
+                                <th style="width: 20%;">نتيجة المتابعة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="treatmentTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="background: #e3f2fd; padding: 20px; border-radius: 10px; border-right: 5px solid #2196f3;">
+                    <h3 style="color: #1976d2; margin-bottom: 15px;">📚 دليل طرق العلاج المتاحة:</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <strong style="color: #2196f3;">1️⃣ شد انتباه الطالب للدرس</strong>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 5px;">استخدام الوسائل المصاحبة للدرس والتقنيات الحديثة</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <strong style="color: #2196f3;">2️⃣ محاولة التقرب والتودد</strong>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 5px;">فهم مشاكل الطالب وبناء علاقة إيجابية معه</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <strong style="color: #2196f3;">3️⃣ إشراك الطالب في الأنشطة</strong>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 5px;">الأنشطة المختلفة المتعلقة بالمادة لتعزيز الفهم</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <strong style="color: #2196f3;">4️⃣ طرح الأسئلة المبسطة</strong>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 5px;">إعطاء الوقت الكافي للإجابة وتعزيز الثقة</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <strong style="color: #2196f3;">5️⃣ نظام الطالب القدوة</strong>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 5px;">وضع الطالب بجانب أحد الطلاب المتميزين للاستفادة</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <strong style="color: #2196f3;">6️⃣ متابعة الأعمال التحريرية</strong>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 5px;">مراجعة الواجبات والأعمال أولاً بأول</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <strong style="color: #2196f3;">7️⃣ تكليفه بواجبات مناسبة</strong>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 5px;">واجبات وأعمال مناسبة ترفع من مستواه تدريجياً</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <strong style="color: #2196f3;">8️⃣ حصص التقوية</strong>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 5px;">إشراكه في حصص التقوية والبرامج العلاجية</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <strong style="color: #2196f3;">9️⃣ إشراك ولي الأمر</strong>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 5px;">التواصل مع ولي الأمر في خطة مناسبة لعلاج الضعف</p>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <strong style="color: #2196f3;">🔟 التشجيع الدائم والمستمر</strong>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 5px;">تشجيع الطالب أمام زملائه عند إظهار أي تحسن</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- تقرير حالة الطالب -->
@@ -531,6 +600,20 @@
 
     <script>
         let studentCount = 1;
+        let students = [];
+
+        const treatmentMethods = [
+            "شد انتباه الطالب للدرس باستخدام الوسائل المصاحبة",
+            "محاولة التقرب منه والتودد إليه وفهم مشاكله",
+            "إشراك الطالب في الأنشطة المختلفة المتعلقة بالمادة",
+            "طرح الأسئلة عليه بشكل مبسط وإعطائه الوقت الكافي للإجابة",
+            "وضع الطالب بجانب أحد الطلاب المتميزين ليستفيد منه",
+            "متابعة أعماله التحريرية أولاً بأول",
+            "تكليفه بواجبات وأعمال مناسبة ترفع من مستواه",
+            "إشراكه في حصص التقوية",
+            "إشراك ولي أمره في خطة مناسبة لعلاج الضعف",
+            "التشجيع الدائم والمستمر للطالب أمام زملائه عند التحسن"
+        ];
 
         function addStudent() {
             studentCount++;
@@ -538,7 +621,7 @@
             const row = tbody.insertRow();
             row.innerHTML = `
                 <td>${studentCount}</td>
-                <td><input type="text" placeholder="اسم الطالب" style="width: 100%;"></td>
+                <td><input type="text" class="student-name-input" data-id="${studentCount}" placeholder="اسم الطالب" style="width: 100%;" onchange="updateTreatmentTable()"></td>
                 <td>
                     <div class="checkbox-group">
                         <label class="checkbox-label">
@@ -563,7 +646,56 @@
                     </div>
                 </td>
             `;
+            updateTreatmentTable();
         }
+
+        function updateTreatmentTable() {
+            const tbody = document.getElementById('treatmentTableBody');
+            const nameInputs = document.querySelectorAll('.student-name-input');
+            
+            tbody.innerHTML = '';
+            
+            nameInputs.forEach((input, index) => {
+                if (input.value.trim()) {
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td style="font-weight: bold; color: #2a5298;">${input.value}</td>
+                        <td>
+                            <div style="text-align: right;">
+                                ${treatmentMethods.map((method, i) => `
+                                    <label style="display: block; margin: 8px 0; cursor: pointer; padding: 8px; background: #f8f9fa; border-radius: 5px; transition: all 0.3s;" 
+                                           onmouseover="this.style.background='#e3f2fd'" 
+                                           onmouseout="this.style.background='#f8f9fa'">
+                                        <input type="checkbox" class="treatment-checkbox" 
+                                               data-student="${input.value}" 
+                                               style="margin-left: 8px; transform: scale(1.2);">
+                                        <span style="font-size: 0.95em;">${i + 1}. ${method}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </td>
+                        <td>
+                            <select class="result-select" style="width: 100%; padding: 10px; border: 2px solid #dee2e6; border-radius: 8px; font-weight: bold;">
+                                <option value="">اختر النتيجة</option>
+                                <option value="excellent" style="color: #28a745;">⭐ ممتاز - تحسن كبير</option>
+                                <option value="good" style="color: #17a2b8;">✓ جيد - تقدم ملحوظ</option>
+                                <option value="average" style="color: #ffc107;">→ متوسط - تحسن طفيف</option>
+                                <option value="weak" style="color: #fd7e14;">△ ضعيف - تقدم بطيء</option>
+                                <option value="no-change" style="color: #dc3545;">✗ لا تغيير - يحتاج متابعة</option>
+                            </select>
+                            <textarea placeholder="ملاحظات إضافية..." 
+                                      style="width: 100%; margin-top: 10px; padding: 8px; border: 2px solid #dee2e6; border-radius: 8px; min-height: 60px; font-size: 0.9em;"></textarea>
+                        </td>
+                    `;
+                }
+            });
+        }
+
+        // تحديث جدول العلاج عند تغيير اسم الطالب
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTreatmentTable();
+        });
 
         // منع تحديد أكثر من خيار واحد
         document.addEventListener('change', function(e) {
@@ -586,12 +718,65 @@
                 timestamp: new Date().toLocaleString('ar-SA')
             };
 
+            // جمع بيانات الطلاب وطرق العلاج
+            const studentsData = [];
+            const nameInputs = document.querySelectorAll('.student-name-input');
+            
+            nameInputs.forEach((input, index) => {
+                if (input.value.trim()) {
+                    const treatments = [];
+                    const checkboxes = document.querySelectorAll(`.treatment-checkbox[data-student="${input.value}"]`);
+                    checkboxes.forEach((cb, i) => {
+                        if (cb.checked) {
+                            treatments.push(treatmentMethods[i]);
+                        }
+                    });
+                    
+                    studentsData.push({
+                        name: input.value,
+                        treatments: treatments
+                    });
+                }
+            });
+
+            data.students = studentsData;
             localStorage.setItem('improvementPlan', JSON.stringify(data));
-            alert('✅ تم حفظ البيانات بنجاح!');
+            
+            // عرض رسالة نجاح مع تفاصيل
+            alert(`✅ تم حفظ البيانات بنجاح!\n\n📊 الإحصائيات:\n- عدد الطلاب: ${studentsData.length}\n- التاريخ: ${data.timestamp}`);
         }
 
         function exportToExcel() {
-            alert('📊 جاري تصدير البيانات إلى Excel...\n\nيمكنك نسخ الجدول ولصقه في برنامج Excel مباشرة.');
+            let csvContent = "اسم الطالب,طرق العلاج المطبقة,نتيجة المتابعة\n";
+            
+            const tbody = document.getElementById('treatmentTableBody');
+            const rows = tbody.querySelectorAll('tr');
+            
+            rows.forEach(row => {
+                const studentName = row.cells[1].textContent;
+                const checkboxes = row.querySelectorAll('.treatment-checkbox:checked');
+                const treatments = Array.from(checkboxes).map((cb, i) => {
+                    const label = cb.closest('label').textContent.trim();
+                    return label;
+                }).join(' | ');
+                
+                const result = row.querySelector('.result-select').selectedOptions[0]?.text || 'لم يحدد';
+                
+                csvContent += `"${studentName}","${treatments}","${result}"\n`;
+            });
+
+            const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute("href", url);
+            link.setAttribute("download", `خطة_العلاج_${new Date().toLocaleDateString('ar-SA')}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('📊 تم تصدير البيانات بنجاح!\nيمكنك فتح الملف في Excel');
         }
 
         // تحميل البيانات المحفوظة
