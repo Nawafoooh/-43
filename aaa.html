@@ -663,11 +663,12 @@
             tbody.innerHTML = '';
             
             nameInputs.forEach((input, index) => {
-                if (input.value.trim()) {
+                const studentName = input.value.trim();
+                if (studentName) {
                     const row = tbody.insertRow();
                     row.innerHTML = `
                         <td>${index + 1}</td>
-                        <td style="font-weight: bold; color: #2a5298;">${input.value}</td>
+                        <td style="font-weight: bold; color: #2a5298;">${studentName}</td>
                         <td>
                             <div style="text-align: right;">
                                 ${treatmentMethods.map((method, i) => `
@@ -675,7 +676,8 @@
                                            onmouseover="this.style.background='#e3f2fd'" 
                                            onmouseout="this.style.background='#f8f9fa'">
                                         <input type="checkbox" class="treatment-checkbox" 
-                                               data-student="${input.value}" 
+                                               data-student="${studentName}" 
+                                               data-student-index="${index}"
                                                style="margin-left: 8px; transform: scale(1.2);">
                                         <span style="font-size: 0.95em;">${i + 1}. ${method}</span>
                                     </label>
@@ -683,7 +685,7 @@
                             </div>
                         </td>
                         <td>
-                            <select class="result-select" style="width: 100%; padding: 10px; border: 2px solid #dee2e6; border-radius: 8px; font-weight: bold;">
+                            <select class="result-select" data-student-index="${index}" style="width: 100%; padding: 10px; border: 2px solid #dee2e6; border-radius: 8px; font-weight: bold;">
                                 <option value="">اختر النتيجة</option>
                                 <option value="excellent" style="color: #28a745;">⭐ ممتاز - تحسن كبير</option>
                                 <option value="good" style="color: #17a2b8;">✓ جيد - تقدم ملحوظ</option>
@@ -692,17 +694,8 @@
                                 <option value="no-change" style="color: #dc3545;">✗ لا تغيير - يحتاج متابعة</option>
                             </select>
                             <textarea placeholder="ملاحظات إضافية..." 
+                                      data-student-index="${index}"
                                       style="width: 100%; margin-top: 10px; padding: 8px; border: 2px solid #dee2e6; border-radius: 8px; min-height: 60px; font-size: 0.9em;"></textarea>
-                            
-                            <div style="margin-top: 15px; padding: 15px; background: #fff3cd; border-radius: 8px; border: 2px dashed #ffc107;">
-                                <strong style="color: #856404; display: block; margin-bottom: 10px;">📎 إرفاق الشواهد (صور أو ملفات)</strong>
-                                <input type="file" class="evidence-upload" accept="image/*,.pdf" multiple 
-                                       style="width: 100%; padding: 8px; border: 2px solid #ffc107; border-radius: 5px; background: white; cursor: pointer;">
-                                <p style="font-size: 0.85em; color: #856404; margin-top: 8px; margin-bottom: 0;">
-                                    💡 يمكنك إرفاق شاهد أو اثنين (صور الواجبات، الاختبارات، أو تقارير المتابعة)
-                                </p>
-                                <div class="evidence-preview" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px;"></div>
-                            </div>
                         </td>
                     `;
                 }
@@ -711,52 +704,16 @@
 
         // تحديث جدول العلاج عند تغيير اسم الطالب
         document.addEventListener('DOMContentLoaded', function() {
-            updateTreatmentTable();
-            
-            // معالجة رفع الشواهد
-            document.addEventListener('change', function(e) {
-                if (e.target.classList.contains('evidence-upload')) {
-                    handleEvidenceUpload(e);
-                }
-            });
+            // تحديث الجدول عند التحميل
+            setTimeout(updateTreatmentTable, 100);
         });
 
-        function handleEvidenceUpload(event) {
-            const files = event.target.files;
-            const previewDiv = event.target.parentElement.querySelector('.evidence-preview');
-            previewDiv.innerHTML = '';
-            
-            if (files.length > 2) {
-                alert('⚠️ يمكنك إرفاق شاهدين كحد أقصى');
-                event.target.value = '';
-                return;
+        // تحديث فوري عند إدخال أي اسم طالب
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('student-name-input')) {
+                updateTreatmentTable();
             }
-            
-            Array.from(files).forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.createElement('div');
-                    preview.style.cssText = 'position: relative; width: 100px; height: 100px; border: 2px solid #ddd; border-radius: 8px; overflow: hidden;';
-                    
-                    if (file.type.startsWith('image/')) {
-                        preview.innerHTML = `
-                            <img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">
-                            <span style="position: absolute; top: 5px; right: 5px; background: #28a745; color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.8em;">شاهد ${index + 1}</span>
-                        `;
-                    } else {
-                        preview.innerHTML = `
-                            <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f8f9fa;">
-                                <span style="font-size: 2em;">📄</span>
-                            </div>
-                            <span style="position: absolute; top: 5px; right: 5px; background: #28a745; color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.8em;">ملف ${index + 1}</span>
-                        `;
-                    }
-                    
-                    previewDiv.appendChild(preview);
-                };
-                reader.readAsDataURL(file);
-            });
-        }
+        });
 
         function sendToWhatsApp() {
             const teacherName = document.getElementById('teacherName').value || 'غير محدد';
@@ -785,7 +742,6 @@
                 const checkboxes = row.querySelectorAll('.treatment-checkbox:checked');
                 const result = row.querySelector('.result-select').value;
                 const notes = row.querySelector('textarea').value;
-                const evidenceCount = row.querySelector('.evidence-upload').files.length;
                 
                 message += `*${index + 1}. الطالب:* ${studentName}\n\n`;
                 
@@ -807,10 +763,6 @@
                     message += `*📝 ملاحظات:* ${notes}\n\n`;
                 }
                 
-                if (evidenceCount > 0) {
-                    message += `*📎 عدد الشواهد المرفقة:* ${evidenceCount}\n\n`;
-                }
-                
                 message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
             });
             
@@ -825,7 +777,7 @@
             window.open(whatsappURL, '_blank');
             
             // إظهار رسالة تأكيد
-            alert('✅ سيتم فتح الواتساب لإرسال التقرير\n\n💡 ملاحظة: يمكنك إرفاق الشواهد (الصور) يدوياً بعد فتح المحادثة في الواتساب');
+            alert('✅ سيتم فتح الواتساب لإرسال التقرير\n\n💡 لا تنسَ إرفاق الشواهد (الصور) بعد إرسال التقرير مباشرة');
         }
 
         // منع تحديد أكثر من خيار واحد
