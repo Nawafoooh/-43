@@ -209,8 +209,12 @@
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
             color: white;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
         }
 
         .btn-info {
@@ -310,6 +314,11 @@
             
             .btn {
                 width: 100%;
+            }
+            
+            .btn-secondary {
+                font-size: 0.9em;
+                padding: 15px 20px;
             }
         }
     </style>
@@ -421,7 +430,7 @@
             <div class="form-section">
                 <h2>🎯 طرق العلاج المقترحة من المعلم</h2>
                 <p style="color: #6c757d; margin-bottom: 20px; font-style: italic;">
-                    اختر الطرق العلاجية المناسبة لكل طالب لتحسين مستواه الدراسي والسلوكي
+                    اختر الطرق العلاجية المناسبة لكل طالب لتحسين مستواه الدراسي والسلوكي، ثم أرفق شاهداً أو اثنين
                 </p>
 
                 <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
@@ -584,7 +593,9 @@
             <!-- أزرار الإجراءات -->
             <div class="action-buttons">
                 <button class="btn btn-primary" onclick="saveData()">💾 حفظ البيانات</button>
-                <button class="btn btn-secondary" onclick="window.print()">🖨️ طباعة التقرير</button>
+                <button class="btn btn-secondary" onclick="sendToWhatsApp()">
+                    <span style="font-size: 1.2em;">📱</span> إرسال التقرير للأستاذ نواف الصبحي
+                </button>
                 <button class="btn btn-info" onclick="exportToExcel()">📊 تصدير Excel</button>
             </div>
         </div>
@@ -686,6 +697,16 @@
                             </select>
                             <textarea placeholder="ملاحظات إضافية..." 
                                       style="width: 100%; margin-top: 10px; padding: 8px; border: 2px solid #dee2e6; border-radius: 8px; min-height: 60px; font-size: 0.9em;"></textarea>
+                            
+                            <div style="margin-top: 15px; padding: 15px; background: #fff3cd; border-radius: 8px; border: 2px dashed #ffc107;">
+                                <strong style="color: #856404; display: block; margin-bottom: 10px;">📎 إرفاق الشواهد (صور أو ملفات)</strong>
+                                <input type="file" class="evidence-upload" accept="image/*,.pdf" multiple 
+                                       style="width: 100%; padding: 8px; border: 2px solid #ffc107; border-radius: 5px; background: white; cursor: pointer;">
+                                <p style="font-size: 0.85em; color: #856404; margin-top: 8px; margin-bottom: 0;">
+                                    💡 يمكنك إرفاق شاهد أو اثنين (صور الواجبات، الاختبارات، أو تقارير المتابعة)
+                                </p>
+                                <div class="evidence-preview" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px;"></div>
+                            </div>
                         </td>
                     `;
                 }
@@ -695,7 +716,121 @@
         // تحديث جدول العلاج عند تغيير اسم الطالب
         document.addEventListener('DOMContentLoaded', function() {
             updateTreatmentTable();
+            
+            // معالجة رفع الشواهد
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('evidence-upload')) {
+                    handleEvidenceUpload(e);
+                }
+            });
         });
+
+        function handleEvidenceUpload(event) {
+            const files = event.target.files;
+            const previewDiv = event.target.parentElement.querySelector('.evidence-preview');
+            previewDiv.innerHTML = '';
+            
+            if (files.length > 2) {
+                alert('⚠️ يمكنك إرفاق شاهدين كحد أقصى');
+                event.target.value = '';
+                return;
+            }
+            
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.createElement('div');
+                    preview.style.cssText = 'position: relative; width: 100px; height: 100px; border: 2px solid #ddd; border-radius: 8px; overflow: hidden;';
+                    
+                    if (file.type.startsWith('image/')) {
+                        preview.innerHTML = `
+                            <img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover;">
+                            <span style="position: absolute; top: 5px; right: 5px; background: #28a745; color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.8em;">شاهد ${index + 1}</span>
+                        `;
+                    } else {
+                        preview.innerHTML = `
+                            <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f8f9fa;">
+                                <span style="font-size: 2em;">📄</span>
+                            </div>
+                            <span style="position: absolute; top: 5px; right: 5px; background: #28a745; color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.8em;">ملف ${index + 1}</span>
+                        `;
+                    }
+                    
+                    previewDiv.appendChild(preview);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function sendToWhatsApp() {
+            const teacherName = document.getElementById('teacherName').value || 'غير محدد';
+            const subject = document.getElementById('subject').value || 'غير محدد';
+            const classLevel = document.getElementById('classLevel').value || 'غير محدد';
+            
+            // جمع بيانات الطلاب
+            const tbody = document.getElementById('treatmentTableBody');
+            const rows = tbody.querySelectorAll('tr');
+            
+            if (rows.length === 0) {
+                alert('⚠️ يرجى إضافة بيانات الطلاب أولاً');
+                return;
+            }
+            
+            let message = `*📋 تقرير خطة تحسين نتائج الطلاب*\n`;
+            message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+            message += `*👨‍🏫 المعلم:* ${teacherName}\n`;
+            message += `*📚 المادة:* ${subject}\n`;
+            message += `*🎓 الصف:* ${classLevel}\n`;
+            message += `*📅 التاريخ:* ${new Date().toLocaleDateString('ar-SA')}\n\n`;
+            message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+            
+            rows.forEach((row, index) => {
+                const studentName = row.cells[1].textContent;
+                const checkboxes = row.querySelectorAll('.treatment-checkbox:checked');
+                const result = row.querySelector('.result-select').value;
+                const notes = row.querySelector('textarea').value;
+                const evidenceCount = row.querySelector('.evidence-upload').files.length;
+                
+                message += `*${index + 1}. الطالب:* ${studentName}\n\n`;
+                
+                if (checkboxes.length > 0) {
+                    message += `*🎯 طرق العلاج المطبقة:*\n`;
+                    checkboxes.forEach((cb, i) => {
+                        const label = cb.closest('label').textContent.trim();
+                        message += `   ${label}\n`;
+                    });
+                    message += `\n`;
+                }
+                
+                if (result) {
+                    const resultText = row.querySelector('.result-select').selectedOptions[0].text;
+                    message += `*📊 نتيجة المتابعة:* ${resultText}\n\n`;
+                }
+                
+                if (notes) {
+                    message += `*📝 ملاحظات:* ${notes}\n\n`;
+                }
+                
+                if (evidenceCount > 0) {
+                    message += `*📎 عدد الشواهد المرفقة:* ${evidenceCount}\n\n`;
+                }
+                
+                message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
+            });
+            
+            message += `\n*🏫 مدرسة المنذر بن عمرو الأنصاري المتوسطة*\n`;
+            message += `*📍 الإدارة العامة للتعليم بمنطقة المدينة المنورة*`;
+            
+            // ترميز الرسالة للواتساب
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappURL = `https://wa.me/966541148047?text=${encodedMessage}`;
+            
+            // فتح الواتساب في نافذة جديدة
+            window.open(whatsappURL, '_blank');
+            
+            // إظهار رسالة تأكيد
+            alert('✅ سيتم فتح الواتساب لإرسال التقرير\n\n💡 ملاحظة: يمكنك إرفاق الشواهد (الصور) يدوياً بعد فتح المحادثة في الواتساب');
+        }
 
         // منع تحديد أكثر من خيار واحد
         document.addEventListener('change', function(e) {
