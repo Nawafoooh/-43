@@ -465,6 +465,15 @@
 
                 <form id="addSchoolForm">
                     <div class="form-group">
+                        <label>نوع المدرسة:</label>
+                        <select id="schoolGender" required style="width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px;">
+                            <option value="">-- اختر نوع المدرسة --</option>
+                            <option value="girls">بنات 👧</option>
+                            <option value="boys">بنين 👦</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
                         <label>اسم المدرسة:</label>
                         <input type="text" id="schoolName" placeholder="مثال: متوسطة الثالثة والأربعون" required>
                     </div>
@@ -475,12 +484,12 @@
                     </div>
 
                     <div class="form-group">
-                        <label>اسم المديرة:</label>
+                        <label id="principalLabel">اسم المدير/ة:</label>
                         <input type="text" id="principalName" placeholder="مثال: منى الرشيدي" required>
                     </div>
 
                     <div class="form-group">
-                        <label>اسم المشرفة:</label>
+                        <label id="supervisorLabel">اسم المشرف/ة:</label>
                         <input type="text" id="supervisorName" placeholder="مثال: ريم العنزي" required>
                     </div>
 
@@ -571,6 +580,25 @@
         const studentTemplateInput = document.getElementById('studentTemplate');
         const teacherTemplateInput = document.getElementById('teacherTemplate');
         const templateStatus = document.getElementById('templateStatus');
+        const schoolGenderSelect = document.getElementById('schoolGender');
+        const principalLabel = document.getElementById('principalLabel');
+        const supervisorLabel = document.getElementById('supervisorLabel');
+
+        // Update labels based on school gender
+        schoolGenderSelect.addEventListener('change', (e) => {
+            const gender = e.target.value;
+            if (gender === 'boys') {
+                principalLabel.textContent = 'اسم المدير:';
+                supervisorLabel.textContent = 'اسم المشرف:';
+                document.getElementById('principalName').placeholder = 'مثال: خالد المطيري';
+                document.getElementById('supervisorName').placeholder = 'مثال: نواف الصحبي';
+            } else if (gender === 'girls') {
+                principalLabel.textContent = 'اسم المديرة:';
+                supervisorLabel.textContent = 'اسم المشرفة:';
+                document.getElementById('principalName').placeholder = 'مثال: منى الرشيدي';
+                document.getElementById('supervisorName').placeholder = 'مثال: ريم العنزي';
+            }
+        });
 
         // Check if templates are loaded
         function updateTemplateStatus() {
@@ -664,7 +692,40 @@
             customized = customized.replace(/المدينة المنورة/g, schoolData.region);
             customized = customized.replace(/منى الرشيدي/g, schoolData.principalName);
             customized = customized.replace(/ريم العنزي/g, schoolData.supervisorName);
-            customized = customized.replace(/الأستاذة ريم العنزي/g, 'الأستاذة ' + schoolData.supervisorName);
+            
+            // Gender-based replacements
+            if (schoolData.gender === 'boys') {
+                // Replace feminine forms with masculine forms
+                customized = customized.replace(/الأستاذة ريم العنزي/g, 'الأستاذ ' + schoolData.supervisorName);
+                customized = customized.replace(/الأستاذة/g, 'الأستاذ');
+                customized = customized.replace(/المشرفة/g, 'المشرف');
+                customized = customized.replace(/المديرة/g, 'المدير');
+                customized = customized.replace(/مديرة المدرسة/g, 'مدير المدرسة');
+                customized = customized.replace(/الطالبة/g, 'الطالب');
+                customized = customized.replace(/طالبة/g, 'طالب');
+                customized = customized.replace(/الطالبات/g, 'الطلاب');
+                customized = customized.replace(/👩‍💼/g, '👨‍💼');
+                customized = customized.replace(/👩‍🏫/g, '👨‍🏫');
+                customized = customized.replace(/رقم الطالبة/g, 'رقم الطالب');
+                customized = customized.replace(/اسمك الرباعي/g, 'اسمك الرباعي');
+                customized = customized.replace(/أدخلي/g, 'أدخل');
+                customized = customized.replace(/اختاري/g, 'اختر');
+                customized = customized.replace(/قومي/g, 'قم');
+                customized = customized.replace(/اكتبي/g, 'اكتب');
+                customized = customized.replace(/اضغطي/g, 'اضغط');
+                customized = customized.replace(/أجيبي/g, 'أجب');
+                customized = customized.replace(/احفظي/g, 'احفظ');
+                customized = customized.replace(/تريدين/g, 'تريد');
+                customized = customized.replace(/لديك/g, 'لديك');
+                customized = customized.replace(/نقاطك/g, 'نقاطك');
+                customized = customized.replace(/إجابتك/g, 'إجابتك');
+                customized = customized.replace(/متأكدة/g, 'متأكد');
+                customized = customized.replace(/مستعدة/g, 'مستعد');
+                customized = customized.replace(/جاهزة/g, 'جاهز');
+            } else {
+                // Keep feminine forms (already in template)
+                customized = customized.replace(/الأستاذة ريم العنزي/g, 'الأستاذة ' + schoolData.supervisorName);
+            }
             
             // Replace colors
             customized = customized.replace(/#e8b4d9/g, schoolData.primaryColor);
@@ -715,6 +776,7 @@
                 id: generateSchoolId(),
                 name: document.getElementById('schoolName').value,
                 region: document.getElementById('schoolRegion').value,
+                gender: document.getElementById('schoolGender').value,
                 principalName: document.getElementById('principalName').value,
                 supervisorName: document.getElementById('supervisorName').value,
                 primaryColor: primaryColor.value,
@@ -772,13 +834,16 @@
             list.innerHTML = schools.map(school => `
                 <div class="school-item">
                     <div class="school-header">
-                        <div class="school-name">${school.name}</div>
+                        <div class="school-name">
+                            ${school.name} 
+                            ${school.gender === 'boys' ? '👦 بنين' : '👧 بنات'}
+                        </div>
                         <div class="school-id">${school.id}</div>
                     </div>
                     <div class="school-details">
                         <div>📍 المنطقة: ${school.region}</div>
-                        <div>👩‍💼 المديرة: ${school.principalName}</div>
-                        <div>👩‍🏫 المشرفة: ${school.supervisorName}</div>
+                        <div>👨‍💼 ${school.gender === 'boys' ? 'المدير' : 'المديرة'}: ${school.principalName}</div>
+                        <div>👨‍🏫 ${school.gender === 'boys' ? 'المشرف' : 'المشرفة'}: ${school.supervisorName}</div>
                         <div>📅 تاريخ الإنشاء: ${new Date(school.createdAt).toLocaleDateString('ar-SA')}</div>
                         <div>
                             🎨 الألوان: 
