@@ -364,16 +364,32 @@
             color: #e74c3c;
         }
 
-        .firebase-config-box {
-            background: #2c3e50;
-            color: #ecf0f1;
+        .help-box a {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .upload-templates {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 15px;
             padding: 20px;
-            border-radius: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.8;
-            margin-top: 15px;
-            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .upload-templates h4 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+
+        .upload-templates input[type="file"] {
+            display: block;
+            margin-top: 10px;
+            padding: 10px;
+            border: 2px dashed #28a745;
+            border-radius: 8px;
+            background: white;
+            width: 100%;
         }
 
         @media (max-width: 1024px) {
@@ -430,6 +446,23 @@
                     إضافة مدرسة جديدة
                 </h2>
 
+                <!-- Template Upload Section -->
+                <div class="upload-templates">
+                    <h4>📁 رفع ملفات القوالب (مرة واحدة فقط)</h4>
+                    <p style="color: #155724; font-size: 0.9em; margin-bottom: 10px;">
+                        ارفع ملف الطالبات وملف المعلمة الأصليين كقوالب
+                    </p>
+                    <label style="display: block; margin-top: 10px; color: #155724; font-weight: 600;">
+                        ملف الطالبات (student.html):
+                        <input type="file" id="studentTemplate" accept=".html">
+                    </label>
+                    <label style="display: block; margin-top: 10px; color: #155724; font-weight: 600;">
+                        ملف المعلمة (teacher.html):
+                        <input type="file" id="teacherTemplate" accept=".html">
+                    </label>
+                    <div id="templateStatus" style="margin-top: 10px; font-weight: bold;"></div>
+                </div>
+
                 <form id="addSchoolForm">
                     <div class="form-group">
                         <label>اسم المدرسة:</label>
@@ -467,13 +500,13 @@
 
                     <div class="form-group">
                         <label>Firebase Configuration (JSON):</label>
-                        <textarea id="firebaseConfig" placeholder='أدخل Firebase Config هنا...' required></textarea>
+                        <textarea id="firebaseConfig" placeholder='{"apiKey": "...", "projectId": "..."}' required></textarea>
                     </div>
 
                     <div class="help-box">
                         <h4>📋 كيفية الحصول على Firebase Config:</h4>
                         <p>
-                            1️⃣ اذهب إلى <a href="https://console.firebase.google.com" target="_blank" style="color:#667eea">Firebase Console</a><br>
+                            1️⃣ اذهب إلى <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a><br>
                             2️⃣ أنشئ مشروع جديد للمدرسة<br>
                             3️⃣ اذهب إلى: Project Settings > General > Your apps<br>
                             4️⃣ انقر على "Add app" واختر Web<br>
@@ -517,9 +550,14 @@
     </div>
 
     <script>
-        // Local Storage for Schools
+        // Local Storage Keys
         const SCHOOLS_KEY = 'nafes_schools';
+        const STUDENT_TEMPLATE_KEY = 'nafes_student_template';
+        const TEACHER_TEMPLATE_KEY = 'nafes_teacher_template';
+        
         let schools = JSON.parse(localStorage.getItem(SCHOOLS_KEY) || '[]');
+        let studentTemplateHTML = localStorage.getItem(STUDENT_TEMPLATE_KEY) || '';
+        let teacherTemplateHTML = localStorage.getItem(TEACHER_TEMPLATE_KEY) || '';
 
         // Elements
         const form = document.getElementById('addSchoolForm');
@@ -530,6 +568,52 @@
         const previewSection = document.getElementById('previewSection');
         const colorPreview1 = document.getElementById('colorPreview1');
         const colorPreview2 = document.getElementById('colorPreview2');
+        const studentTemplateInput = document.getElementById('studentTemplate');
+        const teacherTemplateInput = document.getElementById('teacherTemplate');
+        const templateStatus = document.getElementById('templateStatus');
+
+        // Check if templates are loaded
+        function updateTemplateStatus() {
+            if (studentTemplateHTML && teacherTemplateHTML) {
+                templateStatus.innerHTML = '✅ القوالب محملة ومحفوظة!';
+                templateStatus.style.color = '#155724';
+            } else if (studentTemplateHTML || teacherTemplateHTML) {
+                templateStatus.innerHTML = '⚠️ يرجى رفع كلا الملفين';
+                templateStatus.style.color = '#856404';
+            } else {
+                templateStatus.innerHTML = '❌ لم يتم رفع القوالب بعد';
+                templateStatus.style.color = '#721c24';
+            }
+        }
+
+        // Handle Template Upload
+        studentTemplateInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    studentTemplateHTML = event.target.result;
+                    localStorage.setItem(STUDENT_TEMPLATE_KEY, studentTemplateHTML);
+                    showNotification('✅ تم رفع قالب الطالبات بنجاح!', 'success');
+                    updateTemplateStatus();
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        teacherTemplateInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    teacherTemplateHTML = event.target.result;
+                    localStorage.setItem(TEACHER_TEMPLATE_KEY, teacherTemplateHTML);
+                    showNotification('✅ تم رفع قالب المعلمة بنجاح!', 'success');
+                    updateTemplateStatus();
+                };
+                reader.readAsText(file);
+            }
+        });
 
         // Color Picker Updates
         primaryColor.addEventListener('input', (e) => {
@@ -567,55 +651,33 @@
             return 'school_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         }
 
-        // Generate School Files
-        function generateSchoolFiles(schoolData) {
-            const studentFile = generateStudentHTML(schoolData);
-            const teacherFile = generateTeacherHTML(schoolData);
+        // Customize HTML Template
+        function customizeTemplate(template, schoolData) {
+            if (!template) return '';
             
-            return {
-                student: studentFile,
-                teacher: teacherFile
-            };
-        }
-
-        // Generate Student HTML
-        function generateStudentHTML(school) {
-            // سنقوم بقراءة الملف الأصلي واستبدال المتغيرات
-            const originalHTML = `${document.querySelector('body').parentElement.innerHTML}`;
+            let customized = template;
             
-            // استبدال القيم
-            let customizedHTML = originalHTML
-                .replace(/متوسطة الثالثة والأربعون/g, school.name)
-                .replace(/قطاعي أحد والعواليّ/g, school.region)
-                .replace(/منى الرشيدي/g, school.principalName)
-                .replace(/ريم العنزي/g, school.supervisorName)
-                .replace(/#e8b4d9/g, school.primaryColor)
-                .replace(/#d4a5c4/g, school.secondaryColor);
-
-            // استبدال Firebase Config
-            customizedHTML = customizedHTML.replace(
-                /const firebaseConfig = {[\s\S]*?};/,
-                `const firebaseConfig = ${school.firebaseConfig};`
+            // Replace school info
+            customized = customized.replace(/متوسطة الثالثة والأربعون/g, schoolData.name);
+            customized = customized.replace(/المتوسطة الثالثة والأربعون/g, schoolData.name);
+            customized = customized.replace(/قطاعي أحد والعواليّ/g, schoolData.region);
+            customized = customized.replace(/المدينة المنورة/g, schoolData.region);
+            customized = customized.replace(/منى الرشيدي/g, schoolData.principalName);
+            customized = customized.replace(/ريم العنزي/g, schoolData.supervisorName);
+            customized = customized.replace(/الأستاذة ريم العنزي/g, 'الأستاذة ' + schoolData.supervisorName);
+            
+            // Replace colors
+            customized = customized.replace(/#e8b4d9/g, schoolData.primaryColor);
+            customized = customized.replace(/#d4a5c4/g, schoolData.secondaryColor);
+            
+            // Replace Firebase Config
+            const firebaseConfigRegex = /const firebaseConfig = \{[\s\S]*?\};/;
+            customized = customized.replace(
+                firebaseConfigRegex,
+                `const firebaseConfig = ${schoolData.firebaseConfig};`
             );
-
-            return customizedHTML;
-        }
-
-        // Generate Teacher HTML
-        function generateTeacherHTML(school) {
-            const originalHTML = `${document.querySelector('body').parentElement.innerHTML}`;
             
-            let customizedHTML = originalHTML
-                .replace(/المتوسطة الثالثة والأربعون/g, school.name)
-                .replace(/المدينة المنورة - المملكة العربية السعودية/g, school.region + ' - المملكة العربية السعودية')
-                .replace(/الأستاذة ريم العنزي/g, 'الأستاذة ' + school.supervisorName);
-
-            customizedHTML = customizedHTML.replace(
-                /const firebaseConfig = {[\s\S]*?};/,
-                `const firebaseConfig = ${school.firebaseConfig};`
-            );
-
-            return customizedHTML;
+            return customized;
         }
 
         // Download File
@@ -630,6 +692,12 @@
         // Form Submit
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // Check if templates are loaded
+            if (!studentTemplateHTML || !teacherTemplateHTML) {
+                showNotification('❌ يرجى رفع ملفات القوالب أولاً!', 'error');
+                return;
+            }
 
             // Validate Firebase Config
             let firebaseConfigObj;
@@ -658,17 +726,18 @@
                 monthlyRevenue: 299
             };
 
+            // Generate customized files
+            const studentHTML = customizeTemplate(studentTemplateHTML, schoolData);
+            const teacherHTML = customizeTemplate(teacherTemplateHTML, schoolData);
+
             // Add to schools array
             schools.push(schoolData);
             localStorage.setItem(SCHOOLS_KEY, JSON.stringify(schools));
 
-            // Generate files
-            const files = generateSchoolFiles(schoolData);
-
             // Download files
-            downloadFile(files.student, `${schoolData.id}_student.html`);
+            downloadFile(studentHTML, `${schoolData.id}_student.html`);
             setTimeout(() => {
-                downloadFile(files.teacher, `${schoolData.id}_teacher.html`);
+                downloadFile(teacherHTML, `${schoolData.id}_teacher.html`);
             }, 500);
 
             showNotification(`✅ تم إنشاء مدرسة "${schoolData.name}" بنجاح! جاري تحميل الملفات...`, 'success');
@@ -732,13 +801,20 @@
 
         // Redownload School Files
         window.redownloadSchool = function(schoolId) {
+            if (!studentTemplateHTML || !teacherTemplateHTML) {
+                showNotification('❌ القوالب غير محملة! ارفع الملفات الأصلية أولاً', 'error');
+                return;
+            }
+
             const school = schools.find(s => s.id === schoolId);
             if (!school) return;
 
-            const files = generateSchoolFiles(school);
-            downloadFile(files.student, `${school.id}_student.html`);
+            const studentHTML = customizeTemplate(studentTemplateHTML, school);
+            const teacherHTML = customizeTemplate(teacherTemplateHTML, school);
+            
+            downloadFile(studentHTML, `${school.id}_student.html`);
             setTimeout(() => {
-                downloadFile(files.teacher, `${school.id}_teacher.html`);
+                downloadFile(teacherHTML, `${school.id}_teacher.html`);
             }, 500);
 
             showNotification(`📥 جاري تحميل ملفات "${school.name}"...`, 'info');
@@ -773,13 +849,14 @@
         }
 
         // Initialize
+        updateTemplateStatus();
         updateStats();
         renderSchools();
 
         // Show welcome message
-        if (schools.length === 0) {
+        if (schools.length === 0 && !studentTemplateHTML && !teacherTemplateHTML) {
             setTimeout(() => {
-                showNotification('👋 مرحباً! ابدأ بإضافة أول مدرسة لك', 'info');
+                showNotification('👋 مرحباً! ابدأ برفع ملفات القوالب الأصلية أولاً', 'info');
             }, 500);
         }
     </script>
