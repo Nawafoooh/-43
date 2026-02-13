@@ -117,7 +117,8 @@
         }
 
         .form-group input,
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             width: 100%;
             padding: 15px;
             border: 2px solid #e0e0e0;
@@ -128,7 +129,8 @@
         }
 
         .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -139,6 +141,7 @@
             resize: vertical;
             font-family: 'Courier New', monospace;
             font-size: 14px;
+            direction: ltr;
         }
 
         .color-picker-group {
@@ -190,10 +193,6 @@
 
         .btn.danger {
             background: linear-gradient(135deg, #e74c3c, #c0392b);
-        }
-
-        .btn.info {
-            background: linear-gradient(135deg, #3498db, #2980b9);
         }
 
         .school-list {
@@ -337,21 +336,21 @@
         }
 
         .help-box {
-            background: #fff3cd;
-            border: 2px solid #f39c12;
+            background: #e9ecef;
+            border: 2px solid #ced4da;
             border-radius: 15px;
             padding: 20px;
             margin-top: 20px;
         }
 
         .help-box h4 {
-            color: #856404;
+            color: #495057;
             margin-bottom: 10px;
             font-size: 1.1em;
         }
 
         .help-box p {
-            color: #856404;
+            color: #495057;
             line-height: 1.8;
             font-size: 0.95em;
         }
@@ -466,7 +465,7 @@
                 <form id="addSchoolForm">
                     <div class="form-group">
                         <label>نوع المدرسة:</label>
-                        <select id="schoolGender" required style="width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px;">
+                        <select id="schoolGender" required>
                             <option value="">-- اختر نوع المدرسة --</option>
                             <option value="girls">بنات 👧</option>
                             <option value="boys">بنين 👦</option>
@@ -508,19 +507,56 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Firebase Configuration (JSON):</label>
-                        <textarea id="firebaseConfig" placeholder='{"apiKey": "...", "projectId": "..."}' required></textarea>
+                        <label>Firebase Configuration (الكود الكامل أو JSON):</label>
+                        <textarea id="firebaseConfig" placeholder='الصق الكود الكامل المنسوخ من Firebase هنا...' required></textarea>
                     </div>
 
                     <div class="help-box">
                         <h4>📋 كيفية الحصول على Firebase Config:</h4>
                         <p>
-                            1️⃣ اذهب إلى <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a><br>
-                            2️⃣ أنشئ مشروع جديد للمدرسة<br>
-                            3️⃣ اذهب إلى: Project Settings > General > Your apps<br>
-                            4️⃣ انقر على "Add app" واختر Web<br>
-                            5️⃣ انسخ الـ <code>firebaseConfig</code> والصقه أعلاه
+                            1️⃣ اذهب إلى <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a>  
+
+                            2️⃣ أنشئ مشروع جديد للمدرسة  
+
+                            3️⃣ اذهب إلى: Project Settings > General > Your apps  
+
+                            4️⃣ انقر على "Add app" واختر Web  
+
+                            5️⃣ انسخ الكود الكامل (مع `const firebaseConfig = ...` ) والصقه أعلاه
                         </p>
+                    </div>
+
+                    <div class="help-box" style="border-color: #e74c3c; background: #fbeae5; margin-top: 20px;">
+                        <h4 style="color: #c0392b;">🔒 خطوة هامة: تطبيق قواعد الأمان</h4>
+                        <p style="color: #c0392b;">
+                            بعد إنشاء المشروع، يجب عليك نسخ هذه القواعد ولصقها في:
+                              
+
+                            <b>Firestore Database > Rules</b>
+                        </p>
+                        <textarea id="securityRules" readonly style="height: 200px; background: #fff; color: #333; margin-top: 10px;">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ملاحظة: هذه القواعد تسمح بالوصول للجميع وهي مناسبة لمرحلة التطوير فقط.
+    // يجب تقييدها قبل إطلاق المنصة بشكل نهائي.
+    match /students/{studentId} {
+      allow read, write: if true;
+    }
+    match /studentCodes/{code} {
+      allow read, write: if true;
+    }
+    match /teachers/{teacherId} {
+      allow read, write: if true;
+    }
+    match /questions/{questionId} {
+      allow read, write: if true;
+    }
+    match /testResults/{resultId} {
+      allow read, write: if true;
+    }
+  }
+}</textarea>
+                        <button type="button" class="btn danger" onclick="copyRules()" style="margin-top: 10px;">📋 نسخ قواعد الأمان</button>
                     </div>
 
                     <button type="submit" class="btn success">✨ إنشاء المدرسة وتوليد الملفات</button>
@@ -595,8 +631,8 @@
             } else if (gender === 'girls') {
                 principalLabel.textContent = 'اسم المديرة:';
                 supervisorLabel.textContent = 'اسم المشرفة:';
-                document.getElementById('principalName').placeholder = 'مثال: منى الرشيدي';
-                document.getElementById('supervisorName').placeholder = 'مثال: ريم العنزي';
+                document.getElementById('principalName').placeholder = 'مثال: منى ';
+                document.getElementById('supervisorName').placeholder = 'مثال: ريم ';
             }
         });
 
@@ -685,6 +721,8 @@
             
             let customized = template;
             
+            // ... بداية دالة customizeTemplate
+
             // Replace school info
             customized = customized.replace(/متوسطة الثالثة والأربعون/g, schoolData.name);
             customized = customized.replace(/المتوسطة الثالثة والأربعون/g, schoolData.name);
@@ -695,7 +733,6 @@
             
             // Gender-based replacements
             if (schoolData.gender === 'boys') {
-                // Replace feminine forms with masculine forms
                 customized = customized.replace(/الأستاذة ريم العنزي/g, 'الأستاذ ' + schoolData.supervisorName);
                 customized = customized.replace(/الأستاذة/g, 'الأستاذ');
                 customized = customized.replace(/المشرفة/g, 'المشرف');
@@ -723,7 +760,6 @@
                 customized = customized.replace(/مستعدة/g, 'مستعد');
                 customized = customized.replace(/جاهزة/g, 'جاهز');
             } else {
-                // Keep feminine forms (already in template)
                 customized = customized.replace(/الأستاذة ريم العنزي/g, 'الأستاذة ' + schoolData.supervisorName);
             }
             
@@ -747,30 +783,40 @@
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = filename;
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
         }
 
         // Form Submit
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Check if templates are loaded
             if (!studentTemplateHTML || !teacherTemplateHTML) {
                 showNotification('❌ يرجى رفع ملفات القوالب أولاً!', 'error');
                 return;
             }
 
-            // Validate Firebase Config
+            // --- MODIFIED: Smart Firebase Config Parsing ---
+            let firebaseConfigString = document.getElementById('firebaseConfig').value;
             let firebaseConfigObj;
             try {
-                firebaseConfigObj = JSON.parse(document.getElementById('firebaseConfig').value);
+                const match = firebaseConfigString.match(/\{[\s\S]*\}/);
+                if (!match) throw new Error('لم يتم العثور على كائن الإعدادات.');
+                
+                const potentialJson = match[0];
+                firebaseConfigObj = JSON.parse(potentialJson);
+
                 if (!firebaseConfigObj.apiKey || !firebaseConfigObj.projectId) {
-                    throw new Error('Firebase Config غير صحيح');
+                    throw new Error('كائن الإعدادات غير مكتمل.');
                 }
+                
+                document.getElementById('firebaseConfig').value = JSON.stringify(firebaseConfigObj, null, 2);
             } catch (error) {
-                showNotification('❌ Firebase Config غير صحيح! تأكد من نسخه بشكل صحيح', 'error');
+                showNotification(`❌ Firebase Config غير صحيح! ${error.message}`, 'error');
                 return;
             }
+            // --- END MODIFICATION ---
 
             const schoolData = {
                 id: generateSchoolId(),
@@ -781,22 +827,19 @@
                 supervisorName: document.getElementById('supervisorName').value,
                 primaryColor: primaryColor.value,
                 secondaryColor: secondaryColor.value,
-                firebaseConfig: document.getElementById('firebaseConfig').value,
+                firebaseConfig: JSON.stringify(firebaseConfigObj), // Use the parsed object
                 createdAt: new Date().toISOString(),
                 status: 'active',
                 plan: 'basic',
                 monthlyRevenue: 299
             };
 
-            // Generate customized files
             const studentHTML = customizeTemplate(studentTemplateHTML, schoolData);
             const teacherHTML = customizeTemplate(teacherTemplateHTML, schoolData);
 
-            // Add to schools array
             schools.push(schoolData);
             localStorage.setItem(SCHOOLS_KEY, JSON.stringify(schools));
 
-            // Download files
             downloadFile(studentHTML, `${schoolData.id}_student.html`);
             setTimeout(() => {
                 downloadFile(teacherHTML, `${schoolData.id}_teacher.html`);
@@ -804,15 +847,15 @@
 
             showNotification(`✅ تم إنشاء مدرسة "${schoolData.name}" بنجاح! جاري تحميل الملفات...`, 'success');
 
-            // Reset form
             form.reset();
             previewSection.style.display = 'none';
             primaryColor.value = '#e8b4d9';
             secondaryColor.value = '#d4a5c4';
             primaryColorText.value = '#e8b4d9';
             secondaryColorText.value = '#d4a5c4';
+            document.getElementById('firebaseConfig').value = '';
 
-            // Update UI
+
             updateStats();
             renderSchools();
         });
@@ -831,7 +874,7 @@
                 return;
             }
 
-            list.innerHTML = schools.map(school => `
+            list.innerHTML = schools.slice().reverse().map(school => `
                 <div class="school-item">
                     <div class="school-header">
                         <div class="school-name">
@@ -913,17 +956,30 @@
             document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString('ar-SA');
         }
 
-        // Initialize
-        updateTemplateStatus();
-        updateStats();
-        renderSchools();
-
-        // Show welcome message
-        if (schools.length === 0 && !studentTemplateHTML && !teacherTemplateHTML) {
-            setTimeout(() => {
-                showNotification('👋 مرحباً! ابدأ برفع ملفات القوالب الأصلية أولاً', 'info');
-            }, 500);
+        // Copy Security Rules
+        function copyRules() {
+            const rulesTextarea = document.getElementById('securityRules');
+            rulesTextarea.select();
+            document.execCommand('copy');
+            showNotification('✅ تم نسخ قواعد الأمان بنجاح!', 'success');
         }
+
+        // Initialize
+        function init() {
+            updateTemplateStatus();
+            updateStats();
+            renderSchools();
+
+            // Show welcome message
+            if (schools.length === 0 && !studentTemplateHTML && !teacherTemplateHTML) {
+                setTimeout(() => {
+                    showNotification('👋 مرحباً! ابدأ برفع ملفات القوالب الأصلية أولاً', 'info');
+                }, 500);
+            }
+        }
+
+        init();
     </script>
 </body>
 </html>
+
