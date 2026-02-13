@@ -666,9 +666,9 @@
                 </div>
             </div>
             <div class="school-info">
-                <strong>🏫 متوسطة المنذر بن عمرو الأنصاري</strong><br>
+                <strong>🏫 المتوسطة المنذر بن عمرو الأنصاري</strong><br>
                 📍 المدينة المنورة - المملكة العربية السعودية<br>
-                👨‍💼 <strong>إشراف الأستاذ نواف الصبحي</strong>
+                👨‍💼 <strong>إشراف الأستاذ نواف الصبحي </strong>
             </div>
         </div>
 
@@ -705,7 +705,7 @@
                 <div class="action-buttons">
                     <button class="btn success" onclick="addManualQuestion()">➕ إضافة سؤال يدوياً</button>
                     <button class="btn info" onclick="downloadTemplate()">📥 تحميل قالب CSV</button>
-                    <button class="btn info" onclick="publishQuestions()">🚀 نشر الأسئلة للطلاب</button>
+                    <button class="btn info" onclick="publishQuestions()">🚀 نشر الأسئلة للطالبات</button>
                     <button class="btn warning" onclick="clearAllQuestions()">🗑️ حذف جميع الأسئلة</button>
                 </div>
 
@@ -919,7 +919,7 @@
                 <div style="margin-top: 20px; padding: 20px; background: #fff3cd; border-radius: 15px; border: 2px solid #f39c12;">
                     <h3 style="color: #856404; margin-bottom: 10px;">💡 ملاحظة هامة - إضافة أسئلة جديدة</h3>
                     <p style="color: #856404; line-height: 1.8;">
-                        عند إضافة أسئلة جديدة، يجب عليك الضغط على زر <strong>"🔓 إعادة فتح الاختبار للجميع"</strong> حتى يتمكن الطلاب الذين أتموا الاختبار من الدخول مرة أخرى لحل الأسئلة الجديدة.
+                        عند إضافة أسئلة جديدة، يجب عليك الضغط على زر <strong>"🔓 إعادة فتح الاختبار للجميع"</strong> حتى تتمكن الطلاب اللواتي أتممن الاختبار من الدخول مرة أخرى لحل الأسئلة الجديدة.
                         <br><br>
                         <strong>هذا الزر سيقوم بـ:</strong><br>
                         • إلغاء حالة "إتمام الاختبار" لجميع الطلاب<br>
@@ -951,7 +951,7 @@
 
         <!-- Footer -->
         <div style="text-align: center; margin-top: 40px; color: white; font-size: 14px;">
-            <p>إشراف الأستاذ نواف الصبحي</p>
+            <p>إشراف الأستاذ نواف الصبحي </p>
         </div>
     </div>
 
@@ -962,27 +962,22 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, writeBatch } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyC7tDRocsczoeSvY53Q0gMchnIFd7eWGys",
-  authDomain: "school-platform-template.firebaseapp.com",
-  projectId: "school-platform-template",
-  storageBucket: "school-platform-template.firebasestorage.app",
-  messagingSenderId: "870540316503",
-  appId: "1:870540316503:web:a612b92fae5cf7da8fb812",
-  measurementId: "G-5B8BB46TKF"
+        // Firebase Configuration
+        const firebaseConfig = {
+  "apiKey": "AIzaSyD28cfba2NmXlsfBci9jgbne21U9rZLJ2M",
+  "authDomain": "nafis-new.firebaseapp.com",
+  "projectId": "nafis-new",
+  "storageBucket": "nafis-new.firebasestorage.app",
+  "messagingSenderId": "366381122504",
+  "appId": "1:366381122504:web:b76107c74d7d7ec82df6fd",
+  "measurementId": "G-ZD3Z9LEGGM"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
         let allStudents = [];
         let allMessages = [];
@@ -1342,7 +1337,7 @@ const analytics = getAnalytics(app);
             const score = student.score || 0;
             const questionsAnswered = student.questionsAnswered || 0;
             
-            // يجب أن يكون لديه نقاط
+            // يجب أن يكون لديها نقاط
             if (score === 0) {
                 console.log(`❌ استبعاد ${student.name}: لا توجد نقاط`);
                 return false;
@@ -1388,8 +1383,8 @@ const analytics = getAnalytics(app);
                     آخر تحديث: ${new Date().toLocaleTimeString('ar-SA')}<br>
                     📝 عدد الأسئلة: ${totalQuestions}<br>
                     👥 إجمالي الطلاب: ${allStudents.length}<br>
-                    ✅ الطلاب المؤهلون: ${validStudents.length}<br>
-                    ❌ المستبعدون: ${allStudents.length - validStudents.length}
+                    ✅ الطلاب المؤهلين: ${validStudents.length}<br>
+                    ❌ المستبعدين: ${allStudents.length - validStudents.length}
                 `;
             }
             
@@ -1449,8 +1444,8 @@ const analytics = getAnalytics(app);
             let statsMessage = `📊 إحصائيات مفصلة\n\n`;
             statsMessage += `📝 عدد الأسئلة المتاحة: ${totalQuestions}\n`;
             statsMessage += `👥 إجمالي الطلاب: ${allStudents.length}\n`;
-            statsMessage += `✅ الطلاب المؤهلون: ${validStudents.length}\n`;
-            statsMessage += `❌ المستبعدون: ${invalidStudents.length}\n\n`;
+            statsMessage += `✅ الطلاب المؤهلين: ${validStudents.length}\n`;
+            statsMessage += `❌ المستبعدين: ${invalidStudents.length}\n\n`;
             
             if (validStudents.length > 0) {
                 statsMessage += `🏆 أعلى نقاط: ${validStudents[0].score} - ${validStudents[0].name}\n`;
@@ -1472,7 +1467,7 @@ const analytics = getAnalytics(app);
             if (!students || students.length === 0) {
                 container.innerHTML = `
                     <div class="no-top-students">
-                        <p style="font-size: 18px; margin-bottom: 10px;">📝 لا يوجد طلاب مؤهلون حالياً</p>
+                        <p style="font-size: 18px; margin-bottom: 10px;">📝 لا يوجد طلاب مؤهلين حالياً</p>
                         <p style="font-size: 14px; color: #95a5a6;">لا يوجد طلاب حصلوا على نقاط صحيحة بعد</p>
                         <button class="btn info" onclick="showDetailedDebug()" style="margin-top: 10px;">🔍 عرض التفاصيل الكاملة</button>
                     </div>
@@ -1556,10 +1551,10 @@ const analytics = getAnalytics(app);
             // عرض في alert (مختصر)
             let shortMessage = `🔍 تقرير مختصر:\n\n`;
             shortMessage += `📝 أسئلة: ${totalQuestions}\n`;
-            shortMessage += `👥 طلاب: ${allStudents.length}\n`;
+            shortMessage += `👥 طالبات: ${allStudents.length}\n`;
             
             const studentsWithScore = allStudents.filter(s => (s.score || 0) > 0);
-            shortMessage += `💯 لديهم نقاط: ${studentsWithScore.length}\n\n`;
+            shortMessage += `💯 لديهن نقاط: ${studentsWithScore.length}\n\n`;
             
             if (studentsWithScore.length > 0) {
                 shortMessage += `أعلى النقاط:\n`;
@@ -1606,7 +1601,7 @@ const analytics = getAnalytics(app);
             box.innerHTML = allStudents.map(st => {
                 const isCompleted = st.testCompleted === true;
                 const statusBadge = isCompleted 
-                    ? '<span style="background:#d4edda;color:#155724;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:5px">✅ أتم الاختبار</span>' 
+                    ? '<span style="background:#d4edda;color:#155724;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:5px">✅ أتمت الاختبار</span>' 
                     : (st.lastQuestion !== undefined && st.lastQuestion > 0 
                         ? '<span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:5px">⏳ قيد التقدم</span>' 
                         : '');
@@ -1642,7 +1637,7 @@ const analytics = getAnalytics(app);
         }
 
         window.resetStudentTest = async (id, name) => {
-            if (!confirm(`إعادة اختبار الطالب ${name}؟\n\nسيتم إعادته للسؤال الأول مع الاحتفاظ بدرجته الحالية.`)) return;
+            if (!confirm(`إعادة اختبار الطالب ${name}؟\n\nسيتم اعادته للسؤال الأول مع الاحتفاظ بدرجته الحالية.`)) return;
             try {
                 await updateDoc(doc(db, 'students', id), {
                     lastQuestion: 0,
@@ -1733,7 +1728,7 @@ const analytics = getAnalytics(app);
             
             if (currentMessageFilter === 'unread') {
                 filtered = allMessages.filter(m => !m.read);
-                        } else if (currentMessageFilter === 'read') {
+            } else if (currentMessageFilter === 'read') {
                 filtered = allMessages.filter(m => m.read && !m.replied);
             } else if (currentMessageFilter === 'replied') {
                 filtered = allMessages.filter(m => m.replied);
@@ -1980,7 +1975,7 @@ const analytics = getAnalytics(app);
                 
                 showNotification(
                     `✅ تم إصلاح البيانات بنجاح!\n\n` +
-                    `عدد الطلاب المعدل: ${fixedCount}`,
+                    `عدد الطلاب المعدلة: ${fixedCount}`,
                     'success'
                 );
                 
@@ -1997,7 +1992,7 @@ const analytics = getAnalytics(app);
         window.resetAllData = async () => {
             if (!confirm('⚠️ تحذير خطير!\n\nهل أنت متأكد من إعادة تعيين النظام بالكامل؟\n\nسيتم حذف:\n- جميع بيانات الطلاب\n- جميع الدرجات\n- جميع التقدم في الاختبارات\n\nهذا الإجراء لا يمكن التراجع عنه!')) return;
             
-            if (!confirm('⚠️ تأكيد أخير!\n\nاضغط موافق فقط إذا كنت متأكداً تماماً من إعادة تعيين النظام بالكامل.')) return;
+            if (!confirm('⚠️ تأكيد أخير!\n\nاضغط موافق فقط إذا كنت متأكد تماماً من إعادة تعيين النظام بالكامل.')) return;
 
             try {
                 const batch = writeBatch(db);
@@ -2033,9 +2028,10 @@ const analytics = getAnalytics(app);
             setupFileUpload();
             loadQuestions();
             loadStudents();
-            console.log('✅ لوحة تحكم المعلم جاهزة بالكامل');
+            console.log('✅ لوحة تحكم المعلم جاهز بالكامل');
         });
 
     </script>
 </body>
 </html>
+
