@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #88b1d7 0%, #708feb 100%);
+            background: linear-gradient(135deg, #85b7e5 0%, #9dcbe2 100%);
             min-height: 100vh;
             color: #333;
         }
@@ -25,7 +25,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #88b1d7 0%, #708feb 100%);
+            background: linear-gradient(135deg, #85b7e5 0%, #9dcbe2 100%);
             border-radius: 25px;
             padding: 40px;
             margin-bottom: 30px;
@@ -152,9 +152,9 @@
             font-size: 20px;
         }
 
-        .icon.register { background: linear-gradient(135deg, #88b1d7, #708feb); }
+        .icon.register { background: linear-gradient(135deg, #85b7e5, #9dcbe2); }
         .icon.login { background: linear-gradient(135deg, #c9a0d4, #b88ec4); }
-        .icon.test { background: linear-gradient(135deg, #708feb, #c495b4); }
+        .icon.test { background: linear-gradient(135deg, #9dcbe2, #c495b4); }
         .icon.results { background: linear-gradient(135deg, #b88ec4, #a87eb4); }
 
         .form-group {
@@ -179,12 +179,12 @@
 
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #708feb;
+            border-color: #9dcbe2;
             box-shadow: 0 0 0 3px rgba(212, 165, 196, 0.1);
         }
 
         .btn {
-            background: linear-gradient(135deg, #88b1d7, #708feb);
+            background: linear-gradient(135deg, #85b7e5, #9dcbe2);
             color: white;
             border: none;
             padding: 15px 30px;
@@ -318,7 +318,7 @@
         }
 
         .competition-status {
-            background: linear-gradient(135deg, #88b1d7, #708feb);
+            background: linear-gradient(135deg, #85b7e5, #9dcbe2);
             color: white;
             padding: 30px;
             border-radius: 20px;
@@ -366,13 +366,13 @@
         }
 
         .option:hover {
-            border-color: #708feb;
+            border-color: #9dcbe2;
             background: #faf7f9;
         }
 
         .option.selected {
-            border-color: #708feb;
-            background: #708feb;
+            border-color: #9dcbe2;
+            background: #9dcbe2;
             color: white;
         }
 
@@ -488,7 +488,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(135deg, #708feb, #c495b4);
+            background: linear-gradient(135deg, #9dcbe2, #c495b4);
             width: 0%;
             transition: width 0.3s ease;
         }
@@ -549,7 +549,7 @@
                 </div>
                 <div class="stat-item">
                     <div class="stat-number" id="headerActiveStudents">0</div>
-                    <div class="stat-label">طالب نشط</div>
+                    <div class="stat-label">طالب نشطة</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number" id="headerTotalPoints">0</div>
@@ -605,7 +605,7 @@
                         للحصول على رقمك، يرجى التواصل مع:
                     </p>
                     <div style="background: white; padding: 15px; border-radius: 10px; margin: 10px 0;">
-                        <strong style="color: #708feb; font-size: 1.1em;">الأستاذ نواف الصبحي </strong><br>
+                        <strong style="color: #9dcbe2; font-size: 1.1em;">الأستاذ نواف الصبحي </strong><br>
                         <span style="color: #666;">📍 مكتب الأستاذ نواف الصبحي  - المبنى الرئيسي</span>
                     </div>
                     <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
@@ -716,7 +716,7 @@
 
                 <div class="form-group">
                     <label>الشعبة:</label>
-                    <select id="contactClass" required style="padding: 12px; border-radius: 10px; border: 2px solid #88b1d7;">
+                    <select id="contactClass" required style="padding: 12px; border-radius: 10px; border: 2px solid #85b7e5;">
                         <option value="">اختر الشعبة</option>
                     </select>
                 </div>
@@ -724,10 +724,10 @@
                 <div class="form-group">
                     <label>نص الرسالة (حد أقصى 500 كلمة):</label>
                     <textarea id="contactMessage" rows="10" required 
-                        style="resize: vertical; padding: 15px; border-radius: 10px; border: 2px solid #88b1d7; font-family: inherit;"
+                        style="resize: vertical; padding: 15px; border-radius: 10px; border: 2px solid #85b7e5; font-family: inherit;"
                         placeholder="اكتب رسالتك هنا..."></textarea>
                     <div style="text-align: left; font-size: 13px; color: #666; margin-top: 8px; font-weight: 500;">
-                        <span id="wordCount" style="color: #708feb; font-weight: bold;">0</span> / 500 كلمة
+                        <span id="wordCount" style="color: #9dcbe2; font-weight: bold;">0</span> / 500 كلمة
                     </div>
                 </div>
 
@@ -750,27 +750,21 @@
     </div>
 
     <script type="module">
-        // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyC7tDRocsczoeSvY53Q0gMchnIFd7eWGys",
-  authDomain: "school-platform-template.firebaseapp.com",
-  projectId: "school-platform-template",
-  storageBucket: "school-platform-template.firebasestorage.app",
-  messagingSenderId: "870540316503",
-  appId: "1:870540316503:web:a612b92fae5cf7da8fb812",
-  measurementId: "G-5B8BB46TKF"
+        const firebaseConfig = {
+  "apiKey": "AIzaSyD28cfba2NmXlsfBci9jgbne21U9rZLJ2M",
+  "authDomain": "nafis-new.firebaseapp.com",
+  "projectId": "nafis-new",
+  "storageBucket": "nafis-new.firebasestorage.app",
+  "messagingSenderId": "366381122504",
+  "appId": "1:366381122504:web:b76107c74d7d7ec82df6fd",
+  "measurementId": "G-ZD3Z9LEGGM"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
         let currentStudent = null;
         let currentQuestion = 0;
@@ -951,7 +945,7 @@ const analytics = getAnalytics(app);
                 } else {
                     const messages = [
                         '🖐️ استمتع بوقتك! المسابقة تعود يوم الأحد مع تحديات جديدة!',
-                        '💪 فترة راحة مستحقة! عد أقوى يوم الأحد!',
+                        '💪 فترة راحة مستحقة! عود أقوى يوم الأحد!',
                         '🎯 المسابقة مؤجلة مؤقتاً - نلتقي بتحديات أقوى يوم الأحد!',
                         '⚡ اشحن طاقتك! موعدنا الأحد الساعة 10:00 صباحاً لتحديات جديدة!'
                     ];
@@ -1250,7 +1244,7 @@ const analytics = getAnalytics(app);
 
         window.switchToRegister = function() {
             showSection('registration');
-            showNotification('أنشئ حساب جديد بالاسم الرباعي', 'info');
+            showNotification('أنشأ حساب جديد بالاسم الرباعي', 'info');
         };
 
         function updateDashboardInfo() {
@@ -1396,7 +1390,7 @@ const analytics = getAnalytics(app);
             container.innerHTML = `
                 <div class="question-card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <span style="background: linear-gradient(135deg, #88b1d7, #708feb); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9em;">
+                        <span style="background: linear-gradient(135deg, #85b7e5, #9dcbe2); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9em;">
                             ${question.subject}
                         </span>
                         <span style="color: #666; font-size: 0.9em;">
@@ -1431,7 +1425,7 @@ const analytics = getAnalytics(app);
                 nextBtn.style.background = 'linear-gradient(135deg, #b4d4c4, #a4c4b4)';
             } else {
                 nextBtn.textContent = 'التالي';
-                nextBtn.style.background = 'linear-gradient(135deg, #88b1d7, #708feb)';
+                nextBtn.style.background = 'linear-gradient(135deg, #85b7e5, #9dcbe2)';
             }
         }
 
@@ -1643,7 +1637,7 @@ const analytics = getAnalytics(app);
                     rankClass = index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : '';
                     
                     return `
-                        <div class="leaderboard-item ${rankClass}" style="${isCurrentStudent ? 'border: 3px solid #708feb;' : ''}">
+                        <div class="leaderboard-item ${rankClass}" style="${isCurrentStudent ? 'border: 3px solid #9dcbe2;' : ''}">
                             <div class="rank">${index + 1}</div>
                             <div class="student-name">
                                 ${student.name} ${isCurrentStudent ? '(أنت) 🌟' : ''}
@@ -1662,7 +1656,7 @@ const analytics = getAnalytics(app);
                     rankClass = index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : '';
                     
                     return `
-                        <div class="leaderboard-item ${rankClass}" style="${isCurrentStudent ? 'border: 3px solid #708feb;' : ''}">
+                        <div class="leaderboard-item ${rankClass}" style="${isCurrentStudent ? 'border: 3px solid #9dcbe2;' : ''}">
                             <div class="rank">${index + 1}</div>
                             <div class="student-name">
                                 ${student.name} - الصف ${student.grade} ${isCurrentStudent ? '(أنت) 🌟' : ''}
@@ -1724,7 +1718,7 @@ const analytics = getAnalytics(app);
                         document.getElementById('wordCount').style.color = '#e74c3c';
                         showNotification('تجاوزت الحد المسموح (500 كلمة)', 'error');
                     } else {
-                        document.getElementById('wordCount').style.color = '#708feb';
+                        document.getElementById('wordCount').style.color = '#9dcbe2';
                     }
                 });
             }
@@ -1826,7 +1820,7 @@ const analytics = getAnalytics(app);
                     const studentQuery = query(collection(db, 'students'), where('code', '==', currentStudent.code));
                     const querySnapshot = await getDocs(studentQuery);
                     if (!querySnapshot.empty) {
-                                                const studentDocRef = doc(db, 'students', querySnapshot.docs[0].id);
+                        const studentDocRef = doc(db, 'students', querySnapshot.docs[0].id);
                         await updateDoc(studentDocRef, {
                             lastQuestion: currentQuestion,
                             lastAnswers: studentAnswers,
@@ -1958,3 +1952,4 @@ const analytics = getAnalytics(app);
     </script>
 </body>
 </html>
+
