@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #85b7e5 0%, #9dcbe2 100%);
+            background: linear-gradient(135deg, #88b1d7 0%, #708feb 100%);
             min-height: 100vh;
             color: #333;
         }
@@ -25,7 +25,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #85b7e5 0%, #9dcbe2 100%);
+            background: linear-gradient(135deg, #88b1d7 0%, #708feb 100%);
             border-radius: 25px;
             padding: 40px;
             margin-bottom: 30px;
@@ -152,9 +152,9 @@
             font-size: 20px;
         }
 
-        .icon.register { background: linear-gradient(135deg, #85b7e5, #9dcbe2); }
+        .icon.register { background: linear-gradient(135deg, #88b1d7, #708feb); }
         .icon.login { background: linear-gradient(135deg, #c9a0d4, #b88ec4); }
-        .icon.test { background: linear-gradient(135deg, #9dcbe2, #c495b4); }
+        .icon.test { background: linear-gradient(135deg, #708feb, #c495b4); }
         .icon.results { background: linear-gradient(135deg, #b88ec4, #a87eb4); }
 
         .form-group {
@@ -179,12 +179,12 @@
 
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #9dcbe2;
+            border-color: #708feb;
             box-shadow: 0 0 0 3px rgba(212, 165, 196, 0.1);
         }
 
         .btn {
-            background: linear-gradient(135deg, #85b7e5, #9dcbe2);
+            background: linear-gradient(135deg, #88b1d7, #708feb);
             color: white;
             border: none;
             padding: 15px 30px;
@@ -318,7 +318,7 @@
         }
 
         .competition-status {
-            background: linear-gradient(135deg, #85b7e5, #9dcbe2);
+            background: linear-gradient(135deg, #88b1d7, #708feb);
             color: white;
             padding: 30px;
             border-radius: 20px;
@@ -366,13 +366,13 @@
         }
 
         .option:hover {
-            border-color: #9dcbe2;
+            border-color: #708feb;
             background: #faf7f9;
         }
 
         .option.selected {
-            border-color: #9dcbe2;
-            background: #9dcbe2;
+            border-color: #708feb;
+            background: #708feb;
             color: white;
         }
 
@@ -488,7 +488,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(135deg, #9dcbe2, #c495b4);
+            background: linear-gradient(135deg, #708feb, #c495b4);
             width: 0%;
             transition: width 0.3s ease;
         }
@@ -537,7 +537,7 @@
                         <strong>🇸🇦 المملكة العربية السعودية - وزارة التعليم</strong><br>
                         📍 المدينة المنورة<br>
                         🏫 متوسطة المنذر بن عمرو الأنصاري<br>
-                        👨‍💼 <strong>مدير المدرسة: خالد المطيري</strong>
+                        👩‍💼 <strong>مديرة المدرسة: خالد المطيري</strong>
                     </div>
                 </div>
             </div>
@@ -549,7 +549,7 @@
                 </div>
                 <div class="stat-item">
                     <div class="stat-number" id="headerActiveStudents">0</div>
-                    <div class="stat-label">طالب نشطة</div>
+                    <div class="stat-label">طالبة نشطة</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number" id="headerTotalPoints">0</div>
@@ -566,13 +566,13 @@
             </h2>
             <div class="form-group">
                 <label for="studentName">الاسم الرباعي</label>
-                <input type="text" id="studentName" placeholder="أدخل اسمك الرباعي">
+                <input type="text" id="studentName" placeholder="أدخلي اسمك الرباعي">
                 <div id="nameCheckResult" style="margin-top: 5px; font-size: 0.9em;"></div>
             </div>
             <div class="form-group">
                 <label for="studentGrade">الصف</label>
                 <select id="studentGrade">
-                    <option value="">اختر الصف</option>
+                    <option value="">اختاري الصف</option>
                     <option value="1">الصف الأول المتوسط</option>
                     <option value="2">الصف الثاني المتوسط</option>
                     <option value="3">الصف الثالث المتوسط</option>
@@ -593,20 +593,20 @@
             </h2>
             
             <div class="form-group">
-                <label for="loginCode">رقم الطالب (6 أرقام)</label>
-                <input type="text" id="loginCode" placeholder="أدخل رقم الطالب" maxlength="6">
+                <label for="loginCode">رقم الطالبة (6 أرقام)</label>
+                <input type="text" id="loginCode" placeholder="أدخلي رقم الطالبة" maxlength="6">
             </div>
             <button class="btn" onclick="loginStudent()">دخول</button>
 
             <div class="forgot-number-section">
                 <div class="alert-info" style="margin-top: 25px; text-align: center;">
-                    <h4 style="color: #6c4460; margin-bottom: 10px;">📌 نسيت رقم الطالب؟</h4>
+                    <h4 style="color: #6c4460; margin-bottom: 10px;">📌 نسيت رقم الطالبة؟</h4>
                     <p style="line-height: 1.8; margin-bottom: 15px;">
                         للحصول على رقمك، يرجى التواصل مع:
                     </p>
                     <div style="background: white; padding: 15px; border-radius: 10px; margin: 10px 0;">
-                        <strong style="color: #9dcbe2; font-size: 1.1em;">الأستاذ نواف الصبحي </strong><br>
-                        <span style="color: #666;">📍 مكتب الأستاذ نواف الصبحي  - المبنى الرئيسي</span>
+                        <strong style="color: #708feb; font-size: 1.1em;">الأستاذة نواف الصبحي </strong><br>
+                        <span style="color: #666;">📍 مكتب الأستاذة نواف الصبحي  - المبنى الرئيسي</span>
                     </div>
                     <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
                         ⏰ أوقات الدوام: الأحد - الخميس (7:00 ص - 2:00 م)
@@ -624,16 +624,16 @@
         <div id="dashboard" class="card hidden">
             <h2 class="card-title">
                 <div class="icon test">🎯</div>
-                لوحة الطالب
+                لوحة الطالبة
             </h2>
 
             <div class="warning-box">
                 <h3>⚠️ تنبيه هام قبل البدء</h3>
                 <p style="font-size: 1.1em; line-height: 1.8; margin-top: 10px;">
-                    🌟 اعتمد على نفسك وقدراتك<br>
-                    📚 كل سؤال تجيبه بنفسك يزيد من معرفتك<br>
+                    🌟 اعتمدي على نفسك وقدراتك<br>
+                    📚 كل سؤال تجيبينه بنفسك يزيد من معرفتك<br>
                     🎯 النجاح الحقيقي يأتي من الفهم والجهد الذاتي<br>
-                    💪 ثق بإمكانياتك ولا تبحث عن طرق مختصرة
+                    💪 ثقي بإمكانياتك ولا تبحثي عن طرق مختصرة
                 </p>
             </div>
 
@@ -646,7 +646,7 @@
             <div class="action-buttons">
                 <button class="btn success" onclick="startTest()" id="startTestBtn">بدء الاختبار</button>
                 <button class="btn warning" onclick="showResults()">عرض النتائج</button>
-                <button class="btn primary" onclick="showContactForm()">💬 التواصل مع المشرف</button>
+                <button class="btn primary" onclick="showContactForm()">💬 التواصل مع المشرفة</button>
                 <button class="btn secondary" onclick="logout()">تسجيل الخروج</button>
             </div>
         </div>
@@ -660,7 +660,7 @@
             <div id="questionTimer" class="timer-container">
                 <div class="timer-label">⏱️ الوقت المتبقي</div>
                 <div class="timer-number" id="timerDisplay">2:00</div>
-                <div class="timer-label" id="timerMessage">أجب قبل انتهاء الوقت!</div>
+                <div class="timer-label" id="timerMessage">أجيبي قبل انتهاء الوقت!</div>
             </div>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
@@ -693,14 +693,14 @@
                 <div id="schoolLeaderboard"></div>
             </div>
 
-            <button class="btn" onclick="backToDashboard()">العودة للوحة الطالب</button>
+            <button class="btn" onclick="backToDashboard()">العودة للوحة الطالبة</button>
         </div>
 
         <!-- Contact Section -->
         <div id="contactSection" class="card hidden">
             <h2 class="card-title">
                 <div class="icon">💬</div>
-                التواصل مع المشرف
+                التواصل مع المشرفة
             </h2>
 
             <form id="contactForm" style="margin-top: 25px;">
@@ -716,7 +716,7 @@
 
                 <div class="form-group">
                     <label>الشعبة:</label>
-                    <select id="contactClass" required style="padding: 12px; border-radius: 10px; border: 2px solid #85b7e5;">
+                    <select id="contactClass" required style="padding: 12px; border-radius: 10px; border: 2px solid #88b1d7;">
                         <option value="">اختر الشعبة</option>
                     </select>
                 </div>
@@ -724,10 +724,10 @@
                 <div class="form-group">
                     <label>نص الرسالة (حد أقصى 500 كلمة):</label>
                     <textarea id="contactMessage" rows="10" required 
-                        style="resize: vertical; padding: 15px; border-radius: 10px; border: 2px solid #85b7e5; font-family: inherit;"
-                        placeholder="اكتب رسالتك هنا..."></textarea>
+                        style="resize: vertical; padding: 15px; border-radius: 10px; border: 2px solid #88b1d7; font-family: inherit;"
+                        placeholder="اكتبي رسالتك هنا..."></textarea>
                     <div style="text-align: left; font-size: 13px; color: #666; margin-top: 8px; font-weight: 500;">
-                        <span id="wordCount" style="color: #9dcbe2; font-weight: bold;">0</span> / 500 كلمة
+                        <span id="wordCount" style="color: #708feb; font-weight: bold;">0</span> / 500 كلمة
                     </div>
                 </div>
 
@@ -740,7 +740,7 @@
 
         <!-- Footer -->
         <div style="text-align: center; margin-top: 40px; color: white; font-size: 14px;">
-            <p> اشراف الاستاذ نواف الصبحي   </p>
+            <p> اشراف الاستاذه نواف الصبحي   </p>
         </div>
     </div>
 
@@ -918,36 +918,36 @@
                 if (hours <= 1) {
                     const messages = [
                         '⚡ الوقت ينفد! اللحظات الأخيرة لتحقيق أعلى النقاط!',
-                        '🔥 أقل من ساعة متبقية! أثبت تفوقك الآن!',
+                        '🔥 أقل من ساعة متبقية! أثبتي تفوقك الآن!',
                         '💪 الفرصة الأخيرة لكسر الأرقام القياسية!',
                         '⏰ دقائق معدودة! كل سؤال يحسب!',
                         '🏆 السباق الأخير نحو القمة!'
                     ];
                     return messages[Math.floor(Math.random() * messages.length)];
                 } else if (hours <= 6) {
-                    return '⏱️ ساعات قليلة متبقية! استغل الوقت وحقق أكبر عدد من النقاط!';
+                    return '⏱️ ساعات قليلة متبقية! استغلي الوقت وحققي أكبر عدد من النقاط!';
                 } else if (hours <= 24) {
-                    return '🎯 يوم واحد متبقي! لا تفوت فرصة التفوق هذا الأسبوع!';
+                    return '🎯 يوم واحد متبقي! لا تفوتي فرصة التفوق هذا الأسبوع!';
                 } else {
-                    return '📚 المسابقة مستمرة! واصل التقدم واكسب المزيد من النقاط!';
+                    return '📚 المسابقة مستمرة! واصلي التقدم واكسبي المزيد من النقاط!';
                 }
             } else {
                 if (hours <= 24) {
                     const messages = [
-                        '🎉 غداً ينطلق التحدي الأسبوعي! هل أنت مستعد؟',
-                        '⭐ أقل من يوم على انطلاق المسابقة! جهز نفسك!',
-                        '🚀 العد التنازلي بدأ! استعد لتحدي جديد!',
+                        '🎉 غداً ينطلق التحدي الأسبوعي! هل أنت مستعدة؟',
+                        '⭐ أقل من يوم على انطلاق المسابقة! جهزي نفسك!',
+                        '🚀 العد التنازلي بدأ! استعدي لتحدي جديد!',
                         '💫 ساعات قليلة وينطلق السباق نحو القمة!'
                     ];
                     return messages[Math.floor(Math.random() * messages.length)];
                 } else if (hours <= 48) {
-                    return '🌟 يومان فقط! استعد لأسبوع مليء بالتحديات والإنجازات!';
+                    return '🌟 يومان فقط! استعدي لأسبوع مليء بالتحديات والإنجازات!';
                 } else {
                     const messages = [
-                        '🖐️ استمتع بوقتك! المسابقة تعود يوم الأحد مع تحديات جديدة!',
-                        '💪 فترة راحة مستحقة! عود أقوى يوم الأحد!',
+                        '🖐️ استمتعي بوقتك! المسابقة تعود يوم الأحد مع تحديات جديدة!',
+                        '💪 فترة راحة مستحقة! عودي أقوى يوم الأحد!',
                         '🎯 المسابقة مؤجلة مؤقتاً - نلتقي بتحديات أقوى يوم الأحد!',
-                        '⚡ اشحن طاقتك! موعدنا الأحد الساعة 10:00 صباحاً لتحديات جديدة!'
+                        '⚡ اشحني طاقتك! موعدنا الأحد الساعة 10:00 صباحاً لتحديات جديدة!'
                     ];
                     return messages[Math.floor(Math.random() * messages.length)];
                 }
@@ -1022,7 +1022,7 @@
                 if (timeRemaining <= 30) {
                     timerContainer.classList.add('warning');
                     if (timeRemaining <= 10) {
-                        timerMessage.textContent = '⚠️ الوقت ينفد! أسرع!';
+                        timerMessage.textContent = '⚠️ الوقت ينفد! أسرعي!';
                     } else {
                         timerMessage.textContent = '⏰ أقل من 30 ثانية!';
                     }
@@ -1030,7 +1030,7 @@
                     timerMessage.textContent = '🏃 دقيقة واحدة متبقية!';
                 } else {
                     timerContainer.classList.remove('warning');
-                    timerMessage.textContent = 'أجب قبل انتهاء الوقت!';
+                    timerMessage.textContent = 'أجيبي قبل انتهاء الوقت!';
                 }
             }
         }
@@ -1131,85 +1131,120 @@
             }
         }
 
-        async function registerStudent() {
-    const name = document.getElementById('studentName').value.trim();
-    const grade = document.getElementById('studentGrade').value;
-    const className = document.getElementById('studentClass')?.value || '';
-    
-    if (!name || !grade) {
-        showNotification('يرجى ملء جميع الحقول المطلوبة', 'error');
-        return;
-    }
-    
-    try {
-        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-        
-        const studentData = {
-            name, grade, class: className, code,
-            score: 0, questionsAnswered: 0,
-            lastQuestion: 0, lastAnswers: [],
-            testCompleted: false,
-            registeredAt: new Date(),
-            lastActive: new Date()
-        };
-        
-        const docRef = await addDoc(collection(db, 'students'), studentData);
-        currentStudent = { id: docRef.id, ...studentData };
-        
-        showNotification(`✅ تم التسجيل بنجاح!\nالكود: ${code}`, 'success');
-        updateDashboardInfo();
-        showSection('dashboard');
-        
-    } catch (error) {
-        console.error('Registration error:', error);
-        showNotification('حدث خطأ أثناء التسجيل', 'error');
-    }
-}
+        window.registerStudent = async function() {
+            const name = document.getElementById('studentName').value.trim();
+            const grade = document.getElementById('studentGrade').value;
 
-        async function loginStudent() {
-    const code = document.getElementById('loginCode').value.trim().toUpperCase();
-    
-    if (!code) {
-        showNotification('يرجى إدخال الكود', 'error');
-        return;
-    }
-    
-    try {
-        const studentQuery = query(
-            collection(db, 'students'), 
-            where('code', '==', code)
-        );
-        const querySnapshot = await getDocs(studentQuery);
-        
-        if (querySnapshot.empty) {
-            showNotification('الكود غير موجود', 'error');
-            return;
-        }
-        
-        const studentDoc = querySnapshot.docs[0];
-        currentStudent = { id: studentDoc.id, ...studentDoc.data() };
-        
-        await updateDoc(doc(db, 'students', studentDoc.id), {
-            lastActive: new Date()
-        });
-        
-        showNotification(`مرحباً ${currentStudent.name}! 💕`, 'success');
-        updateDashboardInfo();
-        showSection('dashboard');
-        
-    } catch (error) {
-        console.error('Login error:', error);
-        showNotification('حدث خطأ', 'error');
-    }
-}
+            if (!name || !grade) {
+                showNotification('يرجى إدخال جميع البيانات المطلوبة', 'error');
+                return;
+            }
+
+            const nameParts = name.split(' ').filter(part => part.length > 0);
+            if (nameParts.length < 3) {
+                showNotification('يرجى إدخال الاسم الرباعي كاملاً (على الأقل 3 أجزاء)', 'error');
+                return;
+            }
+
+            try {
+                const nameQuery = query(collection(db, 'students'), where('name', '==', name));
+                const existingStudents = await getDocs(nameQuery);
+
+                if (!existingStudents.empty) {
+                    showNotification('هذا الاسم مسجل مسبقاً. استخدمي تسجيل الدخول', 'error');
+                    setTimeout(() => {
+                        const switchConfirm = confirm('هل تريدين الانتقال لتسجيل الدخول؟');
+                        if (switchConfirm) {
+                            switchToLogin();
+                        }
+                    }, 1000);
+                    return;
+                }
+
+                const studentCode = generateStudentCode();
+                const studentData = {
+                    name: name,
+                    grade: grade,
+                    code: studentCode,
+                    score: 0,
+                    questionsAnswered: 0,
+                    createdAt: new Date(),
+                    lastActive: new Date()
+                };
+
+                await addDoc(collection(db, 'students'), studentData);
+
+                currentStudent = studentData;
+                currentStudent.id = studentCode;
+                
+                const studentInfo = document.getElementById('studentInfo');
+                studentInfo.innerHTML = `
+                    <div class="student-code">
+                        <h3>تم التسجيل بنجاح!</h3>
+                        <p>رقم الطالبة الخاص بك:</p>
+                        <div class="code-display">${studentCode}</div>
+                        <p style="font-size: 0.9em; margin-top: 10px;">احفظي هذا الرقم لتسجيل الدخول من أي جهاز</p>
+                    </div>
+                `;
+
+                document.getElementById('currentScore').textContent = '0';
+                showNotification('تم التسجيل بنجاح!', 'success');
+                showSection('dashboard');
+                updateDashboardInfo();
+
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('حدث خطأ أثناء التسجيل', 'error');
+            }
+        };
+
+        window.loginStudent = async function() {
+            const code = document.getElementById('loginCode').value.trim();
+
+            if (!code || code.length !== 6) {
+                showNotification('يرجى إدخال رقم صحيح مكون من 6 أرقام', 'error');
+                return;
+            }
+
+            try {
+                const studentsQuery = query(collection(db, 'students'), where('code', '==', code));
+                const querySnapshot = await getDocs(studentsQuery);
+
+                if (querySnapshot.empty) {
+                    showNotification('رقم الطالبة غير صحيح', 'error');
+                    return;
+                }
+
+                const studentDoc = querySnapshot.docs[0];
+                currentStudent = { id: studentDoc.id, ...studentDoc.data() };
+
+                if (currentStudent.lastQuestion !== undefined) {
+                    currentQuestion = currentStudent.lastQuestion;
+                    studentAnswers = currentStudent.lastAnswers || [];
+                }
+
+                await updateDoc(doc(db, 'students', studentDoc.id), {
+                    lastActive: new Date()
+                });
+
+                updateDashboardInfo();
+                showNotification(`مرحباً بك ${currentStudent.name}!`, 'success');
+                showSection('dashboard');
+
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('حدث خطأ أثناء تسجيل الدخول', 'error');
+            }
+        };
+
         window.switchToLogin = function() {
             showSection('login');
-            showNotification('قم بتسجيل الدخول برقم الطالب', 'info');
+            showNotification('قومي بتسجيل الدخول برقم الطالبة', 'info');
         };
 
         window.switchToRegister = function() {
             showSection('registration');
-            showNotification('أنشأ حساب جديد بالاسم الرباعي', 'info');
+            showNotification('أنشئي حساب جديد بالاسم الرباعي', 'info');
         };
 
         function updateDashboardInfo() {
@@ -1255,7 +1290,7 @@
                 <div style="text-align: center; margin-bottom: 20px;">
                     <h3>مرحباً ${currentStudent.name}</h3>
                     <p>الصف: ${currentStudent.grade}</p>
-                    <p>رقم الطالب: ${currentStudent.code}</p>
+                    <p>رقم الطالبة: ${currentStudent.code}</p>
                     ${progressInfo}
                 </div>
             `;
@@ -1276,7 +1311,7 @@
 
             if (currentStudent.testCompleted === true) {
                 showNotification('❌ لقد أتممت الاختبار مسبقاً. لا يمكن إعادته!', 'error');
-                alert('🚫 تنبيه هام:\n\nلقد أكملت الاختبار بالفعل ولا يمكن إعادته.\n\nهذا الإجراء لضمان عدالة المنافسة بين جميع الطلاب.\n\nنقاطك النهائية: ' + (currentStudent.score || 0));
+                alert('🚫 تنبيه هام:\n\nلقد أكملت الاختبار بالفعل ولا يمكن إعادته.\n\nهذا الإجراء لضمان عدالة المنافسة بين جميع الطالبات.\n\nنقاطك النهائية: ' + (currentStudent.score || 0));
                 return;
             }
 
@@ -1355,7 +1390,7 @@
             container.innerHTML = `
                 <div class="question-card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <span style="background: linear-gradient(135deg, #85b7e5, #9dcbe2); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9em;">
+                        <span style="background: linear-gradient(135deg, #88b1d7, #708feb); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9em;">
                             ${question.subject}
                         </span>
                         <span style="color: #666; font-size: 0.9em;">
@@ -1390,7 +1425,7 @@
                 nextBtn.style.background = 'linear-gradient(135deg, #b4d4c4, #a4c4b4)';
             } else {
                 nextBtn.textContent = 'التالي';
-                nextBtn.style.background = 'linear-gradient(135deg, #85b7e5, #9dcbe2)';
+                nextBtn.style.background = 'linear-gradient(135deg, #88b1d7, #708feb)';
             }
         }
 
@@ -1498,7 +1533,7 @@
 
         window.saveAndExit = async function() {
             if (!currentStudent) {
-                showNotification('خطأ: لم يتم العثور على بيانات الطالب', 'error');
+                showNotification('خطأ: لم يتم العثور على بيانات الطالبة', 'error');
                 return;
             }
 
@@ -1602,7 +1637,7 @@
                     rankClass = index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : '';
                     
                     return `
-                        <div class="leaderboard-item ${rankClass}" style="${isCurrentStudent ? 'border: 3px solid #9dcbe2;' : ''}">
+                        <div class="leaderboard-item ${rankClass}" style="${isCurrentStudent ? 'border: 3px solid #708feb;' : ''}">
                             <div class="rank">${index + 1}</div>
                             <div class="student-name">
                                 ${student.name} ${isCurrentStudent ? '(أنت) 🌟' : ''}
@@ -1621,7 +1656,7 @@
                     rankClass = index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : '';
                     
                     return `
-                        <div class="leaderboard-item ${rankClass}" style="${isCurrentStudent ? 'border: 3px solid #9dcbe2;' : ''}">
+                        <div class="leaderboard-item ${rankClass}" style="${isCurrentStudent ? 'border: 3px solid #708feb;' : ''}">
                             <div class="rank">${index + 1}</div>
                             <div class="student-name">
                                 ${student.name} - الصف ${student.grade} ${isCurrentStudent ? '(أنت) 🌟' : ''}
@@ -1683,7 +1718,7 @@
                         document.getElementById('wordCount').style.color = '#e74c3c';
                         showNotification('تجاوزت الحد المسموح (500 كلمة)', 'error');
                     } else {
-                        document.getElementById('wordCount').style.color = '#9dcbe2';
+                        document.getElementById('wordCount').style.color = '#708feb';
                     }
                 });
             }
@@ -1734,7 +1769,7 @@
                 
             } catch (error) {
                 console.error('Error sending message:', error);
-                showNotification('حدث خطأ أثناء إرسال الرسالة. حاول مرة أخرى', 'error');
+                showNotification('حدث خطأ أثناء إرسال الرسالة. حاولي مرة أخرى', 'error');
             }
         });
 
@@ -1747,7 +1782,7 @@
             stopQuestionTimer();
             
             if (currentStudent && !document.getElementById('testSection').classList.contains('hidden')) {
-                const saveBeforeLogout = confirm('هل تريد حفظ التقدم قبل تسجيل الخروج؟');
+                const saveBeforeLogout = confirm('هل تريدين حفظ التقدم قبل تسجيل الخروج؟');
                 if (saveBeforeLogout) {
                     saveAndExit().then(() => {
                         performLogout();
@@ -1760,12 +1795,6 @@
         };
 
         function performLogout() {
-            await signOut(auth); // تسجيل خروج من Firebase Auth
-    
-    stopQuestionTimer();
-    currentStudent = null;
-    currentQuestion = 0;
-    studentAnswers = [];
             stopQuestionTimer();
             
             currentStudent = null;
@@ -1866,7 +1895,7 @@
         window.addEventListener('beforeunload', (event) => {
             if (currentStudent && !document.getElementById('testSection').classList.contains('hidden')) {
                 event.preventDefault();
-                event.returnValue = 'لديك اختبار جاري. هل أنت متأكد من الخروج؟';
+                event.returnValue = 'لديك اختبار جاري. هل أنت متأكدة من الخروج؟';
                 return event.returnValue;
             }
         });
