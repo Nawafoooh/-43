@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang=\"ar\" dir=\"rtl\">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
     <title>نافس - متوسطة المنذر بن عمرو الأنصاري</title>
     <style>
         * {
@@ -175,11 +175,18 @@
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.3s;
             font-weight: 600;
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn:hover {
+        .btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(112, 143, 235, 0.4);
+        }
+
+        .btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
         }
 
         .btn.secondary {
@@ -202,6 +209,7 @@
             z-index: 1000;
             transition: transform 0.3s;
             max-width: 90%;
+            text-align: center;
         }
 
         .notification.show {
@@ -253,6 +261,7 @@
             font-weight: 600;
             margin-bottom: 20px;
             color: #333;
+            line-height: 1.6;
         }
 
         .option {
@@ -264,9 +273,10 @@
             transition: all 0.3s;
             border: 2px solid #e0e0e0;
             font-size: 16px;
+            user-select: none;
         }
 
-        .option:hover {
+        .option:hover:not(.disabled) {
             border-color: #708feb;
             transform: translateX(5px);
         }
@@ -289,12 +299,28 @@
             border-color: #dc3545;
         }
 
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
         .timer-container {
             text-align: center;
             margin: 20px 0;
             padding: 20px;
             background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
             border-radius: 15px;
+            transition: background 0.3s;
+        }
+
+        .timer-container.danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
         }
 
         .timer-number {
@@ -333,6 +359,11 @@
             justify-content: space-between;
             align-items: center;
             border-right: 4px solid #708feb;
+            transition: transform 0.2s;
+        }
+
+        .leaderboard-item:hover {
+            transform: translateX(-5px);
         }
 
         .leaderboard-item.top-1 {
@@ -348,6 +379,37 @@
         .leaderboard-item.top-3 {
             background: linear-gradient(135deg, #cd7f32 0%, #daa06d 100%);
             border-right-color: #cd7f32;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-group.error input,
+        .form-group.error select {
+            border-color: #dc3545;
+        }
+
+        .form-group.error .error-message {
+            display: block;
         }
 
         @media (max-width: 768px) {
@@ -370,306 +432,306 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class=\"container\">
         <!-- Header -->
-        <div class="header">
-            <div class="logo-section">
-                <div class="title-section">
+        <div class=\"header\">
+            <div class=\"logo-section\">
+                <div class=\"title-section\">
                     <h1>🏆 نافس</h1>
-                    <div class="subtitle">المنصة التنافسية التعليمية</div>
+                    <div class=\"subtitle\">المنصة التنافسية التعليمية</div>
                 </div>
             </div>
             
-            <!-- 
-            ╔═══════════════════════════════════════════════════════════╗
-            ║  ⚠️ تعديل معلومات المدرسة هنا                            ║
-            ║  لإضافة مدرسة جديدة: غير المعلومات في هذا القسم فقط      ║
-            ╚═══════════════════════════════════════════════════════════╝
-            -->
-            <div class="school-info" id="schoolInfoDisplay">
-                <!-- سيتم ملؤها تلقائياً من JavaScript -->
-            </div>
+            <div class=\"school-info\" id=\"schoolInfoDisplay\"></div>
 
-            <div class="header-stats">
-                <div class="stat-item">
-                    <div class="stat-number" id="connectedStatus">⏳</div>
-                    <div class="stat-label">حالة الاتصال</div>
+            <div class=\"header-stats\">
+                <div class=\"stat-item\">
+                    <div class=\"stat-number\" id=\"connectedStatus\">⏳</div>
+                    <div class=\"stat-label\">حالة الاتصال</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="totalStudents">--</div>
-                    <div class="stat-label">إجمالي الطلاب</div>
+                <div class=\"stat-item\">
+                    <div class=\"stat-number\" id=\"totalStudents\">--</div>
+                    <div class=\"stat-label\">إجمالي الطلاب</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="totalQuestions">--</div>
-                    <div class="stat-label">عدد الأسئلة</div>
+                <div class=\"stat-item\">
+                    <div class=\"stat-number\" id=\"totalQuestions\">--</div>
+                    <div class=\"stat-label\">عدد الأسئلة</div>
                 </div>
             </div>
         </div>
 
         <!-- Registration Section -->
-        <div id="registrationSection" class="card">
-            <h2 class="card-title">
-                <div class="icon">📝</div>
+        <div id=\"registrationSection\" class=\"card\">
+            <h2 class=\"card-title\">
+                <div class=\"icon\">📝</div>
                 تسجيل طالب جديد
             </h2>
-            <form id="registrationForm">
-                <div class="form-group">
-                    <label for="studentName">👤 الاسم الكامل</label>
-                    <input type="text" id="studentName" placeholder="أدخل الاسم الثلاثي" required>
+            <form id=\"registrationForm\">
+                <div class=\"form-group\">
+                    <label for=\"studentName\">👤 الاسم الكامل *</label>
+                    <input type=\"text\" id=\"studentName\" placeholder=\"أدخل الاسم الثلاثي\" required>
+                    <div class=\"error-message\">الرجاء إدخال الاسم</div>
                 </div>
 
-                <div class="form-group">
-                    <label for="studentGrade">📚 الصف الدراسي</label>
-                    <select id="studentGrade" required>
-                        <option value="">اختر الصف</option>
-                        <!-- سيتم ملؤها تلقائياً حسب نوع المدرسة -->
+                <div class=\"form-group\">
+                    <label for=\"studentGrade\">📚 الصف الدراسي *</label>
+                    <select id=\"studentGrade\" required>
+                        <option value=\"\">اختر الصف</option>
+                    </select>
+                    <div class=\"error-message\">الرجاء اختيار الصف</div>
+                </div>
+
+                <div class=\"form-group\">
+                    <label for=\"studentClass\">🎓 الشعبة (اختياري)</label>
+                    <select id=\"studentClass\">
+                        <option value=\"\">اختياري</option>
+                        <option value=\"١\">فصل ١</option>
+                        <option value=\"٢\">فصل ٢</option>
+                        <option value=\"٣\">فصل ٣</option>
+                        <option value=\"٤\">فصل ٤</option>
+                        <option value=\"٥\">فصل ٥</option>
+                        <option value=\"٦\">فصل ٦</option>
+                        <option value=\"٧\">فصل ٧</option>
+                        <option value=\"٨\">فصل ٨</option>
+                        <option value=\"٩\">فصل ٩</option>
+                        <option value=\"١٠\">فصل ١٠</option>
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label for="studentClass">🎓 الشعبة (اختياري)</label>
-                    <select id="studentClass">
-                        <option value="">اختياري</option>
-                        <option value="١">فصل ١</option>
-                        <option value="٢">فصل ٢</option>
-                        <option value="٣">فصل ٣</option>
-                        <option value="٤">فصل ٤</option>
-                        <option value="٥">فصل ٥</option>
-                        <option value="٦">فصل ٦</option>
-                        <option value="٧">فصل ٧</option>
-                        <option value="٨">فصل ٨</option>
-                        <option value="٩">فصل ٩</option>
-                        <option value="١٠">فصل ١٠</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn">تسجيل</button>
+                <button type=\"submit\" class=\"btn\">تسجيل</button>
             </form>
         </div>
 
         <!-- Login Section -->
-        <div id="loginSection" class="card hidden">
-            <h2 class="card-title">
-                <div class="icon">🔑</div>
+        <div id=\"loginSection\" class=\"card hidden\">
+            <h2 class=\"card-title\">
+                <div class=\"icon\">🔑</div>
                 تسجيل الدخول
             </h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginCode">🔢 كود الطالب</label>
-                    <input type="text" id="loginCode" placeholder="أدخل كود الطالب" required>
+            <form id=\"loginForm\">
+                <div class=\"form-group\">
+                    <label for=\"loginCode\">🔢 كود الطالب *</label>
+                    <input type=\"text\" id=\"loginCode\" placeholder=\"أدخل كود الطالب\" required>
+                    <div class=\"error-message\">الرجاء إدخال الكود</div>
                 </div>
-                <div class="action-buttons">
-                    <button type="submit" class="btn">دخول</button>
-                    <button type="button" class="btn secondary" onclick="backToRegistration()">تسجيل جديد</button>
+                <div class=\"action-buttons\">
+                    <button type=\"submit\" class=\"btn\">دخول</button>
+                    <button type=\"button\" class=\"btn secondary\" onclick=\"backToRegistration()\">تسجيل جديد</button>
                 </div>
             </form>
         </div>
 
         <!-- Dashboard Section -->
-        <div id="dashboardSection" class="card hidden">
-            <h2 class="card-title">
-                <div class="icon">📊</div>
+        <div id=\"dashboardSection\" class=\"card hidden\">
+            <h2 class=\"card-title\">
+                <div class=\"icon\">📊</div>
                 لوحة الطالب
             </h2>
-            <div style="background: #f8f9fa; padding: 25px; border-radius: 15px; margin-bottom: 25px;">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+            <div style=\"background: #f8f9fa; padding: 25px; border-radius: 15px; margin-bottom: 25px;\">
+                <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;\">
                     <div>
-                        <div style="font-size: 14px; color: #666; margin-bottom: 5px;">الاسم</div>
-                        <div style="font-size: 18px; font-weight: 700; color: #333;" id="studentNameDisplay">--</div>
+                        <div style=\"font-size: 14px; color: #666; margin-bottom: 5px;\">الاسم</div>
+                        <div style=\"font-size: 18px; font-weight: 700; color: #333;\" id=\"studentNameDisplay\">--</div>
                     </div>
                     <div>
-                        <div style="font-size: 14px; color: #666; margin-bottom: 5px;">الصف</div>
-                        <div style="font-size: 18px; font-weight: 700; color: #333;" id="studentGradeDisplay">--</div>
+                        <div style=\"font-size: 14px; color: #666; margin-bottom: 5px;\">الصف</div>
+                        <div style=\"font-size: 18px; font-weight: 700; color: #333;\" id=\"studentGradeDisplay\">--</div>
                     </div>
                     <div>
-                        <div style="font-size: 14px; color: #666; margin-bottom: 5px;">الكود</div>
-                        <div style="font-size: 18px; font-weight: 700; color: #708feb;" id="studentCodeDisplay">--</div>
+                        <div style=\"font-size: 14px; color: #666; margin-bottom: 5px;\">الكود</div>
+                        <div style=\"font-size: 18px; font-weight: 700; color: #708feb;\" id=\"studentCodeDisplay\">--</div>
                     </div>
                     <div>
-                        <div style="font-size: 14px; color: #666; margin-bottom: 5px;">النقاط</div>
-                        <div style="font-size: 24px; font-weight: 700; color: #28a745;" id="studentScoreDisplay">0</div>
+                        <div style=\"font-size: 14px; color: #666; margin-bottom: 5px;\">النقاط</div>
+                        <div style=\"font-size: 24px; font-weight: 700; color: #28a745;\" id=\"studentScoreDisplay\">0</div>
                     </div>
                 </div>
             </div>
 
-            <div class="action-buttons">
-                <button class="btn" onclick="startTest()">🎯 بدء الاختبار</button>
-                <button class="btn" onclick="viewResults()">📊 عرض النتائج والترتيب</button>
-                <button class="btn secondary" onclick="logout()">🚪 تسجيل الخروج</button>
+            <div class=\"action-buttons\">
+                <button class=\"btn\" onclick=\"startTest()\">🎯 بدء الاختبار</button>
+                <button class=\"btn\" onclick=\"viewResults()\">📊 عرض النتائج والترتيب</button>
+                <button class=\"btn secondary\" onclick=\"logout()\">🚪 تسجيل الخروج</button>
             </div>
         </div>
 
         <!-- Test Section -->
-        <div id="testSection" class="card hidden">
-            <h2 class="card-title">
-                <div class="icon">📝</div>
+        <div id=\"testSection\" class=\"card hidden\">
+            <h2 class=\"card-title\">
+                <div class=\"icon\">📝</div>
                 بنك الأسئلة
             </h2>
-            <div id="questionTimer" class="timer-container">
-                <div class="timer-label">⏱️ الوقت المتبقي</div>
-                <div class="timer-number" id="timerDisplay">2:00</div>
-                <div class="timer-label" id="timerMessage">أجب قبل انتهاء الوقت!</div>
+            <div id=\"questionTimer\" class=\"timer-container\">
+                <div class=\"timer-label\">⏱️ الوقت المتبقي</div>
+                <div class=\"timer-number\" id=\"timerDisplay\">2:00</div>
+                <div class=\"timer-label\" id=\"timerMessage\">أجب قبل انتهاء الوقت!</div>
             </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
+            <div class=\"progress-bar\">
+                <div class=\"progress-fill\" id=\"progressFill\"></div>
             </div>
-            <div id="questionContainer"></div>
-            <div class="action-buttons">
-                <button class="btn secondary" onclick="saveAndExit()">💾 حفظ وخروج</button>
-                <button class="btn" onclick="nextQuestion()" id="nextBtn">⏭️ التالي</button>
+            <div id=\"questionContainer\"></div>
+            <div class=\"action-buttons\">
+                <button class=\"btn secondary\" onclick=\"saveAndExit()\">💾 حفظ وخروج</button>
+                <button class=\"btn\" onclick=\"nextQuestion()\" id=\"nextBtn\" style=\"display: none;\">⏭️ التالي</button>
             </div>
         </div>
 
         <!-- Results Section -->
-        <div id="resultsSection" class="card hidden">
-            <h2 class="card-title">
-                <div class="icon">🏆</div>
+        <div id=\"resultsSection\" class=\"card hidden\">
+            <h2 class=\"card-title\">
+                <div class=\"icon\">🏆</div>
                 النتائج والترتيب
             </h2>
             
-            <div class="leaderboard">
-                <div class="leaderboard-header">
+            <div class=\"leaderboard\">
+                <div class=\"leaderboard-header\">
                     <h3>🎓 ترتيب الصف</h3>
                 </div>
-                <div id="classLeaderboard"></div>
+                <div id=\"classLeaderboard\"></div>
             </div>
 
-            <div class="leaderboard">
-                <div class="leaderboard-header">
+            <div class=\"leaderboard\">
+                <div class=\"leaderboard-header\">
                     <h3>🏫 ترتيب المدرسة</h3>
                 </div>
-                <div id="schoolLeaderboard"></div>
+                <div id=\"schoolLeaderboard\"></div>
             </div>
 
-            <button class="btn" onclick="backToDashboard()">↩️ العودة للوحة الطالب</button>
+            <button class=\"btn\" onclick=\"backToDashboard()\">↩️ العودة للوحة الطالب</button>
         </div>
 
         <!-- Footer -->
-        <div style="text-align: center; margin-top: 40px; color: white; font-size: 14px;">
-            <p id="footerText"><!-- سيتم ملؤها تلقائياً --></p>
+        <div style=\"text-align: center; margin-top: 40px; color: white; font-size: 14px;\">
+            <p id=\"footerText\"></p>
         </div>
     </div>
 
     <!-- Notification -->
-    <div id="notification" class="notification">
-        <span id="notificationText"></span>
+    <div id=\"notification\" class=\"notification\">
+        <span id=\"notificationText\"></span>
     </div>
 
-    <script type="module">
-        // ═══════════════════════════════════════════════════════════════════════
-        // 🏫 إعدادات المدرسة - عدّل هنا فقط لإضافة مدرسة جديدة
-        // ═══════════════════════════════════════════════════════════════════════
-        
-        const SCHOOL_CONFIG = {
-            // 🔑 معرف المدرسة الفريد (يجب أن يكون باللغة الإنجليزية بدون مسافات)
-            SCHOOL_ID: "ALMUNTHER",
-            
-            // 📛 اسم المدرسة (كما سيظهر للطلاب)
-            SCHOOL_NAME: "متوسطة المنذر بن عمرو الأنصاري",
-            
-            // 🎓 نوع المدرسة: "middle" للمتوسطة أو "primary" للابتدائية
-            SCHOOL_TYPE: "middle",
-            
-            // 👨‍💼 مدير المدرسة
-            SCHOOL_PRINCIPAL: "الأستاذ خالد المطيري",
-            
-            // 👤 المشرف على المنصة
-            SUPERVISOR_NAME: "الأستاذ نواف الصبحي",
-            
-            // 🎨 ألوان المدرسة (اختياري)
-            PRIMARY_COLOR: "#708feb",
-            SECONDARY_COLOR: "#88b1d7"
-        };
-        
-        // ═══════════════════════════════════════════════════════════════════════
-        // 🔥 Firebase Configuration - لا تغير هذا إلا للمشروع بالكامل
-        // ═══════════════════════════════════════════════════════════════════════
-        
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, limit, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+    <script type=\"module\">
+        // ✅ إصلاح: إزالة المسافات الزائدة من روابط الاستيراد
+        import { initializeApp } from \"https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js\";
+        import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, limit, updateDoc, doc, getDoc } from \"https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js\";
 
         const firebaseConfig = {
-            "apiKey": "AIzaSyD28cfba2NmXlsfBci9jgbne21U9rZLJ2M",
-            "authDomain": "nafis-new.firebaseapp.com",
-            "projectId": "nafis-new",
-            "storageBucket": "nafis-new.firebasestorage.app",
-            "messagingSenderId": "366381122504",
-            "appId": "1:366381122504:web:b76107c74d7d7ec82df6fd",
-            "measurementId": "G-ZD3Z9LEGGM"
+            apiKey: \"AIzaSyD28cfba2NmXlsfBci9jgbne21U9rZLJ2M\",
+            authDomain: \"nafis-new.firebaseapp.com\",
+            projectId: \"nafis-new\",
+            storageBucket: \"nafis-new.firebasestorage.app\",
+            messagingSenderId: \"366381122504\",
+            appId: \"1:366381122504:web:b76107c74d7d7ec82df6fd\",
+            measurementId: \"G-ZD3Z9LEGGM\"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // ═══════════════════════════════════════════════════════════════════════
-        // 📊 المتغيرات العامة
-        // ═══════════════════════════════════════════════════════════════════════
-        
+        // إعدادات المدرسة
+        const SCHOOL_CONFIG = {
+            SCHOOL_ID: \"ALMUNTHER\",
+            SCHOOL_NAME: \"متوسطة المنذر بن عمرو الأنصاري\",
+            SCHOOL_TYPE: \"middle\",
+            SCHOOL_PRINCIPAL: \"الأستاذ خالد المطيري\",
+            SUPERVISOR_NAME: \"الأستاذ نواف الصبحي\",
+            PRIMARY_COLOR: \"#708feb\",
+            SECONDARY_COLOR: \"#88b1d7\"
+        };
+
         let currentStudent = null;
         let currentQuestion = 0;
         let questions = [];
         let studentAnswers = [];
         let questionTimer = null;
         let timeRemaining = 120;
+        let isAnswered = false; // ✅ متغير جديد لمنع الإجابة المتكررة
 
-        // ═══════════════════════════════════════════════════════════════════════
-        // 🎨 تهيئة واجهة المدرسة
-        // ═══════════════════════════════════════════════════════════════════════
-        
         function initializeSchoolInterface() {
-            // عرض اسم المدرسة
             const schoolInfoHtml = `
-                <div style="font-size: 20px; font-weight: 700; margin-bottom: 10px;">
+                <div style=\"font-size: 20px; font-weight: 700; margin-bottom: 10px;\">
                     ${SCHOOL_CONFIG.SCHOOL_NAME}
                 </div>
-                <div style="font-size: 15px; opacity: 0.9;">
+                <div style=\"font-size: 15px; opacity: 0.9;\">
                     👨‍💼 مدير المدرسة: ${SCHOOL_CONFIG.SCHOOL_PRINCIPAL}
                 </div>
             `;
             document.getElementById('schoolInfoDisplay').innerHTML = schoolInfoHtml;
-            
-            // عرض اسم المشرف في الفوتر
             document.getElementById('footerText').textContent = `إشراف المنصة: ${SCHOOL_CONFIG.SUPERVISOR_NAME}`;
             
-            // ملء قائمة الصفوف حسب نوع المدرسة
             const gradeSelect = document.getElementById('studentGrade');
-            gradeSelect.innerHTML = '<option value="">اختر الصف</option>';
+            gradeSelect.innerHTML = '<option value=\"\">اختر الصف</option>';
             
-            if (SCHOOL_CONFIG.SCHOOL_TYPE === "middle") {
-                // مدرسة متوسطة
+            if (SCHOOL_CONFIG.SCHOOL_TYPE === \"middle\") {
                 gradeSelect.innerHTML += `
-                    <option value="الأول متوسط">الأول متوسط</option>
-                    <option value="الثاني متوسط">الثاني متوسط</option>
-                    <option value="الثالث متوسط">الثالث متوسط</option>
+                    <option value=\"الأول متوسط\">الأول متوسط</option>
+                    <option value=\"الثاني متوسط\">الثاني متوسط</option>
+                    <option value=\"الثالث متوسط\">الثالث متوسط</option>
                 `;
-            } else if (SCHOOL_CONFIG.SCHOOL_TYPE === "primary") {
-                // مدرسة ابتدائية
+            } else if (SCHOOL_CONFIG.SCHOOL_TYPE === \"primary\") {
                 gradeSelect.innerHTML += `
-                    <option value="الثالث ابتدائي">الثالث ابتدائي</option>
-                    <option value="السادس ابتدائي">السادس ابتدائي</option>
+                    <option value=\"الثالث ابتدائي\">الثالث ابتدائي</option>
+                    <option value=\"السادس ابتدائي\">السادس ابتدائي</option>
                 `;
             }
-            
-            console.log(`✅ تم تهيئة واجهة مدرسة: ${SCHOOL_CONFIG.SCHOOL_NAME}`);
-            console.log(`📋 معرف المدرسة: ${SCHOOL_CONFIG.SCHOOL_ID}`);
         }
 
-        // ═══════════════════════════════════════════════════════════════════════
-        // 📝 دوال التسجيل والدخول
-        // ═══════════════════════════════════════════════════════════════════════
-        
+        // ✅ دالة جديدة: التحقق من تكرار الطالب
+        async function isStudentExists(name, grade, className) {
+            try {
+                const q = query(
+                    collection(db, 'students'),
+                    where('schoolId', '==', SCHOOL_CONFIG.SCHOOL_ID),
+                    where('name', '==', name),
+                    where('grade', '==', grade),
+                    where('class', '==', className)
+                );
+                const snapshot = await getDocs(q);
+                return !snapshot.empty;
+            } catch (error) {
+                console.error('خطأ في التحقق من وجود الطالب:', error);
+                return false;
+            }
+        }
+
+        // ✅ دالة جديدة: مؤشر التحميل
+        function setLoading(button, isLoading) {
+            if (isLoading) {
+                button.dataset.originalText = button.innerHTML;
+                button.innerHTML = '<span class=\"loading-spinner\"></span> جاري التحميل...';
+                button.disabled = true;
+            } else {
+                button.innerHTML = button.dataset.originalText;
+                button.disabled = false;
+            }
+        }
+
         async function registerStudent(event) {
             event.preventDefault();
-            
+            const submitBtn = event.target.querySelector('button[type=\"submit\"]');
+            setLoading(submitBtn, true);
+
             const name = document.getElementById('studentName').value.trim();
             const grade = document.getElementById('studentGrade').value;
             const className = document.getElementById('studentClass').value || '';
-            
+
+            // ✅ التحقق من صحة البيانات
             if (!name || !grade) {
                 showNotification('❌ يرجى ملء جميع الحقول المطلوبة', 'error');
+                setLoading(submitBtn, false);
                 return;
             }
-            
+
+            // ✅ التحقق من عدم التكرار
+            const exists = await isStudentExists(name, grade, className);
+            if (exists) {
+                showNotification('⚠️ هذا الطالب مسجل مسبقاً! استخدم تسجيل الدخول', 'warning');
+                setLoading(submitBtn, false);
+                setTimeout(() => showSection('login'), 2000);
+                return;
+            }
+
             try {
                 const code = Math.random().toString(36).substring(2, 8).toUpperCase();
                 
@@ -677,7 +739,7 @@
                     name,
                     grade,
                     class: className,
-                    schoolId: SCHOOL_CONFIG.SCHOOL_ID, // ← تلقائي من الإعدادات
+                    schoolId: SCHOOL_CONFIG.SCHOOL_ID,
                     schoolName: SCHOOL_CONFIG.SCHOOL_NAME,
                     code,
                     score: 0,
@@ -692,26 +754,32 @@
                 const docRef = await addDoc(collection(db, 'students'), studentData);
                 currentStudent = { id: docRef.id, ...studentData };
                 
-                showNotification(`✅ تم التسجيل بنجاح!\n\n🎫 كودك: ${code}\n\n⚠️ احفظ هذا الكود جيداً!`, 'success');
+                showNotification(`✅ تم التسجيل بنجاح!\\n\\n🎫 كودك: ${code}\\n\\n⚠️ احفظ هذا الكود جيداً!`, 'success');
                 
                 setTimeout(() => {
                     updateDashboardInfo();
                     showSection('dashboard');
+                    updateStats(); // ✅ تحديث الإحصائيات
                 }, 2000);
                 
             } catch (error) {
                 console.error('خطأ في التسجيل:', error);
                 showNotification('❌ حدث خطأ أثناء التسجيل. حاول مرة أخرى.', 'error');
+            } finally {
+                setLoading(submitBtn, false);
             }
         }
 
         async function loginStudent(event) {
             event.preventDefault();
-            
+            const submitBtn = event.target.querySelector('button[type=\"submit\"]');
+            setLoading(submitBtn, true);
+
             const code = document.getElementById('loginCode').value.trim().toUpperCase();
             
             if (!code) {
                 showNotification('❌ يرجى إدخال الكود', 'error');
+                setLoading(submitBtn, false);
                 return;
             }
             
@@ -719,13 +787,14 @@
                 const studentsQuery = query(
                     collection(db, 'students'),
                     where('code', '==', code),
-                    where('schoolId', '==', SCHOOL_CONFIG.SCHOOL_ID) // ← فلترة بمعرف المدرسة
+                    where('schoolId', '==', SCHOOL_CONFIG.SCHOOL_ID)
                 );
                 
                 const querySnapshot = await getDocs(studentsQuery);
                 
                 if (querySnapshot.empty) {
                     showNotification('❌ الكود غير موجود أو غير صحيح', 'error');
+                    setLoading(submitBtn, false);
                     return;
                 }
                 
@@ -747,22 +816,18 @@
             } catch (error) {
                 console.error('خطأ في تسجيل الدخول:', error);
                 showNotification('❌ حدث خطأ أثناء تسجيل الدخول', 'error');
+            } finally {
+                setLoading(submitBtn, false);
             }
         }
 
-        // ═══════════════════════════════════════════════════════════════════════
-        // 📚 تحميل الأسئلة
-        // ═══════════════════════════════════════════════════════════════════════
-        
         async function loadQuestions() {
             if (questions.length > 0) return true;
             
             try {
-                console.log(`🔄 جاري تحميل أسئلة مدرسة: ${SCHOOL_CONFIG.SCHOOL_NAME}...`);
-                
                 const questionsQuery = query(
                     collection(db, 'questions'),
-                    where('schoolId', '==', SCHOOL_CONFIG.SCHOOL_ID) // ← فلترة بمعرف المدرسة
+                    where('schoolId', '==', SCHOOL_CONFIG.SCHOOL_ID)
                 );
                 
                 const questionsSnapshot = await getDocs(questionsQuery);
@@ -786,7 +851,9 @@
                     });
                 });
                 
-                console.log(`✅ تم تحميل ${questions.length} سؤال`);
+                // ✅ خلط الأسئلة عشوائياً
+                questions.sort(() => Math.random() - 0.5);
+                
                 document.getElementById('totalQuestions').textContent = questions.length;
                 return true;
                 
@@ -797,10 +864,6 @@
             }
         }
 
-        // ═══════════════════════════════════════════════════════════════════════
-        // 🏆 عرض الترتيب
-        // ═══════════════════════════════════════════════════════════════════════
-        
         async function viewResults() {
             showSection('results');
             await loadClassLeaderboard();
@@ -809,7 +872,7 @@
 
         async function loadClassLeaderboard() {
             const container = document.getElementById('classLeaderboard');
-            container.innerHTML = '<div style="text-align: center; padding: 20px;">⏳ جاري التحميل...</div>';
+            container.innerHTML = '<div style=\"text-align: center; padding: 20px;\">⏳ جاري التحميل...</div>';
             
             try {
                 const leaderboardQuery = query(
@@ -822,43 +885,17 @@
                 );
                 
                 const snapshot = await getDocs(leaderboardQuery);
-                
-                if (snapshot.empty) {
-                    container.innerHTML = '<div style="text-align: center; padding: 20px;">لا توجد نتائج بعد</div>';
-                    return;
-                }
-                
-                let html = '';
-                snapshot.forEach((doc, index) => {
-                    const data = doc.data();
-                    const rankClass = index === 0 ? 'top-1' : index === 1 ? 'top-2' : index === 2 ? 'top-3' : '';
-                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
-                    
-                    html += `
-                        <div class="leaderboard-item ${rankClass}">
-                            <div>
-                                <strong>${medal} ${index + 1}. ${data.name}</strong>
-                                <div style="font-size: 13px; color: #666;">الشعبة: ${data.class || 'غير محدد'}</div>
-                            </div>
-                            <div style="text-align: left;">
-                                <div style="font-size: 20px; font-weight: 700; color: #28a745;">${data.score} نقطة</div>
-                                <div style="font-size: 12px; color: #666;">${data.questionsAnswered} سؤال</div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                container.innerHTML = html;
+                renderLeaderboard(container, snapshot);
                 
             } catch (error) {
                 console.error('خطأ في تحميل ترتيب الصف:', error);
-                container.innerHTML = '<div style="text-align: center; padding: 20px; color: red;">حدث خطأ في التحميل</div>';
+                container.innerHTML = '<div style=\"text-align: center; padding: 20px; color: red;\">حدث خطأ في التحميل. تأكد من إنشاء الفهارس في Firebase.</div>';
             }
         }
 
         async function loadSchoolLeaderboard() {
             const container = document.getElementById('schoolLeaderboard');
-            container.innerHTML = '<div style="text-align: center; padding: 20px;">⏳ جاري التحميل...</div>';
+            container.innerHTML = '<div style=\"text-align: center; padding: 20px;\">⏳ جاري التحميل...</div>';
             
             try {
                 const leaderboardQuery = query(
@@ -870,44 +907,43 @@
                 );
                 
                 const snapshot = await getDocs(leaderboardQuery);
-                
-                if (snapshot.empty) {
-                    container.innerHTML = '<div style="text-align: center; padding: 20px;">لا توجد نتائج بعد</div>';
-                    return;
-                }
-                
-                let html = '';
-                snapshot.forEach((doc, index) => {
-                    const data = doc.data();
-                    const rankClass = index === 0 ? 'top-1' : index === 1 ? 'top-2' : index === 2 ? 'top-3' : '';
-                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
-                    
-                    html += `
-                        <div class="leaderboard-item ${rankClass}">
-                            <div>
-                                <strong>${medal} ${index + 1}. ${data.name}</strong>
-                                <div style="font-size: 13px; color: #666;">${data.grade} - الشعبة: ${data.class || 'غير محدد'}</div>
-                            </div>
-                            <div style="text-align: left;">
-                                <div style="font-size: 20px; font-weight: 700; color: #28a745;">${data.score} نقطة</div>
-                                <div style="font-size: 12px; color: #666;">${data.questionsAnswered} سؤال</div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                container.innerHTML = html;
+                renderLeaderboard(container, snapshot);
                 
             } catch (error) {
                 console.error('خطأ في تحميل ترتيب المدرسة:', error);
-                container.innerHTML = '<div style="text-align: center; padding: 20px; color: red;">حدث خطأ في التحميل</div>';
+                container.innerHTML = '<div style=\"text-align: center; padding: 20px; color: red;\">حدث خطأ في التحميل. تأكد من إنشاء الفهارس في Firebase.</div>';
             }
         }
 
-        // ═══════════════════════════════════════════════════════════════════════
-        // 🎯 الاختبار
-        // ═══════════════════════════════════════════════════════════════════════
-        
+        function renderLeaderboard(container, snapshot) {
+            if (snapshot.empty) {
+                container.innerHTML = '<div style=\"text-align: center; padding: 20px;\">لا توجد نتائج بعد</div>';
+                return;
+            }
+            
+            let html = '';
+            snapshot.forEach((doc, index) => {
+                const data = doc.data();
+                const rankClass = index === 0 ? 'top-1' : index === 1 ? 'top-2' : index === 2 ? 'top-3' : '';
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
+                
+                html += `
+                    <div class=\"leaderboard-item ${rankClass}\">
+                        <div>
+                            <strong>${medal} ${data.name}</strong>
+                            <div style=\"font-size: 13px; color: #666;\">${data.grade} - الشعبة: ${data.class || 'غير محدد'}</div>
+                        </div>
+                        <div style=\"text-align: left;\">
+                            <div style=\"font-size: 20px; font-weight: 700; color: #28a745;\">${data.score} نقطة</div>
+                            <div style=\"font-size: 12px; color: #666;\">${data.questionsAnswered} سؤال</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
         async function startTest() {
             const loaded = await loadQuestions();
             if (!loaded || questions.length === 0) {
@@ -933,49 +969,69 @@
                 return;
             }
             
+            isAnswered = false; // ✅ إعادة تعيين حالة الإجابة
+            
             const question = questions[currentQuestion];
             const container = document.getElementById('questionContainer');
             
             const progress = ((currentQuestion + 1) / questions.length) * 100;
             document.getElementById('progressFill').style.width = progress + '%';
             
+            // ✅ إعادة ضبط لون المؤقت
+            const timerContainer = document.getElementById('questionTimer');
+            timerContainer.classList.remove('danger');
+            document.getElementById('timerMessage').textContent = 'أجب قبل انتهاء الوقت!';
+            
             let html = `
-                <div class="question-card">
-                    <div style="margin-bottom: 15px; color: #708feb; font-weight: 600;">
+                <div class=\"question-card\">
+                    <div style=\"margin-bottom: 15px; color: #708feb; font-weight: 600;\">
                         السؤال ${currentQuestion + 1} من ${questions.length}
                         ${question.subject ? `- ${question.subject}` : ''}
                     </div>
-                    <div class="question-text">${question.text}</div>
-                    <div class="options-container">
+                    <div class=\"question-text\">${question.text}</div>
+                    <div class=\"options-container\">
             `;
             
             question.options.forEach((option, index) => {
                 html += `
-                    <div class="option" onclick="selectOption(${index})">
-                        ${option}
+                    <div class=\"option\" onclick=\"selectOption(${index})\" data-index=\"${index}\">\n                        ${option}
                     </div>
                 `;
             });
             
             html += `
                     </div>
+                    ${question.explanation ? `<div id=\"explanation\" style=\"display: none; margin-top: 15px; padding: 15px; background: #e3f2fd; border-radius: 8px; color: #1976d2;\">${question.explanation}</div>` : ''}
                 </div>
             `;
             
             container.innerHTML = html;
             
             timeRemaining = question.timeLimit || 120;
+            updateTimerDisplay();
             startQuestionTimer();
         }
 
         function selectOption(optionIndex) {
+            // ✅ منع الإجابة المتكررة
+            if (isAnswered) {
+                showNotification('⚠️ لقد أجبت على هذا السؤال مسبقاً', 'warning');
+                return;
+            }
+            
+            isAnswered = true;
+            stopQuestionTimer();
+            
             const question = questions[currentQuestion];
             const options = document.querySelectorAll('.option');
             
-            options.forEach(opt => opt.classList.remove('selected', 'correct', 'wrong'));
-            options[optionIndex].classList.add('selected');
+            // تعطيل جميع الخيارات
+            options.forEach(opt => {
+                opt.classList.add('disabled');
+                opt.style.pointerEvents = 'none';
+            });
             
-            studentAnswers[currentQuestion] = optionIndex;
+            options[optionIndex].classList.add('selected');
             
             const isCorrect = optionIndex === question.correctAnswer;
             
@@ -986,17 +1042,27 @@
             } else {
                 options[optionIndex].classList.add('wrong');
                 options[question.correctAnswer].classList.add('correct');
-                showNotification('❌ إجابة خاطئة. الإجابة الصحيحة محددة باللون الأخضر', 'error');
+                showNotification('❌ إجابة خاطئة', 'error');
             }
             
-            stopQuestionTimer();
+            // عرض التفسير إن وجد
+            const explanationDiv = document.getElementById('explanation');
+            if (explanationDiv) {
+                explanationDiv.style.display = 'block';
+            }
             
-            setTimeout(() => {
-                nextQuestion();
-            }, 2000);
+            // ✅ إظهار زر التالي
+            document.getElementById('nextBtn').style.display = 'inline-block';
         }
 
         async function nextQuestion() {
+            // ✅ التحقق من الإجابة قبل الانتقال
+            if (!isAnswered) {
+                showNotification('⚠️ الرجاء اختيار إجابة أولاً', 'warning');
+                return;
+            }
+            
+            studentAnswers[currentQuestion] = true;
             currentQuestion++;
             currentStudent.questionsAnswered = currentQuestion;
             currentStudent.lastQuestion = currentQuestion;
@@ -1015,6 +1081,7 @@
                 console.error('خطأ في حفظ التقدم:', error);
             }
             
+            document.getElementById('nextBtn').style.display = 'none';
             displayQuestion();
         }
 
@@ -1023,24 +1090,43 @@
             
             questionTimer = setInterval(() => {
                 timeRemaining--;
-                
-                const minutes = Math.floor(timeRemaining / 60);
-                const seconds = timeRemaining % 60;
-                document.getElementById('timerDisplay').textContent = 
-                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                updateTimerDisplay();
                 
                 if (timeRemaining <= 10) {
-                    document.getElementById('questionTimer').style.background = 
-                        'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)';
+                    document.getElementById('questionTimer').classList.add('danger');
                     document.getElementById('timerMessage').textContent = '⚠️ الوقت ينفد!';
                 }
                 
                 if (timeRemaining <= 0) {
                     stopQuestionTimer();
-                    showNotification('⏱️ انتهى الوقت!', 'warning');
-                    setTimeout(() => nextQuestion(), 1500);
+                    handleTimeUp();
                 }
             }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function handleTimeUp() {
+            if (!isAnswered) {
+                isAnswered = true;
+                const question = questions[currentQuestion];
+                const options = document.querySelectorAll('.option');
+                
+                options.forEach(opt => {
+                    opt.classList.add('disabled');
+                    opt.style.pointerEvents = 'none';
+                });
+                
+                options[question.correctAnswer].classList.add('correct');
+                showNotification('⏱️ انتهى الوقت! الإجابة الصحيحة محددة', 'warning');
+                
+                document.getElementById('nextBtn').style.display = 'inline-block';
+            }
         }
 
         function stopQuestionTimer() {
@@ -1079,10 +1165,6 @@
             }
         }
 
-        // ═══════════════════════════════════════════════════════════════════════
-        // 🔄 دوال مساعدة
-        // ═══════════════════════════════════════════════════════════════════════
-        
         function showSection(sectionName) {
             const sections = ['registration', 'login', 'dashboard', 'test', 'results'];
             sections.forEach(name => {
@@ -1144,17 +1226,25 @@
             }, 3000);
         }
 
-        // ═══════════════════════════════════════════════════════════════════════
-        // 🚀 تهيئة التطبيق
-        // ═══════════════════════════════════════════════════════════════════════
-        
+        // ✅ دالة محسّنة لتحديث الإحصائيات
+        async function updateStats() {
+            try {
+                const studentsQuery = query(
+                    collection(db, 'students'),
+                    where('schoolId', '==', SCHOOL_CONFIG.SCHOOL_ID)
+                );
+                const studentsSnapshot = await getDocs(studentsQuery);
+                document.getElementById('totalStudents').textContent = studentsSnapshot.size;
+            } catch (error) {
+                console.error('خطأ في تحديث الإحصائيات:', error);
+            }
+        }
+
         async function initializeApp() {
             console.log('🚀 بدء تهيئة التطبيق...');
             
-            // تهيئة واجهة المدرسة
             initializeSchoolInterface();
             
-            // اختبار الاتصال بـ Firebase
             try {
                 const testQuery = query(collection(db, 'students'), limit(1));
                 await getDocs(testQuery);
@@ -1162,13 +1252,10 @@
                 document.getElementById('connectedStatus').textContent = '✅';
                 document.getElementById('connectedStatus').style.color = '#28a745';
                 
-                // جلب إحصائيات
-                const studentsQuery = query(
-                    collection(db, 'students'),
-                    where('schoolId', '==', SCHOOL_CONFIG.SCHOOL_ID)
-                );
-                const studentsSnapshot = await getDocs(studentsQuery);
-                document.getElementById('totalStudents').textContent = studentsSnapshot.size;
+                await updateStats();
+                
+                // ✅ تحديث الإحصائيات كل 30 ثانية
+                setInterval(updateStats, 30000);
                 
                 console.log('✅ الاتصال بـ Firebase ناجح');
                 
@@ -1178,20 +1265,16 @@
                 document.getElementById('connectedStatus').style.color = '#dc3545';
             }
             
-            // ربط الأحداث
             document.getElementById('registrationForm').addEventListener('submit', registerStudent);
             document.getElementById('loginForm').addEventListener('submit', loginStudent);
             
-            // عرض قسم التسجيل
             showSection('registration');
             
             console.log('✅ اكتملت تهيئة التطبيق');
         }
 
-        // تشغيل التطبيق عند تحميل الصفحة
         window.addEventListener('DOMContentLoaded', initializeApp);
         
-        // جعل الدوال متاحة globally
         window.startTest = startTest;
         window.viewResults = viewResults;
         window.selectOption = selectOption;
