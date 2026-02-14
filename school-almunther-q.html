@@ -752,7 +752,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
         const firebaseConfig = {
   "apiKey": "AIzaSyD28cfba2NmXlsfBci9jgbne21U9rZLJ2M",
@@ -766,7 +765,6 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app);
 
         let currentStudent = null;
         let currentQuestion = 0;
@@ -1144,50 +1142,27 @@
     }
     
     try {
-        // 1. توليد كود فريد
         const code = Math.random().toString(36).substring(2, 8).toUpperCase();
         
-        // 2. إنشاء حساب في Firebase Authentication
-        //    نستخدم الكود كـ email وpassword
-        const email = `${code}@nafis.local`;
-        const password = code; // الكود نفسه هو كلمة المرور!
-        
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const userId = userCredential.user.uid;
-        
-        // 3. حفظ بيانات الطالبة في Firestore
         const studentData = {
-            name,
-            grade,
-            class: className,
-            code,
-            score: 0,
-            questionsAnswered: 0,
-            lastQuestion: 0,
-            lastAnswers: [],
+            name, grade, class: className, code,
+            score: 0, questionsAnswered: 0,
+            lastQuestion: 0, lastAnswers: [],
             testCompleted: false,
             registeredAt: new Date(),
             lastActive: new Date()
         };
         
-        // مهم: نستخدم userId كـ Document ID
-        await setDoc(doc(db, 'students', userId), studentData);
+        const docRef = await addDoc(collection(db, 'students'), studentData);
+        currentStudent = { id: docRef.id, ...studentData };
         
-        currentStudent = { id: userId, ...studentData };
-        
-        showNotification(`✅ تم التسجيل بنجاح!\n\nالاسم: ${name}\nالكود: ${code}\n\n⚠️ احفظي هذا الكود جيداً!`, 'success');
-        
+        showNotification(`✅ تم التسجيل بنجاح!\nالكود: ${code}`, 'success');
         updateDashboardInfo();
         showSection('dashboard');
         
     } catch (error) {
         console.error('Registration error:', error);
-        
-        if (error.code === 'auth/email-already-in-use') {
-            showNotification('هذا الكود مستخدم. حاولي مرة أخرى.', 'error');
-        } else {
-            showNotification('حدث خطأ أثناء التسجيل. حاولي مرة أخرى.', 'error');
-        }
+        showNotification('حدث خطأ أثناء التسجيل', 'error');
     }
 }
 
@@ -1200,46 +1175,31 @@
     }
     
     try {
-        // 1. تسجيل الدخول باستخدام الكود
-        const email = `${code}@nafis.local`;
-        const password = code;
+        const studentQuery = query(
+            collection(db, 'students'), 
+            where('code', '==', code)
+        );
+        const querySnapshot = await getDocs(studentQuery);
         
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const userId = userCredential.user.uid;
-        
-        // 2. جلب بيانات الطالبة
-        const studentDoc = await getDoc(doc(db, 'students', userId));
-        
-        if (!studentDoc.exists()) {
-            showNotification('لم يتم العثور على بيانات الطالبة', 'error');
-            await signOut(auth); // تسجيل خروج
+        if (querySnapshot.empty) {
+            showNotification('الكود غير موجود', 'error');
             return;
         }
         
-        currentStudent = {
-            id: userId,
-            ...studentDoc.data()
-        };
+        const studentDoc = querySnapshot.docs[0];
+        currentStudent = { id: studentDoc.id, ...studentDoc.data() };
         
-        // 3. تحديث آخر نشاط
-        await updateDoc(doc(db, 'students', userId), {
+        await updateDoc(doc(db, 'students', studentDoc.id), {
             lastActive: new Date()
         });
         
         showNotification(`مرحباً ${currentStudent.name}! 💕`, 'success');
-        
         updateDashboardInfo();
         showSection('dashboard');
         
     } catch (error) {
         console.error('Login error:', error);
-        
-        if (error.code === 'auth/invalid-credential' || 
-            error.code === 'auth/user-not-found') {
-            showNotification('الكود غير صحيح أو غير موجود', 'error');
-        } else {
-            showNotification('حدث خطأ أثناء تسجيل الدخول', 'error');
-        }
+        showNotification('حدث خطأ', 'error');
     }
 }
         window.switchToLogin = function() {
