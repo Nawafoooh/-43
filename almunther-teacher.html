@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نافس - لوحة تحكم المعلم</title>
+    <title>نافس - لوحة تحكم المعلم - متوسطة ابن النفيس</title>
     <style>
         * {
             margin: 0;
@@ -45,7 +45,7 @@
         .logo {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #4CAF50, #45a049);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -53,7 +53,7 @@
             color: white;
             font-size: 32px;
             font-weight: bold;
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
         .title-section h1 {
@@ -66,7 +66,7 @@
         }
 
         .subtitle {
-            color: #e67e22;
+            color: #667eea;
             font-size: 1.2em;
             font-weight: 600;
             margin-bottom: 15px;
@@ -666,9 +666,10 @@
                 </div>
             </div>
             <div class="school-info">
-                <strong>🏫 المتوسطة المنذر بن عمرو الأنصاري</strong><br>
-                📍 المدينة المنورة - المملكة العربية السعودية<br>
-                👨‍💼 <strong>إشراف الأستاذ نواف الصبحي </strong>
+                <strong>🏫 متوسطة ابن النفيس</strong><br>
+                📍 قطاعي أحد والعواليّ - المملكة العربية السعودية<br>
+                👨‍💼 <strong>مدير المدرسة: محمد احمد خالد</strong><br>
+                👨‍🏫 <strong>إشراف الأستاذ سعيد سالم الحربي</strong>
             </div>
         </div>
 
@@ -705,7 +706,7 @@
                 <div class="action-buttons">
                     <button class="btn success" onclick="addManualQuestion()">➕ إضافة سؤال يدوياً</button>
                     <button class="btn info" onclick="downloadTemplate()">📥 تحميل قالب CSV</button>
-                    <button class="btn info" onclick="publishQuestions()">🚀 نشر الأسئلة للطالبات</button>
+                    <button class="btn info" onclick="publishQuestions()">🚀 نشر الأسئلة للطلاب</button>
                     <button class="btn warning" onclick="clearAllQuestions()">🗑️ حذف جميع الأسئلة</button>
                 </div>
 
@@ -931,6 +932,9 @@
                 <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 15px;">
                     <h3 style="color: #2c3e50; margin-bottom: 15px;">معلومات النظام</h3>
                     <p style="margin: 10px 0; color: #555;">
+                        <strong>🏫 المدرسة:</strong> متوسطة ابن النفيس
+                    </p>
+                    <p style="margin: 10px 0; color: #555;">
                         <strong>📅 آخر تحديث:</strong> <span id="lastUpdate">-</span>
                     </p>
                     <p style="margin: 10px 0; color: #555;">
@@ -951,7 +955,7 @@
 
         <!-- Footer -->
         <div style="text-align: center; margin-top: 40px; color: white; font-size: 14px;">
-            <p>إشراف الأستاذ نواف الصبحي </p>
+            <p>إشراف الأستاذ سعيد سالم الحربي</p>
         </div>
     </div>
 
@@ -965,19 +969,22 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
         import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, writeBatch } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-        // Firebase Configuration
+        // ✅ Firebase Configuration - nafis-new project
         const firebaseConfig = {
-  "apiKey": "AIzaSyD28cfba2NmXlsfBci9jgbne21U9rZLJ2M",
-  "authDomain": "nafis-new.firebaseapp.com",
-  "projectId": "nafis-new",
-  "storageBucket": "nafis-new.firebasestorage.app",
-  "messagingSenderId": "366381122504",
-  "appId": "1:366381122504:web:b76107c74d7d7ec82df6fd",
-  "measurementId": "G-ZD3Z9LEGGM"
-};
+            apiKey: "AIzaSyAwB-NddnSti81ieiRpvyDFpAlA3UyJSVk",
+            authDomain: "nafis-new.firebaseapp.com",
+            projectId: "nafis-new",
+            storageBucket: "nafis-new.firebasestorage.app",
+            messagingSenderId: "366381122504",
+            appId: "1:366381122504:web:b84adfa0be0dea1e2df6fd",
+            measurementId: "G-641VBH48XM"
+        };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
+        // ✅ School ID for Ibn Al-Nafees
+        const SCHOOL_ID = "ibn-nafees-school";
 
         let allStudents = [];
         let allMessages = [];
@@ -1181,7 +1188,7 @@
             const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'قالب_الأسئلة_نافس.csv';
+            link.download = 'قالب_الأسئلة_نافس_ابن_النفيس.csv';
             link.click();
             showNotification('تم تحميل قالب الأسئلة بنجاح! 📥', 'success');
         };
@@ -1319,7 +1326,12 @@
         async function loadStudents() {
             showLoading('studentsLoading', true);
             try {
-                const snap = await getDocs(collection(db, 'students'));
+                // ✅ Load only students from Ibn Al-Nafees school
+                const studentsQuery = query(
+                    collection(db, 'students'),
+                    where('schoolId', '==', SCHOOL_ID)
+                );
+                const snap = await getDocs(studentsQuery);
                 allStudents = [];
                 snap.forEach(d => allStudents.push({ id: d.id, ...d.data() }));
                 updateStudentsStats();
@@ -1337,26 +1349,21 @@
             const score = student.score || 0;
             const questionsAnswered = student.questionsAnswered || 0;
             
-            // يجب أن يكون لديها نقاط
             if (score === 0) {
                 console.log(`❌ استبعاد ${student.name}: لا توجد نقاط`);
                 return false;
             }
             
-            // إذا كان عدد الأسئلة معروف، تحقق من أن النقاط لا تتجاوزه
             if (totalQuestions > 0 && score > totalQuestions) {
                 console.log(`❌ استبعاد ${student.name}: النقاط (${score}) أكبر من عدد الأسئلة (${totalQuestions})`);
                 return false;
             }
             
-            // إذا كان questionsAnswered موثوق (أكبر من النقاط)، استخدمه للتحقق
-            // وإلا تجاهله (قد يكون غير محدث)
             if (questionsAnswered >= score && score > questionsAnswered) {
                 console.log(`❌ استبعاد ${student.name}: النقاط (${score}) أكبر من الأسئلة المجابة (${questionsAnswered})`);
                 return false;
             }
             
-            // إذا كان questionsAnswered صفر أو أقل من النقاط، تجاهله واقبل الطالب
             console.log(`✅ قبول ${student.name}: ${score} نقطة`);
             return true;
         }
@@ -1368,15 +1375,12 @@
             console.log(`📝 عدد الأسئلة الكلي: ${totalQuestions}`);
             console.log(`👥 عدد الطلاب الكلي: ${allStudents.length}`);
             
-            // تصفية الطلاب الصالحين فقط
             const validStudents = allStudents.filter(student => isValidStudent(student, totalQuestions));
             
             console.log(`✅ عدد الطلاب المؤهلين: ${validStudents.length}`);
             
-            // ترتيب حسب النقاط
             validStudents.sort((a, b) => (b.score || 0) - (a.score || 0));
             
-            // عرض معلومات التصحيح
             const debugInfo = document.getElementById('debugInfo');
             if (debugInfo) {
                 debugInfo.innerHTML = `
@@ -1388,24 +1392,20 @@
                 `;
             }
             
-            // الثلاثة الأوائل على المدرسة
             const schoolTop3 = validStudents.slice(0, 3);
             console.log('🏫 الأوائل على المدرسة:', schoolTop3.length);
             displayTop3List('schoolTop3', schoolTop3);
             
-            // الثلاثة الأوائل للصف الأول
             const grade1Students = validStudents.filter(s => s.grade === '1');
             const grade1Top3 = grade1Students.slice(0, 3);
             console.log('📚 الأوائل للصف الأول:', grade1Top3.length);
             displayTop3List('grade1Top3', grade1Top3);
             
-            // الثلاثة الأوائل للصف الثاني
             const grade2Students = validStudents.filter(s => s.grade === '2');
             const grade2Top3 = grade2Students.slice(0, 3);
             console.log('📚 الأوائل للصف الثاني:', grade2Top3.length);
             displayTop3List('grade2Top3', grade2Top3);
             
-            // الثلاثة الأوائل للصف الثالث
             const grade3Students = validStudents.filter(s => s.grade === '3');
             const grade3Top3 = grade3Students.slice(0, 3);
             console.log('📚 الأوائل للصف الثالث:', grade3Top3.length);
@@ -1416,8 +1416,11 @@
             showNotification('🔄 جاري تحديث الترتيب...', 'info');
             
             try {
-                // تحميل البيانات من جديد
-                const studentsSnap = await getDocs(collection(db, 'students'));
+                const studentsQuery = query(
+                    collection(db, 'students'),
+                    where('schoolId', '==', SCHOOL_ID)
+                );
+                const studentsSnap = await getDocs(studentsQuery);
                 allStudents = [];
                 studentsSnap.forEach(d => allStudents.push({ id: d.id, ...d.data() }));
                 
@@ -1425,7 +1428,6 @@
                 currentQuestions = [];
                 questionsSnap.forEach(d => currentQuestions.push({ id: d.id, ...d.data() }));
                 
-                // تحديث العرض
                 displayTopStudents();
                 updateStudentsStats();
                 
@@ -1467,7 +1469,7 @@
             if (!students || students.length === 0) {
                 container.innerHTML = `
                     <div class="no-top-students">
-                        <p style="font-size: 18px; margin-bottom: 10px;">📝 لا يوجد طلاب مؤهلين حالياً</p>
+                        <p style="font-size: 18px; margin-bottom: 10px;">📝 لا يوجد طلاب مؤهلون حالياً</p>
                         <p style="font-size: 14px; color: #95a5a6;">لا يوجد طلاب حصلوا على نقاط صحيحة بعد</p>
                         <button class="btn info" onclick="showDetailedDebug()" style="margin-top: 10px;">🔍 عرض التفاصيل الكاملة</button>
                     </div>
@@ -1482,9 +1484,8 @@
                 const rankClass = rankClasses[index] || '';
                 const medal = medals[index] || '🏅';
                 
-                // استخدام lastQuestion بدلاً من questionsAnswered إذا كان أكبر
                 const questionsAnswered = student.questionsAnswered || 0;
-                const lastQuestion = (student.lastQuestion || 0) + 1; // +1 لأن lastQuestion يبدأ من 0
+                const lastQuestion = (student.lastQuestion || 0) + 1;
                 const displayQuestions = Math.max(questionsAnswered, lastQuestion, student.score || 0);
                 
                 return `
@@ -1545,16 +1546,14 @@
                 debugMessage += `\n`;
             });
             
-            // عرض في console
             console.log(debugMessage);
             
-            // عرض في alert (مختصر)
             let shortMessage = `🔍 تقرير مختصر:\n\n`;
             shortMessage += `📝 أسئلة: ${totalQuestions}\n`;
-            shortMessage += `👥 طالبات: ${allStudents.length}\n`;
+            shortMessage += `👥 طلاب: ${allStudents.length}\n`;
             
             const studentsWithScore = allStudents.filter(s => (s.score || 0) > 0);
-            shortMessage += `💯 لديهن نقاط: ${studentsWithScore.length}\n\n`;
+            shortMessage += `💯 لديهم نقاط: ${studentsWithScore.length}\n\n`;
             
             if (studentsWithScore.length > 0) {
                 shortMessage += `أعلى النقاط:\n`;
@@ -1601,7 +1600,7 @@
             box.innerHTML = allStudents.map(st => {
                 const isCompleted = st.testCompleted === true;
                 const statusBadge = isCompleted 
-                    ? '<span style="background:#d4edda;color:#155724;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:5px">✅ أتمت الاختبار</span>' 
+                    ? '<span style="background:#d4edda;color:#155724;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:5px">✅ أتم الاختبار</span>' 
                     : (st.lastQuestion !== undefined && st.lastQuestion > 0 
                         ? '<span style="background:#fff3cd;color:#856404;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:600;margin-left:5px">⏳ قيد التقدم</span>' 
                         : '');
@@ -1637,7 +1636,7 @@
         }
 
         window.resetStudentTest = async (id, name) => {
-            if (!confirm(`إعادة اختبار الطالب ${name}؟\n\nسيتم اعادته للسؤال الأول مع الاحتفاظ بدرجته الحالية.`)) return;
+            if (!confirm(`إعادة اختبار الطالب ${name}؟\n\nسيتم إعادته للسؤال الأول مع الاحتفاظ بدرجته الحالية.`)) return;
             try {
                 await updateDoc(doc(db, 'students', id), {
                     lastQuestion: 0,
@@ -1688,7 +1687,12 @@
         window.loadMessages = async function() {
             showLoading('messagesLoading', true);
             try {
-                const snap = await getDocs(collection(db, 'messages'));
+                // ✅ Load only messages from Ibn Al-Nafees school
+                const messagesQuery = query(
+                    collection(db, 'messages'),
+                    where('schoolId', '==', SCHOOL_ID)
+                );
+                const snap = await getDocs(messagesQuery);
                 allMessages = [];
                 snap.forEach(d => allMessages.push({ id: d.id, ...d.data() }));
                 
@@ -1843,10 +1847,22 @@
         // Settings
         window.backupData = async () => {
             try {
-                const stSnap = await getDocs(collection(db, 'students'));
-                const msgSnap = await getDocs(collection(db, 'messages'));
+                // ✅ Backup only Ibn Al-Nafees school data
+                const studentsQuery = query(
+                    collection(db, 'students'),
+                    where('schoolId', '==', SCHOOL_ID)
+                );
+                const stSnap = await getDocs(studentsQuery);
+                
+                const messagesQuery = query(
+                    collection(db, 'messages'),
+                    where('schoolId', '==', SCHOOL_ID)
+                );
+                const msgSnap = await getDocs(messagesQuery);
                 
                 const backup = {
+                    school: 'متوسطة ابن النفيس',
+                    schoolId: SCHOOL_ID,
                     timestamp: new Date().toISOString(),
                     students: stSnap.docs.map(d => ({ id: d.id, ...d.data() })),
                     messages: msgSnap.docs.map(d => ({ id: d.id, ...d.data() }))
@@ -1855,7 +1871,7 @@
                 const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = `نسخة_احتياطية_نافس_${new Date().toLocaleDateString('ar-SA')}.json`;
+                link.download = `نسخة_احتياطية_نافس_ابن_النفيس_${new Date().toLocaleDateString('ar-SA')}.json`;
                 link.click();
                 showNotification('تم تحميل النسخة الاحتياطية', 'success');
             } catch (e) {
@@ -1953,10 +1969,8 @@
                     const lastQuestion = (student.lastQuestion || 0) + 1;
                     const currentQuestionsAnswered = student.questionsAnswered || 0;
                     
-                    // استخدام الأكبر من: score, lastQuestion, questionsAnswered الحالي
                     const correctedQuestionsAnswered = Math.max(score, lastQuestion, currentQuestionsAnswered);
                     
-                    // تحديث فقط إذا كان مختلف
                     if (correctedQuestionsAnswered !== currentQuestionsAnswered) {
                         batch.update(doc(db, 'students', student.id), {
                             questionsAnswered: correctedQuestionsAnswered,
@@ -1992,7 +2006,7 @@
         window.resetAllData = async () => {
             if (!confirm('⚠️ تحذير خطير!\n\nهل أنت متأكد من إعادة تعيين النظام بالكامل؟\n\nسيتم حذف:\n- جميع بيانات الطلاب\n- جميع الدرجات\n- جميع التقدم في الاختبارات\n\nهذا الإجراء لا يمكن التراجع عنه!')) return;
             
-            if (!confirm('⚠️ تأكيد أخير!\n\nاضغط موافق فقط إذا كنت متأكد تماماً من إعادة تعيين النظام بالكامل.')) return;
+            if (!confirm('⚠️ تأكيد أخير!\n\nاضغط موافق فقط إذا كنت متأكداً تماماً من إعادة تعيين النظام بالكامل.')) return;
 
             try {
                 const batch = writeBatch(db);
@@ -2025,10 +2039,11 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('✅ لوحة تحكم المعلم - متوسطة ابن النفيس');
+            console.log('🏫 School ID:', SCHOOL_ID);
             setupFileUpload();
             loadQuestions();
             loadStudents();
-            console.log('✅ لوحة تحكم المعلم جاهز بالكامل');
         });
 
     </script>
