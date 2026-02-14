@@ -664,7 +664,6 @@
             <div class="action-buttons">
                 <button class="btn success" onclick="startTest()" id="startTestBtn">بدء الاختبار</button>
                 <button class="btn warning" onclick="showResults()">عرض النتائج</button>
-                <button class="btn primary" onclick="showContactForm()">💬 التواصل مع المشرف</button>
                 <button class="btn secondary" onclick="logout()">تسجيل الخروج</button>
             </div>
         </div>
@@ -712,48 +711,6 @@
             </div>
 
             <button class="btn" onclick="backToDashboard()">العودة للوحة الطالب</button>
-        </div>
-
-        <!-- Contact Section -->
-        <div id="contactSection" class="card hidden">
-            <h2 class="card-title">
-                <div class="icon">💬</div>
-                التواصل مع المشرف
-            </h2>
-
-            <form id="contactForm" style="margin-top: 25px;">
-                <div class="form-group">
-                    <label>الاسم الثلاثي:</label>
-                    <input type="text" id="contactName" readonly style="background: #f5f5f5; cursor: not-allowed;">
-                </div>
-
-                <div class="form-group">
-                    <label>الصف:</label>
-                    <input type="text" id="contactGrade" readonly style="background: #f5f5f5; cursor: not-allowed;">
-                </div>
-
-                <div class="form-group">
-                    <label>الشعبة:</label>
-                    <select id="contactClass" required style="padding: 12px; border-radius: 10px; border: 2px solid #667eea;">
-                        <option value="">اختر الشعبة</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>نص الرسالة (حد أقصى 500 كلمة):</label>
-                    <textarea id="contactMessage" rows="10" required 
-                        style="resize: vertical; padding: 15px; border-radius: 10px; border: 2px solid #667eea; font-family: inherit; width: 100%;"
-                        placeholder="اكتب رسالتك هنا..."></textarea>
-                    <div style="text-align: left; font-size: 13px; color: #666; margin-top: 8px; font-weight: 500;">
-                        <span id="wordCount" style="color: #667eea; font-weight: bold;">0</span> / 500 كلمة
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px;">
-                    <button type="submit" class="btn primary">📤 إرسال الرسالة</button>
-                    <button type="button" class="btn secondary" onclick="backToDashboard()">العودة</button>
-                </div>
-            </form>
         </div>
 
         <!-- Footer -->
@@ -1121,7 +1078,7 @@
         }
 
         function showSection(sectionId) {
-            const sections = ['registration', 'login', 'dashboard', 'testSection', 'resultsSection', 'contactSection'];
+            const sections = ['registration', 'login', 'dashboard', 'testSection', 'resultsSection'];
             sections.forEach(section => {
                 document.getElementById(section).classList.add('hidden');
             });
@@ -1773,6 +1730,11 @@
                 console.error('Error loading results:', error);
                 showNotification('حدث خطأ أثناء تحميل النتائج', 'error');
             }
+        };
+
+        window.backToDashboard = function() {
+            updateDashboardInfo();
+            showSection('dashboard');
         };
 
         window.logout = function() {
