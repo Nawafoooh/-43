@@ -213,6 +213,10 @@
             background: linear-gradient(135deg, #d4c4b4, #c4b4a4);
         }
 
+        .btn.primary {
+            background: linear-gradient(135deg, #e8b4d9, #d4a5c4);
+        }
+
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -272,239 +276,6 @@
             margin: 10px 0;
         }
 
-        .question-card {
-            border: 2px solid #f0e1ed;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 20px 0;
-            background: #faf7f9;
-        }
-
-        .timer-container {
-            background: linear-gradient(135deg, #e7b4c4, #d7a4b4);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(231, 180, 196, 0.3);
-            animation: timerPulse 1s infinite;
-        }
-
-        .timer-container.warning {
-            animation: timerWarning 0.5s infinite;
-        }
-
-        @keyframes timerPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        @keyframes timerWarning {
-            0%, 100% { background: linear-gradient(135deg, #e7b4c4, #d7a4b4); }
-            50% { background: linear-gradient(135deg, #d7a4b4, #e7b4c4); }
-        }
-
-        .timer-number {
-            font-size: 2.5em;
-            font-weight: bold;
-            margin: 10px 0;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .timer-label {
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-
-        .competition-status {
-            background: linear-gradient(135deg, #e8b4d9, #d4a5c4);
-            color: white;
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            margin: 20px 0;
-            box-shadow: 0 10px 30px rgba(232, 180, 217, 0.3);
-        }
-
-        .competition-status.closed {
-            background: linear-gradient(135deg, #c9b4d4, #b9a4c4);
-        }
-
-        .countdown-display {
-            font-size: 2em;
-            font-weight: bold;
-            margin: 15px 0;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .motivational-message {
-            font-size: 1.2em;
-            margin: 15px 0;
-            line-height: 1.6;
-        }
-
-        .question-text {
-            font-size: 1.2em;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        .options {
-            display: grid;
-            gap: 15px;
-        }
-
-        .option {
-            background: white;
-            border: 2px solid #f0e1ed;
-            border-radius: 10px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .option:hover {
-            border-color: #d4a5c4;
-            background: #faf7f9;
-        }
-
-        .option.selected {
-            border-color: #d4a5c4;
-            background: #d4a5c4;
-            color: white;
-        }
-
-        .option.correct {
-            border-color: #b4d4c4;
-            background: #b4d4c4;
-            color: white;
-        }
-
-        .option.wrong {
-            border-color: #e7b4c4;
-            background: #e7b4c4;
-            color: white;
-        }
-
-        .score-display {
-            background: linear-gradient(135deg, #d4c4b4, #c4b4a4);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .score-number {
-            font-size: 2.5em;
-            font-weight: bold;
-        }
-
-        .leaderboard {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        .leaderboard-header {
-            background: linear-gradient(135deg, #b88ec4, #a87eb4);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .warning-box {
-            background: linear-gradient(135deg, #fff3cd, #ffe8a1);
-            border: 2px solid #f39c12;
-            color: #856404;
-            padding: 20px;
-            border-radius: 15px;
-            margin: 20px 0;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(243, 156, 18, 0.2);
-        }
-
-        .warning-box h3 {
-            font-size: 1.3em;
-            margin-bottom: 10px;
-            color: #f39c12;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            border-bottom: 1px solid #f0e1ed;
-            transition: all 0.3s ease;
-        }
-
-        .leaderboard-item:last-child {
-            border-bottom: none;
-        }
-
-        .leaderboard-item.first {
-            background: linear-gradient(135deg, #f4daa5, #e4ca95);
-            color: white;
-        }
-
-        .leaderboard-item.second {
-            background: linear-gradient(135deg, #d4d4d4, #c4c4c4);
-            color: white;
-        }
-
-        .leaderboard-item.third {
-            background: linear-gradient(135deg, #d4b4a4, #c4a494);
-            color: white;
-        }
-
-        .rank {
-            font-size: 1.2em;
-            font-weight: bold;
-            min-width: 40px;
-        }
-
-        .student-name {
-            flex: 1;
-            margin: 0 15px;
-        }
-
-        .student-score {
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #f0e1ed;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 20px 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #d4a5c4, #c495b4);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .action-buttons .btn {
-            flex: 1;
-            min-width: 150px;
-        }
-
         .alert-info {
             background: #f4e8f1;
             border: 1px solid #e8d4e5;
@@ -514,13 +285,23 @@
             margin: 15px 0;
         }
 
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 768px) {
             .title-section h1 {
                 font-size: 2em;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
             }
         }
     </style>
@@ -537,7 +318,7 @@
                         <strong>🇸🇦 المملكة العربية السعودية - وزارة التعليم</strong><br>
                         📍 قطاعي أحد والعواليّ<br>
                         🏫 متوسطة الثالثة والأربعون<br>
-                        👩‍💼 <strong>مديرة المدرسة: منى </strong>
+                        👩‍💼 <strong>مديرة المدرسة: منى الرشيدي </strong>
                     </div>
                 </div>
             </div>
@@ -578,7 +359,7 @@
                     <option value="3">الصف الثالث المتوسط</option>
                 </select>
             </div>
-            <button class="btn" onclick="registerStudent()">تسجيل</button>
+            <button class="btn" onclick="registerStudent()" id="registerBtn">تسجيل</button>
             <div style="text-align: center; margin-top: 15px;">
                 <span style="color: #666;">لديك حساب مسبقاً؟</span>
                 <button class="btn secondary" onclick="switchToLogin()" style="margin-top: 10px;">تسجيل الدخول</button>
@@ -596,7 +377,7 @@
                 <label for="loginCode">رقم الطالبة (6 أرقام)</label>
                 <input type="text" id="loginCode" placeholder="أدخلي رقم الطالبة" maxlength="6">
             </div>
-            <button class="btn" onclick="loginStudent()">دخول</button>
+            <button class="btn" onclick="loginStudent()" id="loginBtn">دخول</button>
 
             <div class="forgot-number-section">
                 <div class="alert-info" style="margin-top: 25px; text-align: center;">
@@ -626,121 +407,17 @@
                 <div class="icon test">🎯</div>
                 لوحة الطالبة
             </h2>
-
-            <div class="warning-box">
-                <h3>⚠️ تنبيه هام قبل البدء</h3>
-                <p style="font-size: 1.1em; line-height: 1.8; margin-top: 10px;">
-                    🌟 اعتمدي على نفسك وقدراتك<br>
-                    📚 كل سؤال تجيبينه بنفسك يزيد من معرفتك<br>
-                    🎯 النجاح الحقيقي يأتي من الفهم والجهد الذاتي<br>
-                    💪 ثقي بإمكانياتك ولا تبحثي عن طرق مختصرة
-                </p>
-            </div>
-
-            <div id="competitionStatusDashboard"></div>
             <div id="studentInfo"></div>
-            <div class="score-display">
+            <div class="score-display" style="background: linear-gradient(135deg, #d4c4b4, #c4b4a4); color: white; padding: 20px; border-radius: 15px; text-align: center; margin: 20px 0;">
                 <h3>نقاطك الحالية</h3>
-                <div class="score-number" id="currentScore">0</div>
+                <div class="score-number" style="font-size: 2.5em; font-weight: bold;" id="currentScore">0</div>
             </div>
-            <div class="action-buttons">
-                <button class="btn success" onclick="startTest()" id="startTestBtn">بدء الاختبار</button>
-                <button class="btn warning" onclick="showResults()">عرض النتائج</button>
-                <button class="btn primary" onclick="showContactForm()">💬 التواصل مع المشرفة</button>
-                <button class="btn secondary" onclick="logout()">تسجيل الخروج</button>
-            </div>
-        </div>
-
-        <!-- Test Section -->
-        <div id="testSection" class="card hidden">
-            <h2 class="card-title">
-                <div class="icon test">📝</div>
-                بنك الأسئلة
-            </h2>
-            <div id="questionTimer" class="timer-container">
-                <div class="timer-label">⏱️ الوقت المتبقي</div>
-                <div class="timer-number" id="timerDisplay">2:00</div>
-                <div class="timer-label" id="timerMessage">أجيبي قبل انتهاء الوقت!</div>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div id="questionContainer"></div>
-            <div class="action-buttons">
-                <button class="btn secondary" onclick="saveAndExit()">حفظ وخروج</button>
-                <button class="btn" onclick="nextQuestion()" id="nextBtn">التالي</button>
-            </div>
-        </div>
-
-        <!-- Results Section -->
-        <div id="resultsSection" class="card hidden">
-            <h2 class="card-title">
-                <div class="icon results">🏆</div>
-                النتائج والترتيب
-            </h2>
-            
-            <div class="leaderboard">
-                <div class="leaderboard-header">
-                    <h3>ترتيب الصف</h3>
-                </div>
-                <div id="classLeaderboard"></div>
-            </div>
-
-            <div class="leaderboard">
-                <div class="leaderboard-header">
-                    <h3>ترتيب المدرسة</h3>
-                </div>
-                <div id="schoolLeaderboard"></div>
-            </div>
-
-            <button class="btn" onclick="backToDashboard()">العودة للوحة الطالبة</button>
-        </div>
-
-        <!-- Contact Section -->
-        <div id="contactSection" class="card hidden">
-            <h2 class="card-title">
-                <div class="icon">💬</div>
-                التواصل مع المشرفة
-            </h2>
-
-            <form id="contactForm" style="margin-top: 25px;">
-                <div class="form-group">
-                    <label>الاسم الثلاثي:</label>
-                    <input type="text" id="contactName" readonly style="background: #f5f5f5; cursor: not-allowed;">
-                </div>
-
-                <div class="form-group">
-                    <label>الصف:</label>
-                    <input type="text" id="contactGrade" readonly style="background: #f5f5f5; cursor: not-allowed;">
-                </div>
-
-                <div class="form-group">
-                    <label>الشعبة:</label>
-                    <select id="contactClass" required style="padding: 12px; border-radius: 10px; border: 2px solid #e8b4d9;">
-                        <option value="">اختر الشعبة</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>نص الرسالة (حد أقصى 500 كلمة):</label>
-                    <textarea id="contactMessage" rows="10" required 
-                        style="resize: vertical; padding: 15px; border-radius: 10px; border: 2px solid #e8b4d9; font-family: inherit;"
-                        placeholder="اكتبي رسالتك هنا..."></textarea>
-                    <div style="text-align: left; font-size: 13px; color: #666; margin-top: 8px; font-weight: 500;">
-                        <span id="wordCount" style="color: #d4a5c4; font-weight: bold;">0</span> / 500 كلمة
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px;">
-                    <button type="submit" class="btn primary">📤 إرسال الرسالة</button>
-                    <button type="button" class="btn secondary" onclick="backToDashboard()">العودة</button>
-                </div>
-            </form>
+            <button class="btn secondary" onclick="logout()">تسجيل الخروج</button>
         </div>
 
         <!-- Footer -->
         <div style="text-align: center; margin-top: 40px; color: white; font-size: 14px;">
-            <p> اشراف الاستاذه ريم العنزي  </p>
+            <p>اشراف الاستاذه ريم العنزي</p>
         </div>
     </div>
 
@@ -750,326 +427,56 @@
     </div>
 
     <script type="module">
-        // Import the functions you need from the SDKs you need
-           import { initializeApp } from "firebase/app";
-           import { getAnalytics } from "firebase/analytics";
-           import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, updateDoc, doc } from "firebase/firestore";
-        
-     // TODO: Add SDKs for Firebase products that you want to use
-     // https://firebase.google.com/docs/web/setup#available-libraries
+        // ✅ FIX 1: Import ALL required Firebase functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            getDocs, 
+            query, 
+            where, 
+            orderBy, 
+            updateDoc, 
+            doc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-       // Your web app's Firebase configuration
-       // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-       const firebaseConfig = {
-       apiKey: "AIzaSyAwB-NddnSti81ieiRpvyDFpAlA3UyJSVk",
-       authDomain: "nafis-new.firebaseapp.com",
-       projectId: "nafis-new",
-       storageBucket: "nafis-new.firebasestorage.app",
-       messagingSenderId: "366381122504",
-       appId: "1:366381122504:web:b84adfa0be0dea1e2df6fd",
-       measurementId: "G-641VBH48XM"
-       };
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwB-NddnSti81ieiRpvyDFpAlA3UyJSVk",
+            authDomain: "nafis-new.firebaseapp.com",
+            projectId: "nafis-new",
+            storageBucket: "nafis-new.firebasestorage.app",
+            messagingSenderId: "366381122504",
+            appId: "1:366381122504:web:b84adfa0be0dea1e2df6fd",
+            measurementId: "G-641VBH48XM"
+        };
 
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-      const analytics = getAnalytics(app);
-      const db = getFirestore(app);
+        // Initialize Firebase
+        let app, analytics, db;
+        let isFirebaseInitialized = false;
+
+        try {
+            app = initializeApp(firebaseConfig);
+            analytics = getAnalytics(app);
+            db = getFirestore(app);
+            isFirebaseInitialized = true;
+            console.log("✅ Firebase initialized successfully");
+        } catch (error) {
+            console.error("❌ Firebase initialization error:", error);
+            showNotification('خطأ في الاتصال بقاعدة البيانات', 'error');
+        }
 
         let currentStudent = null;
-        let currentQuestion = 0;
-        let questions = [];
-        let studentAnswers = [];
-        let questionTimer = null;
-        let timeRemaining = 120;
-        let competitionStatusInterval = null;
-        
-        let sessionStartTime = null;
-        let questionsAnsweredInSession = 0;
 
-        const defaultQuestions = [
-            {
-                id: 1,
-                question: "ما هو حاصل ضرب 7 × 8؟",
-                options: ["54", "56", "58", "60"],
-                correct: 1,
-                subject: "رياضيات",
-                active: true
-            },
-            {
-                id: 2,
-                question: "ما هي عاصمة المملكة العربية السعودية؟",
-                options: ["جدة", "الرياض", "الدمام", "مكة المكرمة"],
-                correct: 1,
-                subject: "جغرافيا",
-                active: true
-            },
-            {
-                id: 3,
-                question: "كم عدد أركان الإسلام؟",
-                options: ["4", "5", "6", "7"],
-                correct: 1,
-                subject: "تربية إسلامية",
-                active: true
-            },
-            {
-                id: 4,
-                question: "ما هو أكبر كوكب في النظام الشمسي؟",
-                options: ["الأرض", "المشتري", "زحل", "المريخ"],
-                correct: 1,
-                subject: "علوم",
-                active: true
-            },
-            {
-                id: 5,
-                question: "من هو أول خليفة راشد؟",
-                options: ["عمر بن الخطاب", "أبو بكر الصديق", "عثمان بن عفان", "علي بن أبي طالب"],
-                correct: 1,
-                subject: "تاريخ",
-                active: true
-            }
-        ];
-
+        // ✅ FIX 2: Generate unique 6-digit code
         function generateStudentCode() {
             return Math.floor(100000 + Math.random() * 900000).toString();
         }
 
-        function checkCompetitionStatus() {
-            const now = new Date();
-            const riyadhTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Riyadh' }));
-            const dayOfWeek = riyadhTime.getDay();
-            const hours = riyadhTime.getHours();
-
-            let isOpen = false;
-            let nextEventDate = null;
-            let eventType = '';
-
-            if (dayOfWeek === 0) {
-                if (hours >= 10) {
-                    isOpen = true;
-                } else {
-                    nextEventDate = new Date(riyadhTime);
-                    nextEventDate.setHours(10, 0, 0, 0);
-                    eventType = 'start';
-                }
-            } else if (dayOfWeek >= 1 && dayOfWeek <= 2) {
-                isOpen = true;
-            } else if (dayOfWeek === 3) {
-                if (hours < 22) {
-                    isOpen = true;
-                } else {
-                    isOpen = false;
-                    nextEventDate = getNextSunday(riyadhTime);
-                    nextEventDate.setHours(10, 0, 0, 0);
-                    eventType = 'start';
-                }
-            } else {
-                isOpen = false;
-                nextEventDate = getNextSunday(riyadhTime);
-                nextEventDate.setHours(10, 0, 0, 0);
-                eventType = 'start';
-            }
-
-            if (isOpen && !nextEventDate) {
-                nextEventDate = getNextWednesday(riyadhTime);
-                nextEventDate.setHours(22, 0, 0, 0);
-                eventType = 'end';
-            }
-
-            return { isOpen, nextEventDate, eventType, riyadhTime };
-        }
-
-        function getNextSunday(currentDate) {
-            const result = new Date(currentDate);
-            const dayOfWeek = result.getDay();
-            const daysUntilSunday = dayOfWeek === 0 ? 7 : (7 - dayOfWeek);
-            result.setDate(result.getDate() + daysUntilSunday);
-            return result;
-        }
-
-        function getNextWednesday(currentDate) {
-            const result = new Date(currentDate);
-            const dayOfWeek = result.getDay();
-            let daysUntilWednesday;
-            
-            if (dayOfWeek <= 3) {
-                daysUntilWednesday = 3 - dayOfWeek;
-            } else {
-                daysUntilWednesday = 7 - dayOfWeek + 3;
-            }
-            
-            result.setDate(result.getDate() + daysUntilWednesday);
-            return result;
-        }
-
-        function formatTimeRemaining(nextEventDate, currentTime) {
-            const diff = nextEventDate - currentTime;
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-            if (days > 0) {
-                return `${days} يوم و ${hours} ساعة`;
-            } else if (hours > 0) {
-                return `${hours} ساعة و ${minutes} دقيقة`;
-            } else if (minutes > 0) {
-                return `${minutes} دقيقة و ${seconds} ثانية`;
-            } else {
-                return `${seconds} ثانية`;
-            }
-        }
-
-        function getMotivationalMessage(eventType, timeLeft) {
-            const diff = timeLeft;
-            const hours = diff / (1000 * 60 * 60);
-
-            if (eventType === 'end') {
-                if (hours <= 1) {
-                    const messages = [
-                        '⚡ الوقت ينفد! اللحظات الأخيرة لتحقيق أعلى النقاط!',
-                        '🔥 أقل من ساعة متبقية! أثبتي تفوقك الآن!',
-                        '💪 الفرصة الأخيرة لكسر الأرقام القياسية!',
-                        '⏰ دقائق معدودة! كل سؤال يحسب!',
-                        '🏆 السباق الأخير نحو القمة!'
-                    ];
-                    return messages[Math.floor(Math.random() * messages.length)];
-                } else if (hours <= 6) {
-                    return '⏱️ ساعات قليلة متبقية! استغلي الوقت وحققي أكبر عدد من النقاط!';
-                } else if (hours <= 24) {
-                    return '🎯 يوم واحد متبقي! لا تفوتي فرصة التفوق هذا الأسبوع!';
-                } else {
-                    return '📚 المسابقة مستمرة! واصلي التقدم واكسبي المزيد من النقاط!';
-                }
-            } else {
-                if (hours <= 24) {
-                    const messages = [
-                        '🎉 غداً ينطلق التحدي الأسبوعي! هل أنت مستعدة؟',
-                        '⭐ أقل من يوم على انطلاق المسابقة! جهزي نفسك!',
-                        '🚀 العد التنازلي بدأ! استعدي لتحدي جديد!',
-                        '💫 ساعات قليلة وينطلق السباق نحو القمة!'
-                    ];
-                    return messages[Math.floor(Math.random() * messages.length)];
-                } else if (hours <= 48) {
-                    return '🌟 يومان فقط! استعدي لأسبوع مليء بالتحديات والإنجازات!';
-                } else {
-                    const messages = [
-                        '🖐️ استمتعي بوقتك! المسابقة تعود يوم الأحد مع تحديات جديدة!',
-                        '💪 فترة راحة مستحقة! عودي أقوى يوم الأحد!',
-                        '🎯 المسابقة مؤجلة مؤقتاً - نلتقي بتحديات أقوى يوم الأحد!',
-                        '⚡ اشحني طاقتك! موعدنا الأحد الساعة 10:00 صباحاً لتحديات جديدة!'
-                    ];
-                    return messages[Math.floor(Math.random() * messages.length)];
-                }
-            }
-        }
-
-        function updateCompetitionStatusDisplay(containerId) {
-            const status = checkCompetitionStatus();
-            const container = document.getElementById(containerId);
-            
-            if (!container) return;
-
-            const timeLeft = status.nextEventDate - status.riyadhTime;
-            const formattedTime = formatTimeRemaining(status.nextEventDate, status.riyadhTime);
-            const message = getMotivationalMessage(status.eventType, timeLeft);
-
-            if (status.isOpen) {
-                container.innerHTML = `
-                    <div class="competition-status">
-                        <h3>✅ المسابقة الأسبوعية مفتوحة الآن!</h3>
-                        <div class="motivational-message">${message}</div>
-                        <div class="countdown-display">⏰ ${formattedTime}</div>
-                        <p style="font-size: 0.9em; opacity: 0.9; margin-top: 10px;">
-                            تنتهي يوم الأربعاء الساعة 10:00 مساءً
-                        </p>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = `
-                    <div class="competition-status closed">
-                        <h3>⏸️ المسابقة مغلقة مؤقتاً</h3>
-                        <div class="motivational-message">${message}</div>
-                        <div class="countdown-display">🚀 ${formattedTime}</div>
-                        <p style="font-size: 0.9em; opacity: 0.9; margin-top: 10px;">
-                            المسابقة تفتح يوم الأحد الساعة 10:00 صباحاً
-                        </p>
-                    </div>
-                `;
-            }
-        }
-
-        function startQuestionTimer() {
-            clearInterval(questionTimer);
-            timeRemaining = 120;
-            updateTimerDisplay();
-
-            questionTimer = setInterval(() => {
-                timeRemaining--;
-                updateTimerDisplay();
-
-                if (timeRemaining <= 0) {
-                    clearInterval(questionTimer);
-                    handleTimeOut();
-                }
-            }, 1000);
-        }
-
-        function updateTimerDisplay() {
-            const minutes = Math.floor(timeRemaining / 60);
-            const seconds = timeRemaining % 60;
-            const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            
-            const timerElement = document.getElementById('timerDisplay');
-            const timerContainer = document.getElementById('questionTimer');
-            const timerMessage = document.getElementById('timerMessage');
-            
-            if (timerElement) {
-                timerElement.textContent = display;
-            }
-
-            if (timerContainer && timerMessage) {
-                if (timeRemaining <= 30) {
-                    timerContainer.classList.add('warning');
-                    if (timeRemaining <= 10) {
-                        timerMessage.textContent = '⚠️ الوقت ينفد! أسرعي!';
-                    } else {
-                        timerMessage.textContent = '⏰ أقل من 30 ثانية!';
-                    }
-                } else if (timeRemaining <= 60) {
-                    timerMessage.textContent = '🏃 دقيقة واحدة متبقية!';
-                } else {
-                    timerContainer.classList.remove('warning');
-                    timerMessage.textContent = 'أجيبي قبل انتهاء الوقت!';
-                }
-            }
-        }
-
-        function stopQuestionTimer() {
-            clearInterval(questionTimer);
-        }
-
-        async function handleTimeOut() {
-            const status = checkCompetitionStatus();
-            if (!status.isOpen) {
-                stopQuestionTimer();
-                showNotification('⛔ المسابقة أغلقت! تم إيقاف الاختبار', 'error');
-                alert('🚫 انتهى وقت المسابقة.\nتم إيقاف الاختبار تلقائياً.');
-                await saveAndExit();
-                return;
-            }
-
-            showNotification('⏰ انتهى الوقت! الانتقال للسؤال التالي', 'warning');
-            
-            if (studentAnswers[currentQuestion] === undefined) {
-                studentAnswers[currentQuestion] = -1;
-            }
-
-            setTimeout(() => {
-                currentQuestion++;
-                displayQuestion();
-            }, 2000);
-        }
-
+        // ✅ FIX 3: Show notification function
         function showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
             const notificationText = document.getElementById('notificationText');
@@ -1083,84 +490,57 @@
             }, 3000);
         }
 
+        // ✅ FIX 4: Show/Hide sections
         function showSection(sectionId) {
-            const sections = ['registration', 'login', 'dashboard', 'testSection', 'resultsSection', 'contactSection'];
+            const sections = ['registration', 'login', 'dashboard'];
             sections.forEach(section => {
                 document.getElementById(section).classList.add('hidden');
             });
             document.getElementById(sectionId).classList.remove('hidden');
         }
 
-        const CACHE_DURATION = 5 * 60 * 1000;
-        let cachedQuestions = null;
-        let cacheTimestamp = null;
-
-        async function loadQuestions() {
-            const now = Date.now();
-            if (cachedQuestions && cacheTimestamp && (now - cacheTimestamp < CACHE_DURATION)) {
-                console.log('📦 استخدام الأسئلة من Cache (توفير القراءات)');
-                questions = [...cachedQuestions];
-                showNotification(`تم تحميل ${questions.length} سؤال من الذاكرة المؤقتة`, 'success');
-                return true;
-            }
-
-            try {
-                console.log('🔄 جاري تحميل الأسئلة من Firebase...');
-                const questionsQuery = query(
-                    collection(db, 'questions'), 
-                    where('active', '==', true)
-                );
-                const questionsSnapshot = await getDocs(questionsQuery);
-                
-                if (!questionsSnapshot.empty) {
-                    questions = [];
-                    questionsSnapshot.forEach((doc) => {
-                        questions.push({ id: doc.id, ...doc.data() });
-                    });
-                    
-                    cachedQuestions = [...questions];
-                    cacheTimestamp = now;
-                    
-                    console.log(`✅ تم تحميل ${questions.length} سؤال من Firebase`);
-                    showNotification(`تم تحميل ${questions.length} سؤال من قاعدة البيانات`, 'success');
-                    return true;
-                } else {
-                    console.log('⚠️ لا توجد أسئلة في Firebase، استخدام الأسئلة الافتراضية');
-                    questions = [...defaultQuestions];
-                    cachedQuestions = [...defaultQuestions];
-                    cacheTimestamp = now;
-                    showNotification('لم يتم نشر أسئلة بعد. يتم استخدام الأسئلة الافتراضية', 'info');
-                    return false;
-                }
-            } catch (error) {
-                console.error('❌ خطأ في تحميل الأسئلة:', error);
-                questions = [...defaultQuestions];
-                showNotification('خطأ في الاتصال، استخدام الأسئلة الافتراضية', 'error');
-                return false;
-            }
-        }
-
+        // ✅ FIX 5: Register Student with proper error handling
         window.registerStudent = async function() {
+            if (!isFirebaseInitialized) {
+                showNotification('خطأ في الاتصال بقاعدة البيانات. حاولي لاحقاً', 'error');
+                return;
+            }
+
             const name = document.getElementById('studentName').value.trim();
             const grade = document.getElementById('studentGrade').value;
+            const registerBtn = document.getElementById('registerBtn');
 
             if (!name || !grade) {
                 showNotification('يرجى إدخال جميع البيانات المطلوبة', 'error');
                 return;
             }
 
+            // Validate full name (at least 3 parts)
             const nameParts = name.split(' ').filter(part => part.length > 0);
             if (nameParts.length < 3) {
                 showNotification('يرجى إدخال الاسم الرباعي كاملاً (على الأقل 3 أجزاء)', 'error');
                 return;
             }
 
+            // Disable button and show loading
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<span class="loading-spinner"></span> جاري التسجيل...';
+
             try {
-                const nameQuery = query(collection(db, 'students'), where('name', '==', name));
+                console.log('🔍 Checking if name exists:', name);
+                
+                // Check if name already exists
+                const nameQuery = query(
+                    collection(db, 'students'), 
+                    where('name', '==', name)
+                );
                 const existingStudents = await getDocs(nameQuery);
 
                 if (!existingStudents.empty) {
                     showNotification('هذا الاسم مسجل مسبقاً. استخدمي تسجيل الدخول', 'error');
+                    registerBtn.disabled = false;
+                    registerBtn.textContent = 'تسجيل';
+                    
                     setTimeout(() => {
                         const switchConfirm = confirm('هل تريدين الانتقال لتسجيل الدخول؟');
                         if (switchConfirm) {
@@ -1170,702 +550,192 @@
                     return;
                 }
 
-                const studentCode = generateStudentCode();
+                // Generate unique student code
+                let studentCode;
+                let codeExists = true;
+                let attempts = 0;
+                
+                while (codeExists && attempts < 10) {
+                    studentCode = generateStudentCode();
+                    const codeQuery = query(
+                        collection(db, 'students'), 
+                        where('code', '==', studentCode)
+                    );
+                    const codeCheck = await getDocs(codeQuery);
+                    codeExists = !codeCheck.empty;
+                    attempts++;
+                }
+
+                if (codeExists) {
+                    throw new Error('فشل في إنشاء رقم طالبة فريد');
+                }
+
+                console.log('✅ Creating new student with code:', studentCode);
+
+                // Create student document
                 const studentData = {
-                name: name,
-                grade: grade,
-                code: studentCode,
-                score: 0,
-                questionsAnswered: 0,
-                createdAt: new Date(),
-                lastActive: new Date(), 
-                schoolId: "nafis-school-2"
+                    name: name,
+                    grade: grade,
+                    code: studentCode,
+                    score: 0,
+                    questionsAnswered: 0,
+                    createdAt: serverTimestamp(),
+                    lastActive: serverTimestamp(),
+                    schoolId: "nafis-school-2",
+                    testCompleted: false
                 };
 
-                await addDoc(collection(db, 'students'), studentData);
+                const docRef = await addDoc(collection(db, 'students'), studentData);
+                console.log('✅ Student created with ID:', docRef.id);
 
-                currentStudent = studentData;
-                currentStudent.id = studentCode;
+                // Update current student
+                currentStudent = { ...studentData, id: docRef.id };
                 
+                // Show success message with code
                 const studentInfo = document.getElementById('studentInfo');
                 studentInfo.innerHTML = `
                     <div class="student-code">
-                        <h3>تم التسجيل بنجاح!</h3>
+                        <h3>تم التسجيل بنجاح! ✅</h3>
                         <p>رقم الطالبة الخاص بك:</p>
                         <div class="code-display">${studentCode}</div>
-                        <p style="font-size: 0.9em; margin-top: 10px;">احفظي هذا الرقم لتسجيل الدخول من أي جهاز</p>
+                        <p style="font-size: 0.9em; margin-top: 10px;">⚠️ احفظي هذا الرقم لتسجيل الدخول</p>
+                    </div>
+                    <div style="text-align: center; margin: 20px 0;">
+                        <h3>مرحباً ${name}</h3>
+                        <p>الصف: ${grade}</p>
                     </div>
                 `;
 
                 document.getElementById('currentScore').textContent = '0';
-                showNotification('تم التسجيل بنجاح!', 'success');
+                showNotification('تم التسجيل بنجاح! 🎉', 'success');
                 showSection('dashboard');
-                updateDashboardInfo();
 
             } catch (error) {
-                console.error('Error:', error);
-                showNotification('حدث خطأ أثناء التسجيل', 'error');
+                console.error('❌ Registration error:', error);
+                showNotification('حدث خطأ أثناء التسجيل: ' + error.message, 'error');
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'تسجيل';
             }
         };
 
+        // ✅ FIX 6: Login Student with proper error handling
         window.loginStudent = async function() {
+            if (!isFirebaseInitialized) {
+                showNotification('خطأ في الاتصال بقاعدة البيانات. حاولي لاحقاً', 'error');
+                return;
+            }
+
             const code = document.getElementById('loginCode').value.trim();
+            const loginBtn = document.getElementById('loginBtn');
 
             if (!code || code.length !== 6) {
                 showNotification('يرجى إدخال رقم صحيح مكون من 6 أرقام', 'error');
                 return;
             }
 
+            // Disable button and show loading
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<span class="loading-spinner"></span> جاري تسجيل الدخول...';
+
             try {
-                const studentsQuery = query(collection(db, 'students'), where('code', '==', code));
+                console.log('🔍 Searching for student with code:', code);
+
+                const studentsQuery = query(
+                    collection(db, 'students'), 
+                    where('code', '==', code)
+                );
                 const querySnapshot = await getDocs(studentsQuery);
 
                 if (querySnapshot.empty) {
-                    showNotification('رقم الطالبة غير صحيح', 'error');
+                    showNotification('رقم الطالبة غير صحيح ❌', 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'دخول';
                     return;
                 }
 
                 const studentDoc = querySnapshot.docs[0];
                 currentStudent = { id: studentDoc.id, ...studentDoc.data() };
 
-                if (currentStudent.lastQuestion !== undefined) {
-                    currentQuestion = currentStudent.lastQuestion;
-                    studentAnswers = currentStudent.lastAnswers || [];
-                }
+                console.log('✅ Student found:', currentStudent.name);
 
+                // Update last active
                 await updateDoc(doc(db, 'students', studentDoc.id), {
-                    lastActive: new Date()
+                    lastActive: serverTimestamp()
                 });
 
-                updateDashboardInfo();
-                showNotification(`مرحباً بك ${currentStudent.name}!`, 'success');
+                // Show dashboard
+                const studentInfo = document.getElementById('studentInfo');
+                studentInfo.innerHTML = `
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h3>مرحباً ${currentStudent.name} 👋</h3>
+                        <p>الصف: ${currentStudent.grade}</p>
+                        <p>رقم الطالبة: ${currentStudent.code}</p>
+                    </div>
+                `;
+
+                document.getElementById('currentScore').textContent = currentStudent.score || 0;
+                showNotification(`مرحباً بك ${currentStudent.name}! 🎉`, 'success');
                 showSection('dashboard');
 
             } catch (error) {
-                console.error('Error:', error);
-                showNotification('حدث خطأ أثناء تسجيل الدخول', 'error');
+                console.error('❌ Login error:', error);
+                showNotification('حدث خطأ أثناء تسجيل الدخول: ' + error.message, 'error');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'دخول';
             }
         };
 
+        // Switch functions
         window.switchToLogin = function() {
             showSection('login');
+            document.getElementById('loginCode').value = '';
             showNotification('قومي بتسجيل الدخول برقم الطالبة', 'info');
         };
 
         window.switchToRegister = function() {
             showSection('registration');
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentGrade').value = '';
             showNotification('أنشئي حساب جديد بالاسم الرباعي', 'info');
         };
 
-        function updateDashboardInfo() {
-            if (!currentStudent) return;
-            
-            updateCompetitionStatusDisplay('competitionStatusDashboard');
-            
-            const status = checkCompetitionStatus();
-            const startTestBtn = document.getElementById('startTestBtn');
-            if (startTestBtn) {
-                if (currentStudent.testCompleted === true) {
-                    startTestBtn.disabled = true;
-                    startTestBtn.textContent = '✅ تم إتمام الاختبار';
-                    startTestBtn.style.opacity = '0.6';
-                    startTestBtn.style.background = 'linear-gradient(135deg, #c9b4d4, #b9a4c4)';
-                } else if (!status.isOpen) {
-                    startTestBtn.disabled = true;
-                    startTestBtn.textContent = '🔒 المسابقة مغلقة';
-                    startTestBtn.style.opacity = '0.6';
-                } else {
-                    startTestBtn.disabled = false;
-                    startTestBtn.textContent = 'بدء الاختبار';
-                    startTestBtn.style.opacity = '1';
-                    startTestBtn.style.background = 'linear-gradient(135deg, #b4d4c4, #a4c4b4)';
-                }
-            }
-            
-            const studentInfo = document.getElementById('studentInfo');
-            let progressInfo = '';
-            
-            if (currentStudent.testCompleted === true) {
-                progressInfo = `
-                    <div style="background: linear-gradient(135deg, #b4d4c4, #a4c4b4); color: white; padding: 20px; border-radius: 15px; margin: 15px 0; text-align: center;">
-                        <h3>🎉 تم إتمام الاختبار بنجاح!</h3>
-                        <p style="font-size: 1.2em; margin: 10px 0;">نقاطك النهائية: <strong>${currentStudent.score || 0}</strong></p>
-                        <p style="font-size: 0.9em; opacity: 0.9;">لا يمكن إعادة الاختبار</p>
-                        <p style="font-size: 0.85em; margin-top: 10px;">تاريخ الإتمام: ${currentStudent.completedAt ? new Date(currentStudent.completedAt.seconds * 1000).toLocaleString('ar-SA') : 'غير متاح'}</p>
-                    </div>
-                `;
-            }
-
-            studentInfo.innerHTML = `
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <h3>مرحباً ${currentStudent.name}</h3>
-                    <p>الصف: ${currentStudent.grade}</p>
-                    <p>رقم الطالبة: ${currentStudent.code}</p>
-                    ${progressInfo}
-                </div>
-            `;
-
-            document.getElementById('currentScore').textContent = currentStudent.score || 0;
-        }
-
-        function startSession() {
-            sessionStartTime = Date.now();
-            questionsAnsweredInSession = 0;
-        }
-
-        window.startTest = async function() {
-            if (!currentStudent) {
-                showNotification('يرجى تسجيل الدخول أولاً', 'error');
-                return;
-            }
-
-            if (currentStudent.testCompleted === true) {
-                showNotification('❌ لقد أتممت الاختبار مسبقاً. لا يمكن إعادته!', 'error');
-                alert('🚫 تنبيه هام:\n\nلقد أكملت الاختبار بالفعل ولا يمكن إعادته.\n\nهذا الإجراء لضمان عدالة المنافسة بين جميع الطالبات.\n\nنقاطك النهائية: ' + (currentStudent.score || 0));
-                return;
-            }
-
-            const status = checkCompetitionStatus();
-            if (!status.isOpen) {
-                const timeLeft = formatTimeRemaining(status.nextEventDate, status.riyadhTime);
-                showNotification(`❌ المسابقة مغلقة حالياً. تفتح بعد: ${timeLeft}`, 'error');
-                return;
-            }
-
-            await loadQuestions();
-
-            if (questions.length === 0) {
-                showNotification('لا توجد أسئلة متاحة حالياً', 'error');
-                return;
-            }
-
-            if (currentStudent.questionsOrder && currentStudent.questionsOrder.length > 0) {
-                const orderedQuestions = [];
-                currentStudent.questionsOrder.forEach(questionId => {
-                    const question = questions.find(q => q.id === questionId);
-                    if (question) {
-                        orderedQuestions.push(question);
-                    }
-                });
-                
-                if (orderedQuestions.length > 0) {
-                    questions = orderedQuestions;
-                    console.log('🔀 تم تحميل الأسئلة بالترتيب المخلوط المحفوظ');
-                }
-            }
-
-            startSession();
-
-            if (currentStudent.lastQuestion !== undefined && currentStudent.lastQuestion < questions.length && !currentStudent.testCompleted) {
-                currentQuestion = currentStudent.lastQuestion;
-                studentAnswers = currentStudent.lastAnswers || [];
-                showNotification(`✅ تم استئناف الاختبار من السؤال ${currentQuestion + 1} من ${questions.length}`, 'success');
-            } else {
-                currentQuestion = 0;
-                studentAnswers = [];
-            }
-
-            showSection('testSection');
-            displayQuestion();
-        };
-
-        function displayQuestion() {
-            const status = checkCompetitionStatus();
-            if (!status.isOpen) {
-                stopQuestionTimer();
-                showNotification('⛔ المسابقة مغلقة! لا يمكن متابعة الاختبار', 'error');
-                alert(
-                    '🚫 المسابقة أغلقت!\n\n' +
-                    'تم إيقاف الاختبار تلقائياً لانتهاء وقت المسابقة.\n\n' +
-                    'نقاطك المحفوظة حتى الآن: ' + (currentStudent.score || 0)
-                );
-                saveAndExit();
-                return;
-            }
-
-            if (currentQuestion >= questions.length) {
-                stopQuestionTimer();
-                showNotification('🎉 تم الانتهاء من جميع الأسئلة!', 'success');
-                markTestAsCompleted();
-                showSection('dashboard');
-                return;
-            }
-
-            startQuestionTimer();
-
-            const question = questions[currentQuestion];
-            const container = document.getElementById('questionContainer');
-            const previousAnswer = studentAnswers[currentQuestion];
-            
-            container.innerHTML = `
-                <div class="question-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <span style="background: linear-gradient(135deg, #e8b4d9, #d4a5c4); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9em;">
-                            ${question.subject}
-                        </span>
-                        <span style="color: #666; font-size: 0.9em;">
-                            السؤال ${currentQuestion + 1} من ${questions.length}
-                        </span>
-                    </div>
-                    <div class="question-text">
-                        <strong>السؤال ${currentQuestion + 1}:</strong> ${question.question}
-                    </div>
-                    ${previousAnswer !== undefined && previousAnswer !== -1 ? 
-                        '<div style="background: #f4e8f1; padding: 10px; border-radius: 8px; margin: 10px 0; color: #6c4460; font-size: 0.9em;">✓ تمت الإجابة على هذا السؤال مسبقاً</div>' : 
-                        ''
-                    }
-                    <div class="options">
-                        ${question.options.map((option, index) => `
-                            <div class="option ${previousAnswer === index ? 'selected' : ''}" 
-                                 onclick="selectOption(${index})" 
-                                 data-index="${index}">
-                                ${String.fromCharCode(65 + index)}) ${option}
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-
-            const progress = ((currentQuestion + 1) / questions.length) * 100;
-            document.getElementById('progressFill').style.width = progress + '%';
-
-            const nextBtn = document.getElementById('nextBtn');
-            if (currentQuestion === questions.length - 1) {
-                nextBtn.textContent = 'إنهاء الاختبار';
-                nextBtn.style.background = 'linear-gradient(135deg, #b4d4c4, #a4c4b4)';
-            } else {
-                nextBtn.textContent = 'التالي';
-                nextBtn.style.background = 'linear-gradient(135deg, #e8b4d9, #d4a5c4)';
-            }
-        }
-
-        async function markTestAsCompleted() {
-            if (!currentStudent) return;
-            
-            try {
-                const studentQuery = query(collection(db, 'students'), where('code', '==', currentStudent.code));
-                const querySnapshot = await getDocs(studentQuery);
-                
-                if (!querySnapshot.empty) {
-                    const studentDocRef = doc(db, 'students', querySnapshot.docs[0].id);
-                    await updateDoc(studentDocRef, {
-                        testCompleted: true,
-                        completedAt: new Date(),
-                        lastQuestion: questions.length,
-                        lastAnswers: [],
-                        finalScore: currentStudent.score,
-                        lastActive: new Date()
-                    });
-                    
-                    currentStudent.testCompleted = true;
-                    currentStudent.lastQuestion = questions.length;
-                    currentStudent.lastAnswers = [];
-                    
-                    setTimeout(() => {
-                        alert(
-                            '🎊 تهانينا!\n\n' +
-                            'لقد أتممت الاختبار بنجاح!\n\n' +
-                            `نقاطك النهائية: ${currentStudent.score}\n\n` +
-                            '⚠️ ملاحظة: لا يمكن إعادة الاختبار مرة أخرى\n' +
-                            'يمكنك الآن مشاهدة ترتيبك في لوحة النتائج'
-                        );
-                        updateDashboardInfo();
-                    }, 1000);
-                }
-            } catch (error) {
-                console.error('Error marking test as completed:', error);
-            }
-        }
-
-        window.selectOption = function(index) {
-            const options = document.querySelectorAll('.option');
-            options.forEach(option => option.classList.remove('selected'));
-            options[index].classList.add('selected');
-            
-            studentAnswers[currentQuestion] = index;
-        };
-
-        window.nextQuestion = async function() {
-            if (studentAnswers[currentQuestion] === undefined) {
-                showNotification('يرجى اختيار إجابة قبل الانتقال للسؤال التالي', 'error');
-                return;
-            }
-
-            const status = checkCompetitionStatus();
-            if (!status.isOpen) {
-                stopQuestionTimer();
-                showNotification('⛔ المسابقة أغلقت! لا يمكن متابعة الاختبار', 'error');
-                alert(
-                    '🚫 تنبيه هام!\n\n' +
-                    'انتهى وقت المسابقة الأسبوعية.\n' +
-                    'تم إيقاف الاختبار تلقائياً.\n\n' +
-                    'نقاطك المسجلة حتى الآن: ' + (currentStudent.score || 0) + '\n\n' +
-                    'المسابقة تفتح يوم الأحد الساعة 10:00 صباحاً'
-                );
-                await saveAndExit();
-                return;
-            }
-
-            questionsAnsweredInSession++;
-            stopQuestionTimer();
-
-            const question = questions[currentQuestion];
-            const selectedAnswer = studentAnswers[currentQuestion];
-            const isCorrect = selectedAnswer === question.correct;
-
-            const options = document.querySelectorAll('.option');
-            options[question.correct].classList.add('correct');
-            if (!isCorrect && selectedAnswer !== -1) {
-                options[selectedAnswer].classList.add('wrong');
-            }
-
-            if (isCorrect) {
-                currentStudent.score += 1;
-                showNotification('إجابة صحيحة! +1 نقطة', 'success');
-            } else {
-                showNotification('إجابة خاطئة!', 'error');
-            }
-
-            scheduleScoreUpdate({
-                score: currentStudent.score,
-                questionsAnswered: (currentStudent.questionsAnswered || 0) + 1,
-                lastActive: new Date(),
-                lastScoreUpdate: new Date()
-            });
-
-            document.getElementById('currentScore').textContent = currentStudent.score;
-
-            setTimeout(() => {
-                currentQuestion++;
-                displayQuestion();
-            }, 2000);
-        };
-
-        window.saveAndExit = async function() {
-            if (!currentStudent) {
-                showNotification('خطأ: لم يتم العثور على بيانات الطالبة', 'error');
-                return;
-            }
-
-            stopQuestionTimer();
-
-            try {
-                const studentQuery = query(collection(db, 'students'), where('code', '==', currentStudent.code));
-                const querySnapshot = await getDocs(studentQuery);
-                
-                if (!querySnapshot.empty) {
-                    const studentDocRef = doc(db, 'students', querySnapshot.docs[0].id);
-                    
-                    const answeredQuestions = questions.slice(0, currentQuestion + 1);
-                    const remainingQuestions = questions.slice(currentQuestion + 1);
-                    
-                    for (let i = remainingQuestions.length - 1; i > 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        [remainingQuestions[i], remainingQuestions[j]] = [remainingQuestions[j], remainingQuestions[i]];
-                    }
-                    
-                    questions = [...answeredQuestions, ...remainingQuestions];
-                    
-                    const shuffledQuestionsOrder = questions.map(q => q.id);
-                    
-                    await updateDoc(studentDocRef, {
-                        lastQuestion: currentQuestion,
-                        lastAnswers: studentAnswers,
-                        score: currentStudent.score,
-                        questionsOrder: shuffledQuestionsOrder,
-                        lastActive: new Date(),
-                        savedAt: new Date(),
-                        testCompleted: false
-                    });
-                    
-                    currentStudent.lastQuestion = currentQuestion;
-                    currentStudent.lastAnswers = studentAnswers;
-                    currentStudent.questionsOrder = shuffledQuestionsOrder;
-                    currentStudent.testCompleted = false;
-                    
-                    showNotification('✅ تم حفظ تقدمك بنجاح!\n⚠️ تنبيه: الأسئلة المتبقية تم خلطها 🔀', 'success');
-                    
-                    setTimeout(() => {
-                        updateDashboardInfo();
-                        showSection('dashboard');
-                    }, 2500);
-                }
-                
-            } catch (error) {
-                console.error('Error saving progress:', error);
-                showNotification('حدث خطأ أثناء الحفظ', 'error');
-            }
-        };
-
-        let pendingUpdates = [];
-        let updateTimeout = null;
-
-        async function batchUpdateScore(updates) {
-            if (!currentStudent) return;
-            
-            try {
-                const studentQuery = query(collection(db, 'students'), where('code', '==', currentStudent.code));
-                const querySnapshot = await getDocs(studentQuery);
-                
-                if (!querySnapshot.empty) {
-                    const studentDocRef = doc(db, 'students', querySnapshot.docs[0].id);
-                    await updateDoc(studentDocRef, updates);
-                    console.log('💾 تم حفظ التحديثات بنجاح (Batch)');
-                }
-            } catch (error) {
-                console.error('Error in batch update:', error);
-            }
-        }
-
-        function scheduleScoreUpdate(newUpdates) {
-            pendingUpdates = { ...pendingUpdates, ...newUpdates };
-            
-            clearTimeout(updateTimeout);
-            updateTimeout = setTimeout(() => {
-                if (Object.keys(pendingUpdates).length > 0) {
-                    batchUpdateScore(pendingUpdates);
-                    pendingUpdates = [];
-                }
-            }, 3000);
-        }
-
-        window.showResults = async function() {
-            try {
-                const studentsSnapshot = await getDocs(collection(db, 'students'));
-                const allStudents = studentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-                allStudents.sort((a, b) => (b.score || 0) - (a.score || 0));
-
-                const classStudents = allStudents.filter(student => student.grade === currentStudent.grade);
-                
-                const classLeaderboard = document.getElementById('classLeaderboard');
-                classLeaderboard.innerHTML = classStudents.slice(0, 10).map((student, index) => {
-                    const isCurrentStudent = student.code === currentStudent.code;
-                    const score = student.score || 0;
-                    
-                    let rankClass = '';
-                    rankClass = index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : '';
-                    
-                    return `
-                        <div class="leaderboard-item ${rankClass}" style="${isCurrentStudent ? 'border: 3px solid #d4a5c4;' : ''}">
-                            <div class="rank">${index + 1}</div>
-                            <div class="student-name">
-                                ${student.name} ${isCurrentStudent ? '(أنت) 🌟' : ''}
-                            </div>
-                            <div class="student-score">${score} نقطة</div>
-                        </div>
-                    `;
-                }).join('');
-
-                const schoolLeaderboard = document.getElementById('schoolLeaderboard');
-                schoolLeaderboard.innerHTML = allStudents.slice(0, 10).map((student, index) => {
-                    const isCurrentStudent = student.code === currentStudent.code;
-                    const score = student.score || 0;
-                    
-                    let rankClass = '';
-                    rankClass = index === 0 ? 'first' : index === 1 ? 'second' : index === 2 ? 'third' : '';
-                    
-                    return `
-                        <div class="leaderboard-item ${rankClass}" style="${isCurrentStudent ? 'border: 3px solid #d4a5c4;' : ''}">
-                            <div class="rank">${index + 1}</div>
-                            <div class="student-name">
-                                ${student.name} - الصف ${student.grade} ${isCurrentStudent ? '(أنت) 🌟' : ''}
-                            </div>
-                            <div class="student-score">${score} نقطة</div>
-                        </div>
-                    `;
-                }).join('');
-
-                showSection('resultsSection');
-
-            } catch (error) {
-                console.error('Error loading results:', error);
-                showNotification('حدث خطأ أثناء تحميل النتائج', 'error');
-            }
-        };
-
-        window.showContactForm = function () {
-            if (!currentStudent) {
-                showNotification('يرجى تسجيل الدخول أولاً', 'error');
-                return;
-            }
-
-            document.getElementById('contactName').value = currentStudent.name;
-            document.getElementById('contactGrade').value = 'الصف ' + currentStudent.grade + ' المتوسط';
-            document.getElementById('contactMessage').value = '';
-            document.getElementById('wordCount').textContent = '0';
-
-            const gradeNum = currentStudent.grade;
-            let numClasses = 0;
-            if (gradeNum === '1')      numClasses = 9;
-            else if (gradeNum === '2') numClasses = 11;
-            else if (gradeNum === '3') numClasses = 10;
-
-            const classSelect = document.getElementById('contactClass');
-            classSelect.innerHTML = '<option value="">اختر الشعبة</option>';
-            const arabicNumbers = ['١','٢','٣','٤','٥','٦','٧','٨','٩','١٠','١١'];
-            for (let i = 0; i < numClasses; i++) {
-                const opt = document.createElement('option');
-                opt.value = arabicNumbers[i];
-                opt.textContent = arabicNumbers[i];
-                classSelect.appendChild(opt);
-            }
-
-            showSection('contactSection');
-        };
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const messageInput = document.getElementById('contactMessage');
-            if (messageInput) {
-                messageInput.addEventListener('input', function() {
-                    const text = this.value.trim();
-                    const words = text ? text.split(/\s+/).filter(word => word.length > 0) : [];
-                    const wordCount = words.length;
-                    
-                    document.getElementById('wordCount').textContent = wordCount;
-                    
-                    if (wordCount > 500) {
-                        document.getElementById('wordCount').style.color = '#e74c3c';
-                        showNotification('تجاوزت الحد المسموح (500 كلمة)', 'error');
-                    } else {
-                        document.getElementById('wordCount').style.color = '#d4a5c4';
-                    }
-                });
-            }
-        });
-
-        document.getElementById('contactForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const className = document.getElementById('contactClass').value;
-            const message = document.getElementById('contactMessage').value.trim();
-            
-            if (!className) {
-                showNotification('يرجى اختيار الشعبة', 'error');
-                return;
-            }
-            
-            if (!message) {
-                showNotification('يرجى كتابة رسالة', 'error');
-                return;
-            }
-            
-            const words = message.split(/\s+/).filter(word => word.length > 0);
-            if (words.length > 500) {
-                showNotification('الرسالة تتجاوز 500 كلمة. يرجى الاختصار', 'error');
-                return;
-            }
-            
-            try {
-                await addDoc(collection(db, 'messages'), {
-                    studentName: currentStudent.name,
-                    studentCode: currentStudent.code,
-                    grade: currentStudent.grade,
-                    class: className,
-                    message: message,
-                    wordCount: words.length,
-                    timestamp: new Date(),
-                    read: false,
-                    replied: false
-                });
-                
-                document.getElementById('contactForm').reset();
-                
-                showNotification('✅ تم إرسال رسالتك بنجاح!\n\nشكراً لتواصلك معنا 💕\nسيتم التواصل معك قريباً إن شاء الله', 'success');
-                
-                setTimeout(() => {
-                    backToDashboard();
-                }, 3000);
-                
-            } catch (error) {
-                console.error('Error sending message:', error);
-                showNotification('حدث خطأ أثناء إرسال الرسالة. حاولي مرة أخرى', 'error');
-            }
-        });
-
-        window.backToDashboard = function() {
-            updateDashboardInfo();
-            showSection('dashboard');
-        };
-
         window.logout = function() {
-            stopQuestionTimer();
-            
-            if (currentStudent && !document.getElementById('testSection').classList.contains('hidden')) {
-                const saveBeforeLogout = confirm('هل تريدين حفظ التقدم قبل تسجيل الخروج؟');
-                if (saveBeforeLogout) {
-                    saveAndExit().then(() => {
-                        performLogout();
-                    });
-                    return;
-                }
-            }
-            
-            performLogout();
-        };
-
-        function performLogout() {
-            stopQuestionTimer();
-            
             currentStudent = null;
-            currentQuestion = 0;
-            studentAnswers = [];
-            
             document.getElementById('studentName').value = '';
             document.getElementById('studentGrade').value = '';
             document.getElementById('loginCode').value = '';
-            
             showNotification('تم تسجيل الخروج بنجاح', 'info');
             showSection('registration');
+        };
+
+        // ✅ FIX 7: Update header stats
+        async function updateHeaderStats() {
+            if (!isFirebaseInitialized) return;
+
+            try {
+                // Use default questions count
+                document.getElementById('headerTotalQuestions').textContent = '5';
+
+                const studentsSnapshot = await getDocs(collection(db, 'students'));
+                let totalPoints = 0;
+                studentsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    totalPoints += data.score || 0;
+                });
+                
+                document.getElementById('headerActiveStudents').textContent = studentsSnapshot.size;
+                document.getElementById('headerTotalPoints').textContent = totalPoints;
+
+                console.log('✅ Header stats updated');
+
+            } catch (error) {
+                console.error('❌ Error updating header stats:', error);
+            }
         }
 
-        setInterval(async () => {
-            if (currentStudent && !document.getElementById('testSection').classList.contains('hidden')) {
-                try {
-                    if (Object.keys(pendingUpdates).length > 0) {
-                        await batchUpdateScore(pendingUpdates);
-                        pendingUpdates = [];
-                    }
-
-                    const studentQuery = query(collection(db, 'students'), where('code', '==', currentStudent.code));
-                    const querySnapshot = await getDocs(studentQuery);
-                    if (!querySnapshot.empty) {
-                        const studentDocRef = doc(db, 'students', querySnapshot.docs[0].id);
-                        await updateDoc(studentDocRef, {
-                            lastQuestion: currentQuestion,
-                            lastAnswers: studentAnswers,
-                            score: currentStudent.score,
-                            lastActive: new Date(),
-                            autoSavedAt: new Date()
-                        });
-                        
-                        const autoSaveIndicator = document.createElement('div');
-                        autoSaveIndicator.innerHTML = '💾 تم الحفظ التلقائي';
-                        autoSaveIndicator.style.cssText = `
-                            position: fixed; 
-                            bottom: 20px; 
-                            left: 20px; 
-                            background: rgba(180, 212, 196, 0.9); 
-                            color: white; 
-                            padding: 8px 15px; 
-                            border-radius: 20px; 
-                            font-size: 0.8em; 
-                            z-index: 1000;
-                            opacity: 0;
-                            transition: opacity 0.3s ease;
-                        `;
-                        
-                        document.body.appendChild(autoSaveIndicator);
-                        setTimeout(() => autoSaveIndicator.style.opacity = '1', 100);
-                        setTimeout(() => autoSaveIndicator.style.opacity = '0', 2000);
-                        setTimeout(() => document.body.removeChild(autoSaveIndicator), 2500);
-                    }
-                } catch (error) {
-                    console.error('Auto-save error:', error);
-                }
-            }
-        }, 300000);
-
+        // Keyboard shortcuts
         document.addEventListener('keydown', (event) => {
             if (!document.getElementById('login').classList.contains('hidden')) {
                 if (event.key === 'Enter') {
@@ -1884,82 +754,15 @@
                     }
                 }
             }
-
-            if (!document.getElementById('testSection').classList.contains('hidden')) {
-                if (event.key >= '1' && event.key <= '4') {
-                    const optionIndex = parseInt(event.key) - 1;
-                    const options = document.querySelectorAll('.option');
-                    if (options[optionIndex]) {
-                        selectOption(optionIndex);
-                    }
-                }
-                if (event.key === 'Enter') {
-                    nextQuestion();
-                }
-                if (event.key === 'Escape') {
-                    saveAndExit();
-                }
-            }
         });
 
-        window.addEventListener('beforeunload', (event) => {
-            if (currentStudent && !document.getElementById('testSection').classList.contains('hidden')) {
-                event.preventDefault();
-                event.returnValue = 'لديك اختبار جاري. هل أنت متأكدة من الخروج؟';
-                return event.returnValue;
-            }
-        });
-
-        async function updateHeaderStats() {
-            try {
-                await loadQuestions();
-                document.getElementById('headerTotalQuestions').textContent = questions.length;
-
-                const cachedStats = sessionStorage.getItem('headerStats');
-                const cachedStatsTime = sessionStorage.getItem('headerStatsTime');
-                const now = Date.now();
-                
-                if (cachedStats && cachedStatsTime && (now - parseInt(cachedStatsTime) < 30000)) {
-                    const stats = JSON.parse(cachedStats);
-                    document.getElementById('headerActiveStudents').textContent = stats.students;
-                    document.getElementById('headerTotalPoints').textContent = stats.points;
-                    console.log('📦 استخدام الإحصائيات من Cache');
-                    return;
-                }
-
-                const studentsSnapshot = await getDocs(collection(db, 'students'));
-                let totalPoints = 0;
-                studentsSnapshot.forEach(doc => {
-                    const data = doc.data();
-                    totalPoints += data.score || 0;
-                });
-                
-                document.getElementById('headerActiveStudents').textContent = studentsSnapshot.size;
-                document.getElementById('headerTotalPoints').textContent = totalPoints;
-
-                sessionStorage.setItem('headerStats', JSON.stringify({
-                    students: studentsSnapshot.size,
-                    points: totalPoints
-                }));
-                sessionStorage.setItem('headerStatsTime', now.toString());
-
-            } catch (error) {
-                console.error('Error updating header stats:', error);
-            }
-        }
-
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Application starting...');
             showSection('registration');
             updateHeaderStats();
-            
-            competitionStatusInterval = setInterval(() => {
-                if (!document.getElementById('dashboard').classList.contains('hidden')) {
-                    updateCompetitionStatusDisplay('competitionStatusDashboard');
-                }
-            }, 10000);
         });
 
     </script>
 </body>
 </html>
-
