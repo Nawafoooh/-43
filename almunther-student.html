@@ -753,6 +753,8 @@
         // Import the functions you need from the SDKs you need
            import { initializeApp } from "firebase/app";
            import { getAnalytics } from "firebase/analytics";
+           import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, updateDoc, doc } from "firebase/firestore";
+        
      // TODO: Add SDKs for Firebase products that you want to use
      // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -771,9 +773,6 @@
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const analytics = getAnalytics(app);
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
 
         let currentStudent = null;
         let currentQuestion = 0;
@@ -1172,14 +1171,14 @@
 
                 const studentCode = generateStudentCode();
                 const studentData = {
-                    name: name,
-                    grade: grade,
-                    code: studentCode,
-                    score: 0,
-                    questionsAnswered: 0,
-                    createdAt: new Date(),
-                    lastActive: new Date()
-                    schoolId: "nafis-school-2"
+                name: name,
+                grade: grade,
+                code: studentCode,
+                score: 0,
+                questionsAnswered: 0,
+                createdAt: new Date(),
+                lastActive: new Date(), 
+                schoolId: "nafis-school-2"
                 };
 
                 await addDoc(collection(db, 'students'), studentData);
