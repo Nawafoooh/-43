@@ -570,14 +570,59 @@
                 <div id="nameCheckResult" style="margin-top: 5px; font-size: 0.9em;"></div>
             </div>
             <div class="form-group">
-                <label for="studentGrade">الصف</label>
-                <select id="studentGrade">
-                    <option value="">اختر الصف</option>
-                    <option value="1">الصف الأول المتوسط</option>
-                    <option value="2">الصف الثاني المتوسط</option>
-                    <option value="3">الصف الثالث المتوسط</option>
-                </select>
-            </div>
+    <label for="studentSchool">🏫 المدرسة</label>
+    <select id="studentSchool" required>
+        <option value="">اختر المدرسة</option>
+        
+        <optgroup label="المرحلة المتوسطة">
+            <option value="ALMUNTHER">المنذر بن عمرو الأنصاري</option>
+            <option value="GIRLS_43">متوسطة ٤٣</option>
+            <option value="MIDDLE_03">المتوسطة الثالثة</option>
+            <option value="MIDDLE_04">المتوسطة الرابعة</option>
+            <option value="MIDDLE_05">المتوسطة الخامسة</option>
+            <!-- أضف المدارس المتوسطة الأخرى هنا -->
+        </optgroup>
+        
+        <optgroup label="المرحلة الابتدائية">
+            <option value="PRIMARY_01">الابتدائية الأولى</option>
+            <option value="PRIMARY_02">الابتدائية الثانية</option>
+            <option value="PRIMARY_03">الابتدائية الثالثة</option>
+            <!-- أضف المدارس الابتدائية الأخرى هنا -->
+        </optgroup>
+    </select>
+</div>
+            <div class="form-group">
+    <label for="studentGrade">📚 الصف الدراسي</label>
+    <select id="studentGrade" required>
+        <option value="">اختر الصف</option>
+        
+        <optgroup label="المرحلة المتوسطة">
+            <option value="الأول متوسط">الأول متوسط</option>
+            <option value="الثاني متوسط">الثاني متوسط</option>
+            <option value="الثالث متوسط">الثالث متوسط</option>
+        </optgroup>
+        
+        <optgroup label="المرحلة الابتدائية">
+            <option value="السادس ابتدائي">السادس ابتدائي</option>
+        </optgroup>
+    </select>
+</div>
+            <div class="form-group">
+    <label for="studentClass">🎓 الفصل</label>
+    <select id="studentClass">
+        <option value="">اختر الفصل </option>
+        <option value="١">فصل ١</option>
+        <option value="٢">فصل ٢</option>
+        <option value="٣">فصل ٣</option>
+        <option value="٤">فصل ٤</option>
+        <option value="٥">فصل ٥</option>
+        <option value="٦">فصل ٦</option>
+        <option value="٧">فصل ٧</option>
+        <option value="٨">فصل ٨</option>
+        <option value="٩">فصل ٩</option>
+        <option value="١٠">فصل ١٠</option>
+    </select>
+</div>
             <button class="btn" onclick="registerStudent()">تسجيل</button>
             <div style="text-align: center; margin-top: 15px;">
                 <span style="color: #666;">لديك حساب مسبقاً؟</span>
@@ -1079,58 +1124,63 @@
         let cacheTimestamp = null;
 
         async function loadQuestions() {
-            const now = Date.now();
-            if (cachedQuestions && cacheTimestamp && (now - cacheTimestamp < CACHE_DURATION)) {
-                console.log('📦 استخدام الأسئلة من Cache (توفير القراءات)');
-                questions = [...cachedQuestions];
-                showNotification(`تم تحميل ${questions.length} سؤال من الذاكرة المؤقتة`, 'success');
-                return true;
-            }
-
-            try {
-                console.log('🔄 جاري تحميل الأسئلة من Firebase...');
-                const questionsQuery = query(
-                    collection(db, 'questions'), 
-                    where('active', '==', true)
-                );
-                const questionsSnapshot = await getDocs(questionsQuery);
-                
-                if (!questionsSnapshot.empty) {
-                    questions = [];
-                    questionsSnapshot.forEach((doc) => {
-                        questions.push({ id: doc.id, ...doc.data() });
-                    });
-                    
-                    cachedQuestions = [...questions];
-                    cacheTimestamp = now;
-                    
-                    console.log(`✅ تم تحميل ${questions.length} سؤال من Firebase`);
-                    showNotification(`تم تحميل ${questions.length} سؤال من قاعدة البيانات`, 'success');
-                    return true;
-                } else {
-                    console.log('⚠️ لا توجد أسئلة في Firebase، استخدام الأسئلة الافتراضية');
-                    questions = [...defaultQuestions];
-                    cachedQuestions = [...defaultQuestions];
-                    cacheTimestamp = now;
-                    showNotification('لم يتم نشر أسئلة بعد. يتم استخدام الأسئلة الافتراضية', 'info');
-                    return false;
-                }
-            } catch (error) {
-                console.error('❌ خطأ في تحميل الأسئلة:', error);
-                questions = [...defaultQuestions];
-                showNotification('خطأ في الاتصال، استخدام الأسئلة الافتراضية', 'error');
-                return false;
-            }
+    const now = Date.now();
+    if (cachedQuestions && cacheTimestamp && (now - cacheTimestamp < CACHE_DURATION)) {
+        console.log('📦 استخدام الأسئلة من Cache (توفير القراءات)');
+        questions = [...cachedQuestions];
+        showNotification(`تم تحميل ${questions.length} سؤال من الذاكرة المؤقتة`, 'success');
+        return true;
+    }
+    
+    try {
+        console.log('🔄 جاري تحميل الأسئلة من Firebase...');
+        
+        // ← التعديل هنا: إضافة فلترة بـ schoolId
+        const questionsQuery = query(
+            collection(db, 'questions'), 
+            where('schoolId', '==', currentStudent.schoolId), // ← جديد!
+            where('active', '==', true)
+        );
+        
+        const questionsSnapshot = await getDocs(questionsQuery);
+        
+        if (!questionsSnapshot.empty) {
+            questions = [];
+            questionsSnapshot.forEach((doc) => {
+                questions.push({ id: doc.id, ...doc.data() });
+            });
+            
+            cachedQuestions = [...questions];
+            cacheTimestamp = now;
+            
+            console.log(`✅ تم تحميل ${questions.length} سؤال من Firebase`);
+            showNotification(`تم تحميل ${questions.length} سؤال من قاعدة البيانات`, 'success');
+            return true;
+        } else {
+            console.log('⚠️ لا توجد أسئلة لهذه المدرسة، استخدام الأسئلة الافتراضية');
+            questions = [...defaultQuestions];
+            cachedQuestions = [...defaultQuestions];
+            cacheTimestamp = now;
+            showNotification('لم يتم نشر أسئلة بعد. يتم استخدام الأسئلة الافتراضية', 'info');
+            return false;
         }
+    } catch (error) {
+        console.error('❌ خطأ في تحميل الأسئلة:', error);
+        questions = [...defaultQuestions];
+        showNotification('خطأ في الاتصال، استخدام الأسئلة الافتراضية', 'error');
+        return false;
+    }
+}
 
         window.registerStudent = async function() {
             const name = document.getElementById('studentName').value.trim();
             const grade = document.getElementById('studentGrade').value;
+            const schoolId = document.getElementById('studentSchool').value;
 
-            if (!name || !grade) {
-                showNotification('يرجى إدخال جميع البيانات المطلوبة', 'error');
-                return;
-            }
+            if (!name || !grade || !schoolId) {
+        showNotification('يرجى ملء جميع الحقول المطلوبة', 'error');
+        return;
+    }
 
             const nameParts = name.split(' ').filter(part => part.length > 0);
             if (nameParts.length < 3) {
@@ -1157,6 +1207,8 @@
                 const studentData = {
                     name: name,
                     grade: grade,
+                    class: className,
+                    schoolId,
                     code: studentCode,
                     score: 0,
                     questionsAnswered: 0,
@@ -1426,7 +1478,8 @@
             
             try {
                 const studentQuery = query(collection(db, 'students'), where('code', '==', currentStudent.code));
-                const querySnapshot = await getDocs(studentQuery);
+                const leaderboardQuery = query(collection(db, 'students'), where('schoolId', '==', currentStudent.schoolId),orderBy('score', 'desc'),limit(10));
+                const studentsSnapshot = await getDocs(leaderboardQuery);;
                 
                 if (!querySnapshot.empty) {
                     const studentDocRef = doc(db, 'students', querySnapshot.docs[0].id);
