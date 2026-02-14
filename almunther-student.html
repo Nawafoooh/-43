@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نافس - نظام التعلم التفاعلي</title>
+    <title>نافس - متوسطة المنذر بن عمرو الأنصاري</title>
     <style>
         * {
             margin: 0;
@@ -570,7 +570,10 @@
             // 🎓 نوع المدرسة: "middle" للمتوسطة أو "primary" للابتدائية
             SCHOOL_TYPE: "middle",
             
-            // 👤 اسم المشرف أو صاحب المنصة
+            // 👨‍💼 مدير المدرسة
+            SCHOOL_PRINCIPAL: "الأستاذ خالد المطيري",
+            
+            // 👤 المشرف على المنصة
             SUPERVISOR_NAME: "الأستاذ نواف الصبحي",
             
             // 🎨 ألوان المدرسة (اختياري)
@@ -615,10 +618,18 @@
         
         function initializeSchoolInterface() {
             // عرض اسم المدرسة
-            document.getElementById('schoolInfoDisplay').textContent = SCHOOL_CONFIG.SCHOOL_NAME;
+            const schoolInfoHtml = `
+                <div style="font-size: 20px; font-weight: 700; margin-bottom: 10px;">
+                    ${SCHOOL_CONFIG.SCHOOL_NAME}
+                </div>
+                <div style="font-size: 15px; opacity: 0.9;">
+                    👨‍💼 مدير المدرسة: ${SCHOOL_CONFIG.SCHOOL_PRINCIPAL}
+                </div>
+            `;
+            document.getElementById('schoolInfoDisplay').innerHTML = schoolInfoHtml;
             
             // عرض اسم المشرف في الفوتر
-            document.getElementById('footerText').textContent = `إشراف ${SCHOOL_CONFIG.SUPERVISOR_NAME}`;
+            document.getElementById('footerText').textContent = `إشراف المنصة: ${SCHOOL_CONFIG.SUPERVISOR_NAME}`;
             
             // ملء قائمة الصفوف حسب نوع المدرسة
             const gradeSelect = document.getElementById('studentGrade');
