@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نافس - لوحة تحكم المعلم - متوسطة ابن النفيس</title>
+    <title>نافس - لوحة تحكم المعلم - متوسطة المنذر بن عمرو الأنصاري</title>
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap");
         @import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap");
@@ -682,10 +682,10 @@
                 </div>
             </div>
             <div class="school-info">
-                <strong>🏫 متوسطة ابن النفيس</strong><br>
+                <strong>🏫 متوسطة المنذر بن عمرو الأنصاري</strong><br>
                 📍 قطاعي أحد والعواليّ - المملكة العربية السعودية<br>
-                👨‍💼 <strong>مدير المدرسة: محمد احمد خالد</strong><br>
-                👨‍🏫 <strong>إشراف الأستاذ سعيد سالم الحربي</strong>
+                👨‍💼 <strong>مدير المدرسة:  خالد المطيري</strong><br>
+                👨‍🏫 <strong>إشراف الأستاذ نواف الصبحي</strong>
             </div>
         </div>
 
@@ -903,7 +903,7 @@
                 <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 15px;">
                     <h3 style="color: #1a1a1a; margin-bottom: 15px;">معلومات النظام</h3>
                     <p style="margin: 10px 0; color: #2c3e50;">
-                        <strong>🏫 المدرسة:</strong> متوسطة ابن النفيس
+                        <strong>🏫 المدرسة:</strong> متوسطة المنذر بن عمرو الأنصاري
                     </p>
                     <p style="margin: 10px 0; color: #2c3e50;">
                         <strong>📅 آخر تحديث:</strong> <span id="lastUpdate">-</span>
@@ -926,7 +926,7 @@
 
         <!-- Footer -->
         <div style="text-align: center; margin-top: 40px; color: #1a1a1a; font-size: 14px;">
-            <p>إشراف الأستاذ سعيد سالم الحربي</p>
+            <p>إشراف الأستاذ نواف الصبحي</p>
         </div>
     </div>
 
@@ -1680,7 +1680,7 @@
                 const msgSnap = await getDocs(messagesQuery);
                 
                 const backup = {
-                    school: 'متوسطة ابن النفيس',
+                    school: 'متوسطة المنذر بن عمرو الأنصاري',
                     schoolId: SCHOOL_ID,
                     timestamp: new Date().toISOString(),
                     students: stSnap.docs.map(d => ({ id: d.id, ...d.data() })),
@@ -1690,7 +1690,7 @@
                 const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = `نسخة_احتياطية_نافس_ابن_النفيس_${new Date().toLocaleDateString('ar-SA')}.json`;
+                link.download = `نسخة_احتياطية_نافس__${new Date().toLocaleDateString('ar-SA')}.json`;
                 link.click();
                 showNotification('تم تحميل النسخة الاحتياطية', 'success');
             } catch (e) {
@@ -1858,7 +1858,7 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('✅ لوحة تحكم المعلم - متوسطة ابن النفيس');
+            console.log('✅ لوحة تحكم المعلم - متوسطة  المنذر بن عمرو الأنصاري');
             console.log('🏫 School ID:', SCHOOL_ID);
             setupFileUpload();
             loadQuestions();
