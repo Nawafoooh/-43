@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نافس - نظام التعلم التفاعلي</title>
     <style>
+        @import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap");
         * {
             margin: 0;
             padding: 0;
@@ -12,10 +13,10 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #e8b4d9 0%, #d4a5c4 100%);
+            font-family: "Cairo", "Tajawal", "Almarai", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #FFFFFF;
             min-height: 100vh;
-            color: #333;
+            color: #1a1a1a;
         }
 
         .container {
@@ -25,11 +26,11 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #e8b4d9 0%, #d4a5c4 100%);
+            background: #FFFFFF;
             border-radius: 25px;
             padding: 40px;
             margin-bottom: 30px;
-            box-shadow: 0 15px 40px rgba(232, 180, 217, 0.2);
+            box-shadow: 0 15px 40px rgba(46, 204, 113, 0.15);
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -47,7 +48,7 @@
         }
 
         .title-section h1 {
-            color: white;
+            color: #2ecc71; font-weight: 800;
             font-size: 3.5em;
             margin-bottom: 10px;
             font-weight: 800;
@@ -57,7 +58,7 @@
         }
 
         .subtitle {
-            color: rgba(255,255,255,0.9);
+            color: #555555;
             font-size: 1.3em;
             font-weight: 600;
             margin-bottom: 20px;
@@ -66,10 +67,10 @@
         }
 
         .school-info {
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
+            background: #FFFFFF;
+            backdrop-filter: none;
+            border: 2px solid #2ecc71;
+            color: #2c3e50;
             font-size: 14px;
             line-height: 1.8;
             padding: 20px;
@@ -91,13 +92,13 @@
         }
 
         .stat-item {
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.3);
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            backdrop-filter: none;
+            border: none;
             padding: 15px 20px;
             border-radius: 15px;
             text-align: center;
-            color: white;
+            color: #1a1a1a;
             min-width: 120px;
             transition: all 0.3s ease;
         }
@@ -108,17 +109,22 @@
         }
 
         .stat-number {
+            color: white !important;
             font-size: 1.8em;
             font-weight: bold;
             margin-bottom: 5px;
         }
 
         .stat-label {
+            color: white !important;
+            opacity: 0.95;
             font-size: 0.9em;
             opacity: 0.9;
         }
 
         .card {
+            border-top: 5px solid #2ecc71;
+            box-shadow: 0 2px 15px rgba(46, 204, 113, 0.15);
             background: white;
             border-radius: 20px;
             padding: 30px;
@@ -148,14 +154,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #1a1a1a;
             font-size: 20px;
         }
 
-        .icon.register { background: linear-gradient(135deg, #e8b4d9, #d4a5c4); }
-        .icon.login { background: linear-gradient(135deg, #c9a0d4, #b88ec4); }
-        .icon.test { background: linear-gradient(135deg, #d4a5c4, #c495b4); }
-        .icon.results { background: linear-gradient(135deg, #b88ec4, #a87eb4); }
+        .icon.register { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .icon.login { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .icon.test { background: linear-gradient(135deg, #e67e22, #d35400); }
+        .icon.results { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
 
         .form-group {
             margin-bottom: 20px;
@@ -171,7 +177,7 @@
         .form-group input, .form-group select {
             width: 100%;
             padding: 15px;
-            border: 2px solid #f0e1ed;
+            border: 2px solid #E0E4E8;
             border-radius: 10px;
             font-size: 16px;
             transition: border-color 0.3s ease;
@@ -179,13 +185,13 @@
 
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #d4a5c4;
-            box-shadow: 0 0 0 3px rgba(212, 165, 196, 0.1);
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
         }
 
         .btn {
-            background: linear-gradient(135deg, #e8b4d9, #d4a5c4);
-            color: white;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: #1a1a1a;
             border: none;
             padding: 15px 30px;
             border-radius: 10px;
@@ -198,19 +204,19 @@
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(212, 165, 196, 0.3);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.25);
         }
 
         .btn.secondary {
-            background: linear-gradient(135deg, #c9b4d4, #b9a4c4);
+            background: linear-gradient(135deg, #3498db, #2980b9);
         }
 
         .btn.success {
-            background: linear-gradient(135deg, #b4d4c4, #a4c4b4);
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
         }
 
         .btn.warning {
-            background: linear-gradient(135deg, #d4c4b4, #c4b4a4);
+            background: linear-gradient(135deg, #e67e22, #d35400);
         }
 
         .btn:disabled {
@@ -228,7 +234,7 @@
             right: 20px;
             padding: 15px 25px;
             border-radius: 10px;
-            color: white;
+            color: #1a1a1a;
             font-weight: 500;
             z-index: 1000;
             transform: translateX(400px);
@@ -241,24 +247,24 @@
         }
 
         .notification.success {
-            background: linear-gradient(135deg, #b4d4c4, #a4c4b4);
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
         }
 
         .notification.error {
-            background: linear-gradient(135deg, #e7b4c4, #d7a4b4);
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
         }
 
         .notification.info {
-            background: linear-gradient(135deg, #c4c4d4, #b4b4c4);
+            background: linear-gradient(135deg, #3498db, #2980b9);
         }
 
         .notification.warning {
-            background: linear-gradient(135deg, #d4c4b4, #c4b4a4);
+            background: linear-gradient(135deg, #e67e22, #d35400);
         }
 
         .student-code {
-            background: linear-gradient(135deg, #c4c4d4, #b4b4c4);
-            color: white;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: #1a1a1a;
             padding: 20px;
             border-radius: 15px;
             text-align: center;
@@ -273,21 +279,21 @@
         }
 
         .question-card {
-            border: 2px solid #f0e1ed;
+            border: 2px solid #E0E4E8;
             border-radius: 15px;
             padding: 25px;
             margin: 20px 0;
-            background: #faf7f9;
+            background: #FAFAFA;
         }
 
         .timer-container {
-            background: linear-gradient(135deg, #e7b4c4, #d7a4b4);
-            color: white;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: #1a1a1a;
             padding: 15px 25px;
             border-radius: 15px;
             text-align: center;
             margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(231, 180, 196, 0.3);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.25);
             animation: timerPulse 1s infinite;
         }
 
@@ -301,7 +307,7 @@
         }
 
         @keyframes timerWarning {
-            0%, 100% { background: linear-gradient(135deg, #e7b4c4, #d7a4b4); }
+            0%, 100% { background: linear-gradient(135deg, #e74c3c, #c0392b); }
             50% { background: linear-gradient(135deg, #d7a4b4, #e7b4c4); }
         }
 
@@ -318,17 +324,17 @@
         }
 
         .competition-status {
-            background: linear-gradient(135deg, #e8b4d9, #d4a5c4);
-            color: white;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: #1a1a1a;
             padding: 30px;
             border-radius: 20px;
             text-align: center;
             margin: 20px 0;
-            box-shadow: 0 10px 30px rgba(232, 180, 217, 0.3);
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.25);
         }
 
         .competition-status.closed {
-            background: linear-gradient(135deg, #c9b4d4, #b9a4c4);
+            background: linear-gradient(135deg, #3498db, #2980b9);
         }
 
         .countdown-display {
@@ -358,7 +364,7 @@
 
         .option {
             background: white;
-            border: 2px solid #f0e1ed;
+            border: 2px solid #E0E4E8;
             border-radius: 10px;
             padding: 15px;
             cursor: pointer;
@@ -366,31 +372,31 @@
         }
 
         .option:hover {
-            border-color: #d4a5c4;
-            background: #faf7f9;
+            border-color: #2ecc71;
+            background: #FAFAFA;
         }
 
         .option.selected {
-            border-color: #d4a5c4;
-            background: #d4a5c4;
-            color: white;
+            border-color: #2ecc71;
+            background: #2ecc71;
+            color: #1a1a1a;
         }
 
         .option.correct {
-            border-color: #b4d4c4;
-            background: #b4d4c4;
-            color: white;
+            border-color: #27ae60;
+            background: #27ae60;
+            color: #1a1a1a;
         }
 
         .option.wrong {
-            border-color: #e7b4c4;
-            background: #e7b4c4;
-            color: white;
+            border-color: #e74c3c;
+            background: #e74c3c;
+            color: #1a1a1a;
         }
 
         .score-display {
-            background: linear-gradient(135deg, #d4c4b4, #c4b4a4);
-            color: white;
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: #1a1a1a;
             padding: 20px;
             border-radius: 15px;
             text-align: center;
@@ -410,8 +416,8 @@
         }
 
         .leaderboard-header {
-            background: linear-gradient(135deg, #b88ec4, #a87eb4);
-            color: white;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: #1a1a1a;
             padding: 20px;
             text-align: center;
         }
@@ -448,17 +454,17 @@
 
         .leaderboard-item.first {
             background: linear-gradient(135deg, #f4daa5, #e4ca95);
-            color: white;
+            color: #1a1a1a;
         }
 
         .leaderboard-item.second {
             background: linear-gradient(135deg, #d4d4d4, #c4c4c4);
-            color: white;
+            color: #1a1a1a;
         }
 
         .leaderboard-item.third {
             background: linear-gradient(135deg, #d4b4a4, #c4a494);
-            color: white;
+            color: #1a1a1a;
         }
 
         .rank {
@@ -480,7 +486,7 @@
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: #f0e1ed;
+            background: #E0E4E8;
             border-radius: 10px;
             overflow: hidden;
             margin: 20px 0;
@@ -488,7 +494,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(135deg, #d4a5c4, #c495b4);
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
             width: 0%;
             transition: width 0.3s ease;
         }
@@ -506,9 +512,9 @@
         }
 
         .alert-info {
-            background: #f4e8f1;
-            border: 1px solid #e8d4e5;
-            color: #6c4460;
+            background: #ebf4ff;
+            border: 2px solid #bee3f8;
+            color: #2c5282;
             padding: 15px;
             border-radius: 10px;
             margin: 15px 0;
@@ -600,12 +606,12 @@
 
             <div class="forgot-number-section">
                 <div class="alert-info" style="margin-top: 25px; text-align: center;">
-                    <h4 style="color: #6c4460; margin-bottom: 10px;">📌 نسيت رقم الطالبة؟</h4>
+                    <h4 style="color: #2c5282; margin-bottom: 10px;">📌 نسيت رقم الطالبة؟</h4>
                     <p style="line-height: 1.8; margin-bottom: 15px;">
                         للحصول على رقمك، يرجى التواصل مع:
                     </p>
                     <div style="background: white; padding: 15px; border-radius: 10px; margin: 10px 0;">
-                        <strong style="color: #d4a5c4; font-size: 1.1em;">الأستاذة ريم العنزي</strong><br>
+                        <strong style="color: #2ecc71; font-size: 1.1em;">الأستاذة ريم العنزي</strong><br>
                         <span style="color: #666;">📍 مكتب الأستاذة ريم العنزي - المبنى الرئيسي</span>
                     </div>
                     <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
@@ -716,7 +722,7 @@
 
                 <div class="form-group">
                     <label>الشعبة:</label>
-                    <select id="contactClass" required style="padding: 12px; border-radius: 10px; border: 2px solid #e8b4d9;">
+                    <select id="contactClass" required style="padding: 12px; border-radius: 10px; border: 2px solid #2ecc71;">
                         <option value="">اختر الشعبة</option>
                     </select>
                 </div>
@@ -724,10 +730,10 @@
                 <div class="form-group">
                     <label>نص الرسالة (حد أقصى 500 كلمة):</label>
                     <textarea id="contactMessage" rows="10" required 
-                        style="resize: vertical; padding: 15px; border-radius: 10px; border: 2px solid #e8b4d9; font-family: inherit;"
+                        style="resize: vertical; padding: 15px; border-radius: 10px; border: 2px solid #2ecc71; font-family: inherit;"
                         placeholder="اكتبي رسالتك هنا..."></textarea>
                     <div style="text-align: left; font-size: 13px; color: #666; margin-top: 8px; font-weight: 500;">
-                        <span id="wordCount" style="color: #d4a5c4; font-weight: bold;">0</span> / 500 كلمة
+                        <span id="wordCount" style="color: #2ecc71; font-weight: bold;">0</span> / 500 كلمة
                     </div>
                 </div>
 
@@ -739,7 +745,7 @@
         </div>
 
         <!-- Footer -->
-        <div style="text-align: center; margin-top: 40px; color: white; font-size: 14px;">
+        <div style="text-align: center; margin-top: 40px; color: #1a1a1a; font-size: 14px;">
             <p> اشراف الاستاذه ريم العنزي  </p>
         </div>
     </div>
@@ -1277,7 +1283,7 @@
             
             if (currentStudent.testCompleted === true) {
                 progressInfo = `
-                    <div style="background: linear-gradient(135deg, #b4d4c4, #a4c4b4); color: white; padding: 20px; border-radius: 15px; margin: 15px 0; text-align: center;">
+                    <div style="background: linear-gradient(135deg, #2ecc71, #27ae60); color: #1a1a1a; padding: 20px; border-radius: 15px; margin: 15px 0; text-align: center;">
                         <h3>🎉 تم إتمام الاختبار بنجاح!</h3>
                         <p style="font-size: 1.2em; margin: 10px 0;">نقاطك النهائية: <strong>${currentStudent.score || 0}</strong></p>
                         <p style="font-size: 0.9em; opacity: 0.9;">لا يمكن إعادة الاختبار</p>
@@ -1390,7 +1396,7 @@
             container.innerHTML = `
                 <div class="question-card">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <span style="background: linear-gradient(135deg, #e8b4d9, #d4a5c4); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.9em;">
+                        <span style="background: linear-gradient(135deg, #2ecc71, #27ae60); color: #1a1a1a; padding: 5px 15px; border-radius: 20px; font-size: 0.9em;">
                             ${question.subject}
                         </span>
                         <span style="color: #666; font-size: 0.9em;">
@@ -1401,7 +1407,7 @@
                         <strong>السؤال ${currentQuestion + 1}:</strong> ${question.question}
                     </div>
                     ${previousAnswer !== undefined && previousAnswer !== -1 ? 
-                        '<div style="background: #f4e8f1; padding: 10px; border-radius: 8px; margin: 10px 0; color: #6c4460; font-size: 0.9em;">✓ تمت الإجابة على هذا السؤال مسبقاً</div>' : 
+                        '<div style="background: #ebf4ff; padding: 10px; border-radius: 8px; margin: 10px 0; color: #2c5282; font-size: 0.9em;">✓ تمت الإجابة على هذا السؤال مسبقاً</div>' : 
                         ''
                     }
                     <div class="options">
@@ -1836,7 +1842,7 @@
                             bottom: 20px; 
                             left: 20px; 
                             background: rgba(180, 212, 196, 0.9); 
-                            color: white; 
+                            color: #1a1a1a; 
                             padding: 8px 15px; 
                             border-radius: 20px; 
                             font-size: 0.8em; 
