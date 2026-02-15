@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نافس - لوحة تحكم المعلمة</title>
     <style>
+        @import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap");
         * {
             margin: 0;
             padding: 0;
@@ -12,10 +13,10 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: "Cairo", "Tajawal", "Almarai", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            color: #333;
+            color: #1a1a1a;
         }
 
         .container {
@@ -25,7 +26,7 @@
         }
 
         .header {
-            background: white;
+            background: linear-gradient(135deg, #FFFFFF, #E8F5F2); border: 3px solid #2ecc71;
             border-radius: 20px;
             padding: 30px;
             margin-bottom: 30px;
@@ -62,25 +63,25 @@
             margin-bottom: 5px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-text-fill-color: #1a1a1a;
         }
 
         .subtitle {
-            color: #e67e22;
+            color: #555555;
             font-size: 1.2em;
             font-weight: 600;
             margin-bottom: 15px;
         }
 
         .school-info {
-            color: #555;
+            color: #2c3e50;
             font-size: 14px;
             line-height: 1.6;
         }
 
         .tabs {
             display: flex;
-            background: white;
+            background: linear-gradient(135deg, #FFFFFF, #E8F5F2); border: 3px solid #2ecc71;
             border-radius: 15px;
             padding: 10px;
             margin-bottom: 30px;
@@ -119,7 +120,9 @@
         }
 
         .card {
-            background: white;
+            border-top: 5px solid #2ecc71;
+            box-shadow: 0 2px 15px rgba(46, 204, 113, 0.15);
+            background: linear-gradient(135deg, #FFFFFF, #E8F5F2); border: 3px solid #2ecc71;
             border-radius: 20px;
             padding: 30px;
             margin-bottom: 30px;
@@ -218,26 +221,31 @@
         }
 
         .btn.primary {
+            background: linear-gradient(135deg, #3498db, #2980b9) !important;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
 
         .btn.success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
             background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
         }
 
         .btn.danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
             background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
         }
 
         .btn.warning {
+            background: linear-gradient(135deg, #e67e22, #d35400) !important;
             background: linear-gradient(135deg, #f39c12, #e67e22);
             color: white;
         }
 
         .btn.info {
+            background: linear-gradient(135deg, #3498db, #2980b9) !important;
             background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
         }
@@ -264,24 +272,30 @@
         }
 
         .stat-card.green {
+            background: linear-gradient(135deg, #1ABC9C, #16A085) !important;
             background: linear-gradient(135deg, #4CAF50, #45a049);
         }
 
         .stat-card.orange {
+            background: linear-gradient(135deg, #e67e22, #d35400) !important;
             background: linear-gradient(135deg, #f39c12, #e67e22);
         }
 
         .stat-card.red {
+            background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
             background: linear-gradient(135deg, #e74c3c, #c0392b);
         }
 
         .stat-number {
+            color: white !important;
             font-size: 36px;
             font-weight: bold;
             margin-bottom: 10px;
         }
 
         .stat-label {
+            color: white !important;
+            opacity: 0.95;
             font-size: 14px;
             opacity: 0.9;
         }
@@ -295,8 +309,8 @@
 
         .filter-btn {
             padding: 10px 20px;
-            border: 2px solid #ecf0f1;
-            background: white;
+            border: 2px solid #E8ECEF;
+            background: linear-gradient(135deg, #FFFFFF, #E8F5F2); border: 3px solid #2ecc71;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -394,7 +408,7 @@
         }
 
         .message-content {
-            background: white;
+            background: linear-gradient(135deg, #FFFFFF, #E8F5F2); border: 3px solid #2ecc71;
             padding: 15px;
             border-radius: 10px;
             margin: 15px 0;
@@ -475,7 +489,7 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            background: white;
+            background: linear-gradient(135deg, #FFFFFF, #E8F5F2); border: 3px solid #2ecc71;
             color: #2c3e50;
             box-shadow: 0 3px 10px rgba(0,0,0,0.2);
         }
@@ -567,9 +581,9 @@
 
         .option {
             padding: 12px;
-            background: white;
+            background: linear-gradient(135deg, #FFFFFF, #E8F5F2); border: 3px solid #2ecc71;
             border-radius: 10px;
-            border: 2px solid #ecf0f1;
+            border: 2px solid #E8ECEF;
             transition: all 0.3s ease;
         }
 
@@ -595,7 +609,7 @@
         .form-group textarea {
             width: 100%;
             padding: 12px;
-            border: 2px solid #ecf0f1;
+            border: 2px solid #E8ECEF;
             border-radius: 10px;
             font-size: 15px;
             transition: border-color 0.3s ease;
@@ -814,7 +828,7 @@
 
                 <!-- School Top 3 -->
                 <div style="margin-bottom: 30px;">
-                    <h3 style="color: #2c3e50; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #ecf0f1;">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #E8ECEF;">
                         🏫 الثلاثة الأوائل على مستوى المدرسة
                     </h3>
                     <div id="schoolTop3"></div>
@@ -822,7 +836,7 @@
 
                 <!-- Grade 1 Top 3 -->
                 <div style="margin-bottom: 30px;">
-                    <h3 style="color: #27ae60; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #ecf0f1;">
+                    <h3 style="color: #27ae60; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #E8ECEF;">
                         📚 الثلاثة الأوائل - الصف الأول المتوسط
                     </h3>
                     <div id="grade1Top3"></div>
@@ -830,7 +844,7 @@
 
                 <!-- Grade 2 Top 3 -->
                 <div style="margin-bottom: 30px;">
-                    <h3 style="color: #f39c12; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #ecf0f1;">
+                    <h3 style="color: #f39c12; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #E8ECEF;">
                         📚 الثلاثة الأوائل - الصف الثاني المتوسط
                     </h3>
                     <div id="grade2Top3"></div>
@@ -838,7 +852,7 @@
 
                 <!-- Grade 3 Top 3 -->
                 <div style="margin-bottom: 30px;">
-                    <h3 style="color: #e74c3c; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #ecf0f1;">
+                    <h3 style="color: #e74c3c; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #E8ECEF;">
                         📚 الثلاثة الأوائل - الصف الثالث المتوسط
                     </h3>
                     <div id="grade3Top3"></div>
@@ -930,19 +944,19 @@
 
                 <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 15px;">
                     <h3 style="color: #2c3e50; margin-bottom: 15px;">معلومات النظام</h3>
-                    <p style="margin: 10px 0; color: #555;">
+                    <p style="margin: 10px 0; color: #2c3e50;">
                         <strong>📅 آخر تحديث:</strong> <span id="lastUpdate">-</span>
                     </p>
-                    <p style="margin: 10px 0; color: #555;">
+                    <p style="margin: 10px 0; color: #2c3e50;">
                         <strong>📝 عدد الأسئلة:</strong> <span id="totalQuestionsCount">0</span>
                     </p>
-                    <p style="margin: 10px 0; color: #555;">
+                    <p style="margin: 10px 0; color: #2c3e50;">
                         <strong>👥 عدد الطالبات:</strong> <span id="totalStudentsCount">0</span>
                     </p>
-                    <p style="margin: 10px 0; color: #555;">
+                    <p style="margin: 10px 0; color: #2c3e50;">
                         <strong>💬 عدد الرسائل:</strong> <span id="totalMessagesCount">0</span>
                     </p>
-                    <p style="margin: 10px 0; color: #555;">
+                    <p style="margin: 10px 0; color: #2c3e50;">
                         <strong>🔥 حالة الاتصال:</strong> <span id="connectionStatus" style="color: #27ae60;">متصل</span>
                     </p>
                 </div>
