@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متوسطة المنذر بن عمرو الأنصاري - نظام إدارة المهام</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { Bell, CheckCircle, XCircle, Send, Users, BookOpen, Calendar, Clock, AlertCircle, LogOut } = lucide;
+
+        const Icon = ({ icon: IconComponent, ...props }) => {
+            const ref = React.useRef(null);
+            
+            React.useEffect(() => {
+                if (ref.current && IconComponent) {
+                    lucide.createElement(IconComponent).render(ref.current);
+                }
+            }, [IconComponent]);
+            
+            return <span ref={ref} {...props}></span>;
+        };
+
+        const HomeworkApp = () => {
+            const [currentUser, setCurrentUser] = useState(null);
+            const [userRole, setUserRole] = useState(null);
+            const [loginCode, setLoginCode] = useState('');
+            const [showLogin, setShowLogin] = useState(true);
+            
+            const [homeworks, setHomeworks] = useState([]);
+            const [notifications, setNotifications] = useState([]);
+            const [showNotifications, setShowNotifications] = useState(false);
+            
+            const [newHomework, setNewHomework] = useState({
+                title: '',
+                description: '',
+                dueDate: '',
+                dueTime: '',
+                grade: '',
+                gradeLevel: 'first',
+                section: '1',
+                type: 'homework'
+            });
+
+            const gradeLevels = [
+                { value: 'first', label: 'أول متوسط' },
+                { value: 'second', label: 'ثاني متوسط' },
+                { value: 'third', label: 'ثالث متوسط' }
+            ];
+
+            const sections = ['1', '2', '3', '4', '5', '6'];
+
+            const homeworkTypes = [
+                { value: 'homework', label: 'واجب منزلي' },
+                { value: 'test', label: 'اختبار' },
+                { value: 'project', label: 'مشروع' },
+                { value: 'assignment', label: 'تكليف' }
+            ];
+
+            // Load data from localStorage
+            useEffect(() => {
+                const savedHomeworks = localStorage.getItem('homeworks');
+                const savedNotifications = localStorage.getItem('notifications');
+                
+                if (savedHomeworks) setHomeworks(JSON.parse(savedHomeworks));
+                if (savedNotifications) setNotifications(JSON.parse(savedNotifications));
+            }, []);
+
+            // Save to localStorage
+            useEffect(() => {
+                localStorage.setItem('homeworks', JSON.stringify(homeworks));
+            }, [homeworks]);
+
+            useEffect(() => {
+                localStorage.setItem('notifications', JSON.stringify(notifications));
+            }, [notifications]);
+
+            const handleLogin = () => {
+                if (loginCode.startsWith('T-')) {
+                    setUserRole('teacher');
+                    setCurrentUser({ name: 'أستاذ محمد', code: loginCode });
+                    setShowLogin(false);
+                } else if (loginCode.startsWith('S-')) {
+                    setUserRole('student');
+                    setCurrentUser({ 
+                        name: 'أحمد عبدالله', 
+                        code: loginCode,
+                        gradeLevel: 'first',
+                        section: '1'
+                    });
+                    setShowLogin(false);
+                } else if (loginCode.startsWith('P-')) {
+                    setUserRole('parent');
+                    setCurrentUser({ 
+                        name: 'والد الطالب', 
+                        code: loginCode,
+                        students: [
+                            { name: 'أحمد عبدالله', gradeLevel: 'first', section: '1' },
+                            { name: 'فاطمة عبدالله', gradeLevel: 'second', section: '3' }
+                        ]
+                    });
+                    setShowLogin(false);
+                } else if (loginCode.startsWith('A-')) {
+                    setUserRole('admin');
+                    setCurrentUser({ name: 'المشرف', code: loginCode });
+                    setShowLogin(false);
+                } else {
+                    alert('الكود غير صحيح. جرب: T-001 للمعلم، S-001 للطالب، P-001 لولي الأمر');
+                }
+            };
+
+            const handleAddHomework = () => {
+                if (!newHomework.title || !newHomework.dueDate || !newHomework.dueTime) {
+                    alert('الرجاء ملء جميع الحقول المطلوبة');
+                    return;
+                }
+
+                const homework = {
+                    id: Date.now(),
+                    ...newHomework,
+                    createdAt: new Date().toISOString(),
+                    status: 'active',
+                    teacherName: currentUser.name,
+                    completedBy: []
+                };
+
+                setHomeworks([...homeworks, homework]);
+                
+                setNewHomework({
+                    title: '',
+                    description: '',
+                    dueDate: '',
+                    dueTime: '',
+                    grade: '',
+                    gradeLevel: 'first',
+                    section: '1',
+                    type: 'homework'
+                });
+
+                addNotification({
+                    type: 'new_homework',
+                    message: `مهمة جديدة: ${homework.title}`,
+                    homeworkId: homework.id
+                });
+
+                alert('تم إضافة المهمة بنجاح!');
+            };
+
+            const handleCloseHomework = (homeworkId, completed) => {
+                setHomeworks(homeworks.map(hw => {
+                    if (hw.id === homeworkId) {
+                        return {
+                            ...hw,
+                            status: 'closed',
+                            closedAt: new Date().toISOString(),
+                            completed: completed
+                        };
+                    }
+                    return hw;
+                }));
+
+                addNotification({
+                    type: 'homework_closed',
+                    message: completed ? 'تم إكمال المهمة بنجاح' : 'عفواً، لم يتم الإنجاز',
+                    homeworkId: homeworkId
+                });
+
+                alert(completed ? 'تم إغلاق المهمة كمنجزة' : 'تم إغلاق المهمة كغير منجزة');
+            };
+
+            const handleSendInquiry = (homeworkId, inquiry) => {
+                addNotification({
+                    type: 'inquiry',
+                    message: `استفسار من طالب: ${inquiry}`,
+                    homeworkId: homeworkId,
+                    forTeacher: true
+                });
+                alert('تم إرسال الاستفسار للمعلم');
+            };
+
+            const addNotification = (notification) => {
+                setNotifications([...notifications, { 
+                    ...notification, 
+                    id: Date.now(), 
+                    read: false, 
+                    createdAt: new Date().toISOString()
+                }]);
+            };
+
+            const getFilteredHomeworks = () => {
+                if (userRole === 'teacher') {
+                    return homeworks;
+                } else if (userRole === 'student') {
+                    return homeworks.filter(hw => 
+                        hw.gradeLevel === currentUser.gradeLevel && 
+                        hw.section === currentUser.section
+                    );
+                } else if (userRole === 'parent') {
+                    return homeworks.filter(hw => 
+                        currentUser.students.some(student => 
+                            hw.gradeLevel === student.gradeLevel && 
+                            hw.section === student.section
+                        )
+                    );
+                }
+                return [];
+            };
+
+            const formatDate = (dateStr, timeStr) => {
+                const date = new Date(`${dateStr}T${timeStr}`);
+                return date.toLocaleDateString('ar-SA', { 
+                    weekday: 'short', 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                }) + ' - ' + timeStr;
+            };
+
+            const getTimeRemaining = (dateStr, timeStr) => {
+                const now = new Date();
+                const due = new Date(`${dateStr}T${timeStr}`);
+                const diff = due - now;
+                
+                if (diff < 0) return 'انتهى الموعد';
+                
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                
+                if (days > 0) return `باقي ${days} يوم`;
+                if (hours > 0) return `باقي ${hours} ساعة`;
+                return 'ينتهي قريباً!';
+            };
+
+            if (showLogin) {
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+                            <div className="text-center mb-8">
+                                <Icon icon={BookOpen} className="w-16 h-16 text-indigo-600 mx-auto mb-4" />
+                                <h1 className="text-3xl font-bold text-gray-800 mb-2">متوسطة المنذر بن عمرو الأنصاري</h1>
+                                <p className="text-gray-600">نظام إدارة المهام والواجبات</p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">رمز الدخول</label>
+                                    <input
+                                        type="text"
+                                        value={loginCode}
+                                        onChange={(e) => setLoginCode(e.target.value)}
+                                        placeholder="أدخل الرمز الخاص بك"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                        onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={handleLogin}
+                                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition-colors"
+                                >
+                                    تسجيل الدخول
+                                </button>
+
+                                <div className="mt-6 p-4 bg-gray-50 rounded-lg text-sm text-gray-600">
+                                    <p className="font-semibold mb-2">للتجربة استخدم:</p>
+                                    <p>• معلم: T-001</p>
+                                    <p>• طالب: S-001</p>
+                                    <p>• ولي أمر: P-001</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen bg-gray-50">
+                    <header className="bg-indigo-600 text-white shadow-lg">
+                        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <Icon icon={BookOpen} className="w-8 h-8" />
+                                <div>
+                                    <h1 className="text-xl font-bold">متوسطة المنذر بن عمرو الأنصاري</h1>
+                                    <p className="text-sm text-indigo-200">مرحباً، {currentUser.name}</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                                <button
+                                    onClick={() => setShowNotifications(!showNotifications)}
+                                    className="relative p-2 hover:bg-indigo-700 rounded-lg transition-colors"
+                                >
+                                    <Icon icon={Bell} className="w-6 h-6" />
+                                    {notifications.filter(n => !n.read).length > 0 && (
+                                        <span className="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                                    )}
+                                </button>
+
+                                <button
+                                    onClick={() => {
+                                        setShowLogin(true);
+                                        setCurrentUser(null);
+                                        setUserRole(null);
+                                    }}
+                                    className="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 rounded-lg text-sm transition-colors flex items-center gap-2"
+                                >
+                                    <Icon icon={LogOut} className="w-4 h-4" />
+                                    تسجيل الخروج
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    {showNotifications && (
+                        <div className="fixed top-20 left-4 bg-white rounded-lg shadow-2xl p-4 w-80 max-h-96 overflow-y-auto z-50">
+                            <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                                <Icon icon={Bell} className="w-5 h-5" />
+                                التنبيهات
+                            </h3>
+                            {notifications.length === 0 ? (
+                                <p className="text-gray-500 text-center py-4">لا توجد تنبيهات</p>
+                            ) : (
+                                <div className="space-y-2">
+                                    {notifications.slice().reverse().map(notif => (
+                                        <div key={notif.id} className="p-3 bg-indigo-50 rounded-lg text-sm border-r-4 border-indigo-500">
+                                            <p className="text-gray-800">{notif.message}</p>
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                {new Date(notif.createdAt).toLocaleString('ar-SA')}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    <div className="max-w-7xl mx-auto px-4 py-8">
+                        {userRole === 'teacher' && (
+                            <div className="space-y-6">
+                                <div className="bg-white rounded-xl shadow-md p-6">
+                                    <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                                        <Icon icon={BookOpen} className="w-6 h-6 text-indigo-600" />
+                                        إضافة مهمة جديدة
+                                    </h2>
+
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">عنوان المهمة *</label>
+                                            <input
+                                                type="text"
+                                                value={newHomework.title}
+                                                onChange={(e) => setNewHomework({...newHomework, title: e.target.value})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                                                placeholder="مثال: حل تمارين الرياضيات"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">نوع المهمة</label>
+                                            <select
+                                                value={newHomework.type}
+                                                onChange={(e) => setNewHomework({...newHomework, type: e.target.value})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                                            >
+                                                {homeworkTypes.map(type => (
+                                                    <option key={type.value} value={type.value}>{type.label}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">الوصف</label>
+                                            <textarea
+                                                value={newHomework.description}
+                                                onChange={(e) => setNewHomework({...newHomework, description: e.target.value})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                                                rows="3"
+                                                placeholder="تفاصيل المهمة..."
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">التاريخ المطلوب *</label>
+                                            <input
+                                                type="date"
+                                                value={newHomework.dueDate}
+                                                onChange={(e) => setNewHomework({...newHomework, dueDate: e.target.value})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">الوقت المطلوب *</label>
+                                            <input
+                                                type="time"
+                                                value={newHomework.dueTime}
+                                                onChange={(e) => setNewHomework({...newHomework, dueTime: e.target.value})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">الصف</label>
+                                            <select
+                                                value={newHomework.gradeLevel}
+                                                onChange={(e) => setNewHomework({...newHomework, gradeLevel: e.target.value})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                                            >
+                                                {gradeLevels.map(grade => (
+                                                    <option key={grade.value} value={grade.value}>{grade.label}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">الشعبة</label>
+                                            <select
+                                                value={newHomework.section}
+                                                onChange={(e) => setNewHomework({...newHomework, section: e.target.value})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                                            >
+                                                {sections.map(section => (
+                                                    <option key={section} value={section}>الشعبة {section}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">الدرجة</label>
+                                            <input
+                                                type="number"
+                                                value={newHomework.grade}
+                                                onChange={(e) => setNewHomework({...newHomework, grade: e.target.value})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                                                placeholder="10"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={handleAddHomework}
+                                        className="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition-colors"
+                                    >
+                                        إضافة المهمة
+                                    </button>
+                                </div>
+
+                                <div className="bg-white rounded-xl shadow-md p-6">
+                                    <h2 className="text-2xl font-bold text-gray-800 mb-6">المهام المضافة</h2>
+                                    {getFilteredHomeworks().length === 0 ? (
+                                        <p className="text-center text-gray-500 py-8">لم يتم إضافة أي مهام بعد</p>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            {getFilteredHomeworks().map(hw => (
+                                                <div key={hw.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                                    <div className="flex items-start justify-between mb-3">
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <h3 className="text-lg font-semibold text-gray-800">{hw.title}</h3>
+                                                                <span className="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full">
+                                                                    {homeworkTypes.find(t => t.value === hw.type)?.label}
+                                                                </span>
+                                                                {hw.status === 'closed' && (
+                                                                    <span className={`px-2 py-1 text-xs rounded-full ${hw.completed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                                        {hw.completed ? '✓ مغلقة - منجز' : '✗ مغلقة - غير منجز'}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <p className="text-gray-600 text-sm mb-2">{hw.description}</p>
+                                                            <div className="flex items-center gap-4 text-sm text-gray-500">
+                                                                <span className="flex items-center gap-1">
+                                                                    <Icon icon={Calendar} className="w-4 h-4" />
+                                                                    {formatDate(hw.dueDate, hw.dueTime)}
+                                                                </span>
+                                                                <span className="flex items-center gap-1">
+                                                                    <Icon icon={Users} className="w-4 h-4" />
+                                                                    {gradeLevels.find(g => g.value === hw.gradeLevel)?.label} - الشعبة {hw.section}
+                                                                </span>
+                                                                {hw.grade && (
+                                                                    <span className="text-indigo-600 font-medium">الدرجة: {hw.grade}</span>
+                                                                )}
+                                                                <span className="text-orange-600 font-medium">
+                                                                    {getTimeRemaining(hw.dueDate, hw.dueTime)}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {hw.status === 'active' && (
+                                                        <div className="flex gap-2 mt-3 pt-3 border-t">
+                                                            <button
+                                                                onClick={() => handleCloseHomework(hw.id, true)}
+                                                                className="flex-1 flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors"
+                                                            >
+                                                                <Icon icon={CheckCircle} className="w-4 h-4" />
+                                                                إغلاق (منجز)
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleCloseHomework(hw.id, false)}
+                                                                className="flex-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors"
+                                                            >
+                                                                <Icon icon={XCircle} className="w-4 h-4" />
+                                                                إغلاق (غير منجز)
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {userRole === 'student' && (
+                            <div className="space-y-6">
+                                <div className="bg-white rounded-xl shadow-md p-6">
+                                    <h2 className="text-2xl font-bold text-gray-800 mb-6">المهام والواجبات</h2>
+                                    {getFilteredHomeworks().length === 0 ? (
+                                        <p className="text-center text-gray-500 py-8">لا توجد مهام حالياً</p>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            {getFilteredHomeworks().map(hw => (
+                                                <div key={hw.id} className={`border rounded-lg p-4 ${hw.status === 'closed' ? 'bg-gray-50 border-gray-300' : 'border-indigo-200 bg-indigo-50'}`}>
+                                                    <div className="flex items-start justify-between mb-3">
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <h3 className="text-lg font-semibold text-gray-800">{hw.title}</h3>
+                                                                <span className="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full">
+                                                                    {homeworkTypes.find(t => t.value === hw.type)?.label}
+                                                                </span>
+                                                                {hw.status === 'closed' && (
+                                                                    <span className={`px-2 py-1 text-xs rounded-full ${hw.completed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                                        {hw.completed ? 'تم الإنجاز ✓' : 'لم يتم الإنجاز ✗'}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <p className="text-gray-600 text-sm mb-2">{hw.description}</p>
+                                                            <div className="flex items-center gap-4 text-sm text-gray-500">
+                                                                <span className="flex items-center gap-1">
+                                                                    <Icon icon={Calendar} className="w-4 h-4" />
+                                                                    {formatDate(hw.dueDate, hw.dueTime)}
+                                                                </span>
+                                                                {hw.grade && (
+                                                                    <span className="text-indigo-600 font-medium">الدرجة: {hw.grade}</span>
+                                                                )}
+                                                                <span className={`font-medium ${hw.status === 'active' ? 'text-orange-600' : 'text-gray-500'}`}>
+                                                                    {getTimeRemaining(hw.dueDate, hw.dueTime)}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {hw.status === 'active' && (
+                                                        <button
+                                                            onClick={() => {
+                                                                const inquiry = prompt('اكتب استفسارك للمعلم:');
+                                                                if (inquiry) handleSendInquiry(hw.id, inquiry);
+                                                            }}
+                                                            className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 text-sm font-medium"
+                                                        >
+                                                            <Icon icon={Send} className="w-4 h-4" />
+                                                            إرسال استفسار للمعلم
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {userRole === 'parent' && (
+                            <div className="space-y-6">
+                                <div className="bg-white rounded-xl shadow-md p-6">
+                                    <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                                        <Icon icon={Users} className="w-6 h-6 text-indigo-600" />
+                                        متابعة الأبناء
+                                    </h2>
+
+                                    {currentUser.students.map((student, idx) => {
+                                        const studentHomeworks = homeworks.filter(hw => 
+                                            hw.gradeLevel === student.gradeLevel && 
+                                            hw.section === student.section
+                                        );
+
+                                        return (
+                                            <div key={idx} className="mb-8 last:mb-0">
+                                                <h3 className="text-xl font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-indigo-200">
+                                                    {student.name} - {gradeLevels.find(g => g.value === student.gradeLevel)?.label} - الشعبة {student.section}
+                                                </h3>
+
+                                                {studentHomeworks.length === 0 ? (
+                                                    <p className="text-gray-500 text-sm">لا توجد مهام حالياً</p>
+                                                ) : (
+                                                    <div className="space-y-3">
+                                                        {studentHomeworks.map(hw => (
+                                                            <div key={hw.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                                                <div className="flex items-center gap-2 mb-2">
+                                                                    <h4 className="font-semibold text-gray-800">{hw.title}</h4>
+                                                                    <span className="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full">
+                                                                        {homeworkTypes.find(t => t.value === hw.type)?.label}
+                                                                    </span>
+                                                                    {hw.status === 'closed' && (
+                                                                        <span className={`px-2 py-1 text-xs rounded-full ${hw.completed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                                            {hw.completed ? '✓' : '✗'}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <p className="text-sm text-gray-600 mb-2">{hw.description}</p>
+                                                                <div className="flex items-center gap-4 text-xs text-gray-500">
+                                                                    <span className="flex items-center gap-1">
+                                                                        <Icon icon={Clock} className="w-3 h-3" />
+                                                                        {formatDate(hw.dueDate, hw.dueTime)}
+                                                                    </span>
+                                                                    {hw.grade && (
+                                                                        <span className="text-indigo-600 font-medium">الدرجة: {hw.grade}</span>
+                                                                    )}
+                                                                    <span className={`font-medium ${hw.status === 'active' ? 'text-orange-600' : 'text-gray-500'}`}>
+                                                                        {getTimeRemaining(hw.dueDate, hw.dueTime)}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<HomeworkApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
