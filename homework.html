@@ -9,13 +9,8 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        * {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            margin: 0;
-            padding: 0;
-        }
+        * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { margin: 0; padding: 0; }
     </style>
 </head>
 <body>
@@ -24,22 +19,200 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // Mock student data for each class (will be replaced with Excel import in Phase 2)
-        const MOCK_STUDENTS = {
+        // 🎓 قاعدة بيانات الطلاب الحقيقية - 180 طالب
+        // تم استخراجها من ملفات Excel المرفوعة
+        const REAL_STUDENTS = {
             'first-1': [
-                { id: 'S-101', name: 'أحمد عبدالله' },
-                { id: 'S-102', name: 'محمد سعيد' },
-                { id: 'S-103', name: 'خالد علي' },
-                { id: 'S-104', name: 'عبدالرحمن محمد' },
-                { id: 'S-105', name: 'فهد عبدالعزيز' }
+                { id: 'S-101', name: 'أحمد فواز بن سعدون الحربي' },
+                { id: 'S-102', name: 'أسامه سعود حاجر الحربي' },
+                { id: 'S-103', name: 'اسامه ماجد ضيف الله الزويكي' },
+                { id: 'S-104', name: 'باسم سيف بن عبيد الرويثي' },
+                { id: 'S-105', name: 'ثامر تركي النشمي الحربي' },
+                { id: 'S-106', name: 'ثامر رائد مرزوق المطيري' },
+                { id: 'S-107', name: 'حمد عبدالرحمن بن حمد الحربي' },
+                { id: 'S-108', name: 'ساير ثامر بن سائر العتيبي' },
+                { id: 'S-109', name: 'سعود عماد سعود الحازمي' },
+                { id: 'S-110', name: 'سلطان ساطي سمران الحربي' },
+                { id: 'S-111', name: 'سلطان فهد بن حاسن العمري' },
+                { id: 'S-112', name: 'عبدالاله عوض نويفع الزويكي' },
+                { id: 'S-113', name: 'عبدالرحمن خلوي بن نافع الحربي' },
+                { id: 'S-114', name: 'عبدالعزيز فهد عامر الغنام' },
+                { id: 'S-115', name: 'عبدالمجيد ربيع مرزوق العمري' },
+                { id: 'S-116', name: 'عساف بدر بشير الحربي' },
+                { id: 'S-117', name: 'عمر اسامه بن منور العوفي' },
+                { id: 'S-118', name: 'عمر منصور بن سعود الحربي' },
+                { id: 'S-119', name: 'فيصل فواز محمد الحربي' },
+                { id: 'S-120', name: 'محمد عبدالمجيد بشير الحربي' },
+                { id: 'S-121', name: 'مشاري عبدالله علي المطيري' },
+                { id: 'S-122', name: 'مصعب عبدالهادي بن مرزوق العمري' },
+                { id: 'S-123', name: 'نادر سعود بن حميد العمري' },
+                { id: 'S-124', name: 'نايف عيد حميد العمري' },
+                { id: 'S-125', name: 'هايل صالح عائض المطيري' },
+                { id: 'S-126', name: 'وسام جابر عيد الحربي' },
+                { id: 'S-127', name: 'وسام عبدالله حامد الحربي' },
+                { id: 'S-128', name: 'ياسر خالد معجل المطيري' },
+                { id: 'S-129', name: 'يزيد فواز خليوي المطيري' },
+                { id: 'S-130', name: 'يعقوب محمد عايد المطيري' }
             ],
             'first-2': [
-                { id: 'S-201', name: 'سلمان أحمد' },
-                { id: 'S-202', name: 'عمر فيصل' }
+                { id: 'S-201', name: 'أسامه عبدالرحمن بن سعيد العوفي' },
+                { id: 'S-202', name: 'احمد حسين علوي حسين الحارثي' },
+                { id: 'S-203', name: 'البراء محمد عزيز العوفي' },
+                { id: 'S-204', name: 'بتال موسى عمار المطيري' },
+                { id: 'S-205', name: 'تركي محمد بن سالم الجهني' },
+                { id: 'S-206', name: 'حازم عبدالهادي بن سعد الحربي' },
+                { id: 'S-207', name: 'خالد عبدالرب عبد ربه الكحيلي' },
+                { id: 'S-208', name: 'خالد منصور بن مناور السحيمي' },
+                { id: 'S-209', name: 'ريان ماجد عيد الرشيدي' },
+                { id: 'S-210', name: 'زياد فؤاد محمد العتيبي' },
+                { id: 'S-211', name: 'سعد فهد مسعد العوفي' },
+                { id: 'S-212', name: 'سعود فيصل محمد الخريف' },
+                { id: 'S-213', name: 'سلطان ماجد بن معتاد المولد' },
+                { id: 'S-214', name: 'شامخ نادر سمار الحربي' },
+                { id: 'S-215', name: 'عادل محمد غازي الحربي' },
+                { id: 'S-216', name: 'عبدالرحمن عبدالعزيز بن النشمي الحربي' },
+                { id: 'S-217', name: 'عبدالرحمن محمد بن فهد الحربي' },
+                { id: 'S-218', name: 'عبدالعزيز سلطان بن محسن المطيري' },
+                { id: 'S-219', name: 'عزام اسامه جميل الحربي' },
+                { id: 'S-220', name: 'عمر فهد عيضه المطيري' },
+                { id: 'S-221', name: 'غانم مهند بن غانم الشمري' },
+                { id: 'S-222', name: 'فارس عبدالله بن شجاع العتيبي' },
+                { id: 'S-223', name: 'فيصل أسامه بن علي الرشيدي' },
+                { id: 'S-224', name: 'فيصل احمد بن راضي الحربي' },
+                { id: 'S-225', name: 'فيصل محمد بن ناصر الحربي' },
+                { id: 'S-226', name: 'ماجد مساعد بن مهدي الحربي' },
+                { id: 'S-227', name: 'محمد غازي بن سالم الحربي' },
+                { id: 'S-228', name: 'منيف تركي منيف الشمري' },
+                { id: 'S-229', name: 'نجم عطاء الله بشير الحربي' },
+                { id: 'S-230', name: 'يزيد احمد حمود البقمي' }
             ],
-            'second-3': [
-                { id: 'S-301', name: 'فاطمة عبدالله' },
-                { id: 'S-302', name: 'نورة محمد' }
+            'first-3': [
+                { id: 'S-301', name: 'إبراهيم مسلط بن عايد الحربي' },
+                { id: 'S-302', name: 'احمد حسين منصور الاسمري' },
+                { id: 'S-303', name: 'البراء مساعد علي العمري' },
+                { id: 'S-304', name: 'انس محمود بن غنيم العوفي' },
+                { id: 'S-305', name: 'بدر عبد العزيز بن عبيد الحربي' },
+                { id: 'S-306', name: 'بندر سالم سلامه الزهراني' },
+                { id: 'S-307', name: 'تركي فهد بن احمد الحربي' },
+                { id: 'S-308', name: 'تركي ماجد بن فهيد العتيبي' },
+                { id: 'S-309', name: 'حسن محمد بن عبدالله العيسى' },
+                { id: 'S-310', name: 'خالد سعود بن ناجي الحربي' },
+                { id: 'S-311', name: 'ريان احمد بن دخيل الله الرشيدي' },
+                { id: 'S-312', name: 'ريان عبدالله حسن المطيري' },
+                { id: 'S-313', name: 'زياد شافي ربيع الحربي' },
+                { id: 'S-314', name: 'زياد هاني زياد النمري' },
+                { id: 'S-315', name: 'سعود جمعان شويمي الحربي' },
+                { id: 'S-316', name: 'سلطان سعود سليمان الحربي' },
+                { id: 'S-317', name: 'سلمان عبدالله سليمان النفيعي' },
+                { id: 'S-318', name: 'طارق عبدالعزيز بن خليفه العتيبي' },
+                { id: 'S-319', name: 'عادل جزاع شديد الحربي' },
+                { id: 'S-320', name: 'عبدالرحمن سالم بن عيد المطيري' },
+                { id: 'S-321', name: 'عبدالرحمن سليمان بن مشعل السبيعي' },
+                { id: 'S-322', name: 'عبدالله طلال عبدالله الجهني' },
+                { id: 'S-323', name: 'عبدالمجيد عويض زايد العوفي' },
+                { id: 'S-324', name: 'علي محمد بن سالم المطيري' },
+                { id: 'S-325', name: 'مازن سلمان مسلط الحربي' },
+                { id: 'S-326', name: 'محمد رائد بن سعود الحربي' },
+                { id: 'S-327', name: 'منصور عايد مناور الحازمي' },
+                { id: 'S-328', name: 'نايف تيسير بن مشبب الشهراني' },
+                { id: 'S-329', name: 'هيثم محمد سعد الحربي' },
+                { id: 'S-330', name: 'يزن عبدالله فرج العوفي' }
+            ],
+            'first-4': [
+                { id: 'S-401', name: 'أحمد جابر بن خليف الحربي' },
+                { id: 'S-402', name: 'احمد محمد بن سليمان الحربي' },
+                { id: 'S-403', name: 'البراء احمد سالم الوذيناني' },
+                { id: 'S-404', name: 'تركي محمد ناصر الصبحي' },
+                { id: 'S-405', name: 'تيم صالح بشير الحربي' },
+                { id: 'S-406', name: 'جاسر محمد غنام الحربي' },
+                { id: 'S-407', name: 'جاسم مشعل جابر الحربي' },
+                { id: 'S-408', name: 'حسن عبدالله بن حسن المطيري' },
+                { id: 'S-409', name: 'حمزه سعد محمد المطيري' },
+                { id: 'S-410', name: 'سعد عبد الله بن خليف العوفي' },
+                { id: 'S-411', name: 'سلطان رايد مطلق العتيبي' },
+                { id: 'S-412', name: 'سلطان مشعل بن خليف الحربي' },
+                { id: 'S-413', name: 'شاكر خالد يحيى الحربي' },
+                { id: 'S-414', name: 'عابد محمد بن نايف العمري' },
+                { id: 'S-415', name: 'عبدالرحمن ابراهيم بن حميد الحربي' },
+                { id: 'S-416', name: 'عبدالعزيز محمد بن عطيه العوفي' },
+                { id: 'S-417', name: 'عبدالله حسن رده الحربي' },
+                { id: 'S-418', name: 'عبدالله خالد بن رديني الحربي' },
+                { id: 'S-419', name: 'عبدالمجيد احمد سليم المطيري' },
+                { id: 'S-420', name: 'عثمان تركي حمد الحربي' },
+                { id: 'S-421', name: 'عصام عبدالرحمن علي الغامدي' },
+                { id: 'S-422', name: 'عصام نايف مدعج المطيري' },
+                { id: 'S-423', name: 'علي معتز بن محمد الحازمي' },
+                { id: 'S-424', name: 'عيسى محمد بن رجاء الحربي' },
+                { id: 'S-425', name: 'فهد سليمان احمد المويشير' },
+                { id: 'S-426', name: 'محمد سلطان بن موسى الحربي' },
+                { id: 'S-427', name: 'محمد سمير محمد المطيري' },
+                { id: 'S-428', name: 'محمد هادي بن محمد الحربي' },
+                { id: 'S-429', name: 'ناصر حمد سعد المطيري' },
+                { id: 'S-430', name: 'نواف جايد صالح العوفي' }
+            ],
+            'first-5': [
+                { id: 'S-501', name: 'أحمد علي بن فهد العتيبي' },
+                { id: 'S-502', name: 'أسامه نايف جمعه الحربي' },
+                { id: 'S-503', name: 'احمد عبد الكريم محمد الحربي' },
+                { id: 'S-504', name: 'ايمن عبدالله احمد المغذوي' },
+                { id: 'S-505', name: 'بندر مسعود ملفي الفايز' },
+                { id: 'S-506', name: 'بندر مشعل غازي الحربي' },
+                { id: 'S-507', name: 'تامر عايض بن نايف العوفي' },
+                { id: 'S-508', name: 'تركي محمد محمود الحربي' },
+                { id: 'S-509', name: 'جابر محمد غنام الحربي' },
+                { id: 'S-510', name: 'حسن ناصر محمد الناصر' },
+                { id: 'S-511', name: 'حسين سعود جمعان الحازمي' },
+                { id: 'S-512', name: 'خالد عطيه بن مهيزع الحربي' },
+                { id: 'S-513', name: 'ريان رامي ناصر الحازمي' },
+                { id: 'S-514', name: 'زامل محمد غنيم الحربي' },
+                { id: 'S-515', name: 'سعود خلف دغيلب المطيري' },
+                { id: 'S-516', name: 'سلطان عبدالعزيز سليمان الحربي' },
+                { id: 'S-517', name: 'سلطان محمد صقيران الحربي' },
+                { id: 'S-518', name: 'سلمان ناصر بن سفر الجهني' },
+                { id: 'S-519', name: 'صهيب محمد احمد المزيني' },
+                { id: 'S-520', name: 'طلال محمد سعيد الحربي' },
+                { id: 'S-521', name: 'عبدالرحمن احمد ماجد الحازمي' },
+                { id: 'S-522', name: 'عبدالرحمن عبدالاله سالم الحربي' },
+                { id: 'S-523', name: 'عبدالعزيز سلطان بن عواد الحازمي' },
+                { id: 'S-524', name: 'عبدالعزيز عايد خليفه الحربي' },
+                { id: 'S-525', name: 'عبدالله رائد محمد الوادعي' },
+                { id: 'S-526', name: 'عبدالله سليمان عايد الحربي' },
+                { id: 'S-527', name: 'عمر محمد شباب الحربي' },
+                { id: 'S-528', name: 'محمد راجي مخلف العوفي' },
+                { id: 'S-529', name: 'محمد سعود فيصل الحربي' },
+                { id: 'S-530', name: 'نايف سعود جودالله المطيري' }
+            ],
+            'first-6': [
+                { id: 'S-601', name: 'أحمد جمعان احمد الحربي' },
+                { id: 'S-602', name: 'احمد عيد فهاد الرويلي' },
+                { id: 'S-603', name: 'تركي محمد سلطان الحربي' },
+                { id: 'S-604', name: 'جاسم فهد بن سويلم العتيبي' },
+                { id: 'S-605', name: 'جعفر حسين محمد مخلص' },
+                { id: 'S-606', name: 'حسن جهاد حسن الجهني' },
+                { id: 'S-607', name: 'حمد علي سالم المطيري' },
+                { id: 'S-608', name: 'حمزه محمد سليمان الحربي' },
+                { id: 'S-609', name: 'ريان احمد بن عبدالله الجهني' },
+                { id: 'S-610', name: 'زيد خالد بن حسن الحربي' },
+                { id: 'S-611', name: 'سعد سالم بن سعد الحربي' },
+                { id: 'S-612', name: 'سعد محمد بن هليل العوفي' },
+                { id: 'S-613', name: 'سلطان عبدالله سالم الحربي' },
+                { id: 'S-614', name: 'سلطان محمد بن عايد الحربي' },
+                { id: 'S-615', name: 'سليمان محمد عايد الحربي' },
+                { id: 'S-616', name: 'شاهر احمد بن شديد الحربي' },
+                { id: 'S-617', name: 'صالح عبدالله بن صالح الحربي' },
+                { id: 'S-618', name: 'عبدالرحمن خليل ابراهيم المطيري' },
+                { id: 'S-619', name: 'عبدالرحمن عبدالعزيز احمد العتيبي' },
+                { id: 'S-620', name: 'عبدالرحمن مبارك مقبول العمري' },
+                { id: 'S-621', name: 'عبدالرحمن محمد علي الحربي' },
+                { id: 'S-622', name: 'عبدالعزيز تركي بن محمد الحربي' },
+                { id: 'S-623', name: 'عبدالعزيز عيد عطيه الحربي' },
+                { id: 'S-624', name: 'عبدالله حميد مخلف الحربي' },
+                { id: 'S-625', name: 'عبدالله عبد الرحمن علي القحطاني' },
+                { id: 'S-626', name: 'عثمان عايض صياح العوفي' },
+                { id: 'S-627', name: 'عثمان عمر ربيع المطيري' },
+                { id: 'S-628', name: 'عمر اسامه بن عبدالله الرحيلي' },
+                { id: 'S-629', name: 'عمر محمد بن حامد المغذوي' },
+                { id: 'S-630', name: 'يزن ناصر خلف الحربي' }
             ]
         };
 
@@ -53,7 +226,6 @@
             const [notifications, setNotifications] = useState([]);
             const [showNotifications, setShowNotifications] = useState(false);
             
-            // For homework completion modal
             const [showCompletionModal, setShowCompletionModal] = useState(false);
             const [selectedHomework, setSelectedHomework] = useState(null);
             const [incompleteStudents, setIncompleteStudents] = useState([]);
@@ -86,8 +258,8 @@
 
             useEffect(() => {
                 try {
-                    const savedHomeworks = localStorage.getItem('homeworks');
-                    const savedNotifications = localStorage.getItem('notifications');
+                    const savedHomeworks = localStorage.getItem('homeworks_v2');
+                    const savedNotifications = localStorage.getItem('notifications_v2');
                     
                     if (savedHomeworks) setHomeworks(JSON.parse(savedHomeworks));
                     if (savedNotifications) setNotifications(JSON.parse(savedNotifications));
@@ -98,7 +270,7 @@
 
             useEffect(() => {
                 try {
-                    localStorage.setItem('homeworks', JSON.stringify(homeworks));
+                    localStorage.setItem('homeworks_v2', JSON.stringify(homeworks));
                 } catch (error) {
                     console.error('Error saving homeworks:', error);
                 }
@@ -106,7 +278,7 @@
 
             useEffect(() => {
                 try {
-                    localStorage.setItem('notifications', JSON.stringify(notifications));
+                    localStorage.setItem('notifications_v2', JSON.stringify(notifications));
                 } catch (error) {
                     console.error('Error saving notifications:', error);
                 }
@@ -118,10 +290,9 @@
                     setCurrentUser({ name: 'أستاذ محمد', code: loginCode });
                     setShowLogin(false);
                 } else if (loginCode.startsWith('S-')) {
-                    // Find student in mock data
                     let studentData = null;
-                    for (let classKey in MOCK_STUDENTS) {
-                        const student = MOCK_STUDENTS[classKey].find(s => s.id === loginCode);
+                    for (let classKey in REAL_STUDENTS) {
+                        const student = REAL_STUDENTS[classKey].find(s => s.id === loginCode);
                         if (student) {
                             const [gradeLevel, section] = classKey.split('-');
                             studentData = { ...student, gradeLevel, section };
@@ -139,7 +310,7 @@
                         });
                         setShowLogin(false);
                     } else {
-                        alert('كود الطالب غير موجود. جرب: S-101, S-102, S-103');
+                        alert('كود الطالب غير موجود.\n\n✅ الأكواد الصحيحة:\n• S-101 إلى S-130 (الفصل 1-1)\n• S-201 إلى S-230 (الفصل 1-2)\n• S-301 إلى S-330 (الفصل 1-3)\n• S-401 إلى S-430 (الفصل 1-4)\n• S-501 إلى S-530 (الفصل 1-5)\n• S-601 إلى S-630 (الفصل 1-6)');
                     }
                 } else if (loginCode.startsWith('P-')) {
                     setUserRole('parent');
@@ -147,8 +318,8 @@
                         name: 'والد الطالب', 
                         code: loginCode,
                         students: [
-                            { name: 'أحمد عبدالله', gradeLevel: 'first', section: '1', code: 'S-101' },
-                            { name: 'فاطمة عبدالله', gradeLevel: 'second', section: '3', code: 'S-301' }
+                            { name: 'أحمد فواز بن سعدون الحربي', gradeLevel: 'first', section: '1', code: 'S-101' },
+                            { id: 'S-301', name: 'إبراهيم مسلط بن عايد الحربي', gradeLevel: 'first', section: '3', code: 'S-301' }
                         ]
                     });
                     setShowLogin(false);
@@ -157,7 +328,7 @@
                     setCurrentUser({ name: 'المشرف', code: loginCode });
                     setShowLogin(false);
                 } else {
-                    alert('الكود غير صحيح. جرب:\n• معلم: T-001\n• طالب: S-101, S-102, S-103\n• ولي أمر: P-001');
+                    alert('الكود غير صحيح.\n\n✅ للتجربة:\n• معلم: T-001\n• طالب: S-101, S-201, S-301, إلخ\n• ولي أمر: P-001');
                 }
             };
 
@@ -168,7 +339,7 @@
                 }
 
                 const classKey = `${newHomework.gradeLevel}-${newHomework.section}`;
-                const students = MOCK_STUDENTS[classKey] || [];
+                const students = REAL_STUDENTS[classKey] || [];
 
                 const homework = {
                     id: Date.now(),
@@ -180,7 +351,7 @@
                     studentCompletions: students.map(s => ({
                         studentId: s.id,
                         studentName: s.name,
-                        completed: null // null = pending, true = completed, false = not completed
+                        completed: null
                     }))
                 };
 
@@ -197,7 +368,6 @@
                     type: 'homework'
                 });
 
-                // Send notification to all students in the class
                 students.forEach(student => {
                     addNotification({
                         type: 'new_homework',
@@ -207,7 +377,7 @@
                     });
                 });
 
-                alert('تم إضافة المهمة بنجاح!');
+                alert(`تم إضافة المهمة بنجاح!\nعدد الطلاب: ${students.length} طالب`);
             };
 
             const openCompletionModal = (homework) => {
@@ -242,7 +412,6 @@
                     return hw;
                 }));
 
-                // Send notifications to students and parents
                 selectedHomework.studentCompletions.forEach(sc => {
                     const completed = !incompleteStudents.includes(sc.studentId);
                     addNotification({
@@ -284,16 +453,10 @@
 
             const getFilteredNotifications = () => {
                 if (userRole === 'teacher') {
-                    // Teacher sees only inquiries directed to them
                     return notifications.filter(n => n.forTeacher === currentUser.code);
                 } else if (userRole === 'student') {
-                    // Student sees their own notifications
-                    return notifications.filter(n => 
-                        n.forStudent === currentUser.code || 
-                        n.type === 'new_homework' && n.forStudent === currentUser.code
-                    );
+                    return notifications.filter(n => n.forStudent === currentUser.code);
                 } else if (userRole === 'parent') {
-                    // Parent sees notifications for their children
                     const childrenCodes = currentUser.students.map(s => s.code);
                     return notifications.filter(n => childrenCodes.includes(n.forStudent));
                 }
@@ -359,6 +522,7 @@
                                 </div>
                                 <h1 className="text-3xl font-bold text-gray-800 mb-2">متوسطة المنذر بن عمرو الأنصاري</h1>
                                 <p className="text-gray-600">نظام إدارة المهام والواجبات</p>
+                                <p className="text-sm text-indigo-600 mt-2">✅ 180 طالب حقيقي - الصف الأول المتوسط</p>
                             </div>
 
                             <div className="space-y-4">
@@ -384,7 +548,9 @@
                                 <div className="mt-6 p-4 bg-gray-50 rounded-lg text-sm text-gray-600">
                                     <p className="font-semibold mb-2">للتجربة استخدم:</p>
                                     <p>• معلم: T-001</p>
-                                    <p>• طلاب: S-101, S-102, S-103</p>
+                                    <p>• طالب فصل 1-1: S-101 إلى S-130</p>
+                                    <p>• طالب فصل 1-2: S-201 إلى S-230</p>
+                                    <p>• طالب فصل 1-3: S-301 إلى S-330</p>
                                     <p>• ولي أمر: P-001</p>
                                 </div>
                             </div>
@@ -460,22 +626,26 @@
                         </div>
                     )}
 
-                    {/* Completion Modal */}
                     {showCompletionModal && selectedHomework && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                            <div className="bg-white rounded-xl shadow-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-                                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                            <div className="bg-white rounded-xl shadow-2xl p-6 max-w-3xl w-full max-h-[85vh] overflow-y-auto">
+                                <h2 className="text-2xl font-bold text-gray-800 mb-2">
                                     إغلاق المهمة: {selectedHomework.title}
                                 </h2>
-                                <p className="text-gray-600 mb-6">
-                                    اختر الطلاب الذين <strong className="text-red-600">لم يُنجزوا</strong> المهمة. الباقي سيُعتبرون منجزين تلقائياً.
+                                <p className="text-sm text-gray-600 mb-4">
+                                    الفصل: {gradeLevels.find(g => g.value === selectedHomework.gradeLevel)?.label} - الشعبة {selectedHomework.section}
                                 </p>
+                                <div className="bg-yellow-50 border-r-4 border-yellow-500 p-3 mb-4">
+                                    <p className="text-gray-800 text-sm">
+                                        📌 <strong>اختر الطلاب الذين لم يُنجزوا المهمة فقط.</strong> الباقي سيُعتبرون منجزين تلقائياً.
+                                    </p>
+                                </div>
 
-                                <div className="space-y-2 mb-6">
+                                <div className="grid md:grid-cols-2 gap-2 mb-6 max-h-96 overflow-y-auto">
                                     {selectedHomework.studentCompletions?.map(student => (
                                         <label 
                                             key={student.studentId}
-                                            className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
+                                            className={`flex items-center gap-2 p-2 rounded-lg border-2 cursor-pointer transition-colors text-sm ${
                                                 incompleteStudents.includes(student.studentId)
                                                     ? 'border-red-500 bg-red-50'
                                                     : 'border-green-500 bg-green-50'
@@ -485,18 +655,32 @@
                                                 type="checkbox"
                                                 checked={incompleteStudents.includes(student.studentId)}
                                                 onChange={() => toggleStudentInIncomplete(student.studentId)}
-                                                className="w-5 h-5"
+                                                className="w-4 h-4"
                                             />
-                                            <span className="flex-1 font-medium">{student.studentName}</span>
-                                            <span className={`text-sm font-semibold ${
+                                            <span className="flex-1">{student.studentName}</span>
+                                            <span className={`text-xs font-semibold ${
                                                 incompleteStudents.includes(student.studentId)
                                                     ? 'text-red-600'
                                                     : 'text-green-600'
                                             }`}>
-                                                {incompleteStudents.includes(student.studentId) ? '✗ غير منجز' : '✓ منجز'}
+                                                {incompleteStudents.includes(student.studentId) ? '✗' : '✓'}
                                             </span>
                                         </label>
                                     ))}
+                                </div>
+
+                                <div className="border-t pt-4 mb-4">
+                                    <div className="flex gap-4 text-sm">
+                                        <span className="text-green-600 font-semibold">
+                                            ✓ منجزين: {selectedHomework.studentCompletions.length - incompleteStudents.length}
+                                        </span>
+                                        <span className="text-red-600 font-semibold">
+                                            ✗ غير منجزين: {incompleteStudents.length}
+                                        </span>
+                                        <span className="text-gray-600 font-semibold">
+                                            المجموع: {selectedHomework.studentCompletions.length}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div className="flex gap-3">
@@ -662,8 +846,9 @@
                                                                 <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500">
                                                                     <span>📅 {formatDate(hw.dueDate, hw.dueTime)}</span>
                                                                     <span>👥 {gradeLevels.find(g => g.value === hw.gradeLevel)?.label} - الشعبة {hw.section}</span>
+                                                                    <span>📊 {totalStudents} طالب</span>
                                                                     {hw.grade && (
-                                                                        <span className="text-indigo-600 font-medium">🎯 الدرجة: {hw.grade}</span>
+                                                                        <span className="text-indigo-600 font-medium">🎯 {hw.grade}</span>
                                                                     )}
                                                                     <span className="text-orange-600 font-medium">
                                                                         ⏰ {getTimeRemaining(hw.dueDate, hw.dueTime)}
@@ -677,9 +862,6 @@
                                                                         <span className="px-2 py-1 bg-red-100 text-red-700 rounded">
                                                                             ✗ غير منجز: {incompleteCount}
                                                                         </span>
-                                                                        <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded">
-                                                                            المجموع: {totalStudents}
-                                                                        </span>
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -691,7 +873,7 @@
                                                                     onClick={() => openCompletionModal(hw)}
                                                                     className="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
                                                                 >
-                                                                    📝 إغلاق المهمة وتسجيل الإنجاز
+                                                                    📝 إغلاق المهمة ({totalStudents} طالب)
                                                                 </button>
                                                             </div>
                                                         )}
@@ -707,7 +889,12 @@
                         {userRole === 'student' && (
                             <div className="space-y-6">
                                 <div className="bg-white rounded-xl shadow-md p-6">
-                                    <h2 className="text-2xl font-bold text-gray-800 mb-6">المهام والواجبات ({getFilteredHomeworks().length})</h2>
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h2 className="text-2xl font-bold text-gray-800">المهام والواجبات</h2>
+                                        <span className="text-sm text-gray-600">
+                                            {gradeLevels.find(g => g.value === currentUser.gradeLevel)?.label} - الشعبة {currentUser.section}
+                                        </span>
+                                    </div>
                                     {getFilteredHomeworks().length === 0 ? (
                                         <p className="text-center text-gray-500 py-8">لا توجد مهام حالياً</p>
                                     ) : (
