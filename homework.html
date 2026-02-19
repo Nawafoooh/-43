@@ -1389,5 +1389,115 @@ function App() {
 
 ReactDOM.render(<App />, document.getElementById('root'));
 </script>
+
+<script>
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        // Inline service worker
+        const swCode = `// Service Worker for PWA
+const CACHE_NAME = 'almundhir-v1';
+const urlsToCache = [
+  './',
+  './index.html'
+];
+
+// Install event
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(urlsToCache))
+  );
+  self.skipWaiting();
+});
+
+// Fetch event
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request).then(response => {
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
+          return response;
+        });
+      })
+  );
+});
+
+// Activate event
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+  self.clients.claim();
+});
+`;
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        
+        navigator.serviceWorker.register(swUrl)
+            .then(reg => console.log('✅ Service Worker registered'))
+            .catch(err => console.log('❌ SW registration failed:', err));
+    });
+}
+
+// Install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallPromotion();
+});
+
+function showInstallPromotion() {
+    const installDiv = document.createElement('div');
+    installDiv.id = 'install-banner';
+    installDiv.className = 'fixed bottom-4 left-4 right-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-xl shadow-2xl z-50 animate-slide';
+    installDiv.innerHTML = `
+        <div class="flex items-center gap-3">
+            <span class="text-3xl">📱</span>
+            <div class="flex-1">
+                <p class="font-bold">ثبّت التطبيق على جوالك!</p>
+                <p class="text-xs opacity-90">للحصول على تجربة أفضل</p>
+            </div>
+            <button id="install-btn" class="bg-white text-indigo-600 px-4 py-2 rounded-lg font-bold hover:bg-gray-100 transition">
+                تثبيت
+            </button>
+            <button id="dismiss-btn" class="text-white opacity-75 hover:opacity-100 px-2">✕</button>
+        </div>
+    `;
+    document.body.appendChild(installDiv);
+    
+    document.getElementById('install-btn').addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const result = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            document.getElementById('install-banner').remove();
+        }
+    });
+    
+    document.getElementById('dismiss-btn').addEventListener('click', () => {
+        document.getElementById('install-banner').remove();
+    });
+}
+</script>
 </body>
 </html>
