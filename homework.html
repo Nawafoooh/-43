@@ -309,17 +309,13 @@ function App() {
         const upperCode = code.trim().toUpperCase();
         
         if (upperCode.startsWith('T-')) {
-            // Check if teacher exists in DB
             if (DB[upperCode] && DB[upperCode].r === 'teacher') {
                 const acc = DB[upperCode];
-                setAccountData({ n: acc.n, v: acc.v, code: upperCode, role: 'teacher' });
+                setAccountData({ n: acc.n, v: acc.v, code: upperCode, isTeacher: true });
                 setLoginStep(hasPassword(upperCode) ? 2 : 3);
             } else {
-                alert('❌ كود المعلم غير موجود
-
-الأكواد المتاحة: T-001 إلى T-041');
-            });
-            setLoginStep(0);
+                alert('❌ كود المعلم غير موجود\n\nالأكواد: T-001 إلى T-041');
+            }
         } else if (upperCode.startsWith('P-')) {
             setRole('parent');
             setUser({
@@ -347,15 +343,21 @@ function App() {
     
     const handleStep2 = () => {
         if (checkPassword(code.trim().toUpperCase(), password)) {
-            const stats = recordLogin(code.trim().toUpperCase(), setNewBadge);
-            setStudentStats(stats);
-            setRole('student');
-            setUser({
-                name: accountData.n,
-                code: code.trim().toUpperCase(),
-                gradeLevel: accountData.g,
-                section: accountData.s
-            });
+            const upperCode = code.trim().toUpperCase();
+            if (accountData.isTeacher) {
+                setRole('teacher');
+                setUser({ name: accountData.n, code: upperCode });
+            } else {
+                const stats = recordLogin(upperCode, setNewBadge);
+                setStudentStats(stats);
+                setRole('student');
+                setUser({
+                    name: accountData.n,
+                    code: upperCode,
+                    gradeLevel: accountData.g,
+                    section: accountData.s
+                });
+            }
             setLoginStep(0);
             resetLoginForm();
         } else {
@@ -383,15 +385,21 @@ function App() {
         
         const upperCode = code.trim().toUpperCase();
         savePassword(upperCode, password);
-        const stats = recordLogin(upperCode, setNewBadge);
-        setStudentStats(stats);
-        setRole('student');
-        setUser({
-            name: accountData.n,
-            code: upperCode,
-            gradeLevel: accountData.g,
-            section: accountData.s
-        });
+        
+        if (accountData.isTeacher) {
+            setRole('teacher');
+            setUser({ name: accountData.n, code: upperCode });
+        } else {
+            const stats = recordLogin(upperCode, setNewBadge);
+            setStudentStats(stats);
+            setRole('student');
+            setUser({
+                name: accountData.n,
+                code: upperCode,
+                gradeLevel: accountData.g,
+                section: accountData.s
+            });
+        }
         setLoginStep(0);
         resetLoginForm();
     };
