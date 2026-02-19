@@ -309,8 +309,16 @@ function App() {
         const upperCode = code.trim().toUpperCase();
         
         if (upperCode.startsWith('T-')) {
-            setRole('teacher');
-            setUser({ name: 'أستاذ محمد', code: upperCode });
+            // Check if teacher exists in DB
+            if (DB[upperCode] && DB[upperCode].r === 'teacher') {
+                const acc = DB[upperCode];
+                setAccountData({ n: acc.n, v: acc.v, code: upperCode, role: 'teacher' });
+                setLoginStep(hasPassword(upperCode) ? 2 : 3);
+            } else {
+                alert('❌ كود المعلم غير موجود
+
+الأكواد المتاحة: T-001 إلى T-041');
+            });
             setLoginStep(0);
         } else if (upperCode.startsWith('P-')) {
             setRole('parent');
