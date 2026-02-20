@@ -521,6 +521,32 @@
   /* Paragraph separator render */
   .rendered-body p { margin-bottom: 1.4rem; }
 
+  /* ═══════════════════════════════
+     LTR SUPPORT (English articles)
+  ═══════════════════════════════ */
+  .lang-en .article-headline,
+  .lang-en .article-deck,
+  .lang-en .article-body,
+  .lang-en .pull-quote blockquote {
+    direction: ltr;
+    text-align: left;
+    font-family: 'Georgia', 'Times New Roman', serif;
+  }
+  .lang-en .byline-bar {
+    direction: ltr;
+  }
+  .lang-en .article-body p:first-of-type::first-letter {
+    float: left;
+    margin-right: 0.15em;
+    margin-left: 0;
+  }
+  .lang-en .pull-quote {
+    border-right: none;
+    border-left: 4px solid var(--gold);
+    padding-right: 1rem;
+    padding-left: 1.5rem;
+  }
+
   /* Animations */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
@@ -561,6 +587,14 @@
   <button class="btn-close-admin" onclick="closeAdmin()">✕</button>
   <div class="admin-card">
     <h2>✍️ نشر مقال جديد</h2>
+
+    <div class="form-group">
+      <label>🌐 لغة المقال — Language</label>
+      <select id="field-lang" style="font-family:'Cairo',sans-serif;">
+        <option value="ar">عربي ← (من اليمين لليسار)</option>
+        <option value="en">English → (left to right)</option>
+      </select>
+    </div>
 
     <div class="form-group">
       <label>التصنيف / القسم</label>
@@ -719,6 +753,16 @@ function startCountdown(publishedAt) {
 function renderArticle(data) {
   const articleEl = document.getElementById('article-content');
   const emptyEl   = document.getElementById('empty-state');
+  const isEn      = data.lang === 'en';
+
+  // Apply language direction to article wrapper
+  if (isEn) {
+    articleEl.classList.add('lang-en');
+    articleEl.setAttribute('dir', 'ltr');
+  } else {
+    articleEl.classList.remove('lang-en');
+    articleEl.setAttribute('dir', 'rtl');
+  }
 
   document.getElementById('section-category').textContent = data.category || 'رأي وتحليل';
   document.getElementById('a-title').textContent   = data.title  || '';
@@ -806,6 +850,7 @@ async function publishArticle() {
   const body     = document.getElementById('field-body').value.trim();
   const category = document.getElementById('field-category').value.trim();
   const quote    = document.getElementById('field-quote').value.trim();
+  const lang     = document.getElementById('field-lang').value;
 
   if (!title || !body) {
     alert('العنوان والنص إلزاميان');
@@ -813,7 +858,7 @@ async function publishArticle() {
   }
 
   const data = {
-    title, deck, body, category, quote,
+    title, deck, body, category, quote, lang,
     publishedAt: Date.now()
   };
 
