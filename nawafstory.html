@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نواف — مقال اليوم</title>
+
+<!-- خطوط عربية راقية -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Serif+Arabic:wght@300;400;600;700;900&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+<style>
+  :root {
+    --cream: #FDFAF5;
+    --ink: #1A1410;
+    --ink-light: #4A3F35;
+    --ink-muted: #8A7D72;
+    --gold: #C8923A;
+    --gold-light: #E8B86D;
+    --rule: #D4C4B0;
+    --rule-light: #EDE4D8;
+    --red-accent: #9B3A2A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--cream);
+    color: var(--ink);
+    font-family: 'Noto Naskh Arabic', serif;
+    min-height: 100vh;
+    direction: rtl;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  body.loaded { opacity: 1; }
+
+  /* ═══════════════════════════════
+     LOADING STATE
+  ═══════════════════════════════ */
+  #loading-screen {
+    position: fixed; inset: 0;
+    background: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 999;
+    transition: opacity 0.6s ease;
+  }
+  #loading-screen.hide { opacity: 0; pointer-events: none; }
+  .loading-ornament {
+    font-size: 2rem;
+    color: var(--gold);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+  /* ═══════════════════════════════
+     NEWSPAPER HEADER
+  ═══════════════════════════════ */
+  .newspaper-header {
+    border-bottom: 3px double var(--ink);
+    padding: 1.5rem 0 0;
+    margin-bottom: 0;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0 clamp(1.5rem, 6vw, 6rem);
+    margin-bottom: 1rem;
+  }
+
+  .header-meta {
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.72rem;
+    color: var(--ink-muted);
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+    text-align: right;
+  }
+
+  .header-meta .issue-number {
+    color: var(--red-accent);
+    font-weight: 600;
+  }
+
+  .masthead {
+    text-align: center;
+    flex: 1;
+    padding: 0 2rem;
+  }
+
+  .masthead-name {
+    font-family: 'Noto Serif Arabic', serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    display: block;
+  }
+
+  .masthead-tagline {
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+    display: block;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 0.35rem 2rem;
+    display: inline-block;
+    margin-top: 0.5rem;
+  }
+
+  .header-countdown {
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.72rem;
+    color: var(--ink-muted);
+    text-align: left;
+    line-height: 1.8;
+  }
+
+  .countdown-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--red-accent);
+    display: block;
+    font-family: 'Noto Serif Arabic', serif;
+  }
+
+  /* Gold rule decoration */
+  .header-rule {
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+    margin: 0.8rem 0 0;
+  }
+
+  /* ═══════════════════════════════
+     SECTION LABEL (CATEGORY)
+  ═══════════════════════════════ */
+  .section-bar {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.35rem clamp(1.5rem, 6vw, 6rem);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* ═══════════════════════════════
+     ARTICLE LAYOUT
+  ═══════════════════════════════ */
+  .article-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 6vw, 3rem);
+  }
+
+  /* Headline */
+  .article-headline {
+    font-family: 'Noto Serif Arabic', serif;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1.25;
+    margin-bottom: 1.2rem;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 1rem;
+  }
+
+  .article-deck {
+    font-family: 'Cairo', sans-serif;
+    font-size: clamp(1rem, 2.2vw, 1.25rem);
+    font-weight: 400;
+    color: var(--ink-light);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+
+  /* Byline */
+  .byline-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 0.7rem 0;
+    margin-bottom: 2rem;
+  }
+
+  .byline-author {
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .byline-author span {
+    color: var(--gold);
+  }
+
+  .byline-date {
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.82rem;
+    color: var(--ink-muted);
+  }
+
+  /* Drop cap + body */
+  .article-body {
+    font-family: 'Noto Naskh Arabic', serif;
+    font-size: clamp(1.05rem, 2vw, 1.2rem);
+    line-height: 2;
+    color: var(--ink-light);
+    text-align: justify;
+  }
+
+  .article-body p { margin-bottom: 1.4rem; }
+
+  /* Drop cap on first paragraph */
+  .article-body p:first-of-type::first-letter {
+    font-family: 'Noto Serif Arabic', serif;
+    font-size: 4.5em;
+    font-weight: 900;
+    color: var(--gold);
+    float: right;
+    line-height: 0.75;
+    margin-left: 0.15em;
+    margin-bottom: -0.05em;
+    padding-top: 0.05em;
+  }
+
+  /* Pull quote */
+  .pull-quote {
+    border-right: 4px solid var(--gold);
+    padding: 1rem 1.5rem;
+    margin: 2rem 0;
+    background: rgba(200, 146, 58, 0.05);
+  }
+
+  .pull-quote blockquote {
+    font-family: 'Noto Serif Arabic', serif;
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* Ornament divider */
+  .ornament-divider {
+    text-align: center;
+    margin: 2rem 0;
+    color: var(--gold);
+    font-size: 1.4rem;
+    letter-spacing: 1rem;
+  }
+
+  /* ═══════════════════════════════
+     FOOTER
+  ═══════════════════════════════ */
+  .article-footer {
+    border-top: 3px double var(--ink);
+    padding: 1.5rem clamp(1.5rem, 6vw, 6rem);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--cream);
+  }
+
+  .footer-copy {
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+  }
+
+  .footer-logo {
+    font-family: 'Noto Serif Arabic', serif;
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: var(--ink);
+  }
+
+  /* ═══════════════════════════════
+     ADMIN PANEL
+  ═══════════════════════════════ */
+  #admin-panel {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,20,16,0.85);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  #admin-panel.open { display: flex; }
+
+  .admin-card {
+    background: white;
+    border-radius: 4px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 680px;
+    max-height: 90vh;
+    overflow-y: auto;
+    direction: rtl;
+  }
+
+  .admin-card h2 {
+    font-family: 'Noto Serif Arabic', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    color: var(--ink);
+    border-bottom: 2px solid var(--rule);
+    padding-bottom: 1rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.2rem;
+  }
+
+  .form-group label {
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink-light);
+    display: block;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.05em;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    font-family: 'Noto Naskh Arabic', serif;
+    font-size: 1rem;
+    color: var(--ink);
+    background: var(--cream);
+    direction: rtl;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus {
+    border-color: var(--gold);
+  }
+
+  .form-group textarea { min-height: 180px; }
+
+  .btn-publish {
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    padding: 0.9rem 2.5rem;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-radius: 3px;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  .btn-publish:hover { background: var(--gold); }
+
+  .btn-close-admin {
+    position: absolute;
+    top: 1rem; left: 1rem;
+    background: none; border: none;
+    font-size: 1.5rem; color: white;
+    cursor: pointer; opacity: 0.7;
+  }
+  .btn-close-admin:hover { opacity: 1; }
+
+  /* ═══════════════════════════════
+     EXPIRED / EMPTY STATE
+  ═══════════════════════════════ */
+  #empty-state {
+    display: none;
+    min-height: 70vh;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 3rem;
+  }
+  #empty-state.show { display: flex; }
+
+  .empty-ornament {
+    font-size: 3rem;
+    color: var(--rule);
+    margin-bottom: 1.5rem;
+  }
+
+  .empty-title {
+    font-family: 'Noto Serif Arabic', serif;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 900;
+    color: var(--ink-muted);
+    margin-bottom: 0.8rem;
+  }
+
+  .empty-subtitle {
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+    color: var(--ink-muted);
+    opacity: 0.7;
+  }
+
+  /* ═══════════════════════════════
+     ADMIN TRIGGER (hidden button)
+  ═══════════════════════════════ */
+  .admin-trigger {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    width: 36px; height: 36px;
+    background: var(--rule-light);
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+    z-index: 100;
+  }
+  .admin-trigger:hover { opacity: 1; }
+
+  /* ═══════════════════════════════
+     LOGIN OVERLAY
+  ═══════════════════════════════ */
+  #login-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,20,16,0.85);
+    backdrop-filter: blur(6px);
+    z-index: 1001;
+    align-items: center;
+    justify-content: center;
+  }
+  #login-overlay.open { display: flex; }
+
+  .login-card {
+    background: white;
+    border-radius: 4px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 360px;
+    text-align: center;
+    direction: rtl;
+  }
+
+  .login-card h3 {
+    font-family: 'Noto Serif Arabic', serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    color: var(--ink);
+  }
+
+  .login-card input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    direction: ltr;
+    outline: none;
+  }
+  .login-card input:focus { border-color: var(--gold); }
+
+  .btn-login {
+    background: var(--ink);
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 3px;
+    width: 100%;
+    transition: background 0.2s;
+  }
+  .btn-login:hover { background: var(--gold); }
+
+  .login-error {
+    color: var(--red-accent);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.85rem;
+    margin-top: 0.8rem;
+    display: none;
+  }
+
+  /* Paragraph separator render */
+  .rendered-body p { margin-bottom: 1.4rem; }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .article-headline { animation: fadeUp 0.6s ease both; animation-delay: 0.1s; }
+  .article-deck     { animation: fadeUp 0.6s ease both; animation-delay: 0.2s; }
+  .byline-bar       { animation: fadeUp 0.6s ease both; animation-delay: 0.3s; }
+  .article-body     { animation: fadeUp 0.6s ease both; animation-delay: 0.4s; }
+
+  @media (max-width: 600px) {
+    .header-top { flex-direction: column; align-items: center; gap: 1rem; }
+    .header-meta, .header-countdown { text-align: center; }
+    .article-footer { flex-direction: column; gap: 0.8rem; text-align: center; }
+    .byline-bar { flex-direction: column; gap: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div id="loading-screen">
+  <div class="loading-ornament">✦ ✦ ✦</div>
+</div>
+
+<!-- Login Overlay -->
+<div id="login-overlay">
+  <div class="login-card">
+    <h3>🔐 لوحة التحرير</h3>
+    <input type="password" id="admin-password" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter')checkLogin()">
+    <button class="btn-login" onclick="checkLogin()">دخول</button>
+    <div class="login-error" id="login-error">كلمة المرور غير صحيحة</div>
+  </div>
+</div>
+
+<!-- Admin Panel -->
+<div id="admin-panel">
+  <button class="btn-close-admin" onclick="closeAdmin()">✕</button>
+  <div class="admin-card">
+    <h2>✍️ نشر مقال جديد</h2>
+
+    <div class="form-group">
+      <label>التصنيف / القسم</label>
+      <input type="text" id="field-category" placeholder="مثال: تحليل — رأي — متابعات" value="رأي وتحليل">
+    </div>
+
+    <div class="form-group">
+      <label>العنوان الرئيسي</label>
+      <input type="text" id="field-title" placeholder="عنوان المقال...">
+    </div>
+
+    <div class="form-group">
+      <label>المقدمة (Deck) — جملة توضيحية مختصرة</label>
+      <input type="text" id="field-deck" placeholder="جملة تشويقية أسفل العنوان...">
+    </div>
+
+    <div class="form-group">
+      <label>الاقتباس البارز (Pull Quote) — اختياري</label>
+      <input type="text" id="field-quote" placeholder="اقتباس قوي من المقال يُعرض في المنتصف...">
+    </div>
+
+    <div class="form-group">
+      <label>نص المقال — افصل الفقرات بسطر فارغ</label>
+      <textarea id="field-body" placeholder="أدخل نص المقال هنا...&#10;&#10;يمكنك الضغط على Enter مرتين للفصل بين الفقرات."></textarea>
+    </div>
+
+    <button class="btn-publish" onclick="publishArticle()">نشر المقال الآن — ٢٤ ساعة</button>
+  </div>
+</div>
+
+<!-- ═══════════════ NEWSPAPER HEADER ═══════════════ -->
+<header class="newspaper-header">
+  <div class="header-top">
+    <div class="header-meta">
+      <span class="issue-number" id="h-issue">العدد ١</span><br>
+      <span id="h-date">—</span><br>
+      <span>نسخة إلكترونية حصرية</span>
+    </div>
+
+    <div class="masthead">
+      <span class="masthead-name">نـواف</span>
+      <span class="masthead-tagline">ما يستحق أن يُقال — مرة واحدة — ثم يمضي</span>
+    </div>
+
+    <div class="header-countdown">
+      تختفي بعد<br>
+      <span class="countdown-value" id="countdown-display">٢٤:٠٠:٠٠</span>
+      ساعة
+    </div>
+  </div>
+  <div class="header-rule"></div>
+  <div class="section-bar">
+    <span id="section-category">تحميل...</span>
+    <span>✦</span>
+  </div>
+</header>
+
+<!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+<main>
+  <!-- Article Content -->
+  <div id="article-content" class="article-wrapper" style="display:none;">
+    <h1 class="article-headline" id="a-title"></h1>
+    <p class="article-deck" id="a-deck"></p>
+    <div class="byline-bar">
+      <span class="byline-author">بقلم <span>نـواف</span></span>
+      <span class="byline-date" id="a-date"></span>
+    </div>
+    <div class="article-body" id="a-body"></div>
+  </div>
+
+  <!-- Empty / Expired State -->
+  <div id="empty-state">
+    <div class="empty-ornament">◈</div>
+    <div class="empty-title">نواف لم يذكر شيئاً الى الآن</div>
+    <div class="empty-subtitle">عد لاحقاً — ربما يكون للصمت ما يقوله</div>
+  </div>
+</main>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="article-footer">
+  <span class="footer-copy">تنتهي هذه الصفحة تلقائياً بعد ٢٤ ساعة من النشر</span>
+  <span class="footer-logo">نـواف</span>
+</footer>
+
+<!-- Hidden admin trigger (bottom-left corner, subtle) -->
+<button class="admin-trigger" onclick="openLoginOrAdmin()" title="لوحة التحرير">✎</button>
+
+
+<script>
+// ═══════════════════════════════════════════════════
+//  FIREBASE CONFIG
+// ═══════════════════════════════════════════════════
+const firebaseConfig = {
+    apiKey: "AIzaSyCdqr9x5kC6rQaSdq7oOei-pWEKgVjJKL0",
+    authDomain: "wyckoff-a6303.firebaseapp.com",
+    projectId: "wyckoff-a6303",
+    storageBucket: "wyckoff-a6303.appspot.com",
+    messagingSenderId: "347571286958",
+    appId: "1:347571286958:web:7b9ff7fbd9a8f1feef8e3f",
+    measurementId: "G-WDJC7VDYX5"
+};
+const app = firebase.initializeApp(firebaseConfig);
+const db  = firebase.firestore();
+
+// ═══════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════
+const ADMIN_PASSWORD  = "nawaf2025";   // ← غير هذه كلمة المرور
+const ARTICLE_TTL_MS  = 24 * 60 * 60 * 1000; // 24 ساعة
+const DOC_ID          = "current_article";
+
+// ═══════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════
+function arabicDate(ts) {
+  const d = new Date(ts);
+  return d.toLocaleDateString('ar-SA', {
+    weekday: 'long', year: 'numeric',
+    month: 'long', day: 'numeric'
+  });
+}
+
+function arabicNumber(n) {
+  return n.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+}
+
+function padArabic(n) {
+  return arabicNumber(String(n).padStart(2,'0'));
+}
+
+let countdownInterval = null;
+
+function startCountdown(publishedAt) {
+  const expiresAt = publishedAt + ARTICLE_TTL_MS;
+  clearInterval(countdownInterval);
+
+  countdownInterval = setInterval(() => {
+    const remaining = expiresAt - Date.now();
+    if (remaining <= 0) {
+      clearInterval(countdownInterval);
+      document.getElementById('countdown-display').textContent = 'انتهت';
+      showEmptyState();
+      return;
+    }
+    const h = Math.floor(remaining / 3600000);
+    const m = Math.floor((remaining % 3600000) / 60000);
+    const s = Math.floor((remaining % 60000) / 1000);
+    document.getElementById('countdown-display').textContent =
+      `${padArabic(h)}:${padArabic(m)}:${padArabic(s)}`;
+  }, 1000);
+}
+
+// ═══════════════════════════════════════════════════
+//  RENDER ARTICLE
+// ═══════════════════════════════════════════════════
+function renderArticle(data) {
+  const articleEl = document.getElementById('article-content');
+  const emptyEl   = document.getElementById('empty-state');
+
+  document.getElementById('section-category').textContent = data.category || 'رأي وتحليل';
+  document.getElementById('a-title').textContent   = data.title  || '';
+  document.getElementById('a-deck').textContent    = data.deck   || '';
+  document.getElementById('a-date').textContent    = arabicDate(data.publishedAt);
+  document.getElementById('h-date').textContent    = arabicDate(data.publishedAt);
+
+  // Render body paragraphs
+  const bodyEl = document.getElementById('a-body');
+  const paras  = (data.body || '').split(/\n\n+/).filter(p => p.trim());
+
+  let html = paras.map((p, i) => `<p>${p.trim()}</p>`).join('');
+
+  // Inject pull quote if present (after 2nd paragraph)
+  if (data.quote && paras.length >= 2) {
+    const splitAt = 2;
+    const firstHalf  = paras.slice(0, splitAt).map(p=>`<p>${p.trim()}</p>`).join('');
+    const secondHalf = paras.slice(splitAt).map(p=>`<p>${p.trim()}</p>`).join('');
+    html = firstHalf
+      + `<div class="pull-quote"><blockquote>"${data.quote}"</blockquote></div>`
+      + `<div class="ornament-divider">✦ &nbsp; ✦ &nbsp; ✦</div>`
+      + secondHalf;
+  }
+
+  bodyEl.innerHTML = html;
+
+  // Issue number (sequential based on date)
+  const issueNum = arabicNumber(Math.floor(data.publishedAt / (1000*3600*24)) % 1000 + 1);
+  document.getElementById('h-issue').textContent = `العدد ${issueNum}`;
+
+  emptyEl.classList.remove('show');
+  articleEl.style.display = 'block';
+
+  startCountdown(data.publishedAt);
+}
+
+function showEmptyState() {
+  document.getElementById('article-content').style.display = 'none';
+  document.getElementById('section-category').textContent = '—';
+  document.getElementById('countdown-display').textContent = '—';
+  document.getElementById('empty-state').classList.add('show');
+}
+
+// ═══════════════════════════════════════════════════
+//  LOAD FROM FIREBASE
+// ═══════════════════════════════════════════════════
+async function loadArticle() {
+  try {
+    const doc = await db.collection('articles').doc(DOC_ID).get();
+
+    if (!doc.exists) {
+      showEmptyState();
+      return;
+    }
+
+    const data = doc.data();
+    const now  = Date.now();
+
+    if (!data.publishedAt || now > data.publishedAt + ARTICLE_TTL_MS) {
+      // Expired — delete and show empty
+      await db.collection('articles').doc(DOC_ID).delete().catch(()=>{});
+      showEmptyState();
+      return;
+    }
+
+    renderArticle(data);
+
+  } catch (err) {
+    console.warn('Firebase error:', err);
+    showEmptyState();
+  } finally {
+    // Hide loading screen
+    const ls = document.getElementById('loading-screen');
+    ls.classList.add('hide');
+    document.body.classList.add('loaded');
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  PUBLISH
+// ═══════════════════════════════════════════════════
+async function publishArticle() {
+  const title    = document.getElementById('field-title').value.trim();
+  const deck     = document.getElementById('field-deck').value.trim();
+  const body     = document.getElementById('field-body').value.trim();
+  const category = document.getElementById('field-category').value.trim();
+  const quote    = document.getElementById('field-quote').value.trim();
+
+  if (!title || !body) {
+    alert('العنوان والنص إلزاميان');
+    return;
+  }
+
+  const data = {
+    title, deck, body, category, quote,
+    publishedAt: Date.now()
+  };
+
+  try {
+    await db.collection('articles').doc(DOC_ID).set(data);
+    closeAdmin();
+    renderArticle(data);
+  } catch(err) {
+    alert('خطأ في النشر: ' + err.message);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  ADMIN UI
+// ═══════════════════════════════════════════════════
+function openLoginOrAdmin() {
+  if (sessionStorage.getItem('nawaf_auth') === '1') {
+    document.getElementById('admin-panel').classList.add('open');
+  } else {
+    document.getElementById('login-overlay').classList.add('open');
+    document.getElementById('admin-password').value = '';
+    document.getElementById('login-error').style.display = 'none';
+    setTimeout(()=>document.getElementById('admin-password').focus(), 200);
+  }
+}
+
+function checkLogin() {
+  const val = document.getElementById('admin-password').value;
+  if (val === ADMIN_PASSWORD) {
+    sessionStorage.setItem('nawaf_auth', '1');
+    document.getElementById('login-overlay').classList.remove('open');
+    document.getElementById('admin-panel').classList.add('open');
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+function closeAdmin() {
+  document.getElementById('admin-panel').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+window.addEventListener('load', loadArticle);
+</script>
+</body>
+</html>
