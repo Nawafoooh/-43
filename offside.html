@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -8,33 +8,46 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #080f08; font-family: 'Courier New', monospace; color: #c8e6c9; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  @keyframes scanline { 0%{top:-10%} 100%{top:110%} }
-  ::-webkit-scrollbar { width: 4px; height: 4px; }
-  ::-webkit-scrollbar-track { background: #0a180a; }
-  ::-webkit-scrollbar-thumb { background: #1e4020; border-radius: 2px; }
-  button { font-family: 'Courier New', monospace; }
-  canvas { display: block; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#080f08;font-family:'Courier New',monospace;color:#c8e6c9;overflow-x:hidden}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:#0a180a}
+::-webkit-scrollbar-thumb{background:#1e4020;border-radius:2px}
+button{font-family:'Courier New',monospace;cursor:pointer}
+canvas{display:block;width:100%;height:auto}
 </style>
 </head>
 <body>
 <div id="root"></div>
+
 <script type="text/babel">
 const { useState, useEffect, useRef, useCallback } = React;
 
-const FW = 800, FH = 520;
-const OFFSIDE_X = 596;
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
+const FW = 760;
+const FH = 480;
+const OFFSIDE_X = 562;
 
+// ─── DATA ─────────────────────────────────────────────────────────────────────
 const PLAYERS = [
-  { id:"A1", team:"attack", x:580, y:200, name:"Müller",  num:9,  offside:true,  conf:0.97, bp:{ head:[580,185], shoulder:[578,196], hip:[577,212], knee:[576,225], foot:[574,238] } },
-  { id:"A2", team:"attack", x:520, y:300, name:"Sané",    num:10, offside:false, conf:0.94, bp:{ head:[520,285], shoulder:[519,296], hip:[518,312], knee:[517,325], foot:[515,338] } },
-  { id:"A3", team:"attack", x:556, y:370, name:"Gnabry",  num:7,  offside:true,  conf:0.91, bp:{ head:[556,355], shoulder:[555,366], hip:[554,382], knee:[553,395], foot:[551,408] } },
-  { id:"D1", team:"defend", x:592, y:145, name:"Rüdiger", num:5,  offside:false, conf:null },
-  { id:"D2", team:"defend", x:597, y:338, name:"Süle",    num:15, offside:false, conf:null },
-  { id:"D3", team:"defend", x:602, y:430, name:"Kimmich", num:6,  offside:false, conf:null },
-  { id:"GK", team:"defend", x:724, y:270, name:"Neuer",   num:1,  offside:false, conf:null, isGK:true },
+  {
+    id:"A1", team:"attack", x:575, y:185, name:"Müller", num:9, offside:true, conf:0.97,
+    bp:[[575,170],[573,182],[571,196],[570,210],[568,224]]
+  },
+  {
+    id:"A2", team:"attack", x:510, y:285, name:"Sané", num:10, offside:false, conf:0.94,
+    bp:[[510,270],[509,282],[508,296],[507,310],[505,324]]
+  },
+  {
+    id:"A3", team:"attack", x:548, y:355, name:"Gnabry", num:7, offside:true, conf:0.91,
+    bp:[[548,340],[546,352],[545,366],[544,380],[542,394]]
+  },
+  { id:"D1", team:"defend", x:568, y:135, name:"Rüdiger", num:5,  offside:false, conf:null },
+  { id:"D2", team:"defend", x:564, y:325, name:"Süle",    num:15, offside:false, conf:null },
+  { id:"D3", team:"defend", x:570, y:415, name:"Kimmich", num:6,  offside:false, conf:null },
+  { id:"GK", team:"defend", x:700, y:255, name:"Neuer",   num:1,  offside:false, conf:null, isGK:true },
 ];
 
 const EVENTS = [
@@ -48,7 +61,7 @@ const JSON_DATA = {
   timestamp: "47:23.4",
   frame_id: 84234,
   offside_line_x: OFFSIDE_X,
-  second_last_defender: { player: "Süle", id: "D2", x: OFFSIDE_X },
+  second_last_defender: { player:"Süle", id:"D2", x:OFFSIDE_X },
   players: PLAYERS.filter(p => p.team === "attack").map(p => ({
     timestamp: "47:23.4",
     player_id: p.id,
@@ -57,466 +70,666 @@ const JSON_DATA = {
     offside_status: p.offside ? "OFFSIDE" : "ONSIDE",
     confidence_score: p.conf,
     contact_point_coordinates: { x: p.x, y: p.y },
-    body_part_most_advanced: p.bp ? "foot" : "body",
-    pixels_beyond_line: p.offside ? p.x - OFFSIDE_X : 0,
+    pixels_beyond_line: p.offside ? p.x - OFFSIDE_X : 0
   }))
 };
 
-function Field({ players, skeleton, lines, scan }) {
-  const ref = useRef(null);
-  const anim = useRef(null);
-  const t = useRef(0);
-  const scanY = useRef(-50);
+// ─── CANVAS FIELD ─────────────────────────────────────────────────────────────
+function FieldCanvas({ skeleton, lines, scanning }) {
+  const canvasRef = useRef(null);
+  const animRef   = useRef(null);
+  const tick      = useRef(0);
+  const scanY     = useRef(0);
 
-  const draw = useCallback(() => {
-    const c = ref.current; if(!c) return;
-    const ctx = c.getContext("2d");
-    t.current += 0.04;
-    const pulse = Math.sin(t.current);
+  const render = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
     const W = FW, H = FH;
+    tick.current += 0.045;
+    const pulse = Math.sin(tick.current);
 
-    // Grass
-    ctx.fillStyle = "#0c3018"; ctx.fillRect(0,0,W,H);
-    for(let i=0;i<12;i++){
-      ctx.fillStyle = i%2===0 ? "#0e3520" : "#0b2c1a";
-      ctx.fillRect(i*(W/12),0,W/12,H);
+    // ── Background grass stripes
+    for (let i = 0; i < 10; i++) {
+      ctx.fillStyle = i % 2 === 0 ? "#0d3318" : "#0a2b14";
+      ctx.fillRect(i * (W / 10), 0, W / 10, H);
     }
 
-    // Scanning effect
-    if(scan) {
-      scanY.current = (scanY.current + 4) % (H + 60);
-      const sg = ctx.createLinearGradient(0, scanY.current-30, 0, scanY.current+30);
-      sg.addColorStop(0,"rgba(34,238,102,0)");
-      sg.addColorStop(0.5,"rgba(34,238,102,0.12)");
-      sg.addColorStop(1,"rgba(34,238,102,0)");
-      ctx.fillStyle = sg;
-      ctx.fillRect(0, scanY.current-30, W, 60);
-    } else { scanY.current = -50; }
+    // ── Scan line effect
+    if (scanning) {
+      scanY.current = (scanY.current + 5) % (H + 80);
+      const g = ctx.createLinearGradient(0, scanY.current - 40, 0, scanY.current + 40);
+      g.addColorStop(0,   "rgba(34,238,102,0)");
+      g.addColorStop(0.5, "rgba(34,238,102,0.1)");
+      g.addColorStop(1,   "rgba(34,238,102,0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, scanY.current - 40, W, 80);
+    }
 
-    // Lines
-    ctx.strokeStyle = "rgba(255,255,255,0.3)"; ctx.lineWidth = 1.5; ctx.setLineDash([]);
-    ctx.strokeRect(35,25,W-70,H-50);
-    ctx.beginPath(); ctx.moveTo(W/2,25); ctx.lineTo(W/2,H-25); ctx.stroke();
-    ctx.beginPath(); ctx.arc(W/2,H/2,62,0,Math.PI*2); ctx.stroke();
-    ctx.beginPath(); ctx.arc(W/2,H/2,3,0,Math.PI*2); ctx.fillStyle="rgba(255,255,255,0.4)"; ctx.fill();
-    // Right penalty box
-    ctx.strokeRect(W-35-132,H/2-100,132,200);
-    ctx.strokeRect(W-35-62,H/2-50,62,100);
+    // ── Field lines
+    ctx.strokeStyle = "rgba(255,255,255,0.28)";
+    ctx.lineWidth   = 1.5;
+    ctx.setLineDash([]);
+
+    // Boundary
+    ctx.strokeRect(30, 20, W - 60, H - 40);
+
+    // Halfway line
+    ctx.beginPath(); ctx.moveTo(W/2, 20); ctx.lineTo(W/2, H-20); ctx.stroke();
+
+    // Centre circle
+    ctx.beginPath(); ctx.arc(W/2, H/2, 55, 0, Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(W/2, H/2, 3,  0, Math.PI*2);
+    ctx.fillStyle = "rgba(255,255,255,0.35)"; ctx.fill();
+
+    // Right penalty box (attack side)
+    ctx.strokeRect(W-30-120, H/2-90, 120, 180);
+    ctx.strokeRect(W-30-55,  H/2-45,  55,  90);
+
     // Left penalty box
-    ctx.strokeRect(35,H/2-100,132,200);
-    ctx.strokeRect(35,H/2-50,62,100);
-    // Goals
-    ctx.strokeStyle="rgba(255,255,255,0.7)"; ctx.lineWidth=2.5;
-    ctx.strokeRect(W-35,H/2-42,22,84);
-    ctx.strokeRect(13,H/2-42,22,84);
+    ctx.strokeRect(30,      H/2-90, 120, 180);
+    ctx.strokeRect(30,      H/2-45,  55,  90);
 
-    // Corner arcs
-    ctx.strokeStyle = "rgba(255,255,255,0.2)"; ctx.lineWidth=1;
-    [[35,25],[W-35,25],[35,H-25],[W-35,H-25]].forEach(([cx,cy])=>{
-      ctx.beginPath(); ctx.arc(cx,cy,12,0,Math.PI*2); ctx.stroke();
-    });
+    // Goals
+    ctx.strokeStyle = "rgba(255,255,255,0.65)";
+    ctx.lineWidth   = 2.5;
+    ctx.strokeRect(W - 30, H/2 - 36, 18, 72);
+    ctx.strokeRect(12,     H/2 - 36, 18, 72);
 
     // Penalty spots
-    ctx.fillStyle="rgba(255,255,255,0.4)";
-    ctx.beginPath(); ctx.arc(W-35-90,H/2,3,0,Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(35+90,H/2,3,0,Math.PI*2); ctx.fill();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "rgba(255,255,255,0.35)";
+    ctx.beginPath(); ctx.arc(W - 30 - 82, H/2, 3, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(30 + 82,     H/2, 3, 0, Math.PI*2); ctx.fill();
 
-    // Offside line
-    if(lines) {
-      const a = 0.72 + pulse*0.18;
+    // ── Offside line
+    if (lines) {
+      const a = 0.7 + pulse * 0.2;
       ctx.save();
-      ctx.strokeStyle=`rgba(255,55,55,${a})`; ctx.lineWidth=2.5; ctx.setLineDash([8,5]);
-      ctx.shadowColor="rgba(255,60,60,0.9)"; ctx.shadowBlur=12+pulse*6;
-      ctx.beginPath(); ctx.moveTo(OFFSIDE_X,25); ctx.lineTo(OFFSIDE_X,H-25); ctx.stroke();
+      ctx.strokeStyle = `rgba(255,50,50,${a})`;
+      ctx.lineWidth   = 2.5;
+      ctx.setLineDash([9, 5]);
+      ctx.shadowColor = "rgba(255,50,50,0.85)";
+      ctx.shadowBlur  = 14 + pulse * 6;
+      ctx.beginPath();
+      ctx.moveTo(OFFSIDE_X, 20);
+      ctx.lineTo(OFFSIDE_X, H - 20);
+      ctx.stroke();
       ctx.restore();
-      // Offside label
+
       ctx.save();
-      ctx.fillStyle=`rgba(255,70,70,${a})`; ctx.font="bold 10px 'Courier New'";
-      ctx.textAlign="center"; ctx.setLineDash([]);
-      ctx.fillText("◄ OFFSIDE LINE", OFFSIDE_X-2, 18); ctx.restore();
-      // Second-last defender indicator
-      ctx.save();
-      ctx.strokeStyle="rgba(255,200,0,0.5)"; ctx.lineWidth=1; ctx.setLineDash([3,3]);
-      ctx.beginPath(); ctx.moveTo(OFFSIDE_X,25); ctx.lineTo(OFFSIDE_X,H-25); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle  = `rgba(255,70,70,${a})`;
+      ctx.font       = "bold 10px 'Courier New'";
+      ctx.textAlign  = "center";
+      ctx.fillText("OFFSIDE LINE", OFFSIDE_X, 14);
       ctx.restore();
     }
 
-    // Ball
-    const bx=508, by=294;
+    // ── Ball
+    const bx = 495, by = 278;
     ctx.save();
-    ctx.shadowColor="rgba(255,255,255,0.9)"; ctx.shadowBlur=10+pulse*4;
-    ctx.beginPath(); ctx.arc(bx,by,9,0,Math.PI*2);
-    ctx.fillStyle="white"; ctx.fill();
-    ctx.strokeStyle="#444"; ctx.lineWidth=1; ctx.setLineDash([]); ctx.stroke();
-    // Ball panels
-    ctx.strokeStyle="rgba(0,0,0,0.3)"; ctx.lineWidth=0.8;
-    ctx.beginPath(); ctx.arc(bx,by,5,0,Math.PI*2); ctx.stroke();
+    ctx.shadowColor = "rgba(255,255,255,0.8)";
+    ctx.shadowBlur  = 12 + pulse * 4;
+    ctx.beginPath(); ctx.arc(bx, by, 8, 0, Math.PI*2);
+    ctx.fillStyle   = "white"; ctx.fill();
+    ctx.setLineDash([]);
+    ctx.strokeStyle = "#555"; ctx.lineWidth = 1; ctx.stroke();
     ctx.restore();
 
-    if(lines) {
+    // Ball contact ring
+    if (lines) {
       ctx.save();
-      ctx.strokeStyle=`rgba(255,210,0,${0.5+pulse*0.35})`; ctx.lineWidth=1.5;
-      ctx.setLineDash([3,3]);
-      ctx.beginPath(); ctx.arc(bx,by,18+pulse*5,0,Math.PI*2); ctx.stroke();
-      ctx.fillStyle=`rgba(255,210,0,${0.7+pulse*0.2})`; ctx.font="bold 8px 'Courier New'";
-      ctx.textAlign="center"; ctx.fillText("CONTACT",bx,by-24); ctx.restore();
+      ctx.strokeStyle = `rgba(255,210,0,${0.45 + pulse * 0.35})`;
+      ctx.lineWidth   = 1.5;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.arc(bx, by, 18 + pulse * 4, 0, Math.PI*2); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle  = `rgba(255,210,0,${0.65 + pulse * 0.2})`;
+      ctx.font       = "bold 8px 'Courier New'";
+      ctx.textAlign  = "center";
+      ctx.fillText("⚽ CONTACT", bx, by - 26);
+      ctx.restore();
     }
 
-    // Players
-    players.forEach(p => {
-      const atk = p.team==="attack";
-      const off = p.offside;
-      const col = atk ? (off?"#ff3c3c":"#22ee66") : (p.isGK?"#f5c518":"#3d90ff");
+    // ── Players
+    PLAYERS.forEach(p => {
+      const isAtk = p.team === "attack";
+      const isOff = p.offside;
+      const color = isAtk
+        ? (isOff ? "#ff3c3c" : "#22ee66")
+        : (p.isGK ? "#f5c518" : "#3d90ff");
 
-      // Skeleton
-      if(skeleton && p.bp) {
+      // Skeleton body
+      if (skeleton && p.bp) {
         ctx.save();
-        ctx.strokeStyle = off?"rgba(255,80,80,0.75)":"rgba(34,238,102,0.75)";
-        ctx.lineWidth=1.8; ctx.setLineDash([]);
-        ctx.shadowColor = off?"rgba(255,60,60,0.5)":"rgba(34,238,102,0.5)";
-        ctx.shadowBlur=4;
-        const pts = Object.values(p.bp);
-        for(let i=0;i<pts.length-1;i++){
-          ctx.beginPath(); ctx.moveTo(pts[i][0],pts[i][1]);
-          ctx.lineTo(pts[i+1][0],pts[i+1][1]); ctx.stroke();
+        ctx.strokeStyle = isOff ? "rgba(255,80,80,0.8)" : "rgba(34,238,102,0.8)";
+        ctx.lineWidth   = 2;
+        ctx.setLineDash([]);
+        ctx.shadowBlur  = 4;
+        ctx.shadowColor = isOff ? "rgba(255,60,60,0.5)" : "rgba(34,238,102,0.4)";
+        for (let i = 0; i < p.bp.length - 1; i++) {
+          ctx.beginPath();
+          ctx.moveTo(p.bp[i][0],     p.bp[i][1]);
+          ctx.lineTo(p.bp[i+1][0],   p.bp[i+1][1]);
+          ctx.stroke();
         }
-        pts.forEach(pt=>{
-          ctx.beginPath(); ctx.arc(pt[0],pt[1],3,0,Math.PI*2);
-          ctx.fillStyle=off?"#ff6060":"#44ff88"; ctx.fill();
+        p.bp.forEach(pt => {
+          ctx.beginPath(); ctx.arc(pt[0], pt[1], 3, 0, Math.PI*2);
+          ctx.fillStyle = isOff ? "#ff7070" : "#44ff88"; ctx.fill();
         });
         ctx.restore();
       }
 
-      // Glow ring for offside
-      if(atk && off) {
+      // Pulsing offside glow ring
+      if (isAtk && isOff) {
         ctx.save();
-        ctx.beginPath(); ctx.arc(p.x,p.y,22+pulse*3,0,Math.PI*2);
-        ctx.strokeStyle=`rgba(255,60,60,${0.25+pulse*0.15})`; ctx.lineWidth=3;
-        ctx.setLineDash([]); ctx.stroke(); ctx.restore();
+        ctx.setLineDash([]);
+        ctx.beginPath(); ctx.arc(p.x, p.y, 23 + pulse * 3, 0, Math.PI*2);
+        ctx.strokeStyle = `rgba(255,60,60,${0.2 + pulse * 0.15})`;
+        ctx.lineWidth   = 4;
+        ctx.stroke();
+        ctx.restore();
       }
 
-      // Player circle
-      ctx.save(); ctx.setLineDash([]);
-      ctx.shadowColor=col; ctx.shadowBlur= atk&&off ? 16+pulse*7 : 6;
-      ctx.beginPath(); ctx.arc(p.x,p.y,17,0,Math.PI*2);
-      ctx.fillStyle=col+"28"; ctx.fill();
-      ctx.strokeStyle=col; ctx.lineWidth=2.5; ctx.stroke();
-      ctx.shadowBlur=0;
-      // Number
-      ctx.fillStyle="white"; ctx.font="bold 11px 'Courier New'";
-      ctx.textAlign="center"; ctx.textBaseline="middle";
-      ctx.fillText(p.num,p.x,p.y);
-      // Name
-      ctx.font="9px 'Courier New'"; ctx.fillStyle=col;
-      ctx.textBaseline="alphabetic"; ctx.fillText(p.name,p.x,p.y+29);
+      // Player disc
+      ctx.save();
+      ctx.setLineDash([]);
+      ctx.shadowColor = color;
+      ctx.shadowBlur  = isAtk && isOff ? 18 + pulse * 8 : 5;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 16, 0, Math.PI*2);
+      ctx.fillStyle   = color + "30"; ctx.fill();
+      ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.stroke();
+
+      // Jersey number
+      ctx.shadowBlur = 0;
+      ctx.fillStyle  = "white";
+      ctx.font       = "bold 11px 'Courier New'";
+      ctx.textAlign  = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(p.num, p.x, p.y);
+
+      // Player name below
+      ctx.font      = "8.5px 'Courier New'";
+      ctx.fillStyle = color;
+      ctx.textBaseline = "alphabetic";
+      ctx.fillText(p.name, p.x, p.y + 28);
       ctx.restore();
 
-      // OFFSIDE tag
-      if(atk && off && lines) {
+      // OFFSIDE / ONSIDE label
+      if (isAtk && lines) {
         ctx.save();
-        const ta = 0.85+pulse*0.15;
-        ctx.fillStyle=`rgba(255,255,255,${ta})`; ctx.font="bold 9px 'Courier New'";
-        ctx.textAlign="center";
-        const tw=ctx.measureText("▲ OFFSIDE").width;
-        ctx.fillStyle=`rgba(200,0,0,${ta*0.9})`; ctx.fillRect(p.x-tw/2-4,p.y-42,tw+8,14);
-        ctx.fillStyle=`rgba(255,200,200,${ta})`; ctx.fillText("▲ OFFSIDE",p.x,p.y-31);
-        ctx.restore();
-        // Distance line
-        ctx.save(); ctx.strokeStyle="rgba(255,80,80,0.35)"; ctx.lineWidth=1;
-        ctx.setLineDash([4,3]);
-        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(OFFSIDE_X,p.y); ctx.stroke();
-        const mx=(p.x+OFFSIDE_X)/2;
-        ctx.fillStyle="rgba(255,120,120,0.9)"; ctx.font="8px 'Courier New'";
-        ctx.textAlign="center"; ctx.setLineDash([]);
-        ctx.fillText(`+${p.x-OFFSIDE_X}px`,mx,p.y-6); ctx.restore();
-      }
+        ctx.setLineDash([]);
+        ctx.textAlign = "center";
+        if (isOff) {
+          const a  = 0.85 + pulse * 0.15;
+          const tw = ctx.measureText("▲ OFFSIDE").width + 10;
+          ctx.fillStyle = `rgba(180,0,0,${a * 0.85})`;
+          ctx.fillRect(p.x - tw/2, p.y - 44, tw, 14);
+          ctx.fillStyle = `rgba(255,200,200,${a})`;
+          ctx.font      = "bold 9px 'Courier New'";
+          ctx.fillText("▲ OFFSIDE", p.x, p.y - 33);
 
-      // ONSIDE tag
-      if(atk && !off && lines) {
-        ctx.save();
-        ctx.fillStyle="rgba(34,180,60,0.85)"; ctx.font="bold 9px 'Courier New'";
-        ctx.textAlign="center"; ctx.fillText("✓ ONSIDE",p.x,p.y-31); ctx.restore();
+          // Distance dashed line to offside line
+          ctx.strokeStyle = "rgba(255,80,80,0.4)";
+          ctx.lineWidth   = 1;
+          ctx.setLineDash([4, 3]);
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(OFFSIDE_X, p.y);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = "rgba(255,130,130,0.9)";
+          ctx.font      = "8px 'Courier New'";
+          ctx.fillText("+" + (p.x - OFFSIDE_X) + "px", (p.x + OFFSIDE_X) / 2, p.y - 5);
+        } else {
+          ctx.fillStyle = "rgba(34,200,80,0.85)";
+          ctx.font      = "bold 9px 'Courier New'";
+          ctx.fillText("✓ ONSIDE", p.x, p.y - 30);
+        }
+        ctx.restore();
       }
     });
 
-    anim.current = requestAnimationFrame(draw);
-  }, [players,skeleton,lines,scan]);
+    animRef.current = requestAnimationFrame(render);
+  }, [skeleton, lines, scanning]);
 
-  useEffect(()=>{
-    anim.current = requestAnimationFrame(draw);
-    return ()=>cancelAnimationFrame(anim.current);
-  },[draw]);
+  useEffect(() => {
+    animRef.current = requestAnimationFrame(render);
+    return () => cancelAnimationFrame(animRef.current);
+  }, [render]);
 
-  return <canvas ref={ref} width={FW} height={FH} style={{width:"100%",height:"auto"}}/>;
+  return <canvas ref={canvasRef} width={FW} height={FH} />;
 }
 
-function ConfBar({val}) {
-  const p = Math.round(val*100);
-  const col = p>=95?"#22ee66":p>=85?"#f5c518":"#ff5555";
+// ─── CONFIDENCE BAR ────────────────────────────────────────────────────────────
+function ConfBar({ val }) {
+  const pct   = Math.round(val * 100);
+  const color = pct >= 95 ? "#22ee66" : pct >= 85 ? "#f5c518" : "#ff5555";
   return (
-    <div style={{display:"flex",alignItems:"center",gap:8}}>
-      <div style={{flex:1,height:5,background:"#132013",borderRadius:3,overflow:"hidden"}}>
-        <div style={{width:`${p}%`,height:"100%",background:col,borderRadius:3,transition:"width 0.5s"}}/>
+    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+      <div style={{ flex:1, height:5, background:"#0e1e0e", borderRadius:3, overflow:"hidden" }}>
+        <div style={{ width:`${pct}%`, height:"100%", background:color, borderRadius:3, transition:"width 0.5s" }} />
       </div>
-      <span style={{color:col,fontSize:11,minWidth:34,fontFamily:"monospace"}}>{p}%</span>
+      <span style={{ color, fontSize:11, minWidth:34, fontFamily:"monospace" }}>{pct}%</span>
     </div>
   );
 }
 
-function Toggle({label,val,set}) {
+// ─── TOGGLE ────────────────────────────────────────────────────────────────────
+function Toggle({ label, val, set }) {
   return (
-    <label style={{display:"flex",alignItems:"center",gap:6,cursor:"pointer",fontSize:11,color:"#5a8a5a",userSelect:"none"}}>
-      <div onClick={()=>set(!val)} style={{width:30,height:17,borderRadius:9,background:val?"#22ee66":"#1a2a1a",position:"relative",transition:"background 0.2s",cursor:"pointer",border:`1px solid ${val?"#22ee66":"#2a4a2a"}`}}>
-        <div style={{position:"absolute",top:2,left:val?14:2,width:11,height:11,borderRadius:"50%",background:val?"#080f08":"#4a7a4a",transition:"left 0.2s"}}/>
+    <label style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer", fontSize:10, color:"#5a8a5a", userSelect:"none" }}>
+      <div
+        onClick={() => set(!val)}
+        style={{
+          width:28, height:16, borderRadius:8,
+          background: val ? "#22ee66" : "#172017",
+          position:"relative", transition:"background 0.2s",
+          border: "1px solid " + (val ? "#22ee66" : "#2a4a2a")
+        }}
+      >
+        <div style={{
+          position:"absolute", top:2,
+          left: val ? 13 : 2,
+          width:10, height:10, borderRadius:"50%",
+          background: val ? "#080f08" : "#4a7a4a",
+          transition:"left 0.2s"
+        }} />
       </div>
       {label}
     </label>
   );
 }
 
-export default function App() {
-  const [skeleton, setSkeleton] = useState(true);
-  const [lines, setLines] = useState(true);
-  const [tab, setTab] = useState("field");
-  const [scanning, setScanning] = useState(false);
-  const [result, setResult] = useState(true);
-  const [tick, setTick] = useState(0);
-  const [jsonOpen, setJsonOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
+// ─── TOP-DOWN VIEW ─────────────────────────────────────────────────────────────
+function TopDownView() {
+  return (
+    <div style={{ padding:18, minHeight:440 }}>
+      <div style={{ color:"#3a6a3a", fontSize:10, marginBottom:12, letterSpacing:"0.12em" }}>
+        TOP-DOWN PERSPECTIVE · CAMERA 5 — DEDICATED OFFSIDE LINE CAM
+      </div>
+      <div style={{ position:"relative", background:"#0a2c16", borderRadius:5, height:400, border:"1px solid #1a3c1a", overflow:"hidden" }}>
+        {/* Field boundary */}
+        <div style={{ position:"absolute", inset:18, border:"1px solid rgba(255,255,255,0.2)" }} />
+        {/* Halfway */}
+        <div style={{ position:"absolute", top:18, bottom:18, left:"50%", width:1, background:"rgba(255,255,255,0.18)" }} />
+        {/* Centre circle approx */}
+        <div style={{ position:"absolute", top:"50%", left:"50%", width:60, height:60, borderRadius:"50%", border:"1px solid rgba(255,255,255,0.15)", transform:"translate(-50%,-50%)" }} />
+        {/* Right penalty box */}
+        <div style={{ position:"absolute", top:"24%", bottom:"24%", right:18, width:"17%", border:"1px solid rgba(255,255,255,0.15)" }} />
+        {/* Left penalty box */}
+        <div style={{ position:"absolute", top:"24%", bottom:"24%", left:18, width:"17%", border:"1px solid rgba(255,255,255,0.15)" }} />
+        {/* Offside line */}
+        <div style={{ position:"absolute", top:18, bottom:18, left:"73%", width:2, background:"rgba(255,55,55,0.85)", boxShadow:"0 0 10px rgba(255,55,55,0.7)" }} />
+        <div style={{ position:"absolute", top:6, left:"71%", color:"#ff6060", fontSize:8, fontWeight:"bold", letterSpacing:"0.05em" }}>OFFSIDE</div>
 
-  useEffect(()=>{
-    const t = setInterval(()=>setTick(x=>x+1),1000); return()=>clearInterval(t);
-  },[]);
+        {/* Players */}
+        {PLAYERS.map(p => {
+          const lx  = ((p.x - 30) / (FW - 60)) * 90 + 5;
+          const ly  = ((p.y - 20) / (FH - 40)) * 90 + 5;
+          const col = p.team === "attack"
+            ? (p.offside ? "#ff4040" : "#22ee66")
+            : (p.isGK ? "#f5c518" : "#3d90ff");
+          return (
+            <div key={p.id} title={p.name + " #" + p.num} style={{
+              position:"absolute", left:`${lx}%`, top:`${ly}%`,
+              width:11, height:11, borderRadius:"50%",
+              background:col, transform:"translate(-50%,-50%)",
+              border:"1.5px solid rgba(255,255,255,0.4)",
+              boxShadow: p.offside ? "0 0 8px rgba(255,60,60,0.9)" : "none",
+              cursor:"default"
+            }}>
+              <span style={{ position:"absolute", top:-13, left:"50%", transform:"translateX(-50%)", fontSize:7, color:"rgba(255,255,255,0.7)", whiteSpace:"nowrap" }}>{p.name}</span>
+            </div>
+          );
+        })}
+        {/* Ball */}
+        <div style={{
+          position:"absolute",
+          left: `${((495 - 30) / (FW - 60)) * 90 + 5}%`,
+          top:  `${((278 - 20) / (FH - 40)) * 90 + 5}%`,
+          width:9, height:9, borderRadius:"50%",
+          background:"white", transform:"translate(-50%,-50%)",
+          boxShadow:"0 0 8px rgba(255,255,255,0.9)"
+        }} />
+      </div>
+    </div>
+  );
+}
+
+// ─── REPORT VIEW ───────────────────────────────────────────────────────────────
+function ReportView() {
+  return (
+    <div style={{ padding:18, minHeight:440 }}>
+      <div style={{ color:"#22ee66", fontSize:13, fontWeight:"bold", marginBottom:14, letterSpacing:"0.1em" }}>
+        ▣ AUTOMATED REFEREE REPORT
+      </div>
+      <div style={{ background:"#0b1c0b", borderRadius:5, padding:16, border:"1px solid #1a381a", fontSize:11, lineHeight:1.95, color:"#88b488" }}>
+        <div style={{ color:"#22ee66", marginBottom:10, fontSize:12 }}>── INCIDENT SUMMARY · UCL QF G2 ──</div>
+        <div>Timestamp: <span style={{ color:"#c8e6c9" }}>47:23.4</span> &nbsp;|&nbsp; Frame: <span style={{ color:"#c8e6c9" }}>#84234</span></div>
+        <div>Ball contact: <span style={{ color:"#c8e6c9" }}>SANÉ (#10)</span> at coords <span style={{ color:"#c8e6c9" }}>(495, 278)</span></div>
+        <div>Last defender: <span style={{ color:"#c8e6c9" }}>RÜDIGER (#5)</span> at x=568</div>
+        <div>2nd-last defender: <span style={{ color:"#c8e6c9" }}>SÜLE (#15)</span> at x={OFFSIDE_X} → sets offside line</div>
+        <br/>
+        <div style={{ color:"#ff6060", fontSize:12 }}>⚠ OFFSIDE VIOLATIONS:</div>
+        <div>&nbsp;&nbsp;→ <span style={{ color:"#ffbbbb" }}>MÜLLER (#9)</span>: body x=575, +{575-OFFSIDE_X}px beyond line →&nbsp;
+          <span style={{ color:"#ff5555", fontWeight:"bold" }}>OFFSIDE</span>&nbsp;
+          <span style={{ color:"#4a7a4a" }}>(97%)</span>
+        </div>
+        <div>&nbsp;&nbsp;→ <span style={{ color:"#ffbbbb" }}>GNABRY (#7)</span>: body x=548, +{548-OFFSIDE_X}px beyond line →&nbsp;
+          <span style={{ color:"#ff5555", fontWeight:"bold" }}>OFFSIDE</span>&nbsp;
+          <span style={{ color:"#4a7a4a" }}>(91%)</span>
+        </div>
+        <br/>
+        <div style={{ color:"#22ee66", fontSize:12 }}>✓ ONSIDE:</div>
+        <div>&nbsp;&nbsp;→ <span style={{ color:"#aaffcc" }}>SANÉ (#10)</span>: body x=510, behind line →&nbsp;
+          <span style={{ color:"#22ee66", fontWeight:"bold" }}>ONSIDE</span>&nbsp;
+          <span style={{ color:"#4a7a4a" }}>(94%)</span>
+        </div>
+        <br/>
+        <div style={{ color:"#f5c518" }}>◈ VAR DECISION: Goal disallowed — offside.</div>
+        <div>System confidence: <span style={{ color:"#22ee66", fontWeight:"bold" }}>96.2%</span> · Cameras: 3/6</div>
+        <br/>
+        <div style={{ color:"#2a4a2a", fontSize:9 }}>Generated by VAR·OFFSIDE·AI v2.4 · SAOT 29pt · FIFA 2025/26</div>
+      </div>
+    </div>
+  );
+}
+
+// ─── MAIN APP ──────────────────────────────────────────────────────────────────
+function App() {
+  const [skeleton,    setSkeleton]    = useState(true);
+  const [lines,       setLines]       = useState(true);
+  const [tab,         setTab]         = useState("field");
+  const [scanning,    setScanning]    = useState(false);
+  const [showResult,  setShowResult]  = useState(true);
+  const [jsonOpen,    setJsonOpen]    = useState(false);
+  const [copied,      setCopied]      = useState(false);
+  const [clock,       setClock]       = useState("");
+
+  useEffect(() => {
+    const t = setInterval(() => setClock(new Date().toISOString().slice(11,19)), 1000);
+    setClock(new Date().toISOString().slice(11,19));
+    return () => clearInterval(t);
+  }, []);
 
   const runScan = () => {
-    setResult(false); setScanning(true);
-    setTimeout(()=>{ setScanning(false); setResult(true); },3000);
+    setShowResult(false);
+    setScanning(true);
+    setTimeout(() => { setScanning(false); setShowResult(true); }, 3000);
   };
 
   const copyJSON = () => {
-    navigator.clipboard?.writeText(JSON.stringify(JSON_DATA,null,2));
-    setCopied(true); setTimeout(()=>setCopied(false),1500);
+    navigator.clipboard.writeText(JSON.stringify(JSON_DATA, null, 2)).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
   };
 
-  const offCount = PLAYERS.filter(p=>p.offside).length;
-  const now = new Date().toISOString().slice(11,19);
+  const offCount = PLAYERS.filter(p => p.offside).length;
 
-  const S = {
-    header:{background:"linear-gradient(90deg,#0c1f0c,#07120a,#0c1f0c)",borderBottom:"1px solid #1a3a1a",padding:"13px 22px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:99},
-    logo:{width:38,height:38,borderRadius:9,background:"linear-gradient(135deg,#22ee66,#0b5e28)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,color:"#080f08"},
-    panel:{background:"#0a170a",border:"1px solid #1c3c1c",borderRadius:7,overflow:"hidden"},
-    panelHead:{padding:"9px 14px",borderBottom:"1px solid #1c3c1c",fontSize:11,color:"#4a7a4a",letterSpacing:"0.1em",display:"flex",justifyContent:"space-between",alignItems:"center"},
-    tab:(active)=>({padding:"6px 14px",background:active?"#0c2810":"transparent",border:"1px solid",borderColor:active?"#22ee66":"transparent",borderBottom:"none",borderRadius:"4px 4px 0 0",color:active?"#22ee66":"#4a7a4a",cursor:"pointer",fontSize:10,letterSpacing:"0.08em",textTransform:"uppercase"}),
-    scanBtn:{padding:"7px 20px",background:scanning?"#151f15":"linear-gradient(90deg,#0c6028,#22ee66)",border:"none",borderRadius:5,color:scanning?"#3a6a3a":"#070f07",cursor:scanning?"not-allowed":"pointer",fontSize:12,fontWeight:"bold",letterSpacing:"0.05em",transition:"all 0.2s"},
-    metric:{background:"#0a170a",border:"1px solid #1c3c1c",borderRadius:6,padding:"10px 14px"},
+  // ── Shared styles
+  const panelStyle = {
+    background:"#09160a", border:"1px solid #1a381a",
+    borderRadius:7, overflow:"hidden"
   };
+  const headStyle = {
+    padding:"9px 14px", borderBottom:"1px solid #1a381a",
+    fontSize:10, color:"#4a7a4a", letterSpacing:"0.12em",
+    display:"flex", justifyContent:"space-between", alignItems:"center"
+  };
+
+  const tabStyle = (active) => ({
+    padding:"6px 13px",
+    background: active ? "#0b2610" : "transparent",
+    border:"1px solid",
+    borderColor: active ? "#22ee66" : "transparent",
+    borderBottom:"none",
+    borderRadius:"4px 4px 0 0",
+    color: active ? "#22ee66" : "#4a7a4a",
+    fontSize:10, letterSpacing:"0.07em",
+    textTransform:"uppercase"
+  });
 
   return (
-    <div style={{minHeight:"100vh",background:"#080f08",color:"#c8e6c9",fontFamily:"'Courier New',monospace",paddingBottom:40}}>
+    <div style={{ minHeight:"100vh", background:"#070e07", color:"#c8e6c9", fontFamily:"'Courier New',monospace", paddingBottom:40 }}>
 
-      {/* ─── HEADER ─── */}
-      <div style={S.header}>
-        <div style={{display:"flex",alignItems:"center",gap:14}}>
-          <div style={S.logo}>⚽</div>
+      {/* ══ HEADER ══════════════════════════════════════════════════════════════ */}
+      <div style={{
+        background:"linear-gradient(90deg,#0b1e0c,#060f07,#0b1e0c)",
+        borderBottom:"1px solid #183218",
+        padding:"12px 22px",
+        display:"flex", alignItems:"center", justifyContent:"space-between",
+        position:"sticky", top:0, zIndex:50
+      }}>
+        <div style={{ display:"flex", alignItems:"center", gap:14 }}>
+          <div style={{
+            width:38, height:38, borderRadius:9,
+            background:"linear-gradient(135deg,#22ee66,#0a5525)",
+            display:"flex", alignItems:"center", justifyContent:"center",
+            fontSize:21
+          }}>⚽</div>
           <div>
-            <div style={{fontSize:18,fontWeight:"bold",color:"#22ee66",letterSpacing:"0.12em"}}>VAR · OFFSIDE · AI</div>
-            <div style={{fontSize:9,color:"#3a6a3a",letterSpacing:"0.15em"}}>FIFA 2025/2026 COMPLIANT  ·  SAOT v4.2  ·  29-POINT SKELETAL TRACKING</div>
+            <div style={{ fontSize:17, fontWeight:"bold", color:"#22ee66", letterSpacing:"0.14em" }}>
+              VAR · OFFSIDE · AI
+            </div>
+            <div style={{ fontSize:8.5, color:"#3a6030", letterSpacing:"0.15em" }}>
+              FIFA 2025/2026 · SAOT v4.2 · 29-POINT TRACKING
+            </div>
           </div>
         </div>
-        <div style={{display:"flex",alignItems:"center",gap:20}}>
-          <div style={{textAlign:"right"}}>
-            <div style={{fontSize:9,color:"#3a6a3a"}}>LIVE MATCH</div>
-            <div style={{fontSize:13,color:"#c8e6c9",fontWeight:"bold"}}>UCL QF · 47:23</div>
+
+        <div style={{ display:"flex", alignItems:"center", gap:18 }}>
+          <div style={{ textAlign:"right" }}>
+            <div style={{ fontSize:8.5, color:"#3a6030" }}>LIVE MATCH</div>
+            <div style={{ fontSize:13, color:"#c8e6c9", fontWeight:"bold" }}>UCL QF · 47:23</div>
           </div>
-          <div style={{padding:"4px 12px",borderRadius:4,background:scanning?"rgba(255,60,60,0.1)":"rgba(34,238,102,0.1)",border:`1px solid ${scanning?"#ff3a3a":"#22ee66"}`,fontSize:11,color:scanning?"#ff5555":"#22ee66",letterSpacing:"0.1em",animation:scanning?"pulse 0.7s infinite":"none"}}>
+          <div style={{
+            padding:"4px 12px", borderRadius:4, fontSize:11, letterSpacing:"0.1em",
+            background: scanning ? "rgba(255,50,50,0.1)" : "rgba(34,238,102,0.1)",
+            border: `1px solid ${scanning ? "#ff4040" : "#22ee66"}`,
+            color: scanning ? "#ff5555" : "#22ee66",
+            animation: scanning ? "blink 0.7s infinite" : "none"
+          }}>
             {scanning ? "● SCANNING" : "● READY"}
           </div>
-          <div style={{fontSize:10,color:"#3a6a3a"}}>CAM 3/6 · HD 1080p · {now}</div>
+          <div style={{ fontSize:9.5, color:"#3a6030" }}>CAM 3/6 · HD 1080p · {clock}</div>
         </div>
       </div>
 
-      <div style={{maxWidth:1320,margin:"0 auto",padding:"18px 18px 0"}}>
+      {/* ══ BODY ════════════════════════════════════════════════════════════════ */}
+      <div style={{ maxWidth:1300, margin:"0 auto", padding:"16px 16px 0" }}>
 
-        {/* ─── ALERT BANNER ─── */}
-        {result && (
-          <div style={{background:"linear-gradient(90deg,rgba(255,50,50,0.14),rgba(255,50,50,0.04))",border:"1px solid rgba(255,60,60,0.45)",borderRadius:7,padding:"12px 18px",marginBottom:18,display:"flex",alignItems:"center",gap:16}}>
-            <div style={{fontSize:28}}>🚩</div>
-            <div>
-              <div style={{fontSize:15,fontWeight:"bold",color:"#ff5555",letterSpacing:"0.05em"}}>
+        {/* Alert banner */}
+        {showResult && (
+          <div style={{
+            background:"linear-gradient(90deg,rgba(255,45,45,0.13),rgba(255,45,45,0.03))",
+            border:"1px solid rgba(255,55,55,0.42)",
+            borderRadius:7, padding:"11px 18px", marginBottom:16,
+            display:"flex", alignItems:"center", gap:16,
+            animation:"fadeIn 0.4s ease"
+          }}>
+            <div style={{ fontSize:26 }}>🚩</div>
+            <div style={{ flex:1 }}>
+              <div style={{ fontSize:14, fontWeight:"bold", color:"#ff5555", letterSpacing:"0.05em" }}>
                 OFFSIDE DETECTED — {offCount} PLAYERS IN OFFSIDE POSITION
               </div>
-              <div style={{fontSize:10,color:"#7a3a3a",marginTop:3}}>
-                Frame #84234 · Ball contact at (508, 294) · Second-last defender Süle at x={OFFSIDE_X} · {offCount}/3 attacking players flagged
+              <div style={{ fontSize:9.5, color:"#7a3535", marginTop:2 }}>
+                Frame #84234 · Contact at (495,278) · 2nd-last defender Süle at x={OFFSIDE_X} · {offCount}/3 attackers flagged
               </div>
             </div>
-            <div style={{marginLeft:"auto",textAlign:"right"}}>
-              <div style={{fontSize:9,color:"#4a7a4a",letterSpacing:"0.1em"}}>SYSTEM CONFIDENCE</div>
-              <div style={{fontSize:26,fontWeight:"bold",color:"#22ee66"}}>96.2%</div>
+            <div style={{ textAlign:"right" }}>
+              <div style={{ fontSize:8.5, color:"#4a7a4a", letterSpacing:"0.1em" }}>CONFIDENCE</div>
+              <div style={{ fontSize:24, fontWeight:"bold", color:"#22ee66" }}>96.2%</div>
             </div>
           </div>
         )}
 
-        <div style={{display:"grid",gridTemplateColumns:"1fr 340px",gap:18}}>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 330px", gap:16 }}>
 
-          {/* ─── LEFT: MAIN VIEWER ─── */}
+          {/* ── LEFT PANEL ────────────────────────────────────────────────────── */}
           <div>
-            {/* Tab bar */}
-            <div style={{display:"flex",gap:2,background:"#090f09",border:"1px solid #1c3c1c",borderBottom:"none",borderRadius:"7px 7px 0 0",padding:"6px 10px 0"}}>
-              {[["field","📹 Broadcast"],["topdown","🔭 Top-Down"],["report","📋 Report"]].map(([k,l])=>(
-                <button key={k} style={S.tab(tab===k)} onClick={()=>setTab(k)}>{l}</button>
+            {/* Tabs */}
+            <div style={{
+              display:"flex", gap:2,
+              background:"#080f08",
+              border:"1px solid #1a381a", borderBottom:"none",
+              borderRadius:"7px 7px 0 0",
+              padding:"6px 10px 0"
+            }}>
+              {[["field","📹 Broadcast"],["topdown","🔭 Top-Down"],["report","📋 Report"]].map(([k,l]) => (
+                <button key={k} style={tabStyle(tab===k)} onClick={() => setTab(k)}>{l}</button>
               ))}
-              <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:14,paddingBottom:6}}>
-                <Toggle label="Skeleton" val={skeleton} set={setSkeleton}/>
-                <Toggle label="Lines" val={lines} set={setLines}/>
+              <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:12, paddingBottom:6 }}>
+                <Toggle label="Skeleton" val={skeleton} set={setSkeleton} />
+                <Toggle label="Lines"    val={lines}    set={setLines}    />
               </div>
             </div>
 
-            {/* Viewer */}
-            <div style={{...S.panel,borderRadius:"0 0 7px 7px",borderTop:"none"}}>
-
-              {tab==="field" && <Field players={PLAYERS} skeleton={skeleton} lines={lines} scan={scanning}/>}
-
-              {tab==="topdown" && (
-                <div style={{padding:20,minHeight:420}}>
-                  <div style={{color:"#3a6a3a",fontSize:11,marginBottom:12,letterSpacing:"0.1em"}}>TOP-DOWN TACTICAL VIEW · CAMERA 5 (DEDICATED OFFSIDE CAM)</div>
-                  <div style={{position:"relative",background:"#0b2e18",borderRadius:5,height:390,border:"1px solid #1c3c1c",overflow:"hidden"}}>
-                    {/* Field outline */}
-                    <div style={{position:"absolute",inset:16,border:"1px solid rgba(255,255,255,0.2)"}}/>
-                    <div style={{position:"absolute",top:16,bottom:16,left:"50%",width:1,background:"rgba(255,255,255,0.2)"}}/>
-                    {/* Penalty boxes */}
-                    <div style={{position:"absolute",top:"25%",bottom:"25%",right:16,width:"18%",border:"1px solid rgba(255,255,255,0.15)"}}/>
-                    <div style={{position:"absolute",top:"38%",bottom:"38%",left:16,width:"18%",border:"1px solid rgba(255,255,255,0.15)"}}/>
-                    {/* Offside line */}
-                    <div style={{position:"absolute",top:16,bottom:16,left:"73.2%",width:2,background:"rgba(255,60,60,0.8)",boxShadow:"0 0 10px rgba(255,60,60,0.7)"}}/>
-                    <div style={{position:"absolute",top:5,left:"71%",color:"#ff6060",fontSize:8,letterSpacing:"0.05em",fontWeight:"bold"}}>OFFSIDE LINE</div>
-                    {/* Players */}
-                    {PLAYERS.map(p=>{
-                      const px=((p.x-35)/(FW-70))*92+4;
-                      const py=((p.y-25)/(FH-50))*92+4;
-                      const col = p.team==="attack"?(p.offside?"#ff4040":"#22ee66"):(p.isGK?"#f5c518":"#4488ff");
-                      return (
-                        <div key={p.id} title={`${p.name} #${p.num}`} style={{position:"absolute",left:`${px}%`,top:`${py}%`,width:12,height:12,borderRadius:"50%",background:col,transform:"translate(-50%,-50%)",boxShadow:p.offside?"0 0 8px rgba(255,60,60,0.9)":p.team==="attack"?"0 0 5px rgba(34,238,102,0.7)":"none",border:"1.5px solid rgba(255,255,255,0.4)",cursor:"default"}}>
-                          <div style={{position:"absolute",top:-14,left:"50%",transform:"translateX(-50%)",fontSize:7,color:"rgba(255,255,255,0.7)",whiteSpace:"nowrap"}}>{p.name}</div>
-                        </div>
-                      );
-                    })}
-                    {/* Ball */}
-                    <div style={{position:"absolute",left:`${((508-35)/(FW-70))*92+4}%`,top:`${((294-25)/(FH-50))*92+4}%`,width:10,height:10,borderRadius:"50%",background:"white",transform:"translate(-50%,-50%)",boxShadow:"0 0 8px rgba(255,255,255,0.9)"}}/>
-                  </div>
-                </div>
-              )}
-
-              {tab==="report" && (
-                <div style={{padding:20,minHeight:420}}>
-                  <div style={{color:"#22ee66",fontSize:14,fontWeight:"bold",marginBottom:16,letterSpacing:"0.1em"}}>▣ AUTOMATED REFEREE REPORT</div>
-                  <div style={{background:"#0c1e0c",borderRadius:5,padding:16,border:"1px solid #1c3a1c",fontSize:11,lineHeight:2.0,color:"#8ab88a"}}>
-                    <div style={{color:"#22ee66",marginBottom:8,fontSize:12}}>── INCIDENT SUMMARY · UCL QF G2 ──</div>
-                    <div>Timestamp: <span style={{color:"#c8e6c9"}}>47:23.4</span> | Frame ID: <span style={{color:"#c8e6c9"}}>#84234</span></div>
-                    <div>Ball contact by: <span style={{color:"#c8e6c9"}}>SANÉ (#10)</span> at coordinates <span style={{color:"#c8e6c9"}}>(508, 294)</span></div>
-                    <div>Last defender: <span style={{color:"#c8e6c9"}}>RÜDIGER (#5)</span> at x=592</div>
-                    <div>Second-last defender: <span style={{color:"#c8e6c9"}}>SÜLE (#15)</span> at x=597 → defines offside line</div>
-                    <br/>
-                    <div style={{color:"#ff6060",fontSize:12}}>⚠ OFFSIDE VIOLATIONS DETECTED:</div>
-                    <div>  → <span style={{color:"#ffaaaa"}}>MÜLLER (#9)</span>: foot at x=574, body at x=580 → <span style={{color:"#ff6060",fontWeight:"bold"}}>OFFSIDE</span> <span style={{color:"#5a8a5a"}}>(conf: 97%)</span></div>
-                    <div>  → <span style={{color:"#ffaaaa"}}>GNABRY (#7)</span>: shoulder at x=555, body at x=556 → <span style={{color:"#ff6060",fontWeight:"bold"}}>OFFSIDE</span> <span style={{color:"#5a8a5a"}}>(conf: 91%)</span></div>
-                    <br/>
-                    <div style={{color:"#22ee66",fontSize:12}}>✓ ONSIDE:</div>
-                    <div>  → <span style={{color:"#aaffcc"}}>SANÉ (#10)</span>: body at x=520, behind offside line → <span style={{color:"#22ee66",fontWeight:"bold"}}>ONSIDE</span> <span style={{color:"#5a8a5a"}}>(conf: 94%)</span></div>
-                    <br/>
-                    <div style={{color:"#f5c518"}}>◈ VAR RECOMMENDATION:</div>
-                    <div>  Flag offside. Goal must be disallowed.</div>
-                    <div>  System confidence: <span style={{color:"#22ee66",fontWeight:"bold"}}>96.2%</span> | Cross-validated: 3/6 cameras</div>
-                    <br/>
-                    <div style={{color:"#3a6a3a",fontSize:9}}>Generated by VAR·OFFSIDE·AI v2.4.1 · SAOT 29pt · FIFA 2025/2026</div>
-                  </div>
-                </div>
-              )}
+            {/* Viewer box */}
+            <div style={{ ...panelStyle, borderRadius:"0 0 7px 7px", borderTop:"none" }}>
+              {tab === "field"   && <FieldCanvas skeleton={skeleton} lines={lines} scanning={scanning} />}
+              {tab === "topdown" && <TopDownView />}
+              {tab === "report"  && <ReportView  />}
 
               {/* Toolbar */}
-              <div style={{borderTop:"1px solid #1c3c1c",padding:"8px 14px",display:"flex",alignItems:"center",gap:12,background:"#070e07"}}>
-                <button style={S.scanBtn} onClick={runScan} disabled={scanning}>
+              <div style={{ borderTop:"1px solid #1a381a", padding:"8px 14px", display:"flex", alignItems:"center", gap:12, background:"#060d06" }}>
+                <button
+                  onClick={runScan}
+                  disabled={scanning}
+                  style={{
+                    padding:"6px 18px",
+                    background: scanning ? "#131e13" : "linear-gradient(90deg,#0b5822,#22ee66)",
+                    border:"none", borderRadius:5,
+                    color: scanning ? "#3a5a3a" : "#060d06",
+                    fontWeight:"bold", fontSize:11, letterSpacing:"0.05em",
+                    opacity: scanning ? 0.7 : 1
+                  }}
+                >
                   {scanning ? "⟳ ANALYZING..." : "▶ RUN SCAN"}
                 </button>
-                <span style={{color:"#1a3a1a",fontSize:14"}}>|</span>
-                <span style={{fontSize:10,color:"#3a6a3a"}}>FPS: 60  ·  LATENCY: 34ms  ·  SAOT: 29-point  ·  GPU: NVIDIA A100</span>
-                <div style={{marginLeft:"auto",fontSize:9,color:"#2a4a2a"}}>FRAME #{84234+(tick%100)} · {now}</div>
+                <span style={{ color:"#183218" }}>|</span>
+                <span style={{ fontSize:9.5, color:"#3a6030" }}>FPS: 60 · LATENCY: 34ms · SAOT 29pt · GPU: A100</span>
+                <div style={{ marginLeft:"auto", fontSize:9, color:"#223022" }}>FRAME #84234 · {clock}</div>
               </div>
             </div>
           </div>
 
-          {/* ─── RIGHT PANEL ─── */}
-          <div style={{display:"flex",flexDirection:"column",gap:14}}>
+          {/* ── RIGHT PANEL ───────────────────────────────────────────────────── */}
+          <div style={{ display:"flex", flexDirection:"column", gap:13 }}>
 
             {/* Player tracking */}
-            <div style={S.panel}>
-              <div style={S.panelHead}>
+            <div style={panelStyle}>
+              <div style={headStyle}>
                 <span>PLAYER DETECTION</span>
-                <span style={{color:"#22ee66"}}>{PLAYERS.length} TRACKED</span>
+                <span style={{ color:"#22ee66" }}>{PLAYERS.length} TRACKED</span>
               </div>
-              <div style={{padding:"6px 0"}}>
-                {PLAYERS.filter(p=>p.team==="attack").map(p=>(
-                  <div key={p.id} style={{padding:"9px 14px",borderBottom:"1px solid #0e1e0e"}}>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
-                      <div style={{display:"flex",alignItems:"center",gap:9}}>
-                        <div style={{width:26,height:26,borderRadius:"50%",background:p.offside?"rgba(255,60,60,0.15)":"rgba(34,238,102,0.12)",border:`2px solid ${p.offside?"#ff4040":"#22ee66"}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:p.offside?"#ff6060":"#22ee66",fontWeight:"bold"}}>
-                          {p.num}
-                        </div>
-                        <div>
-                          <div style={{fontSize:12,color:"#c8e6c9",fontWeight:"bold"}}>{p.name}</div>
-                          <div style={{fontSize:9,color:"#3a6a3a"}}>ATK · ({p.x},{p.y})</div>
-                        </div>
-                      </div>
-                      <div style={{fontSize:9,fontWeight:"bold",color:p.offside?"#ff5555":"#22ee66",padding:"2px 8px",borderRadius:3,background:p.offside?"rgba(255,60,60,0.1)":"rgba(34,238,102,0.1)",border:`1px solid ${p.offside?"rgba(255,60,60,0.35)":"rgba(34,238,102,0.35)"}`}}>
-                        {p.offside?"OFFSIDE":"ONSIDE"}
+
+              {/* Attackers */}
+              {PLAYERS.filter(p => p.team === "attack").map(p => (
+                <div key={p.id} style={{ padding:"9px 14px", borderBottom:"1px solid #0d1c0d" }}>
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:5 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                      <div style={{
+                        width:24, height:24, borderRadius:"50%",
+                        background: p.offside ? "rgba(255,60,60,0.12)" : "rgba(34,238,102,0.1)",
+                        border:`2px solid ${p.offside ? "#ff4040" : "#22ee66"}`,
+                        display:"flex", alignItems:"center", justifyContent:"center",
+                        fontSize:10, color: p.offside ? "#ff6060" : "#22ee66", fontWeight:"bold"
+                      }}>{p.num}</div>
+                      <div>
+                        <div style={{ fontSize:11, color:"#c8e6c9", fontWeight:"bold" }}>{p.name}</div>
+                        <div style={{ fontSize:8.5, color:"#3a6030" }}>ATK · ({p.x},{p.y})</div>
                       </div>
                     </div>
-                    <ConfBar val={p.conf}/>
-                    {p.offside && <div style={{fontSize:8,color:"#7a4040",marginTop:4}}>Advanced by {p.x - OFFSIDE_X}px beyond line</div>}
+                    <div style={{
+                      fontSize:9, fontWeight:"bold",
+                      color: p.offside ? "#ff5555" : "#22ee66",
+                      padding:"2px 7px", borderRadius:3,
+                      background: p.offside ? "rgba(255,60,60,0.1)" : "rgba(34,238,102,0.1)",
+                      border:`1px solid ${p.offside ? "rgba(255,60,60,0.35)" : "rgba(34,238,102,0.35)"}`
+                    }}>
+                      {p.offside ? "OFFSIDE" : "ONSIDE"}
+                    </div>
+                  </div>
+                  <ConfBar val={p.conf} />
+                  {p.offside && (
+                    <div style={{ fontSize:8, color:"#7a3535", marginTop:3 }}>
+                      Advanced {p.x - OFFSIDE_X}px beyond the offside line
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* Defenders */}
+              <div style={{ padding:"5px 14px 8px", borderTop:"1px solid #0d1c0d" }}>
+                <div style={{ fontSize:8.5, color:"#2a4a2a", letterSpacing:"0.1em", marginBottom:4 }}>DEFENDERS</div>
+                {PLAYERS.filter(p => p.team === "defend").map(p => (
+                  <div key={p.id} style={{ display:"flex", alignItems:"center", gap:7, padding:"3px 0", borderBottom:"1px solid #0a160a" }}>
+                    <div style={{
+                      width:16, height:16, borderRadius:"50%", flexShrink:0,
+                      background: p.isGK ? "rgba(245,197,24,0.12)" : "rgba(61,144,255,0.1)",
+                      border:`1.5px solid ${p.isGK ? "#f5c518" : "#3d90ff"}`,
+                      display:"flex", alignItems:"center", justifyContent:"center",
+                      fontSize:7, color: p.isGK ? "#f5c518" : "#3d90ff", fontWeight:"bold"
+                    }}>{p.num}</div>
+                    <div style={{ fontSize:9.5, color:"#5a8a5a" }}>{p.name}{p.isGK ? " (GK)" : ""}</div>
+                    <div style={{ marginLeft:"auto", fontSize:8, color:"#2a4a2a" }}>x={p.x}</div>
                   </div>
                 ))}
-                <div style={{padding:"6px 14px",opacity:0.5}}>
-                  <div style={{fontSize:9,color:"#3a5a3a",marginBottom:3}}>DEFENDERS</div>
-                  {PLAYERS.filter(p=>p.team==="defend").map(p=>(
-                    <div key={p.id} style={{display:"flex",alignItems:"center",gap:8,padding:"3px 0",borderBottom:"1px solid #0d1a0d"}}>
-                      <div style={{width:18,height:18,borderRadius:"50%",background:p.isGK?"rgba(245,197,24,0.15)":"rgba(61,144,255,0.12)",border:`1.5px solid ${p.isGK?"#f5c518":"#3d90ff"}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:8,color:p.isGK?"#f5c518":"#3d90ff",fontWeight:"bold"}}>{p.num}</div>
-                      <div style={{fontSize:10,color:"#5a8a5a"}}>{p.name}{p.isGK?" (GK)":""}</div>
-                      <div style={{marginLeft:"auto",fontSize:8,color:"#3a5a3a"}}>x={p.x}</div>
-                    </div>
-                  ))}
-                </div>
               </div>
             </div>
 
             {/* Event log */}
-            <div style={S.panel}>
-              <div style={S.panelHead}><span>EVENT LOG</span><span style={{color:"#2a5a2a"}}>47:23</span></div>
-              {EVENTS.map(ev=>(
-                <div key={ev.id} style={{padding:"8px 14px",borderBottom:"1px solid #0c1a0c",display:"flex",alignItems:"center",gap:10}}>
-                  <div style={{width:8,height:8,borderRadius:"50%",background:ev.status==="OFFSIDE"?"#ff4040":"#22ee66",flexShrink:0,boxShadow:`0 0 5px ${ev.status==="OFFSIDE"?"#ff4040":"#22ee66"}`}}/>
-                  <div style={{flex:1}}>
-                    <div style={{fontSize:11,color:ev.status==="OFFSIDE"?"#ff8888":"#80e880",fontWeight:"bold"}}>{ev.player} · {ev.status}</div>
-                    <div style={{fontSize:9,color:"#2a4a2a"}}>{ev.time} · confidence: {Math.round(ev.conf*100)}%</div>
+            <div style={panelStyle}>
+              <div style={headStyle}>
+                <span>EVENT LOG</span>
+                <span style={{ color:"#2a4a2a" }}>47:23</span>
+              </div>
+              {EVENTS.map(ev => (
+                <div key={ev.id} style={{ padding:"8px 14px", borderBottom:"1px solid #0b190b", display:"flex", alignItems:"center", gap:10 }}>
+                  <div style={{
+                    width:8, height:8, borderRadius:"50%", flexShrink:0,
+                    background: ev.status === "OFFSIDE" ? "#ff4040" : "#22ee66",
+                    boxShadow:`0 0 5px ${ev.status === "OFFSIDE" ? "#ff4040" : "#22ee66"}`
+                  }} />
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:11, fontWeight:"bold", color: ev.status === "OFFSIDE" ? "#ff8888" : "#70e870" }}>
+                      {ev.player} · {ev.status}
+                    </div>
+                    <div style={{ fontSize:8.5, color:"#2a4a2a" }}>{ev.time} · conf: {Math.round(ev.conf*100)}%</div>
                   </div>
-                  <div style={{fontSize:8,color:ev.status==="OFFSIDE"?"#7a3a3a":"#2a5a3a",padding:"2px 6px",border:`1px solid ${ev.status==="OFFSIDE"?"rgba(255,60,60,0.2)":"rgba(34,238,102,0.2)"}`,borderRadius:3}}>FLAG</div>
+                  <div style={{
+                    fontSize:8, padding:"2px 6px", borderRadius:3,
+                    color: ev.status === "OFFSIDE" ? "#7a3535" : "#2a5a3a",
+                    border:`1px solid ${ev.status === "OFFSIDE" ? "rgba(255,60,60,0.25)" : "rgba(34,238,102,0.25)"}`
+                  }}>FLAG</div>
                 </div>
               ))}
             </div>
 
             {/* JSON Output */}
-            <div style={S.panel}>
-              <div style={{...S.panelHead,cursor:"pointer"}} onClick={()=>setJsonOpen(!jsonOpen)}>
-                <span>JSON OUTPUT <span style={{color:"#2a5a2a"}}>{jsonOpen?"▲":"▼"}</span></span>
-                <span onClick={e=>{e.stopPropagation();copyJSON();}} style={{color:copied?"#22ee66":"#2a5a2a",cursor:"pointer",fontSize:10,padding:"2px 8px",border:`1px solid ${copied?"#22ee66":"#2a5a2a"}`,borderRadius:3}}>
-                  {copied?"✓ COPIED":"COPY"}
-                </span>
+            <div style={panelStyle}>
+              <div style={{ ...headStyle, cursor:"pointer" }} onClick={() => setJsonOpen(!jsonOpen)}>
+                <span>JSON OUTPUT <span style={{ color:"#2a4a2a" }}>{jsonOpen ? "▲" : "▼"}</span></span>
+                <button
+                  onClick={(e) => { e.stopPropagation(); copyJSON(); }}
+                  style={{
+                    background:"transparent",
+                    border:`1px solid ${copied ? "#22ee66" : "#2a4a2a"}`,
+                    borderRadius:3, padding:"2px 8px", fontSize:9,
+                    color: copied ? "#22ee66" : "#2a5a2a"
+                  }}
+                >
+                  {copied ? "✓ COPIED" : "COPY"}
+                </button>
               </div>
-              {jsonOpen && (
-                <pre style={{margin:0,padding:"10px 14px",fontSize:8.5,color:"#4a8a4a",overflowX:"auto",maxHeight:200,overflowY:"auto",lineHeight:1.7,background:"#050c05"}}>
-                  {JSON.stringify(JSON_DATA,null,2)}
+              {jsonOpen ? (
+                <pre style={{ margin:0, padding:"10px 14px", fontSize:8.5, color:"#3a7a3a", background:"#050c05", overflowX:"auto", maxHeight:200, overflowY:"auto", lineHeight:1.7 }}>
+                  {JSON.stringify(JSON_DATA, null, 2)}
                 </pre>
-              )}
-              {!jsonOpen && (
-                <div style={{padding:"8px 14px",fontSize:9,color:"#2a4a2a"}}>
+              ) : (
+                <div style={{ padding:"7px 14px", fontSize:9, color:"#2a4a2a" }}>
                   {PLAYERS.filter(p=>p.team==="attack").length} player records · click to expand
                 </div>
               )}
@@ -524,27 +737,28 @@ export default function App() {
           </div>
         </div>
 
-        {/* ─── METRICS ─── */}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10,marginTop:16}}>
+        {/* ══ METRICS ════════════════════════════════════════════════════════════ */}
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:10, marginTop:14 }}>
           {[
-            {label:"DETECTION ACCURACY", val:"97.4%",    col:"#22ee66"},
-            {label:"FRAMES PROCESSED",   val:"84,234",   col:"#3d90ff"},
-            {label:"AVG LATENCY",         val:"34ms",     col:"#22ee66"},
-            {label:"CAMERAS ACTIVE",      val:"3 / 6",    col:"#f5c518"},
-            {label:"OFFSIDE FLAGS",       val:`${offCount} / 3`,col:"#ff6060"},
-          ].map(m=>(
-            <div key={m.label} style={S.metric}>
-              <div style={{fontSize:8,color:"#3a6a3a",letterSpacing:"0.1em",marginBottom:5}}>{m.label}</div>
-              <div style={{fontSize:20,fontWeight:"bold",color:m.col,fontFamily:"monospace"}}>{m.val}</div>
+            { label:"DETECTION ACCURACY", val:"97.4%",    color:"#22ee66" },
+            { label:"FRAMES PROCESSED",   val:"84,234",   color:"#3d90ff" },
+            { label:"AVG LATENCY",        val:"34ms",     color:"#22ee66" },
+            { label:"CAMERAS ACTIVE",     val:"3 / 6",    color:"#f5c518" },
+            { label:"OFFSIDE FLAGS",      val:`${offCount} / 3`, color:"#ff5555" },
+          ].map(m => (
+            <div key={m.label} style={{ background:"#09160a", border:"1px solid #1a381a", borderRadius:6, padding:"10px 14px" }}>
+              <div style={{ fontSize:8, color:"#3a6030", letterSpacing:"0.1em", marginBottom:4 }}>{m.label}</div>
+              <div style={{ fontSize:20, fontWeight:"bold", color:m.color, fontFamily:"monospace" }}>{m.val}</div>
             </div>
           ))}
         </div>
+
       </div>
     </div>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
 </script>
 </body>
 </html>
