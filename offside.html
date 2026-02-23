@@ -1,0 +1,701 @@
+import { useState, useEffect, useRef, useCallback } from "react";
+
+const FIELD_WIDTH = 800;
+const FIELD_HEIGHT = 520;
+
+// Mock data for demonstration
+const MOCK_PLAYERS = [
+  // Attacking team (red)
+  { id: "A1", team: "attack", x: 580, y: 200, name: "Müller", number: 9, offside: true, confidence: 0.97, bodyParts: { head: [580, 185], shoulder: [580, 195], hip: [580, 210], foot: [575, 235] } },
+  { id: "A2", team: "attack", x: 520, y: 300, name: "Sané", number: 10, offside: false, confidence: 0.94, bodyParts: { head: [520, 285], shoulder: [520, 295], hip: [520, 310], foot: [515, 335] } },
+  { id: "A3", team: "attack", x: 560, y: 370, name: "Gnabry", number: 7, offside: true, confidence: 0.91, bodyParts: { head: [560, 355], shoulder: [560, 365], hip: [560, 380], foot: [555, 405] } },
+  // Defending team (blue)
+  { id: "D1", team: "defend", x: 590, y: 150, name: "Rüdiger", number: 5, offside: false, confidence: null },
+  { id: "D2", team: "defend", x: 595, y: 340, name: "Süle", number: 15, offside: false, confidence: null },
+  { id: "D3", team: "defend", x: 600, y: 430, name: "Kimmich", number: 6, offside: false, confidence: null },
+  { id: "GK", team: "defend", x: 720, y: 270, name: "Neuer", number: 1, offside: false, confidence: null, isGK: true },
+];
+
+const OFFSIDE_LINE_X = 596; // second-last defender x position
+
+const MOCK_EVENTS = [
+  { id: 1, timestamp: "47:23", player: "Müller (#9)", status: "OFFSIDE", confidence: 0.97, x: 580, y: 200 },
+  { id: 2, timestamp: "47:23", player: "Gnabry (#7)", status: "OFFSIDE", confidence: 0.91, x: 560, y: 370 },
+  { id: 3, timestamp: "47:23", player: "Sané (#10)", status: "ONSIDE", confidence: 0.94, x: 520, y: 300 },
+];
+
+const JSON_OUTPUT = {
+  match_id: "UCL_2025_QF_G2",
+  timestamp: "47:23.4",
+  frame_id: 84234,
+  offside_line_x: OFFSIDE_LINE_X,
+  players: MOCK_PLAYERS.filter(p => p.team === "attack").map(p => ({
+    timestamp: "47:23.4",
+    player_id: p.id,
+    player_name: p.name,
+    jersey_number: p.number,
+    offside_status: p.offside ? "OFFSIDE" : "ONSIDE",
+    confidence_score: p.confidence,
+    contact_point_coordinates: { x: p.x, y: p.y },
+    most_advanced_body_part: p.bodyParts ? Object.entries(p.bodyParts).reduce((a, b) => a[1][0] < b[1][0] ? b : a)[0] : "body",
+  }))
+};
+
+function FootballField({ players, showSkeleton, showLines, highlightEvent }) {
+  const canvasRef = useRef(null);
+  const animRef = useRef(null);
+  const pulseRef = useRef(0);
+
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const W = FIELD_WIDTH, H = FIELD_HEIGHT;
+    pulseRef.current = (pulseRef.current + 0.04) % (Math.PI * 2);
+    const pulse = Math.sin(pulseRef.current);
+
+    // Field background
+    ctx.fillStyle = "#0d3320";
+    ctx.fillRect(0, 0, W, H);
+
+    // Grass stripes
+    for (let i = 0; i < 10; i++) {
+      ctx.fillStyle = i % 2 === 0 ? "#0e3822" : "#0b2e1c";
+      ctx.fillRect(i * (W / 10), 0, W / 10, H);
+    }
+
+    // Field markings
+    ctx.strokeStyle = "rgba(255,255,255,0.35)";
+    ctx.lineWidth = 1.5;
+
+    // Boundary
+    ctx.strokeRect(40, 30, W - 80, H - 60);
+
+    // Halfway line
+    ctx.beginPath(); ctx.moveTo(W / 2, 30); ctx.lineTo(W / 2, H - 30); ctx.stroke();
+
+    // Center circle
+    ctx.beginPath(); ctx.arc(W / 2, H / 2, 60, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(W / 2, H / 2, 3, 0, Math.PI * 2); ctx.fillStyle = "rgba(255,255,255,0.5)"; ctx.fill();
+
+    // Right penalty box (attacking direction)
+    ctx.strokeRect(W - 40 - 130, H / 2 - 100, 130, 200);
+    ctx.strokeRect(W - 40 - 60, H / 2 - 50, 60, 100);
+
+    // Left penalty box
+    ctx.strokeRect(40, H / 2 - 100, 130, 200);
+    ctx.strokeRect(40, H / 2 - 50, 60, 100);
+
+    // Goal posts
+    ctx.strokeStyle = "rgba(255,255,255,0.7)";
+    ctx.lineWidth = 2.5;
+    ctx.strokeRect(W - 40, H / 2 - 40, 20, 80);
+    ctx.strokeRect(20, H / 2 - 40, 20, 80);
+
+    // Offside line (animated)
+    if (showLines) {
+      const alpha = 0.7 + pulse * 0.15;
+      ctx.save();
+      ctx.strokeStyle = `rgba(255, 60, 60, ${alpha})`;
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([8, 4]);
+      ctx.shadowColor = "rgba(255, 60, 60, 0.8)";
+      ctx.shadowBlur = 10 + pulse * 5;
+      ctx.beginPath();
+      ctx.moveTo(OFFSIDE_LINE_X, 30);
+      ctx.lineTo(OFFSIDE_LINE_X, H - 30);
+      ctx.stroke();
+      ctx.restore();
+
+      // Label
+      ctx.save();
+      ctx.fillStyle = `rgba(255, 60, 60, ${alpha})`;
+      ctx.font = "bold 11px 'Courier New'";
+      ctx.fillText("OFFSIDE LINE", OFFSIDE_LINE_X - 45, 22);
+      ctx.restore();
+    }
+
+    // Ball
+    const ballX = 510, ballY = 290;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(ballX, ballY, 8, 0, Math.PI * 2);
+    ctx.fillStyle = "white";
+    ctx.shadowColor = "rgba(255,255,255,0.8)";
+    ctx.shadowBlur = 8;
+    ctx.fill();
+    ctx.strokeStyle = "#333";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.restore();
+
+    // Ball contact indicator
+    if (showLines) {
+      ctx.save();
+      ctx.strokeStyle = `rgba(255, 220, 0, ${0.6 + pulse * 0.3})`;
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.arc(ballX, ballY, 16 + pulse * 4, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Players
+    players.forEach(p => {
+      const isAttack = p.team === "attack";
+      const isOffside = p.offside;
+
+      // Skeleton
+      if (showSkeleton && p.bodyParts) {
+        const bpColor = isOffside ? "rgba(255,80,80,0.7)" : "rgba(80,220,80,0.7)";
+        ctx.save();
+        ctx.strokeStyle = bpColor;
+        ctx.lineWidth = 1.5;
+        const bp = p.bodyParts;
+        const points = Object.values(bp);
+        for (let i = 0; i < points.length - 1; i++) {
+          ctx.beginPath();
+          ctx.moveTo(points[i][0], points[i][1]);
+          ctx.lineTo(points[i + 1][0], points[i + 1][1]);
+          ctx.stroke();
+        }
+        points.forEach(pt => {
+          ctx.beginPath();
+          ctx.arc(pt[0], pt[1], 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = bpColor;
+          ctx.fill();
+        });
+        ctx.restore();
+      }
+
+      // Player circle
+      ctx.save();
+      const baseColor = isAttack
+        ? (isOffside ? "#ff3a3a" : "#22ee66")
+        : (p.isGK ? "#f5c518" : "#4488ff");
+
+      if (isAttack && isOffside) {
+        ctx.shadowColor = "rgba(255, 60, 60, 0.9)";
+        ctx.shadowBlur = 14 + pulse * 6;
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 16, 0, Math.PI * 2);
+      ctx.fillStyle = baseColor + "33";
+      ctx.fill();
+      ctx.strokeStyle = baseColor;
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // Jersey number
+      ctx.fillStyle = "white";
+      ctx.font = "bold 12px 'Courier New'";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(p.number, p.x, p.y);
+
+      // Name tag
+      ctx.font = "10px 'Courier New'";
+      ctx.fillStyle = baseColor;
+      ctx.fillText(p.name, p.x, p.y + 26);
+
+      // Offside marker
+      if (isAttack && isOffside && showLines) {
+        ctx.font = "bold 10px 'Courier New'";
+        ctx.fillStyle = `rgba(255, 60, 60, ${0.8 + pulse * 0.2})`;
+        ctx.fillText("▲ OFFSIDE", p.x, p.y - 30);
+      }
+
+      ctx.restore();
+
+      // Offside distance indicator
+      if (isAttack && isOffside && showLines) {
+        ctx.save();
+        ctx.strokeStyle = "rgba(255, 80, 80, 0.4)";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(OFFSIDE_LINE_X, p.y);
+        ctx.stroke();
+        const dist = p.x - OFFSIDE_LINE_X;
+        ctx.fillStyle = "rgba(255,100,100,0.9)";
+        ctx.font = "9px 'Courier New'";
+        ctx.textAlign = "center";
+        ctx.fillText(`+${dist}px`, (p.x + OFFSIDE_LINE_X) / 2, p.y - 8);
+        ctx.restore();
+      }
+    });
+
+    animRef.current = requestAnimationFrame(draw);
+  }, [players, showSkeleton, showLines, highlightEvent]);
+
+  useEffect(() => {
+    animRef.current = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(animRef.current);
+  }, [draw]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={FIELD_WIDTH}
+      height={FIELD_HEIGHT}
+      style={{ width: "100%", height: "auto", borderRadius: 4, display: "block" }}
+    />
+  );
+}
+
+function ConfidenceBar({ value }) {
+  const pct = Math.round(value * 100);
+  const color = pct >= 95 ? "#22ee66" : pct >= 85 ? "#f5c518" : "#ff3a3a";
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <div style={{ flex: 1, height: 6, background: "#1a2a1a", borderRadius: 3, overflow: "hidden" }}>
+        <div style={{ width: `${pct}%`, height: "100%", background: color, borderRadius: 3, transition: "width 0.4s" }} />
+      </div>
+      <span style={{ color, fontFamily: "monospace", fontSize: 12, minWidth: 38 }}>{pct}%</span>
+    </div>
+  );
+}
+
+export default function OffsideDetectionSystem() {
+  const [showSkeleton, setShowSkeleton] = useState(true);
+  const [showLines, setShowLines] = useState(true);
+  const [activeTab, setActiveTab] = useState("field");
+  const [scanActive, setScanActive] = useState(false);
+  const [scanComplete, setScanComplete] = useState(true);
+  const [highlightEvent, setHighlightEvent] = useState(null);
+  const [ticker, setTicker] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => setTicker(x => x + 1), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const runScan = () => {
+    setScanComplete(false);
+    setScanActive(true);
+    setTimeout(() => { setScanActive(false); setScanComplete(true); }, 2800);
+  };
+
+  const offsideCount = MOCK_PLAYERS.filter(p => p.offside).length;
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: "#080f08",
+      color: "#c8e6c9",
+      fontFamily: "'Courier New', monospace",
+      padding: "0 0 40px",
+    }}>
+      {/* Header */}
+      <div style={{
+        background: "linear-gradient(90deg, #0d2010 0%, #081508 50%, #0d2010 100%)",
+        borderBottom: "1px solid #1e4020",
+        padding: "14px 24px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        position: "sticky",
+        top: 0,
+        zIndex: 100,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: 8,
+            background: "linear-gradient(135deg, #22ee66, #0d6e30)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 20, fontWeight: "bold", color: "#080f08"
+          }}>⚽</div>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: "bold", color: "#22ee66", letterSpacing: "0.1em" }}>
+              VAR·OFFSIDE·AI
+            </div>
+            <div style={{ fontSize: 10, color: "#4a7a4a", letterSpacing: "0.15em" }}>
+              FIFA 2025/2026 COMPLIANT · SAOT v4.2
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+          <div style={{ textAlign: "right" }}>
+            <div style={{ fontSize: 10, color: "#4a7a4a" }}>MATCH</div>
+            <div style={{ fontSize: 13, color: "#c8e6c9" }}>UCL QF · 47:23</div>
+          </div>
+          <div style={{
+            padding: "4px 12px", borderRadius: 4,
+            background: scanActive ? "rgba(255,60,60,0.1)" : "rgba(34,238,102,0.1)",
+            border: `1px solid ${scanActive ? "#ff3a3a" : "#22ee66"}`,
+            fontSize: 11,
+            color: scanActive ? "#ff3a3a" : "#22ee66",
+            letterSpacing: "0.1em",
+            animation: scanActive ? "pulse 0.6s infinite" : "none",
+          }}>
+            {scanActive ? "● SCANNING" : "● READY"}
+          </div>
+          <div style={{ fontSize: 11, color: "#4a7a4a" }}>
+            CAM: 3/6 · HD 1080p
+          </div>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 1300, margin: "0 auto", padding: "20px 20px 0" }}>
+        {/* Status banner */}
+        {scanComplete && (
+          <div style={{
+            background: "linear-gradient(90deg, rgba(255,60,60,0.12), rgba(255,60,60,0.04))",
+            border: "1px solid rgba(255,60,60,0.4)",
+            borderRadius: 6,
+            padding: "10px 18px",
+            marginBottom: 20,
+            display: "flex",
+            alignItems: "center",
+            gap: 16,
+          }}>
+            <div style={{ fontSize: 22 }}>🚩</div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: "bold", color: "#ff6060" }}>
+                OFFSIDE DETECTED — {offsideCount} PLAYER{offsideCount > 1 ? "S" : ""} IN OFFSIDE POSITION
+              </div>
+              <div style={{ fontSize: 11, color: "#7a4a4a", marginTop: 2 }}>
+                Frame 84234 · Contact at (510, 290) · Second-last defender at x={OFFSIDE_LINE_X} · {offsideCount}/3 attacking players flagged
+              </div>
+            </div>
+            <div style={{ marginLeft: "auto", textAlign: "right" }}>
+              <div style={{ fontSize: 10, color: "#4a7a4a" }}>SYSTEM CONFIDENCE</div>
+              <div style={{ fontSize: 22, fontWeight: "bold", color: "#22ee66" }}>96.2%</div>
+            </div>
+          </div>
+        )}
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 20 }}>
+          {/* Main field panel */}
+          <div>
+            {/* Tab bar */}
+            <div style={{
+              display: "flex",
+              gap: 2,
+              marginBottom: 2,
+              background: "#0a180a",
+              border: "1px solid #1e4020",
+              borderBottom: "none",
+              borderRadius: "6px 6px 0 0",
+              padding: "6px 10px 0",
+            }}>
+              {["field", "topdown", "report"].map(tab => (
+                <button key={tab} onClick={() => setActiveTab(tab)} style={{
+                  padding: "6px 16px",
+                  background: activeTab === tab ? "#0d2a10" : "transparent",
+                  border: "1px solid",
+                  borderColor: activeTab === tab ? "#22ee66" : "transparent",
+                  borderBottom: "none",
+                  borderRadius: "4px 4px 0 0",
+                  color: activeTab === tab ? "#22ee66" : "#4a7a4a",
+                  cursor: "pointer",
+                  fontSize: 11,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}>
+                  {tab === "field" ? "📹 Broadcast" : tab === "topdown" ? "🔭 Top-Down" : "📋 Report"}
+                </button>
+              ))}
+
+              <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10, paddingBottom: 6 }}>
+                {[["Skeleton", showSkeleton, setShowSkeleton], ["Lines", showLines, setShowLines]].map(([label, val, set]) => (
+                  <label key={label} style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer", fontSize: 11, color: "#4a7a4a" }}>
+                    <div onClick={() => set(!val)} style={{
+                      width: 28, height: 16, borderRadius: 8,
+                      background: val ? "#22ee66" : "#1a2a1a",
+                      position: "relative", transition: "background 0.2s", cursor: "pointer",
+                      border: "1px solid " + (val ? "#22ee66" : "#2a3a2a"),
+                    }}>
+                      <div style={{
+                        position: "absolute", top: 2, left: val ? 13 : 2,
+                        width: 10, height: 10, borderRadius: "50%",
+                        background: val ? "#080f08" : "#4a7a4a",
+                        transition: "left 0.2s",
+                      }} />
+                    </div>
+                    {label}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Field view */}
+            <div style={{
+              background: "#0a180a",
+              border: "1px solid #1e4020",
+              borderRadius: "0 0 6px 6px",
+              overflow: "hidden",
+            }}>
+              {activeTab === "field" && (
+                <FootballField
+                  players={MOCK_PLAYERS}
+                  showSkeleton={showSkeleton}
+                  showLines={showLines}
+                  highlightEvent={highlightEvent}
+                />
+              )}
+
+              {activeTab === "topdown" && (
+                <div style={{ padding: 20, minHeight: 400 }}>
+                  <div style={{ color: "#4a7a4a", fontSize: 12, marginBottom: 12 }}>TOP-DOWN PERSPECTIVE · CAMERA 5</div>
+                  <div style={{ position: "relative", background: "#0d3320", borderRadius: 4, height: 380, border: "1px solid #1e4020" }}>
+                    {/* Simplified top-down field */}
+                    <div style={{ position: "absolute", inset: 20, border: "1px solid rgba(255,255,255,0.2)", borderRadius: 2 }} />
+                    <div style={{ position: "absolute", top: 20, bottom: 20, left: "50%", width: 1, background: "rgba(255,255,255,0.2)" }} />
+                    {/* Offside line */}
+                    <div style={{ position: "absolute", top: 20, bottom: 20, left: "72%", width: 2, background: "rgba(255,60,60,0.7)", boxShadow: "0 0 8px rgba(255,60,60,0.6)" }} />
+                    <div style={{ position: "absolute", top: 8, left: "70%", color: "#ff6060", fontSize: 9, letterSpacing: "0.05em" }}>OFFSIDE</div>
+                    {/* Players dots */}
+                    {MOCK_PLAYERS.map(p => {
+                      const tx = ((p.x - 40) / (FIELD_WIDTH - 80)) * 90 + 5;
+                      const ty = ((p.y - 30) / (FIELD_HEIGHT - 60)) * 90 + 5;
+                      const color = p.team === "attack" ? (p.offside ? "#ff3a3a" : "#22ee66") : (p.isGK ? "#f5c518" : "#4488ff");
+                      return (
+                        <div key={p.id} style={{
+                          position: "absolute", left: `${tx}%`, top: `${ty}%`,
+                          width: 10, height: 10, borderRadius: "50%",
+                          background: color,
+                          transform: "translate(-50%,-50%)",
+                          boxShadow: p.offside ? "0 0 6px rgba(255,60,60,0.8)" : "none",
+                          border: "1px solid rgba(255,255,255,0.3)",
+                        }} title={p.name} />
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "report" && (
+                <div style={{ padding: 20, minHeight: 400 }}>
+                  <div style={{ color: "#22ee66", fontSize: 14, fontWeight: "bold", marginBottom: 16, letterSpacing: "0.08em" }}>
+                    ▣ AUTOMATED REFEREE REPORT
+                  </div>
+                  <div style={{ background: "#0d1f0d", borderRadius: 4, padding: 16, border: "1px solid #1e3a1e", marginBottom: 12, fontSize: 11, lineHeight: 1.8, color: "#8ab88a" }}>
+                    <div style={{ color: "#22ee66", marginBottom: 8 }}>INCIDENT SUMMARY · MATCH: UCL QF G2</div>
+                    <div>Timestamp: 47:23.4 | Frame ID: #84234</div>
+                    <div>Ball contact player: SANÉ (#10, Attacking)</div>
+                    <div>Ball contact coordinates: (510, 290)</div>
+                    <div>Second-last defender: SÜLE (#15) at x=595</div>
+                    <div>Last defender: RÜDIGER (#5) at x=590</div>
+                    <br />
+                    <div style={{ color: "#ff6060" }}>⚠ OFFSIDE VIOLATIONS DETECTED:</div>
+                    <div>  → MÜLLER (#9): head at x=580, +16px beyond line → OFFSIDE (97%)</div>
+                    <div>  → GNABRY (#7): shoulder at x=560, +36px beyond line → OFFSIDE (91%)</div>
+                    <br />
+                    <div style={{ color: "#22ee66" }}>✓ ONSIDE:</div>
+                    <div>  → SANÉ (#10): body at x=520, -75px behind line → ONSIDE (94%)</div>
+                    <br />
+                    <div>VAR RECOMMENDATION: Flag offside. Goal disallowed.</div>
+                    <div>System confidence: 96.2% | Cross-validated: 3/6 cameras</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Toolbar */}
+              <div style={{
+                borderTop: "1px solid #1e4020",
+                padding: "8px 14px",
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                background: "#080f08",
+              }}>
+                <button onClick={runScan} disabled={scanActive} style={{
+                  padding: "6px 18px",
+                  background: scanActive ? "#1a2a1a" : "linear-gradient(90deg, #0d6e30, #22ee66)",
+                  border: "none",
+                  borderRadius: 4,
+                  color: scanActive ? "#4a7a4a" : "#080f08",
+                  cursor: scanActive ? "not-allowed" : "pointer",
+                  fontSize: 12,
+                  fontWeight: "bold",
+                  letterSpacing: "0.05em",
+                  fontFamily: "monospace",
+                }}>
+                  {scanActive ? "⟳ SCANNING..." : "▶ RUN SCAN"}
+                </button>
+                <span style={{ fontSize: 10, color: "#2a4a2a" }}>|</span>
+                <span style={{ fontSize: 10, color: "#4a7a4a" }}>FPS: 60 · LATENCY: 34ms · SAOT: 29pt</span>
+                <div style={{ marginLeft: "auto", fontSize: 10, color: "#2a4a2a" }}>
+                  FRAME 84234 · {new Date().toISOString().slice(11, 19)}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right panel */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            {/* Player status cards */}
+            <div style={{
+              background: "#0a180a",
+              border: "1px solid #1e4020",
+              borderRadius: 6,
+              overflow: "hidden",
+            }}>
+              <div style={{
+                padding: "10px 14px",
+                borderBottom: "1px solid #1e4020",
+                fontSize: 11,
+                color: "#4a7a4a",
+                letterSpacing: "0.1em",
+                display: "flex",
+                justifyContent: "space-between",
+              }}>
+                <span>PLAYER DETECTION</span>
+                <span style={{ color: "#22ee66" }}>{MOCK_PLAYERS.length} TRACKED</span>
+              </div>
+
+              {MOCK_PLAYERS.filter(p => p.team === "attack").map(p => (
+                <div key={p.id} onMouseEnter={() => setHighlightEvent(p.id)} onMouseLeave={() => setHighlightEvent(null)}
+                  style={{
+                    padding: "10px 14px",
+                    borderBottom: "1px solid #1a2a1a",
+                    cursor: "pointer",
+                    background: highlightEvent === p.id ? "rgba(34,238,102,0.04)" : "transparent",
+                    transition: "background 0.15s",
+                  }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{
+                        width: 24, height: 24, borderRadius: "50%",
+                        background: p.offside ? "rgba(255,60,60,0.15)" : "rgba(34,238,102,0.15)",
+                        border: `1.5px solid ${p.offside ? "#ff3a3a" : "#22ee66"}`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 10, color: p.offside ? "#ff3a3a" : "#22ee66",
+                        fontWeight: "bold",
+                      }}>
+                        {p.number}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 12, color: "#c8e6c9" }}>{p.name}</div>
+                        <div style={{ fontSize: 10, color: "#4a7a4a" }}>ATK · ({p.x}, {p.y})</div>
+                      </div>
+                    </div>
+                    <div style={{
+                      fontSize: 10,
+                      fontWeight: "bold",
+                      color: p.offside ? "#ff3a3a" : "#22ee66",
+                      padding: "2px 8px",
+                      borderRadius: 3,
+                      background: p.offside ? "rgba(255,60,60,0.1)" : "rgba(34,238,102,0.1)",
+                      border: `1px solid ${p.offside ? "rgba(255,60,60,0.3)" : "rgba(34,238,102,0.3)"}`,
+                    }}>
+                      {p.offside ? "OFFSIDE" : "ONSIDE"}
+                    </div>
+                  </div>
+                  <ConfidenceBar value={p.confidence} />
+                </div>
+              ))}
+            </div>
+
+            {/* Event log */}
+            <div style={{
+              background: "#0a180a",
+              border: "1px solid #1e4020",
+              borderRadius: 6,
+              overflow: "hidden",
+              flex: 1,
+            }}>
+              <div style={{ padding: "10px 14px", borderBottom: "1px solid #1e4020", fontSize: 11, color: "#4a7a4a", letterSpacing: "0.1em" }}>
+                EVENT LOG
+              </div>
+              {MOCK_EVENTS.map(ev => (
+                <div key={ev.id} style={{
+                  padding: "8px 14px",
+                  borderBottom: "1px solid #0d1a0d",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}>
+                  <div style={{
+                    width: 8, height: 8, borderRadius: "50%",
+                    background: ev.status === "OFFSIDE" ? "#ff3a3a" : "#22ee66",
+                    flexShrink: 0,
+                    boxShadow: `0 0 4px ${ev.status === "OFFSIDE" ? "#ff3a3a" : "#22ee66"}`,
+                  }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 11, color: ev.status === "OFFSIDE" ? "#ff8080" : "#80e880" }}>
+                      {ev.player} · {ev.status}
+                    </div>
+                    <div style={{ fontSize: 10, color: "#2a4a2a" }}>{ev.timestamp} · conf: {Math.round(ev.confidence * 100)}%</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* JSON output */}
+            <div style={{
+              background: "#050d05",
+              border: "1px solid #1a3a1a",
+              borderRadius: 6,
+              overflow: "hidden",
+            }}>
+              <div style={{
+                padding: "8px 14px",
+                borderBottom: "1px solid #1a3a1a",
+                fontSize: 11,
+                color: "#4a7a4a",
+                letterSpacing: "0.1em",
+                display: "flex",
+                justifyContent: "space-between",
+              }}>
+                <span>JSON OUTPUT</span>
+                <span style={{ color: "#2a5a2a", cursor: "pointer" }} onClick={() => navigator.clipboard?.writeText(JSON.stringify(JSON_OUTPUT, null, 2))}>
+                  COPY
+                </span>
+              </div>
+              <pre style={{
+                margin: 0, padding: "10px 14px",
+                fontSize: 9,
+                color: "#4a8a4a",
+                overflowX: "auto",
+                maxHeight: 220,
+                overflowY: "auto",
+                lineHeight: 1.6,
+              }}>
+                {JSON.stringify(JSON_OUTPUT, null, 2)}
+              </pre>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom metrics */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(5, 1fr)",
+          gap: 10,
+          marginTop: 16,
+        }}>
+          {[
+            { label: "DETECTION ACCURACY", value: "97.4%", color: "#22ee66" },
+            { label: "FRAMES PROCESSED", value: "84,234", color: "#4488ff" },
+            { label: "AVG LATENCY", value: "34ms", color: "#22ee66" },
+            { label: "CAMERAS ACTIVE", value: "3 / 6", color: "#f5c518" },
+            { label: "OFFSIDE FLAGS", value: "2 THIS HALF", color: "#ff6060" },
+          ].map(m => (
+            <div key={m.label} style={{
+              background: "#0a180a",
+              border: "1px solid #1e4020",
+              borderRadius: 6,
+              padding: "10px 14px",
+            }}>
+              <div style={{ fontSize: 9, color: "#4a7a4a", letterSpacing: "0.1em", marginBottom: 4 }}>{m.label}</div>
+              <div style={{ fontSize: 18, fontWeight: "bold", color: m.color, fontFamily: "monospace" }}>{m.value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #0a180a; }
+        ::-webkit-scrollbar-thumb { background: #1e4020; border-radius: 2px; }
+      `}</style>
+    </div>
+  );
+}
