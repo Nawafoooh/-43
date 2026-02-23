@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>خطة زواجي — المنصة المتكاملة لإدارة الزواج</title>
+<title>خطة زواجي — المنصة المتكاملة لإدارة الزواج v5</title>
 <style>
 /* ================================================================
    CSS VARIABLES & RESET
@@ -491,6 +491,158 @@ footer strong{color:var(--gd300)}
   .cg{grid-template-columns:1fr}
   .wi-grid{grid-template-columns:1fr}
 }
+
+/* ================================================================
+   DASHBOARD
+================================================================ */
+#dashboard{background:linear-gradient(160deg,var(--g950),var(--g900) 60%,#0d2d22)}
+.db-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem;margin-bottom:2rem}
+@media(max-width:900px){.db-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.db-grid{grid-template-columns:1fr 1fr}}
+
+.db-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--r16);padding:1.2rem 1.3rem;position:relative;overflow:hidden;transition:all var(--t) var(--ease)}
+.db-card:hover{background:rgba(255,255,255,.09);transform:translateY(-2px)}
+.db-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,rgba(29,165,116,.13),transparent 60%);pointer-events:none}
+.db-ico{font-size:1.6rem;display:block;margin-bottom:.6rem}
+.db-val{font-size:1.7rem;font-weight:700;color:var(--gd300);display:block;line-height:1.1}
+.db-lbl{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:.2rem}
+.db-sub{font-size:.68rem;color:rgba(255,255,255,.3);margin-top:.15rem}
+.db-prog-bar{height:4px;background:rgba(255,255,255,.1);border-radius:999px;margin-top:.8rem;overflow:hidden}
+.db-prog-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--g500),var(--gd500));transition:width 1.2s var(--ease)}
+
+.db-charts{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem}
+@media(max-width:780px){.db-charts{grid-template-columns:1fr}}
+
+.db-chart-box{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:var(--r16);padding:1.3rem}
+.db-chart-title{font-size:.84rem;font-weight:700;color:rgba(255,255,255,.8);margin-bottom:1rem;display:flex;align-items:center;gap:.4rem}
+
+/* Donut chart */
+.donut-wrap{display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap}
+.donut-svg{flex-shrink:0}
+.donut-legend{flex:1;min-width:120px}
+.dl-item{display:flex;align-items:center;gap:.45rem;margin-bottom:.5rem;font-size:.74rem;color:rgba(255,255,255,.65)}
+.dl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* Bar chart */
+.bar-chart{display:flex;flex-direction:column;gap:.5rem}
+.bc-row{display:flex;align-items:center;gap:.6rem}
+.bc-lbl{font-size:.72rem;color:rgba(255,255,255,.55);width:90px;text-align:right;flex-shrink:0}
+.bc-trk{flex:1;height:10px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden}
+.bc-fil{height:100%;border-radius:999px;transition:width 1s var(--ease)}
+.bc-val{font-size:.7rem;color:rgba(255,255,255,.5);width:75px;flex-shrink:0}
+
+/* Activity feed */
+.db-activity{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:var(--r16);padding:1.3rem}
+.db-act-title{font-size:.84rem;font-weight:700;color:rgba(255,255,255,.8);margin-bottom:.9rem}
+.act-list{display:flex;flex-direction:column;gap:.55rem;max-height:220px;overflow-y:auto}
+.act-item{display:flex;align-items:flex-start;gap:.65rem;padding:.55rem .65rem;background:rgba(255,255,255,.04);border-radius:var(--r8);border-right:3px solid transparent;transition:all var(--t) var(--ease)}
+.act-item:hover{background:rgba(255,255,255,.07)}
+.act-item.green{border-right-color:var(--g500)}
+.act-item.gold{border-right-color:var(--gd500)}
+.act-item.red{border-right-color:#e74c3c}
+.act-ico{font-size:1.1rem;flex-shrink:0;margin-top:.05rem}
+.act-body{flex:1}
+.act-text{font-size:.77rem;color:rgba(255,255,255,.75);line-height:1.4}
+.act-time{font-size:.66rem;color:rgba(255,255,255,.3);margin-top:.12rem}
+
+/* ================================================================
+   CHECKLIST
+================================================================ */
+#checklist{background:var(--white)}
+.cl-header-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.6rem}
+.cl-stats{display:flex;gap:1rem;flex-wrap:wrap}
+.cl-stat{background:var(--off);border:1px solid var(--c200);border-radius:var(--r12);padding:.6rem 1rem;text-align:center}
+.cl-stat-n{font-size:1.25rem;font-weight:700;color:var(--g700);display:block}
+.cl-stat-l{font-size:.67rem;color:var(--c400)}
+
+.cl-filters{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.clf{padding:.38rem .9rem;border:1.5px solid var(--c200);border-radius:20px;background:var(--white);font-family:inherit;font-size:.78rem;font-weight:600;color:var(--c600);cursor:pointer;transition:all var(--t) var(--ease)}
+.clf.act{border-color:var(--g500);background:var(--g100);color:var(--g800)}
+
+.cl-progress-box{background:linear-gradient(135deg,var(--g900),var(--g800));border-radius:var(--r16);padding:1.3rem 1.6rem;margin-bottom:1.8rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.cl-prog-circle{position:relative;width:80px;height:80px;flex-shrink:0}
+.cl-prog-ring{transform:rotate(-90deg)}
+.cl-prog-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:var(--gd300)}
+.cl-prog-info{flex:1}
+.cl-prog-title{font-size:.88rem;font-weight:700;color:var(--white);margin-bottom:.3rem}
+.cl-prog-sub{font-size:.77rem;color:rgba(255,255,255,.55)}
+.cl-prog-cats{display:flex;gap:.5rem;margin-top:.7rem;flex-wrap:wrap}
+.cl-cat-badge{font-size:.68rem;padding:.18rem .6rem;border-radius:20px;font-weight:600}
+
+.cl-list{display:flex;flex-direction:column;gap:.6rem}
+.cl-item{background:var(--white);border:1.5px solid var(--c200);border-radius:var(--r12);padding:1rem 1.2rem;display:flex;align-items:flex-start;gap:.9rem;transition:all var(--t) var(--ease);cursor:pointer;user-select:none}
+.cl-item:hover{border-color:var(--g400);box-shadow:var(--sh1)}
+.cl-item.done{background:var(--g50);border-color:var(--g400);opacity:.82}
+.cl-item.done .cl-item-title{text-decoration:line-through;color:var(--c400)}
+.cl-item.overdue{border-color:#e74c3c;background:#fff9f9}
+.cl-item.urgent{border-color:var(--gd500)}
+
+.cl-checkbox{width:22px;height:22px;border:2px solid var(--c300);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem;transition:all var(--t) var(--ease);background:var(--white)}
+.cl-item.done .cl-checkbox{background:var(--g500);border-color:var(--g500);color:var(--white)}
+.cl-item-body{flex:1}
+.cl-item-title{font-size:.9rem;font-weight:700;color:var(--g800);line-height:1.35}
+.cl-item-meta{display:flex;align-items:center;gap:.6rem;margin-top:.3rem;flex-wrap:wrap}
+.cl-item-cat{font-size:.67rem;font-weight:700;padding:.12rem .55rem;border-radius:20px}
+.cl-item-due{font-size:.7rem;color:var(--c400)}
+.cl-item-priority{font-size:.67rem;font-weight:700}
+.cl-item-notes{font-size:.75rem;color:var(--c600);margin-top:.3rem;font-style:italic}
+.cl-item-right{display:flex;flex-direction:column;align-items:flex-end;gap:.4rem;flex-shrink:0}
+.cl-item-days{font-size:.72rem;font-weight:700;padding:.2rem .55rem;border-radius:20px}
+
+.add-item-form{background:var(--off);border:2px dashed var(--c200);border-radius:var(--r12);padding:1.1rem 1.3rem;margin-top:1rem;display:none}
+.add-item-form.open{display:block;animation:fadeUp .25s var(--ease)}
+.aif-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.7rem}
+@media(max-width:600px){.aif-row{grid-template-columns:1fr}}
+
+/* ================================================================
+   PAYMENTS TRACKER
+================================================================ */
+#payments{background:var(--off)}
+.pay-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+@media(max-width:700px){.pay-summary{grid-template-columns:1fr}}
+
+.pay-sum-card{border-radius:var(--r16);padding:1.3rem 1.4rem;position:relative;overflow:hidden}
+.pay-sum-card.paid{background:linear-gradient(135deg,var(--g800),var(--g700));color:var(--white)}
+.pay-sum-card.pending{background:linear-gradient(135deg,var(--gd800),var(--gd700));color:var(--white)}
+.pay-sum-card.total{background:linear-gradient(135deg,#1a3a6b,#1a4fa0);color:var(--white)}
+.pay-sum-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 10%,rgba(255,255,255,.12),transparent 60%);pointer-events:none}
+.ps-ico{font-size:1.8rem;display:block;margin-bottom:.5rem}
+.ps-val{font-size:1.6rem;font-weight:700;color:var(--gd300);line-height:1}
+.ps-lbl{font-size:.75rem;color:rgba(255,255,255,.55);margin-top:.2rem}
+.ps-sub{font-size:.68rem;color:rgba(255,255,255,.3);margin-top:.1rem}
+
+.pay-progress{background:var(--white);border:1px solid var(--c200);border-radius:var(--r16);padding:1.3rem 1.5rem;margin-bottom:1.5rem;box-shadow:var(--sh0)}
+.pp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem}
+.pp-top h4{font-size:.88rem;color:var(--g800)}
+.pp-pct{font-size:1.5rem;font-weight:700;color:var(--g600)}
+.pp-trk{height:14px;background:var(--c100);border-radius:999px;overflow:hidden;position:relative}
+.pp-fil-paid{height:100%;background:linear-gradient(90deg,var(--g500),var(--g400));border-radius:999px;transition:width 1s var(--ease);float:right}
+.pp-fil-partial{height:100%;background:linear-gradient(90deg,var(--gd700),var(--gd500));border-radius:999px;transition:width 1s var(--ease);float:right}
+
+.pay-table-wrap{background:var(--white);border:1px solid var(--c200);border-radius:var(--r16);box-shadow:var(--sh0);overflow:hidden;margin-bottom:1.5rem}
+.pay-table-head{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.4rem;border-bottom:1px solid var(--c100);flex-wrap:wrap;gap:.6rem}
+.pay-table-head h4{font-size:.9rem;color:var(--g800)}
+.pay-tbl{width:100%;border-collapse:collapse}
+.pay-tbl th{background:var(--g100);color:var(--g800);font-size:.76rem;font-weight:700;padding:.55rem .85rem;text-align:right;border-bottom:2px solid var(--g500)}
+.pay-tbl td{padding:.6rem .85rem;border-bottom:1px solid var(--c100);font-size:.82rem;color:var(--c600);vertical-align:middle}
+.pay-tbl tr:last-child td{border-bottom:none}
+.pay-tbl tr:hover td{background:var(--g50)}
+.pay-status-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .65rem;border-radius:20px;font-size:.7rem;font-weight:700}
+.psb-paid{background:var(--g100);color:var(--g700)}
+.psb-partial{background:var(--gd100);color:var(--gd700)}
+.psb-pending{background:var(--r100);color:var(--r600)}
+.psb-upcoming{background:var(--b100);color:var(--b600)}
+.pay-action-btn{background:none;border:1.5px solid var(--c200);border-radius:var(--r8);padding:.28rem .65rem;font-size:.72rem;font-weight:700;cursor:pointer;color:var(--c600);transition:all var(--t) var(--ease);font-family:inherit}
+.pay-action-btn:hover{border-color:var(--g500);color:var(--g700);background:var(--g50)}
+.pay-action-btn.mark-paid{border-color:var(--g400);color:var(--g700)}
+.pay-action-btn.del{border-color:#f1948a;color:var(--r600)}
+.pay-action-btn.del:hover{background:var(--r100)}
+
+.add-pay-form{background:var(--off);border:1px solid var(--c200);border-radius:var(--r12);padding:1.2rem 1.4rem;margin-top:1rem;display:none}
+.add-pay-form.open{display:block;animation:fadeUp .25s var(--ease)}
+.apf-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;margin-bottom:.8rem}
+@media(max-width:700px){.apf-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.apf-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -508,11 +660,13 @@ footer strong{color:var(--gd300)}
       </div>
     </a>
     <div class="nav-links">
+      <a href="#dashboard">لوحة التحكم</a>
+      <a href="#checklist">قائمة المهام</a>
+      <a href="#payments">المدفوعات</a>
       <a href="#calculator">الحاسبة</a>
       <a href="#timeline">الجدول الزمني</a>
       <a href="#madinah">المدينة المنورة</a>
       <a href="#packages">الباقات</a>
-      <a href="#vendors">الموردون</a>
       <a href="#timeline" class="nav-cta">🗓️ جدولتي</a>
     </div>
   </nav>
@@ -523,7 +677,7 @@ footer strong{color:var(--gd300)}
 ================================================================ -->
 <section class="hero">
   <div class="hero-in">
-    <div class="h-badge">⚙️ Wedding Cost Engine™ + Timeline Planner — الإصدار 4</div>
+    <div class="h-badge">⚙️ Wedding Cost Engine™ + Dashboard + Payments — الإصدار 5</div>
     <h1>المنصة المتكاملة<br>لإدارة زواجك بذكاء</h1>
     <p class="lead">
       احسب تكاليفك بدقة، خطط جدولك الزمني التفاعلي، احجز خدمات المدينة المنورة —
@@ -550,8 +704,277 @@ footer strong{color:var(--gd300)}
 </section>
 
 <!-- ================================================================
-     CALCULATOR SECTION
+     DASHBOARD
 ================================================================ -->
+<section id="dashboard" class="sec sec-d">
+  <div class="wrap">
+    <div class="sh dk">
+      <span class="stag dark">📊 لوحة التحكم</span>
+      <h2>نظرة شاملة على خطتك</h2>
+      <p>إحصائيات فورية وتحليلات ذكية لمتابعة تقدمك نحو يوم الفرح.</p>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="db-grid">
+      <div class="db-card">
+        <span class="db-ico">💰</span>
+        <span class="db-val" id="db-budget">—</span>
+        <div class="db-lbl">إجمالي الميزانية</div>
+        <div class="db-sub" id="db-budget-sub">شغّل محرك الحساب أولاً</div>
+        <div class="db-prog-bar"><div class="db-prog-fill" id="db-budget-prog" style="width:0%"></div></div>
+      </div>
+      <div class="db-card">
+        <span class="db-ico">✅</span>
+        <span class="db-val" id="db-tasks-pct">0%</span>
+        <div class="db-lbl">نسبة إنجاز المهام</div>
+        <div class="db-sub" id="db-tasks-sub">0 من 11 مهمة</div>
+        <div class="db-prog-bar"><div class="db-prog-fill" id="db-tasks-prog" style="width:0%"></div></div>
+      </div>
+      <div class="db-card">
+        <span class="db-ico">💳</span>
+        <span class="db-val" id="db-paid">0 ر</span>
+        <div class="db-lbl">المدفوعات المنجزة</div>
+        <div class="db-sub" id="db-paid-sub">0 من المستحقات</div>
+        <div class="db-prog-bar"><div class="db-prog-fill" id="db-paid-prog" style="width:0%"></div></div>
+      </div>
+      <div class="db-card">
+        <span class="db-ico">📅</span>
+        <span class="db-val" id="db-days">—</span>
+        <div class="db-lbl">يوم متبقي للفرح</div>
+        <div class="db-sub" id="db-days-sub">حدد تاريخ الزفاف</div>
+        <div class="db-prog-bar"><div class="db-prog-fill" id="db-days-prog" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- Charts row -->
+    <div class="db-charts">
+      <!-- Donut cost breakdown -->
+      <div class="db-chart-box">
+        <div class="db-chart-title">🥧 توزيع التكاليف</div>
+        <div class="donut-wrap" id="donut-wrap">
+          <div style="text-align:center;color:rgba(255,255,255,.35);font-size:.82rem;padding:1.5rem 0;width:100%">شغّل محرك الحساب لعرض الرسم البياني</div>
+        </div>
+      </div>
+      <!-- Bar chart tasks -->
+      <div class="db-chart-box">
+        <div class="db-chart-title">📊 تقدم فئات المهام</div>
+        <div class="bar-chart" id="db-bar-chart">
+          <div class="bc-row"><div class="bc-lbl">التخطيط</div><div class="bc-trk"><div class="bc-fil" id="bc-planning" style="width:0%;background:var(--g500)"></div></div><div class="bc-val" id="bcv-planning">0 / 0</div></div>
+          <div class="bc-row"><div class="bc-lbl">الحجوزات</div><div class="bc-trk"><div class="bc-fil" id="bc-bookings" style="width:0%;background:var(--gd500)"></div></div><div class="bc-val" id="bcv-bookings">0 / 0</div></div>
+          <div class="bc-row"><div class="bc-lbl">المشتريات</div><div class="bc-trk"><div class="bc-fil" id="bc-purchases" style="width:0%;background:#5dade2"></div></div><div class="bc-val" id="bcv-purchases">0 / 0</div></div>
+          <div class="bc-row"><div class="bc-lbl">الإجراءات</div><div class="bc-trk"><div class="bc-fil" id="bc-procedures" style="width:0%;background:#a569bd"></div></div><div class="bc-val" id="bcv-procedures">0 / 0</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity feed -->
+    <div class="db-activity">
+      <div class="db-act-title">⚡ آخر النشاطات</div>
+      <div class="act-list" id="db-activity-list">
+        <div class="act-item green"><span class="act-ico">🎉</span><div class="act-body"><div class="act-text">مرحباً بك في خطة زواجي! ابدأ بتحديد تاريخ زفافك وتشغيل محرك الحساب.</div><div class="act-time">الآن</div></div></div>
+        <div class="act-item gold"><span class="act-ico">💡</span><div class="act-body"><div class="act-text">نصيحة: احجز قاعة الأفراح أولاً — الأماكن المميزة تُحجز مبكراً.</div><div class="act-time">نصيحة اليوم</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     CHECKLIST
+================================================================ -->
+<section id="checklist" class="sec sec-w">
+  <div class="wrap">
+    <div class="sh">
+      <span class="stag">✅ قائمة المهام التفاعلية</span>
+      <h2>كل مهام زواجك في مكان واحد</h2>
+      <p>قائمة شاملة قابلة للتخصيص مع تتبع التقدم وتنبيهات المواعيد.</p>
+    </div>
+
+    <!-- Progress circle + stats -->
+    <div class="cl-progress-box">
+      <div class="cl-prog-circle">
+        <svg class="cl-prog-ring" width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="8"/>
+          <circle id="cl-ring-fill" cx="40" cy="40" r="34" fill="none" stroke="url(#clGrad)" stroke-width="8" stroke-linecap="round"
+            stroke-dasharray="213.6" stroke-dashoffset="213.6" style="transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1)"/>
+          <defs><linearGradient id="clGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#1da574"/><stop offset="100%" stop-color="#c9a84c"/></linearGradient></defs>
+        </svg>
+        <div class="cl-prog-pct" id="cl-pct">0%</div>
+      </div>
+      <div class="cl-prog-info">
+        <div class="cl-prog-title" id="cl-prog-title">لم يتم إنجاز أي مهمة بعد</div>
+        <div class="cl-prog-sub" id="cl-prog-sub">ابدأ بوضع علامة ✓ على المهام المنجزة</div>
+        <div class="cl-prog-cats" id="cl-prog-cats">
+          <span class="cl-cat-badge" style="background:rgba(29,165,116,.25);color:#6dcfaa">🏗️ تخطيط: 0/3</span>
+          <span class="cl-cat-badge" style="background:rgba(201,168,76,.2);color:#e8cc80">📅 حجوزات: 0/4</span>
+          <span class="cl-cat-badge" style="background:rgba(90,155,220,.2);color:#93c9e8">🛍️ مشتريات: 0/3</span>
+          <span class="cl-cat-badge" style="background:rgba(165,105,189,.2);color:#d7b9e8">📝 إجراءات: 0/2</span>
+        </div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:2.2rem;font-weight:700;color:var(--gd300)" id="cl-done-count">0</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.4)">مهمة منجزة</div>
+        <div style="font-size:1.3rem;font-weight:700;color:rgba(255,255,255,.6);margin-top:.5rem" id="cl-remain-count">0</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.4)">متبقية</div>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="cl-header-bar">
+      <div class="cl-filters" id="cl-filters">
+        <button class="clf act" onclick="filterChecklist('all',this)">🗂️ الكل</button>
+        <button class="clf" onclick="filterChecklist('pending',this)">🕐 قيد الانتظار</button>
+        <button class="clf" onclick="filterChecklist('done',this)">✅ المنجزة</button>
+        <button class="clf" onclick="filterChecklist('urgent',this)">🔥 عاجلة</button>
+        <button class="clf" onclick="filterChecklist('planning',this)">🏗️ تخطيط</button>
+        <button class="clf" onclick="filterChecklist('booking',this)">📅 حجوزات</button>
+        <button class="clf" onclick="filterChecklist('purchase',this)">🛍️ مشتريات</button>
+      </div>
+      <button class="btn btn-p btn-sm" onclick="toggleAddItemForm()">➕ إضافة مهمة</button>
+    </div>
+
+    <!-- Add item form -->
+    <div class="add-item-form" id="add-item-form">
+      <div class="aif-row">
+        <div class="fg" style="margin:0"><label>اسم المهمة</label><input type="text" id="new-task-title" placeholder="مثال: حجز الكوافيرة"></div>
+        <div class="fg" style="margin:0"><label>الفئة</label>
+          <select id="new-task-cat">
+            <option value="planning">🏗️ تخطيط</option>
+            <option value="booking">📅 حجوزات</option>
+            <option value="purchase">🛍️ مشتريات</option>
+            <option value="procedure">📝 إجراءات</option>
+          </select>
+        </div>
+      </div>
+      <div class="aif-row">
+        <div class="fg" style="margin:0"><label>الأولوية</label>
+          <select id="new-task-priority">
+            <option value="high">🔴 عالية</option>
+            <option value="medium" selected>🟡 متوسطة</option>
+            <option value="low">🟢 منخفضة</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0"><label>أيام قبل الفرح</label><input type="number" id="new-task-days" min="1" max="365" value="30"></div>
+      </div>
+      <div class="fg" style="margin:0 0 .8rem"><label>ملاحظات (اختياري)</label><input type="text" id="new-task-notes" placeholder="تفاصيل إضافية..."></div>
+      <div style="display:flex;gap:.6rem">
+        <button class="btn btn-p btn-sm" onclick="addCustomTask()">✅ إضافة المهمة</button>
+        <button class="btn btn-o btn-sm" onclick="toggleAddItemForm()">إلغاء</button>
+      </div>
+    </div>
+
+    <!-- Checklist items -->
+    <div class="cl-list" id="cl-list"></div>
+  </div>
+</section>
+
+<!-- ================================================================
+     PAYMENTS TRACKER
+================================================================ -->
+<section id="payments" class="sec sec-g">
+  <div class="wrap">
+    <div class="sh">
+      <span class="stag">💳 تتبع المدفوعات</span>
+      <h2>إدارة مدفوعاتك ومستحقاتك</h2>
+      <p>سجّل جميع مدفوعاتك وتابع المستحقات القادمة بدقة كاملة.</p>
+    </div>
+
+    <!-- Summary cards -->
+    <div class="pay-summary">
+      <div class="pay-sum-card paid">
+        <span class="ps-ico">✅</span>
+        <div class="ps-val" id="ps-paid">0 ريال</div>
+        <div class="ps-lbl">إجمالي المدفوع</div>
+        <div class="ps-sub" id="ps-paid-cnt">0 دفعة مكتملة</div>
+      </div>
+      <div class="pay-sum-card pending">
+        <span class="ps-ico">⏳</span>
+        <div class="ps-val" id="ps-pending">0 ريال</div>
+        <div class="ps-lbl">مستحقات قيد الانتظار</div>
+        <div class="ps-sub" id="ps-pending-cnt">0 دفعة معلقة</div>
+      </div>
+      <div class="pay-sum-card total">
+        <span class="ps-ico">📊</span>
+        <div class="ps-val" id="ps-total">0 ريال</div>
+        <div class="ps-lbl">إجمالي الالتزامات</div>
+        <div class="ps-sub" id="ps-total-cnt">0 دفعة إجمالاً</div>
+      </div>
+    </div>
+
+    <!-- Payment progress -->
+    <div class="pay-progress">
+      <div class="pp-top">
+        <h4>📈 نسبة السداد الكلي</h4>
+        <div class="pp-pct" id="pp-pct">0%</div>
+      </div>
+      <div class="pp-trk" id="pp-trk">
+        <div class="pp-fil-paid" id="pp-fil" style="width:0%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:.4rem;font-size:.72rem;color:var(--c400)">
+        <span id="pp-paid-lbl">مدفوع: 0 ريال</span>
+        <span id="pp-remain-lbl">متبقي: 0 ريال</span>
+      </div>
+    </div>
+
+    <!-- Payments table -->
+    <div class="pay-table-wrap">
+      <div class="pay-table-head">
+        <h4>📋 سجل المدفوعات</h4>
+        <button class="btn btn-p btn-sm" onclick="toggleAddPayForm()">➕ إضافة دفعة</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="pay-tbl">
+          <thead>
+            <tr>
+              <th>الجهة / الخدمة</th>
+              <th>المبلغ الكلي</th>
+              <th>المدفوع</th>
+              <th>المتبقي</th>
+              <th>تاريخ الاستحقاق</th>
+              <th>الحالة</th>
+              <th style="text-align:center">إجراء</th>
+            </tr>
+          </thead>
+          <tbody id="pay-tbody"></tbody>
+        </table>
+      </div>
+      <div id="pay-empty" style="text-align:center;padding:2.5rem;color:var(--c400)">
+        <div style="font-size:2rem;margin-bottom:.5rem">💳</div>
+        <div style="font-size:.88rem;font-weight:600">لا توجد مدفوعات مسجّلة بعد</div>
+        <div style="font-size:.78rem;margin-top:.3rem">اضغط "إضافة دفعة" لتسجيل أول دفعة</div>
+      </div>
+    </div>
+
+    <!-- Add payment form -->
+    <div class="add-pay-form" id="add-pay-form">
+      <div style="font-size:.88rem;font-weight:700;color:var(--g800);margin-bottom:.9rem">➕ إضافة دفعة جديدة</div>
+      <div class="apf-grid">
+        <div class="fg" style="margin:0"><label>الجهة / الخدمة</label><input type="text" id="pay-name" placeholder="مثال: قاعة الأفراح"></div>
+        <div class="fg" style="margin:0"><label>المبلغ الكلي (ريال)</label><input type="number" id="pay-total" min="0" placeholder="25000"></div>
+        <div class="fg" style="margin:0"><label>المدفوع حتى الآن (ريال)</label><input type="number" id="pay-paid-amount" min="0" value="0"></div>
+      </div>
+      <div class="apf-grid">
+        <div class="fg" style="margin:0"><label>تاريخ الاستحقاق</label><input type="date" id="pay-due"></div>
+        <div class="fg" style="margin:0"><label>الفئة</label>
+          <select id="pay-cat">
+            <option value="قاعة">🏛️ قاعة الأفراح</option>
+            <option value="طعام">🍽️ الطعام</option>
+            <option value="تصوير">📸 التصوير</option>
+            <option value="ذهب">💍 الذهب / الشبكة</option>
+            <option value="أثاث">🛋️ الأثاث</option>
+            <option value="زينة">🌸 الزينة</option>
+            <option value="دعوات">✉️ الدعوات</option>
+            <option value="أخرى">🎀 أخرى</option>
+          </select>
+        </div>
+        <div class="fg" style="margin:0"><label>ملاحظة</label><input type="text" id="pay-note" placeholder="اختياري"></div>
+      </div>
+      <div style="display:flex;gap:.7rem;margin-top:.5rem">
+        <button class="btn btn-p btn-sm" onclick="addPayment()">💾 حفظ الدفعة</button>
+        <button class="btn btn-o btn-sm" onclick="toggleAddPayForm()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+</section>
 <section id="calculator" class="sec sec-w">
   <div class="wrap">
     <div class="sh">
@@ -1723,7 +2146,432 @@ document.querySelectorAll('input[type="number"]').forEach(i=>{
   const fmt = d.toISOString().split('T')[0];
   document.getElementById('wedding-date').value = fmt;
   updateBehavioral(0);
+  initChecklist();
+  renderPaymentsTable();
+  updateDashboard();
 })();
+
+/* ================================================================
+   CHECKLIST DATA & LOGIC
+================================================================ */
+const CL_CATS = {
+  planning:  { label:'🏗️ تخطيط',    color:'rgba(29,165,116,.18)',  textColor:'#6dcfaa', barId:'bc-planning',   bvId:'bcv-planning' },
+  booking:   { label:'📅 حجوزات',   color:'rgba(201,168,76,.2)',   textColor:'#e8cc80', barId:'bc-bookings',   bvId:'bcv-bookings' },
+  purchase:  { label:'🛍️ مشتريات', color:'rgba(90,155,220,.18)',  textColor:'#93c9e8', barId:'bc-purchases',  bvId:'bcv-purchases' },
+  procedure: { label:'📝 إجراءات',  color:'rgba(165,105,189,.18)', textColor:'#d7b9e8', barId:'bc-procedures', bvId:'bcv-procedures' },
+};
+const PRIORITY_MAP = {
+  high:   { label:'🔴 عالية',    color:'#e74c3c' },
+  medium: { label:'🟡 متوسطة', color:'var(--gd500)' },
+  low:    { label:'🟢 منخفضة', color:'var(--g500)' },
+};
+
+let clItems = [
+  { id:'cl1',  title:'إعداد الميزانية التفصيلية',     cat:'planning',  priority:'high',   days:180, notes:'وزّع الميزانية على جميع البنود قبل أي حجز', done:false },
+  { id:'cl2',  title:'تحديد تاريخ الزفاف',            cat:'planning',  priority:'high',   days:170, notes:'تأكد من توافق الأسرة والقاعة', done:false },
+  { id:'cl3',  title:'إعداد قائمة المدعوين',          cat:'planning',  priority:'medium', days:120, notes:'قسّم القائمة: عائلة، أصدقاء، زملاء', done:false },
+  { id:'cl4',  title:'حجز قاعة الأفراح',              cat:'booking',   priority:'high',   days:180, notes:'احجز مبكراً — القاعات الجيدة تُحجز سريعاً', done:false },
+  { id:'cl5',  title:'حجز المصور الفوتوغرافي',        cat:'booking',   priority:'high',   days:120, notes:'اطلب مشاهدة أعمال سابقة وعقد واضح', done:false },
+  { id:'cl6',  title:'حجز خدمة الطعام',               cat:'booking',   priority:'medium', days:60,  notes:'أكّد العدد النهائي قبل التوقيع', done:false },
+  { id:'cl7',  title:'حجز شهر العسل',                 cat:'booking',   priority:'medium', days:90,  notes:'احجز مبكراً للأسعار الأفضل', done:false },
+  { id:'cl8',  title:'اختيار الشبكة والذهب',          cat:'purchase',  priority:'high',   days:90,  notes:'قارن الأسعار بين 3 محلات على الأقل', done:false },
+  { id:'cl9',  title:'تجهيز الأثاث والمنزل',          cat:'purchase',  priority:'medium', days:60,  notes:'ابدأ بالأساسيات ثم أضف التفاصيل', done:false },
+  { id:'cl10', title:'طباعة الدعوات وتوزيعها',        cat:'purchase',  priority:'medium', days:45,  notes:'أرسل رقمياً قبل 3 أسابيع كتذكير', done:false },
+  { id:'cl11', title:'استخراج وثيقة الزواج',          cat:'procedure', priority:'high',   days:30,  notes:'راجع المتطلبات في وزارة العدل', done:false },
+  { id:'cl12', title:'مراجعة جميع العقود',            cat:'procedure', priority:'high',   days:7,   notes:'تأكد من كل التفاصيل قبل يوم الفرح', done:false },
+];
+
+let clFilter = 'all';
+
+function initChecklist() {
+  renderChecklist();
+}
+
+function filterChecklist(f, btn) {
+  clFilter = f;
+  document.querySelectorAll('.clf').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  renderChecklist();
+}
+
+function renderChecklist() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const wDate = tlState.weddingDate || (() => { const d=new Date(); d.setFullYear(d.getFullYear()+1); return d; })();
+
+  let items = clItems;
+  if (clFilter === 'pending')  items = clItems.filter(i=>!i.done);
+  if (clFilter === 'done')     items = clItems.filter(i=>i.done);
+  if (clFilter === 'urgent')   items = clItems.filter(i=>{
+    if(i.done) return false;
+    const due=new Date(wDate); due.setDate(due.getDate()-i.days);
+    return Math.ceil((due-today)/(864e5)) <= 14;
+  });
+  if (['planning','booking','purchase','procedure'].includes(clFilter))
+    items = clItems.filter(i=>i.cat===clFilter);
+
+  const list = document.getElementById('cl-list');
+  list.innerHTML = '';
+
+  items.forEach(item => {
+    const due = new Date(wDate); due.setDate(due.getDate()-item.days);
+    const dl  = Math.ceil((due-today)/(864e5));
+    const isOverdue = dl < 0 && !item.done;
+    const isUrgent  = dl >= 0 && dl <= 14 && !item.done;
+    const cat = CL_CATS[item.cat] || CL_CATS.planning;
+    const pri = PRIORITY_MAP[item.priority] || PRIORITY_MAP.medium;
+    const dueTxt = item.done ? '✓ منجزة' : isOverdue ? `متأخر ${Math.abs(dl)} يوم` : `باقي ${dl} يوم`;
+    const dueColor = item.done ? 'var(--g600)' : isOverdue ? 'var(--r600)' : isUrgent ? 'var(--a700)' : 'var(--c400)';
+    const cardClass = `cl-item${item.done?' done':isOverdue?' overdue':isUrgent?' urgent':''}`;
+    const dueDateStr = due.toLocaleDateString('ar-SA',{month:'short',day:'numeric'});
+
+    const div = document.createElement('div');
+    div.className = cardClass;
+    div.onclick = () => toggleClItem(item.id);
+    div.innerHTML = `
+      <div class="cl-checkbox">${item.done?'<svg width="13" height="10" viewBox="0 0 13 10"><path d="M1 5l3.5 3.5L12 1" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div>
+      <div class="cl-item-body">
+        <div class="cl-item-title">${item.title}</div>
+        <div class="cl-item-meta">
+          <span class="cl-item-cat" style="background:${cat.color};color:${cat.textColor}">${cat.label}</span>
+          <span class="cl-item-priority" style="color:${pri.color}">${pri.label}</span>
+          <span class="cl-item-due">📅 ${dueDateStr}</span>
+        </div>
+        ${item.notes?`<div class="cl-item-notes">💡 ${item.notes}</div>`:''}
+      </div>
+      <div class="cl-item-right">
+        <span class="cl-item-days" style="background:${isOverdue?'var(--r100)':isUrgent?'var(--a100)':'var(--c100)'};color:${dueColor}">${dueTxt}</span>
+        ${!item.done?`<button class="pay-action-btn del" style="font-size:.66rem;padding:.18rem .45rem" onclick="event.stopPropagation();deleteClItem('${item.id}')">✕</button>`:''}
+      </div>`;
+    list.appendChild(div);
+  });
+
+  if (items.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:2.5rem;color:var(--c400)"><div style="font-size:2rem;margin-bottom:.5rem">✅</div><div style="font-size:.88rem;font-weight:600">لا توجد مهام في هذه الفئة</div></div>`;
+  }
+
+  updateClProgress();
+}
+
+function toggleClItem(id) {
+  const item = clItems.find(i=>i.id===id);
+  if (!item) return;
+  item.done = !item.done;
+  renderChecklist();
+  updateDashboard();
+  addActivity(item.done ? 'green' : 'gold', item.done ? '✅' : '↩️',
+    item.done ? `تم تحديد "${item.title}" كمنجزة` : `تم إلغاء إنجاز "${item.title}"`);
+}
+
+function deleteClItem(id) {
+  clItems = clItems.filter(i=>i.id!==id);
+  renderChecklist();
+  updateDashboard();
+}
+
+function toggleAddItemForm() {
+  const f = document.getElementById('add-item-form');
+  f.classList.toggle('open');
+  if (f.classList.contains('open')) document.getElementById('new-task-title').focus();
+}
+
+function addCustomTask() {
+  const title = document.getElementById('new-task-title').value.trim();
+  if (!title) { alert('⚠️ يرجى إدخال اسم المهمة.'); return; }
+  const cat   = document.getElementById('new-task-cat').value;
+  const days  = parseInt(document.getElementById('new-task-days').value) || 30;
+  const pri   = document.getElementById('new-task-priority').value;
+  const notes = document.getElementById('new-task-notes').value.trim();
+  const id    = 'cl-custom-'+Date.now();
+  clItems.push({ id, title, cat, priority:pri, days, notes, done:false });
+  document.getElementById('new-task-title').value = '';
+  document.getElementById('new-task-notes').value = '';
+  renderChecklist();
+  updateDashboard();
+  toggleAddItemForm();
+  addActivity('green','➕',`تمت إضافة مهمة جديدة: "${title}"`);
+}
+
+function updateClProgress() {
+  const done   = clItems.filter(i=>i.done).length;
+  const total  = clItems.length;
+  const pct    = total ? Math.round((done/total)*100) : 0;
+
+  document.getElementById('cl-pct').textContent = pct+'%';
+  document.getElementById('cl-done-count').textContent = done;
+  document.getElementById('cl-remain-count').textContent = total - done;
+
+  const offset = 213.6 * (1 - pct/100);
+  document.getElementById('cl-ring-fill').style.strokeDashoffset = offset;
+
+  const titles = ['ابدأ بإنجاز أول مهمة! 🌱','أحسنت! استمر في التقدم 💪','ربع المهام منجزة 🔥','منتصف الطريق! ⚡','أكثر من نصف المهام ✨','في المنعطف الأخير! 🚀','أغلب المهام منجزة! 🌟','جميع المهام منجزة! 🎉'];
+  const ti = Math.min(7, Math.floor(pct/14));
+  document.getElementById('cl-prog-title').textContent = titles[ti];
+  document.getElementById('cl-prog-sub').textContent   = `${done} من ${total} مهمة منجزة — ${pct}% إنجاز`;
+
+  // Cat bars
+  const cats = ['planning','booking','purchase','procedure'];
+  cats.forEach(c=>{
+    const all  = clItems.filter(i=>i.cat===c);
+    const doneC= all.filter(i=>i.done).length;
+    const p    = all.length ? Math.round((doneC/all.length)*100) : 0;
+    const bar  = document.getElementById(CL_CATS[c]?.barId);
+    const val  = document.getElementById(CL_CATS[c]?.bvId);
+    if (bar) setTimeout(()=>{ bar.style.width=p+'%'; }, 100);
+    if (val) val.textContent = `${doneC} / ${all.length}`;
+  });
+
+  // Cat badges
+  const badges = ['🏗️ تخطيط','📅 حجوزات','🛍️ مشتريات','📝 إجراءات'];
+  const catKeys = ['planning','booking','purchase','procedure'];
+  const colors  = [['rgba(29,165,116,.25)','#6dcfaa'],['rgba(201,168,76,.2)','#e8cc80'],['rgba(90,155,220,.18)','#93c9e8'],['rgba(165,105,189,.18)','#d7b9e8']];
+  const container = document.getElementById('cl-prog-cats');
+  if (container) {
+    container.innerHTML = catKeys.map((c,i)=>{
+      const all=clItems.filter(it=>it.cat===c).length;
+      const dn =clItems.filter(it=>it.cat===c&&it.done).length;
+      return `<span class="cl-cat-badge" style="background:${colors[i][0]};color:${colors[i][1]}">${badges[i]}: ${dn}/${all}</span>`;
+    }).join('');
+  }
+}
+
+/* ================================================================
+   PAYMENTS DATA & LOGIC
+================================================================ */
+let payments = [
+  { id:'p1', name:'قاعة الأفراح — الفردوس', cat:'قاعة',   total:32000, paid:10000, due:'2025-08-15', note:'دفعة مقدمة 10,000 ريال' },
+  { id:'p2', name:'المصور — استوديو اللحظة', cat:'تصوير', total:7000,  paid:7000,  due:'2025-06-01', note:'مدفوع بالكامل' },
+  { id:'p3', name:'شركة الطعام — ذواقة',     cat:'طعام',  total:45000, paid:5000,  due:'2025-09-01', note:'باقي عند التنفيذ' },
+];
+
+let nextPayId = payments.length + 1;
+
+function renderPaymentsTable() {
+  const tbody   = document.getElementById('pay-tbody');
+  const empty   = document.getElementById('pay-empty');
+  tbody.innerHTML = '';
+
+  if (payments.length === 0) {
+    empty.style.display = 'block';
+    updatePaySummary();
+    return;
+  }
+  empty.style.display = 'none';
+
+  payments.forEach(p => {
+    const remain   = p.total - p.paid;
+    const pct      = p.total ? Math.round((p.paid/p.total)*100) : 0;
+    const today    = new Date(); today.setHours(0,0,0,0);
+    const due      = p.due ? new Date(p.due) : null;
+    const isOverDue= due && due < today && remain > 0;
+    const isUpcoming= due && !isOverDue && Math.ceil((due-today)/(864e5)) <= 14 && remain > 0;
+
+    let statusBadge='', statusClass='';
+    if (pct === 100)     { statusBadge='✅ مدفوع';      statusClass='psb-paid'; }
+    else if (pct > 0)    { statusBadge='⏳ جزئي';       statusClass='psb-partial'; }
+    else if (isOverDue)  { statusBadge='🔴 متأخر';      statusClass='psb-pending'; }
+    else if (isUpcoming) { statusBadge='⚡ قريباً';      statusClass='psb-upcoming'; }
+    else                 { statusBadge='🕐 معلق';       statusClass='psb-pending'; }
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${p.name}</strong>${p.note?`<div style="font-size:.68rem;color:var(--c400);margin-top:.15rem">${p.note}</div>`:''}</td>
+      <td style="color:var(--g800);font-weight:600">${p.total.toLocaleString('ar-SA')} ر</td>
+      <td style="color:var(--g600)">${p.paid.toLocaleString('ar-SA')} ر
+        <div style="height:4px;background:var(--c100);border-radius:999px;margin-top:.25rem;overflow:hidden"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--g500),var(--g400));border-radius:999px;transition:width .8s"></div></div>
+      </td>
+      <td style="color:${remain>0?'var(--r600)':'var(--g600)'}">${remain.toLocaleString('ar-SA')} ر</td>
+      <td style="font-size:.78rem">${p.due||'—'}</td>
+      <td><span class="pay-status-badge ${statusClass}">${statusBadge}</span></td>
+      <td style="text-align:center;white-space:nowrap;display:flex;gap:.3rem;justify-content:center">
+        ${pct<100?`<button class="pay-action-btn mark-paid" onclick="markPaymentPaid('${p.id}')">✅ أتمّ</button>`:''}
+        <button class="pay-action-btn del" onclick="deletePayment('${p.id}')">✕</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+
+  updatePaySummary();
+}
+
+function updatePaySummary() {
+  const totalPaid    = payments.reduce((s,p)=>s+p.paid, 0);
+  const totalPending = payments.reduce((s,p)=>s+(p.total-p.paid), 0);
+  const grandTotal   = payments.reduce((s,p)=>s+p.total, 0);
+  const paidCnt      = payments.filter(p=>p.paid>=p.total).length;
+  const pendingCnt   = payments.filter(p=>p.paid<p.total).length;
+  const pct          = grandTotal ? Math.round((totalPaid/grandTotal)*100) : 0;
+
+  const fmt = n => n.toLocaleString('ar-SA')+' ر';
+  document.getElementById('ps-paid').textContent      = fmt(totalPaid);
+  document.getElementById('ps-pending').textContent   = fmt(totalPending);
+  document.getElementById('ps-total').textContent     = fmt(grandTotal);
+  document.getElementById('ps-paid-cnt').textContent  = `${paidCnt} دفعة مكتملة`;
+  document.getElementById('ps-pending-cnt').textContent = `${pendingCnt} دفعة معلقة`;
+  document.getElementById('ps-total-cnt').textContent = `${payments.length} دفعة إجمالاً`;
+  document.getElementById('pp-pct').textContent       = pct+'%';
+  setTimeout(()=>{ document.getElementById('pp-fil').style.width = pct+'%'; }, 80);
+  document.getElementById('pp-paid-lbl').textContent  = `مدفوع: ${fmt(totalPaid)}`;
+  document.getElementById('pp-remain-lbl').textContent= `متبقي: ${fmt(totalPending)}`;
+
+  updateDashboard();
+}
+
+function markPaymentPaid(id) {
+  const p = payments.find(x=>x.id===id);
+  if (!p) return;
+  p.paid = p.total;
+  renderPaymentsTable();
+  addActivity('green','💳',`تم تسجيل سداد كامل لـ "${p.name}"`);
+}
+
+function deletePayment(id) {
+  const p = payments.find(x=>x.id===id);
+  payments = payments.filter(x=>x.id!==id);
+  renderPaymentsTable();
+  if (p) addActivity('red','🗑️',`تم حذف سجل دفعة "${p.name}"`);
+}
+
+function toggleAddPayForm() {
+  const f = document.getElementById('add-pay-form');
+  f.classList.toggle('open');
+  if (f.classList.contains('open')) document.getElementById('pay-name').focus();
+}
+
+function addPayment() {
+  const name  = document.getElementById('pay-name').value.trim();
+  const total = parseFloat(document.getElementById('pay-total').value) || 0;
+  const paid  = Math.min(total, parseFloat(document.getElementById('pay-paid-amount').value) || 0);
+  const due   = document.getElementById('pay-due').value;
+  const cat   = document.getElementById('pay-cat').value;
+  const note  = document.getElementById('pay-note').value.trim();
+
+  if (!name)  { alert('⚠️ يرجى إدخال اسم الجهة.'); return; }
+  if (!total) { alert('⚠️ يرجى إدخال المبلغ الكلي.'); return; }
+
+  payments.push({ id:'p-'+Date.now(), name, cat, total, paid, due, note });
+  nextPayId++;
+
+  document.getElementById('pay-name').value = '';
+  document.getElementById('pay-total').value = '';
+  document.getElementById('pay-paid-amount').value = '0';
+  document.getElementById('pay-due').value = '';
+  document.getElementById('pay-note').value = '';
+
+  renderPaymentsTable();
+  toggleAddPayForm();
+  addActivity('gold','💳',`تمت إضافة دفعة جديدة: "${name}" — ${total.toLocaleString('ar-SA')} ريال`);
+}
+
+/* ================================================================
+   DASHBOARD — UPDATE
+================================================================ */
+function updateDashboard() {
+  // Budget from engine
+  if (engineState.grand > 0) {
+    const fmt = n => n.toLocaleString('ar-SA')+'ر';
+    document.getElementById('db-budget').textContent = fmt(engineState.grand);
+    document.getElementById('db-budget-sub').textContent = 'تكلفة إجمالية محسوبة';
+    setTimeout(()=>{ document.getElementById('db-budget-prog').style.width = '100%'; }, 80);
+    renderDonutChart(engineState.grand);
+  }
+
+  // Tasks progress
+  const done  = clItems.filter(i=>i.done).length;
+  const total = clItems.length;
+  const tPct  = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('db-tasks-pct').textContent = tPct+'%';
+  document.getElementById('db-tasks-sub').textContent = `${done} من ${total} مهمة`;
+  setTimeout(()=>{ document.getElementById('db-tasks-prog').style.width = tPct+'%'; }, 80);
+
+  // Payments
+  const totalPaid = payments.reduce((s,p)=>s+p.paid, 0);
+  const grandPay  = payments.reduce((s,p)=>s+p.total, 0);
+  const payPct    = grandPay ? Math.round((totalPaid/grandPay)*100) : 0;
+  document.getElementById('db-paid').textContent = totalPaid.toLocaleString('ar-SA')+' ر';
+  document.getElementById('db-paid-sub').textContent = `${payments.filter(p=>p.paid>=p.total).length} / ${payments.length} مدفوع`;
+  setTimeout(()=>{ document.getElementById('db-paid-prog').style.width = payPct+'%'; }, 80);
+
+  // Days to wedding
+  const wDate = tlState.weddingDate;
+  if (wDate) {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const dl = Math.ceil((new Date(wDate)-today)/(864e5));
+    document.getElementById('db-days').textContent = dl;
+    document.getElementById('db-days-sub').textContent = 'يوم متبقي للفرح';
+    const maxDays = 365;
+    const elapsed = Math.max(0, maxDays - dl);
+    setTimeout(()=>{ document.getElementById('db-days-prog').style.width = Math.min(100,(elapsed/maxDays)*100)+'%'; }, 80);
+  }
+}
+
+function renderDonutChart(grand) {
+  // Simple SVG donut
+  const segs = [
+    { label:'🏛️ القاعة',    pct:28, color:'#1da574' },
+    { label:'🍽️ الطعام',   pct:30, color:'#c9a84c' },
+    { label:'📸 التصوير',   pct:10, color:'#5dade2' },
+    { label:'💍 الذهب',     pct:18, color:'#a569bd' },
+    { label:'🛋️ الأثاث',   pct:9,  color:'#e67e22' },
+    { label:'🎀 أخرى',      pct:5,  color:'#95a5a6' },
+  ];
+
+  const R = 54, cx = 64, cy = 64, r = R;
+  let offset = -0.25; // start at top
+  const circumference = 2 * Math.PI * r;
+  let paths = '';
+  let legendHtml = '';
+
+  segs.forEach(seg => {
+    const slice  = seg.pct / 100;
+    const start  = offset * 360;
+    const end    = (offset + slice) * 360;
+    const x1 = cx + r * Math.cos(start * Math.PI/180);
+    const y1 = cy + r * Math.sin(start * Math.PI/180);
+    const x2 = cx + r * Math.cos(end * Math.PI/180);
+    const y2 = cy + r * Math.sin(end * Math.PI/180);
+    const large = slice > 0.5 ? 1 : 0;
+    paths += `<path d="M${cx},${cy} L${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${large},1 ${x2.toFixed(1)},${y2.toFixed(1)} Z" fill="${seg.color}" opacity=".9"/>`;
+    legendHtml += `<div class="dl-item"><div class="dl-dot" style="background:${seg.color}"></div>${seg.label} — ${seg.pct}%</div>`;
+    offset += slice;
+  });
+
+  const svgStr = `<svg class="donut-svg" width="128" height="128" viewBox="0 0 128 128">${paths}<circle cx="64" cy="64" r="32" fill="#0a3d2e"/><text x="64" y="68" text-anchor="middle" fill="#c9a84c" font-size="11" font-weight="700">${(grand/1000).toFixed(0)}k</text></svg>`;
+  document.getElementById('donut-wrap').innerHTML = svgStr + `<div class="donut-legend">${legendHtml}</div>`;
+}
+
+/* ================================================================
+   ACTIVITY FEED
+================================================================ */
+const activityLog = [];
+function addActivity(color, ico, text) {
+  const now = new Date().toLocaleTimeString('ar-SA', {hour:'2-digit',minute:'2-digit'});
+  activityLog.unshift({ color, ico, text, time: now });
+  if (activityLog.length > 10) activityLog.pop();
+
+  const list = document.getElementById('db-activity-list');
+  list.innerHTML = activityLog.map(a=>`
+    <div class="act-item ${a.color}">
+      <span class="act-ico">${a.ico}</span>
+      <div class="act-body"><div class="act-text">${a.text}</div><div class="act-time">${a.time}</div></div>
+    </div>`).join('') +
+    `<div class="act-item green"><span class="act-ico">💡</span><div class="act-body"><div class="act-text">احجز قاعة الأفراح أولاً — الأماكن المميزة تُحجز مبكراً.</div><div class="act-time">نصيحة</div></div></div>`;
+}
+
+/* ================================================================
+   HOOK: update dashboard when engine runs
+================================================================ */
+const _origRunEngine = runEngine;
+runEngine = function() {
+  _origRunEngine();
+  setTimeout(()=>{
+    updateDashboard();
+    addActivity('gold','⚙️','تم تشغيل محرك الحساب وتحديث الميزانية');
+  }, 200);
+};
+const _origUpdateTimeline = updateTimelineProgress;
+updateTimelineProgress = function() {
+  _origUpdateTimeline();
+  setTimeout(updateDashboard, 200);
+};
 </script>
 
 </body>
