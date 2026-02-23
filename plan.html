@@ -3,839 +3,576 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>خطة زواجي — Wedding Cost Engine v2</title>
+<title>خطة زواجي — المنصة المتكاملة لإدارة الزواج</title>
 <style>
 /* ================================================================
    CSS VARIABLES & RESET
 ================================================================ */
 :root {
-  --green-900: #052a1e;
-  --green-800: #0a3d2e;
-  --green-700: #0f5240;
-  --green-600: #157a5c;
-  --green-500: #1da574;
-  --green-400: #3dbd8d;
-  --green-100: #e6f4ef;
-  --green-50:  #f2faf6;
+  --g950:#031a11; --g900:#052a1e; --g800:#0a3d2e; --g700:#0f5240;
+  --g600:#157a5c; --g500:#1da574; --g400:#3dbd8d; --g300:#6dcfaa;
+  --g100:#e6f4ef; --g50:#f2faf6;
 
-  --gold-700:  #a07828;
-  --gold-500:  #c9a84c;
-  --gold-300:  #e8cc80;
-  --gold-100:  #fdf5e0;
+  --gd800:#7a5c1a; --gd700:#a07828; --gd500:#c9a84c;
+  --gd300:#e8cc80; --gd100:#fdf5e0; --gd50:#fffbf0;
 
-  --red-600:   #c0392b;
-  --red-100:   #fdedec;
-  --amber-600: #d68910;
-  --amber-100: #fef9e7;
+  --r600:#c0392b; --r100:#fdedec;
+  --a700:#b7770d; --a600:#d68910; --a100:#fef9e7;
+  --b600:#1a6fa3; --b100:#e8f4fb;
 
-  --white:     #ffffff;
-  --gray-50:   #f8faf9;
-  --gray-100:  #eef1ef;
-  --gray-200:  #dde3de;
-  --gray-400:  #8fa394;
-  --gray-600:  #4a5e52;
-  --gray-900:  #0d1f18;
+  --white:#fff; --off:#f8faf9;
+  --c100:#eef1ef; --c200:#dde3de; --c300:#c4cfc6;
+  --c400:#8fa394; --c600:#4a5e52; --c900:#0d1f18;
 
-  --shadow-xs: 0 1px 4px rgba(5,42,30,.06);
-  --shadow-sm: 0 2px 10px rgba(5,42,30,.09);
-  --shadow-md: 0 6px 28px rgba(5,42,30,.13);
-  --shadow-lg: 0 16px 56px rgba(5,42,30,.18);
+  --sh0:0 1px 4px rgba(5,42,30,.06);
+  --sh1:0 2px 10px rgba(5,42,30,.09);
+  --sh2:0 6px 28px rgba(5,42,30,.13);
+  --sh3:0 16px 56px rgba(5,42,30,.18);
 
-  --r-sm: 8px;
-  --r-md: 14px;
-  --r-lg: 20px;
-  --r-xl: 28px;
-
-  --ease: cubic-bezier(.4,0,.2,1);
-  --dur:  .24s;
+  --r4:4px; --r8:8px; --r12:12px; --r16:16px; --r24:24px;
+  --ease:cubic-bezier(.4,0,.2,1); --t:.22s;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--off);color:var(--c900);line-height:1.7;direction:rtl}
 
-body {
-  font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
-  background: var(--gray-50);
-  color: var(--gray-900);
-  line-height: 1.7;
-  direction: rtl;
-}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--c100)}
+::-webkit-scrollbar-thumb{background:var(--g500);border-radius:4px}
+::selection{background:var(--g100)}
 
-/* ================================================================
-   TYPOGRAPHY
-================================================================ */
-h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); line-height: 1.2; }
-h2 { font-size: clamp(1.25rem, 3vw, 1.75rem); line-height: 1.3; }
-h3 { font-size: 1.1rem; line-height: 1.4; }
-h4 { font-size: .95rem; line-height: 1.4; }
+h1{font-size:clamp(1.65rem,4vw,2.6rem);line-height:1.2}
+h2{font-size:clamp(1.2rem,3vw,1.75rem);line-height:1.3}
+h3{font-size:1.08rem;line-height:1.4}
+h4{font-size:.92rem;line-height:1.4}
+h1,h2,h3,h4{font-weight:700;color:var(--g800)}
+p{color:var(--c600)}
 
-h1,h2,h3,h4 { font-weight: 700; color: var(--green-800); }
-
-p { color: var(--gray-600); }
-
-/* ================================================================
-   LAYOUT
-================================================================ */
-.container  { max-width: 1160px; margin: 0 auto; padding: 0 1.5rem; }
-.section    { padding: 4rem 0; }
-.section-w  { background: var(--white); }
-.section-g  { background: var(--gray-50); }
-
-/* ================================================================
-   SCROLLBAR
-================================================================ */
-::-webkit-scrollbar       { width: 5px; }
-::-webkit-scrollbar-track { background: var(--gray-100); }
-::-webkit-scrollbar-thumb { background: var(--green-500); border-radius: 4px; }
+.wrap{max-width:1180px;margin:0 auto;padding:0 1.4rem}
+.sec{padding:4.5rem 0}
+.sec-w{background:var(--white)}
+.sec-g{background:var(--off)}
+.sec-d{background:var(--g900)}
+.sec-au{background:var(--gd50)}
 
 /* ================================================================
    HEADER
 ================================================================ */
-header {
-  background: var(--green-900);
-  position: sticky;
-  top: 0;
-  z-index: 200;
-  border-bottom: 1px solid rgba(255,255,255,.07);
-}
+header{background:var(--g900);position:sticky;top:0;z-index:300;border-bottom:1px solid rgba(255,255,255,.07)}
+nav{max-width:1180px;margin:0 auto;padding:.8rem 1.4rem;display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap}
 
-nav {
-  max-width: 1160px;
-  margin: 0 auto;
-  padding: .85rem 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
+.logo{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+.logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--gd500),var(--gd300));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.logo-t{font-size:1.05rem;font-weight:700;color:var(--white);display:block}
+.logo-s{font-size:.66rem;color:rgba(255,255,255,.4);display:block;line-height:1.2}
 
-.logo { display: flex; align-items: center; gap: .65rem; text-decoration: none; }
-
-.logo-mark {
-  width: 38px; height: 38px;
-  background: linear-gradient(135deg, var(--gold-500), var(--gold-300));
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.15rem;
-  flex-shrink: 0;
-}
-
-.logo-title  { font-size: 1.1rem; font-weight: 700; color: var(--white); display: block; }
-.logo-sub    { font-size: .7rem;  color: rgba(255,255,255,.5); display: block; line-height: 1.2; }
-
-.nav-links   { display: flex; align-items: center; gap: .35rem; flex-wrap: wrap; }
-.nav-links a {
-  color: rgba(255,255,255,.75);
-  font-size: .85rem;
-  text-decoration: none;
-  padding: .32rem .75rem;
-  border-radius: var(--r-sm);
-  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
-}
-.nav-links a:hover          { background: rgba(255,255,255,.1); color: var(--white); }
-.nav-links .btn-cta         { background: var(--gold-500); color: var(--green-900) !important; font-weight: 700; }
-.nav-links .btn-cta:hover   { background: var(--gold-300); }
+.nav-links{display:flex;align-items:center;gap:.3rem;flex-wrap:wrap}
+.nav-links a{color:rgba(255,255,255,.7);font-size:.8rem;text-decoration:none;padding:.28rem .65rem;border-radius:var(--r8);transition:all var(--t) var(--ease)}
+.nav-links a:hover{background:rgba(255,255,255,.1);color:var(--white)}
+.nav-cta{background:var(--gd500)!important;color:var(--g900)!important;font-weight:700!important}
+.nav-cta:hover{background:var(--gd300)!important}
 
 /* ================================================================
    HERO
 ================================================================ */
-.hero {
-  background: linear-gradient(160deg, var(--green-900) 0%, var(--green-800) 55%, var(--green-700) 100%);
-  padding: 5.5rem 1.5rem 4rem;
-  position: relative;
-  overflow: hidden;
-  color: var(--white);
-  text-align: center;
-}
-
-.hero::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(29,165,116,.18), transparent);
-  pointer-events: none;
-}
-
-/* subtle grid overlay */
-.hero::after {
-  content: '';
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
-}
-
-.hero-inner { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; }
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  background: rgba(201,168,76,.18);
-  border: 1px solid rgba(201,168,76,.4);
-  color: var(--gold-300);
-  font-size: .78rem;
-  font-weight: 600;
-  padding: .3rem 1rem;
-  border-radius: 20px;
-  margin-bottom: 1.3rem;
-  letter-spacing: .4px;
-}
-
-.hero h1     { color: var(--white); margin-bottom: 1rem; }
-.hero .lead  { color: rgba(255,255,255,.75); font-size: 1.08rem; margin-bottom: 2.2rem; }
-
-.hero-engine-tag {
-  display: inline-block;
-  background: rgba(29,165,116,.25);
-  border: 1px solid rgba(29,165,116,.5);
-  color: var(--green-400);
-  font-size: .78rem;
-  font-weight: 700;
-  padding: .25rem .8rem;
-  border-radius: 6px;
-  letter-spacing: .5px;
-  margin-bottom: .5rem;
-}
-
-.hero-stats {
-  display: flex;
-  justify-content: center;
-  gap: 2.5rem;
-  flex-wrap: wrap;
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255,255,255,.12);
-}
-
-.hero-stat .num { font-size: 1.75rem; font-weight: 700; color: var(--gold-300); display: block; }
-.hero-stat .lbl { font-size: .78rem; color: rgba(255,255,255,.55); }
+.hero{background:linear-gradient(155deg,var(--g950),var(--g900) 50%,var(--g800));padding:5.5rem 1.4rem 4rem;color:var(--white);text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 75% 55% at 50% 0%,rgba(29,165,116,.16),transparent);pointer-events:none}
+.hero::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);background-size:44px 44px;pointer-events:none}
+.hero-in{position:relative;z-index:1;max-width:720px;margin:0 auto}
+.h-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(201,168,76,.18);border:1px solid rgba(201,168,76,.4);color:var(--gd300);font-size:.76rem;font-weight:600;padding:.26rem .95rem;border-radius:20px;margin-bottom:1.2rem;letter-spacing:.4px}
+.hero h1{color:var(--white);margin-bottom:.9rem}
+.hero .lead{color:rgba(255,255,255,.72);font-size:1.04rem;margin-bottom:2rem;max-width:580px;margin-left:auto;margin-right:auto}
+.hero-pills{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;margin-bottom:2rem}
+.hpill{background:rgba(29,165,116,.2);border:1px solid rgba(29,165,116,.4);color:var(--g400);font-size:.73rem;font-weight:600;padding:.18rem .7rem;border-radius:6px}
+.hero-stats{display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;margin-top:2.8rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,.1)}
+.hs-num{font-size:1.8rem;font-weight:700;color:var(--gd300);display:block}
+.hs-lbl{font-size:.74rem;color:rgba(255,255,255,.5)}
 
 /* ================================================================
    SECTION HEADER
 ================================================================ */
-.s-header          { text-align: center; margin-bottom: 2.5rem; }
-.s-header h2       { margin-bottom: .45rem; }
-.s-header p        { max-width: 520px; margin: 0 auto; font-size: .95rem; }
-.s-tag {
-  display: inline-block;
-  background: var(--green-100);
-  color: var(--green-700);
-  font-size: .75rem;
-  font-weight: 700;
-  padding: .22rem .9rem;
-  border-radius: 20px;
-  margin-bottom: .7rem;
-  letter-spacing: .4px;
-}
-
-/* Dark section header variant */
-.s-header-dark h2  { color: var(--white); }
-.s-header-dark p   { color: rgba(255,255,255,.65); }
-.s-header-dark .s-tag { background: rgba(255,255,255,.1); color: rgba(255,255,255,.8); }
+.sh{text-align:center;margin-bottom:2.8rem}
+.sh h2{margin-bottom:.4rem}
+.sh p{max-width:540px;margin:0 auto;font-size:.93rem}
+.stag{display:inline-block;background:var(--g100);color:var(--g700);font-size:.72rem;font-weight:700;padding:.2rem .85rem;border-radius:20px;margin-bottom:.65rem;letter-spacing:.4px}
+.stag.gold{background:var(--gd100);color:var(--gd700)}
+.stag.dark{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8)}
+.sh.dk h2{color:var(--white)}
+.sh.dk p{color:rgba(255,255,255,.65)}
 
 /* ================================================================
-   CALCULATOR LAYOUT
+   BUTTONS
 ================================================================ */
-.calc-grid {
-  display: grid;
-  grid-template-columns: 480px 1fr;
-  gap: 2rem;
-  align-items: start;
-}
-
-@media (max-width: 920px) { .calc-grid { grid-template-columns: 1fr; } }
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;padding:.68rem 1.55rem;border:none;border-radius:var(--r8);font-family:inherit;font-size:.92rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all var(--t) var(--ease)}
+.btn-p{background:var(--g800);color:var(--white);box-shadow:0 4px 14px rgba(10,61,46,.25)}
+.btn-p:hover{background:var(--g700);transform:translateY(-1px)}
+.btn-g{background:var(--gd500);color:var(--g900)}
+.btn-g:hover{background:var(--gd300);transform:translateY(-1px)}
+.btn-o{background:transparent;border:2px solid var(--g800);color:var(--g800)}
+.btn-o:hover{background:var(--g800);color:var(--white)}
+.btn-sm{padding:.46rem 1rem;font-size:.8rem}
+.btn-fw{width:100%}
+.btn-calc{width:100%;padding:.86rem;background:var(--g800);color:var(--white);border:none;border-radius:var(--r12);font-family:inherit;font-size:.98rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;box-shadow:0 4px 18px rgba(10,61,46,.28);transition:all var(--t) var(--ease);margin-top:.35rem}
+.btn-calc:hover{background:var(--g700);transform:translateY(-1px)}
 
 /* ================================================================
-   FORM PANEL
+   FORMS
 ================================================================ */
-.form-panel {
-  background: var(--white);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--r-xl);
-  padding: 2rem;
-  box-shadow: var(--shadow-sm);
-}
+.fpanel{background:var(--white);border:1px solid var(--c200);border-radius:var(--r24);padding:1.9rem;box-shadow:var(--sh1)}
+.fpanel h3{display:flex;align-items:center;gap:.5rem;margin-bottom:1.4rem;padding-bottom:.8rem;border-bottom:1.5px solid var(--c100)}
+.fg{margin-bottom:1.1rem}
+label{display:block;font-size:.82rem;font-weight:700;color:var(--g800);margin-bottom:.35rem}
+input[type="number"],select,input[type="text"],input[type="tel"],input[type="email"],input[type="date"]{width:100%;padding:.6rem .88rem;border:1.5px solid var(--c200);border-radius:var(--r8);font-family:inherit;font-size:.92rem;color:var(--c900);background:var(--white);direction:rtl;outline:none;-webkit-appearance:none;appearance:none;transition:border-color var(--t) var(--ease),box-shadow var(--t) var(--ease)}
+input:focus,select:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(29,165,116,.13)}
+input[type="number"]::-webkit-inner-spin-button{opacity:.5}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%230a3d2e' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left .88rem center;padding-left:2.1rem}
 
-.form-panel h3 {
-  display: flex; align-items: center; gap: .5rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: .9rem;
-  border-bottom: 1.5px solid var(--gray-100);
-}
+.rrow{display:flex;gap:.5rem;flex-wrap:wrap}
+.rpill{flex:1;min-width:68px;position:relative}
+.rpill input{position:absolute;opacity:0;width:0;height:0}
+.rpill label{display:block;text-align:center;padding:.48rem .3rem;border:1.5px solid var(--c200);border-radius:var(--r8);cursor:pointer;font-size:.79rem;font-weight:500;color:var(--c600);background:var(--off);margin:0;transition:all var(--t) var(--ease);user-select:none}
+.rpill input:checked+label{border-color:var(--g500);background:var(--g100);color:var(--g800);font-weight:700;box-shadow:0 0 0 2px rgba(29,165,116,.17)}
 
-.form-group    { margin-bottom: 1.15rem; }
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.ci{position:relative}
+.ci input{position:absolute;opacity:0;width:0;height:0}
+.ci label{display:flex;align-items:center;gap:.45rem;padding:.52rem .68rem;border:1.5px solid var(--c200);border-radius:var(--r8);cursor:pointer;font-size:.79rem;font-weight:500;color:var(--c600);background:var(--off);margin:0;transition:all var(--t) var(--ease);user-select:none}
+.ci input:checked+label{border-color:var(--g500);background:var(--g100);color:var(--g800);font-weight:700}
+.cie{font-size:.92rem;flex-shrink:0}
 
-label {
-  display: block;
-  font-size: .84rem;
-  font-weight: 700;
-  color: var(--green-800);
-  margin-bottom: .38rem;
-}
-
-input[type="number"],
-select {
-  width: 100%;
-  padding: .62rem .9rem;
-  border: 1.5px solid var(--gray-200);
-  border-radius: var(--r-sm);
-  font-family: inherit;
-  font-size: .95rem;
-  color: var(--gray-900);
-  background: var(--white);
-  direction: rtl;
-  outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
-}
-
-input:focus, select:focus {
-  border-color: var(--green-500);
-  box-shadow: 0 0 0 3px rgba(29,165,116,.14);
-}
-
-input[type="number"]::-webkit-inner-spin-button { opacity: .5; }
-
-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%230a3d2e' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: left .9rem center;
-  padding-left: 2.2rem;
-}
-
-/* Radio pills */
-.radio-row    { display: flex; gap: .55rem; flex-wrap: wrap; }
-.radio-pill   { flex: 1; min-width: 70px; position: relative; }
-.radio-pill input { position: absolute; opacity: 0; width: 0; height: 0; }
-.radio-pill label {
-  display: block;
-  text-align: center;
-  padding: .5rem .3rem;
-  border: 1.5px solid var(--gray-200);
-  border-radius: var(--r-sm);
-  cursor: pointer;
-  font-size: .82rem;
-  font-weight: 500;
-  color: var(--gray-600);
-  background: var(--gray-50);
-  margin: 0;
-  transition: all var(--dur) var(--ease);
-  user-select: none;
-}
-.radio-pill input:checked + label {
-  border-color: var(--green-500);
-  background: var(--green-100);
-  color: var(--green-800);
-  font-weight: 700;
-  box-shadow: 0 0 0 2px rgba(29,165,116,.18);
-}
-
-.note { font-size: .75rem; color: var(--gray-400); margin-top: .3rem; display: block; }
-
-/* Divider */
-.form-divider { border: none; border-top: 1px dashed var(--gray-200); margin: 1.2rem 0; }
-
-/* Submit button */
-.btn-calc {
-  width: 100%;
-  padding: .85rem;
-  background: var(--green-800);
-  color: var(--white);
-  border: none;
-  border-radius: var(--r-md);
-  font-family: inherit;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: .5rem;
-  box-shadow: 0 4px 18px rgba(10,61,46,.28);
-  transition: all var(--dur) var(--ease);
-  margin-top: .3rem;
-}
-.btn-calc:hover   { background: var(--green-700); box-shadow: 0 6px 22px rgba(10,61,46,.35); transform: translateY(-1px); }
-.btn-calc:active  { transform: translateY(0); }
+.note{font-size:.72rem;color:var(--c400);margin-top:.28rem;display:block}
+.fd{border:none;border-top:1px dashed var(--c200);margin:1.1rem 0}
 
 /* ================================================================
-   RESULTS AREA
+   CALC LAYOUT
 ================================================================ */
-.results-placeholder {
-  background: var(--white);
-  border: 2px dashed var(--gray-200);
-  border-radius: var(--r-xl);
-  padding: 3.5rem 2rem;
-  text-align: center;
-  color: var(--gray-400);
-}
+.calc-grid{display:grid;grid-template-columns:450px 1fr;gap:2rem;align-items:start}
+@media(max-width:920px){.calc-grid{grid-template-columns:1fr}}
 
-.results-placeholder .icon { font-size: 2.5rem; display: block; margin-bottom: .8rem; }
-.results-placeholder h4    { color: var(--gray-400); font-weight: 600; }
-.results-placeholder p     { font-size: .85rem; margin-top: .3rem; }
+/* ── Placeholder ── */
+.rph{background:var(--white);border:2px dashed var(--c200);border-radius:var(--r24);padding:3.2rem 2rem;text-align:center;color:var(--c400)}
+.rph .ico{font-size:2.4rem;display:block;margin-bottom:.75rem}
+.rph h4{color:var(--c400);font-weight:600}
+.rph p{font-size:.82rem;margin-top:.3rem}
 
-/* ---------------------------------------------------------------- */
-.results-panel { display: none; }
-.results-panel.visible { display: block; animation: fadeUp .35s var(--ease); }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+/* ── Results ── */
+.rpanel{display:none}
+.rpanel.vis{display:block;animation:fadeUp .35s var(--ease)}
 
-/* City index strip */
-.city-index-strip {
-  background: linear-gradient(90deg, var(--green-900), var(--green-800));
-  border-radius: var(--r-md);
-  padding: .9rem 1.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-}
-.city-index-strip .label   { font-size: .82rem; color: rgba(255,255,255,.65); }
-.city-index-strip .val     { font-size: 1.3rem; font-weight: 700; color: var(--gold-300); }
-.city-index-strip .ref     { font-size: .75rem; color: rgba(255,255,255,.45); }
-.ci-divider { width: 1px; height: 36px; background: rgba(255,255,255,.12); }
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-/* Total hero card */
-.total-card {
-  background: linear-gradient(145deg, var(--green-900) 0%, var(--green-800) 100%);
-  border-radius: var(--r-xl);
-  padding: 1.8rem;
-  color: var(--white);
-  text-align: center;
-  margin-bottom: 1rem;
-  position: relative;
-  overflow: hidden;
-}
-.total-card::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(circle at 80% 20%, rgba(29,165,116,.2), transparent 60%);
-  pointer-events: none;
-}
-.total-card .card-label  { font-size: .82rem; color: rgba(255,255,255,.6); margin-bottom: .3rem; }
-.total-card .total-amt   { font-size: clamp(2rem,5vw,3rem); font-weight: 700; color: var(--gold-300); line-height: 1.1; display: block; }
-.total-card .range-text  { font-size: .8rem; color: rgba(255,255,255,.5); margin-top: .35rem; }
+/* City strip */
+.cstrip{background:linear-gradient(90deg,var(--g900),var(--g800));border-radius:var(--r12);padding:.82rem 1.1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.9rem;flex-wrap:wrap}
+.cs-lbl{font-size:.76rem;color:rgba(255,255,255,.5)}
+.cs-val{font-size:1.2rem;font-weight:700;color:var(--gd300);line-height:1.1}
+.cs-div{width:1px;height:30px;background:rgba(255,255,255,.1);flex-shrink:0}
 
-.total-card .monthly-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-top: 1.3rem;
-  padding-top: 1.2rem;
-  border-top: 1px solid rgba(255,255,255,.14);
-  text-align: center;
-}
-.m-box .m-lbl { font-size: .74rem; color: rgba(255,255,255,.55); margin-bottom: .2rem; }
-.m-box .m-dur { font-size: .68rem; color: rgba(255,255,255,.35); margin-bottom: .2rem; }
-.m-box .m-val { font-size: 1.25rem; font-weight: 700; color: var(--white); }
+/* Total card */
+.tot-card{background:linear-gradient(145deg,var(--g900),var(--g800));border-radius:var(--r24);padding:1.7rem;color:var(--white);text-align:center;margin-bottom:.9rem;position:relative;overflow:hidden}
+.tot-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(29,165,116,.18),transparent 60%);pointer-events:none}
+.tc-lbl{font-size:.78rem;color:rgba(255,255,255,.52);margin-bottom:.28rem}
+.tc-amt{font-size:clamp(1.9rem,5vw,2.9rem);font-weight:700;color:var(--gd300);line-height:1.1;display:block}
+.tc-rng{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:.28rem}
+.tc-bot{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.2rem;padding-top:1.1rem;border-top:1px solid rgba(255,255,255,.12)}
+.tb-lbl{font-size:.7rem;color:rgba(255,255,255,.48);margin-bottom:.15rem}
+.tb-dur{font-size:.64rem;color:rgba(255,255,255,.3);margin-bottom:.15rem}
+.tb-val{font-size:1.15rem;font-weight:700;color:var(--white)}
+
+/* Mini cards */
+.mini-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.9rem}
+.mc{background:var(--white);border:1px solid var(--c200);border-radius:var(--r12);padding:.88rem 1rem;box-shadow:var(--sh0)}
+.mc-lbl{font-size:.7rem;color:var(--c400);margin-bottom:.18rem}
+.mc-val{font-size:1.08rem;font-weight:700;color:var(--g700)}
+.mc-note{font-size:.68rem;color:var(--c400);margin-top:.1rem}
 
 /* Progress card */
-.prog-card {
-  background: var(--white);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--r-md);
-  padding: 1.1rem 1.3rem;
-  margin-bottom: 1rem;
-  box-shadow: var(--shadow-xs);
-}
-.prog-card h4    { font-size: .88rem; margin-bottom: .7rem; color: var(--green-800); }
-.prog-row        { margin-bottom: .65rem; }
-.prog-meta       { display: flex; justify-content: space-between; font-size: .78rem; color: var(--gray-600); margin-bottom: .28rem; }
-.prog-track      { background: var(--gray-100); border-radius: 999px; height: 9px; overflow: hidden; }
-.prog-fill       { height: 100%; border-radius: 999px; transition: width 1s var(--ease); }
-.prog-fill.green { background: linear-gradient(90deg, var(--green-500), var(--green-400)); }
-.prog-fill.gold  { background: linear-gradient(90deg, var(--gold-700), var(--gold-500)); }
+.pc{background:var(--white);border:1px solid var(--c200);border-radius:var(--r12);padding:.95rem 1.1rem;margin-bottom:.9rem;box-shadow:var(--sh0)}
+.pc h4{font-size:.84rem;margin-bottom:.7rem;color:var(--g800)}
+.prow{margin-bottom:.58rem}
+.pmeta{display:flex;justify-content:space-between;font-size:.73rem;color:var(--c600);margin-bottom:.22rem}
+.ptrk{background:var(--c100);border-radius:999px;height:8px;overflow:hidden}
+.pfil{height:100%;border-radius:999px;transition:width 1s var(--ease)}
+.pfil.gr{background:linear-gradient(90deg,var(--g500),var(--g400))}
+.pfil.gd{background:linear-gradient(90deg,var(--gd700),var(--gd500))}
 
-/* Breakdown table card */
-.breakdown-card {
-  background: var(--white);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--r-md);
-  padding: 1.1rem 1.3rem;
-  margin-bottom: 1rem;
-  box-shadow: var(--shadow-xs);
-  overflow-x: auto;
-}
-.breakdown-card h4 { font-size: .88rem; margin-bottom: .8rem; color: var(--green-800); }
+/* Breakdown table */
+.bdc{background:var(--white);border:1px solid var(--c200);border-radius:var(--r12);padding:.95rem 1.1rem;margin-bottom:.9rem;box-shadow:var(--sh0);overflow-x:auto}
+.bdc h4{font-size:.84rem;margin-bottom:.75rem;color:var(--g800)}
+.ctbl{width:100%;border-collapse:collapse;font-size:.81rem}
+.ctbl th{background:var(--g100);color:var(--g800);font-weight:700;padding:.5rem .68rem;text-align:right;border-bottom:2px solid var(--g500)}
+.ctbl td{padding:.46rem .68rem;border-bottom:1px solid var(--c100);color:var(--c600)}
+.ctbl td:last-child{text-align:left;color:var(--c900);font-weight:500}
+.ctbl tr.tr-tot td{font-weight:700;color:var(--g800);background:var(--g50);border-top:2px solid var(--g500);border-bottom:none}
+.ctbl tr.tr-tot td:last-child{color:var(--g700)}
 
-.c-table { width: 100%; border-collapse: collapse; font-size: .86rem; }
-.c-table th {
-  background: var(--green-100);
-  color: var(--green-800);
-  font-weight: 700;
-  padding: .55rem .75rem;
-  text-align: right;
-  border-bottom: 2px solid var(--green-500);
-}
-.c-table td {
-  padding: .5rem .75rem;
-  border-bottom: 1px solid var(--gray-100);
-  color: var(--gray-600);
-}
-.c-table td:last-child { text-align: left; color: var(--gray-900); font-weight: 500; }
-.c-table tr.total-row td {
-  font-weight: 700;
-  color: var(--green-800);
-  background: var(--green-50);
-  border-top: 2px solid var(--green-500);
-  border-bottom: none;
-}
-.c-table tr.total-row td:last-child { color: var(--green-700); }
-
-/* Comparison card */
-.comp-card {
-  background: var(--white);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--r-md);
-  padding: 1.1rem 1.3rem;
-  margin-bottom: 1rem;
-  box-shadow: var(--shadow-xs);
-}
-.comp-card h4 { font-size: .88rem; margin-bottom: .8rem; color: var(--green-800); }
-.comp-row {
-  display: flex; gap: .8rem; align-items: stretch; flex-wrap: wrap;
-}
-.comp-box {
-  flex: 1; min-width: 120px;
-  background: var(--gray-50);
-  border: 1.5px solid var(--gray-200);
-  border-radius: var(--r-sm);
-  padding: .8rem;
-  text-align: center;
-}
-.comp-box.highlight { border-color: var(--green-500); background: var(--green-50); }
-.comp-box .c-lbl    { font-size: .72rem; color: var(--gray-400); margin-bottom: .3rem; }
-.comp-box .c-val    { font-size: 1rem; font-weight: 700; color: var(--gray-900); }
-.comp-box .c-note   { font-size: .7rem; color: var(--gray-400); margin-top: .2rem; }
+/* Scenarios */
+.scc{background:var(--white);border:1px solid var(--c200);border-radius:var(--r12);padding:.95rem 1.1rem;margin-bottom:.9rem;box-shadow:var(--sh0)}
+.scc h4{font-size:.84rem;margin-bottom:.75rem;color:var(--g800)}
+.sc-row{display:flex;gap:.6rem;flex-wrap:wrap}
+.scb{flex:1;min-width:90px;background:var(--off);border:1.5px solid var(--c200);border-radius:var(--r8);padding:.65rem;text-align:center}
+.scb.act{border-color:var(--g500);background:var(--g50)}
+.scb-d{font-size:.66rem;color:var(--c400);margin-bottom:.18rem}
+.scb-v{font-size:.93rem;font-weight:700;color:var(--c900)}
+.scb-n{font-size:.63rem;color:var(--c400);margin-top:.1rem}
 
 /* Alerts */
-.plan-alert {
-  border-radius: var(--r-sm);
-  padding: .85rem 1rem;
-  font-size: .88rem;
-  font-weight: 600;
-  display: none;
-  margin-bottom: 1rem;
-  align-items: flex-start;
-  gap: .5rem;
-}
-.plan-alert.visible       { display: flex; }
-.plan-alert.red           { background: var(--red-100); color: var(--red-600); border: 1.5px solid #f1948a; }
-.plan-alert.amber         { background: var(--amber-100); color: var(--amber-600); border: 1.5px solid #f8c471; }
-.plan-alert.green-ok      { background: var(--green-100); color: var(--green-700); border: 1.5px solid var(--green-400); }
-.plan-alert .alert-icon   { font-size: 1rem; flex-shrink: 0; line-height: 1.5; }
+.pal{border-radius:var(--r8);padding:.8rem .95rem;font-size:.84rem;font-weight:600;display:none;margin-bottom:.9rem;align-items:flex-start;gap:.45rem}
+.pal.show{display:flex}
+.al-r{background:var(--r100);color:var(--r600);border:1.5px solid #f1948a}
+.al-a{background:var(--a100);color:var(--a700);border:1.5px solid #f8c471}
+.al-g{background:var(--g100);color:var(--g700);border:1.5px solid var(--g400)}
+.ai{font-size:.92rem;flex-shrink:0;line-height:1.6}
+
+/* ================================================================
+   WHATIF SIMULATOR
+================================================================ */
+.whatif-wrap{background:var(--white);border:1px solid var(--c200);border-radius:var(--r16);padding:1.5rem;box-shadow:var(--sh1);margin-top:1rem}
+.whatif-wrap h4{font-size:.9rem;color:var(--g800);margin-bottom:1rem;display:flex;align-items:center;gap:.4rem}
+.wi-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1rem}
+@media(max-width:600px){.wi-grid{grid-template-columns:1fr 1fr}}
+.wi-box{background:var(--off);border:1.5px solid var(--c200);border-radius:var(--r8);padding:.8rem;text-align:center;cursor:pointer;transition:all var(--t) var(--ease);user-select:none}
+.wi-box:hover{border-color:var(--g400);background:var(--g50)}
+.wi-box.sel{border-color:var(--g500);background:var(--g100)}
+.wi-ico{font-size:1.3rem;display:block;margin-bottom:.3rem}
+.wi-lbl{font-size:.75rem;font-weight:700;color:var(--g800);margin-bottom:.15rem}
+.wi-sub{font-size:.68rem;color:var(--c400)}
+.wi-result{background:var(--g50);border:1.5px solid var(--g400);border-radius:var(--r8);padding:.9rem 1rem;font-size:.84rem;color:var(--c600);display:none;animation:fadeUp .25s var(--ease)}
+.wi-result.show{display:block}
+.wi-result strong{color:var(--g700)}
+
+/* ================================================================
+   TIMELINE PLANNER — THE STAR FEATURE
+================================================================ */
+#timeline{background:linear-gradient(180deg,var(--g50) 0%,var(--white) 100%)}
+
+.tl-controls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem}
+.tl-date-input{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.tl-date-input label{font-size:.84rem;font-weight:700;color:var(--g800);white-space:nowrap;margin:0}
+.tl-date-input input{padding:.55rem .85rem;border:1.5px solid var(--c200);border-radius:var(--r8);font-family:inherit;font-size:.9rem;outline:none;width:auto;direction:ltr;transition:border-color var(--t) var(--ease)}
+.tl-date-input input:focus{border-color:var(--g500)}
+
+.tl-summary{display:flex;gap:1.2rem;flex-wrap:wrap}
+.tls-box{background:var(--white);border:1px solid var(--c200);border-radius:var(--r12);padding:.75rem 1.1rem;text-align:center;min-width:110px;box-shadow:var(--sh0)}
+.tls-n{font-size:1.4rem;font-weight:700;color:var(--g600);display:block;line-height:1}
+.tls-l{font-size:.68rem;color:var(--c400);margin-top:.15rem}
+
+/* Timeline progress bar */
+.tl-master-prog{background:var(--white);border:1px solid var(--c200);border-radius:var(--r12);padding:1.1rem 1.3rem;margin-bottom:1.5rem;box-shadow:var(--sh0)}
+.tlmp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.55rem;flex-wrap:wrap;gap:.5rem}
+.tlmp-top h4{font-size:.88rem;color:var(--g800)}
+.tlmp-pct{font-size:1.6rem;font-weight:700;color:var(--g600)}
+.tlmp-trk{background:var(--c100);border-radius:999px;height:12px;overflow:hidden}
+.tlmp-fil{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--g500),var(--g400));transition:width 1s var(--ease)}
+
+/* Task cards */
+.tl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.1rem}
+@media(max-width:780px){.tl-grid{grid-template-columns:1fr}}
+
+.task-card{background:var(--white);border:1.5px solid var(--c200);border-radius:var(--r16);overflow:hidden;box-shadow:var(--sh0);transition:all var(--t) var(--ease)}
+.task-card:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
+.task-card.done{border-color:var(--g400);background:linear-gradient(135deg,var(--white),var(--g50))}
+.task-card.urgent{border-color:#e74c3c;animation:pulse 2s infinite}
+.task-card.warn{border-color:var(--gd500)}
+
+@keyframes pulse{0%,100%{box-shadow:var(--sh0)}50%{box-shadow:0 0 0 3px rgba(231,76,60,.18)}}
+
+.tc-head{padding:.9rem 1.1rem;display:flex;align-items:center;gap:.8rem;border-bottom:1px solid var(--c100)}
+.tc-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0}
+.tci-g{background:var(--g100)}
+.tci-gd{background:var(--gd100)}
+.tci-b{background:#eaf4fb}
+.tci-p{background:#f5eef8}
+.tci-r{background:#fdecea}
+.tci-o{background:#fff3e0}
+
+.tc-info{flex:1}
+.tc-title{font-size:.92rem;font-weight:700;color:var(--g800);margin-bottom:.1rem}
+.tc-sub{font-size:.73rem;color:var(--c400)}
+
+.tc-status{flex-shrink:0;text-align:left}
+.status-badge{font-size:.68rem;font-weight:700;padding:.18rem .6rem;border-radius:20px;display:inline-block}
+.sb-done{background:var(--g100);color:var(--g700)}
+.sb-urgent{background:var(--r100);color:var(--r600)}
+.sb-warn{background:var(--gd100);color:var(--gd700)}
+.sb-ok{background:var(--c100);color:var(--c600)}
+.sb-pending{background:var(--c100);color:var(--c400)}
+
+.tc-body{padding:.85rem 1.1rem}
+.tc-timeline{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;flex-wrap:wrap;gap:.4rem}
+.tc-when{font-size:.76rem;color:var(--c600)}
+.tc-when strong{color:var(--g700)}
+.tc-days-left{font-size:.76rem;font-weight:700;padding:.15rem .55rem;border-radius:6px}
+.dl-ok{background:var(--g100);color:var(--g700)}
+.dl-warn{background:var(--gd100);color:var(--gd700)}
+.dl-urgent{background:var(--r100);color:var(--r600)}
+.dl-done{background:var(--g100);color:var(--g600)}
+
+.tc-prog-wrap{margin-bottom:.7rem}
+.tc-prog-trk{background:var(--c100);border-radius:999px;height:7px;overflow:hidden}
+.tc-prog-fil{height:100%;border-radius:999px;transition:width .8s var(--ease)}
+.tpf-done{background:var(--g500)}
+.tpf-warn{background:var(--gd500)}
+.tpf-urgent{background:#e74c3c}
+.tpf-ok{background:var(--g400)}
+
+.tc-price{font-size:.78rem;color:var(--c600);margin-bottom:.7rem}
+.tc-price strong{color:var(--g700);font-size:.85rem}
+
+.tc-actions{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.chk-btn{flex:1;padding:.45rem .7rem;border:1.5px solid var(--g500);background:transparent;color:var(--g700);border-radius:var(--r8);font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;transition:all var(--t) var(--ease);display:flex;align-items:center;justify-content:center;gap:.35rem}
+.chk-btn:hover{background:var(--g500);color:var(--white)}
+.chk-btn.done-btn{background:var(--g500);color:var(--white);border-color:var(--g500);cursor:default}
+.notif-btn{padding:.45rem .7rem;background:var(--off);border:1.5px solid var(--c200);border-radius:var(--r8);font-family:inherit;font-size:.78rem;cursor:pointer;transition:all var(--t) var(--ease);color:var(--c600)}
+.notif-btn:hover{border-color:var(--gd500);color:var(--gd700);background:var(--gd50)}
+.notif-btn.active{background:var(--gd50);border-color:var(--gd500);color:var(--gd700)}
+
+/* Alert banner */
+.tl-alert-bar{background:linear-gradient(90deg,#fdf3e7,var(--gd50));border:1.5px solid var(--gd500);border-radius:var(--r12);padding:.9rem 1.1rem;margin-bottom:1.5rem;display:none;animation:fadeUp .3s var(--ease)}
+.tl-alert-bar.show{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.tab-icon{font-size:1.3rem;flex-shrink:0}
+.tab-text{font-size:.84rem;color:var(--a700);flex:1}
+.tab-text strong{color:var(--gd800)}
+
+/* ================================================================
+   MADINAH BOOKING
+================================================================ */
+.booking-banner{background:linear-gradient(135deg,var(--g900),var(--g800) 60%,var(--gd800));border-radius:var(--r24);padding:2.4rem 2rem;color:var(--white);text-align:center;margin-bottom:2.5rem;position:relative;overflow:hidden}
+.booking-banner::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
+.booking-banner h2{color:var(--white);margin-bottom:.55rem;position:relative;z-index:1}
+.booking-banner p{color:rgba(255,255,255,.7);position:relative;z-index:1;max-width:540px;margin:0 auto}
+.excl-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(201,168,76,.22);border:1px solid rgba(201,168,76,.45);color:var(--gd300);font-size:.74rem;font-weight:700;padding:.25rem .85rem;border-radius:20px;margin-bottom:.9rem;position:relative;z-index:1}
+
+.svc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.4rem;margin-bottom:2.5rem}
+@media(max-width:740px){.svc-grid{grid-template-columns:1fr}}
+
+.svc-card{background:var(--white);border:1.5px solid var(--c200);border-radius:var(--r24);overflow:hidden;box-shadow:var(--sh1);display:flex;flex-direction:column;transition:all var(--t) var(--ease)}
+.svc-card:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
+.svc-hd{padding:1.3rem 1.4rem .9rem;display:flex;align-items:flex-start;gap:.9rem;border-bottom:1px solid var(--c100)}
+.svc-iw{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0}
+.svc-t{font-size:.97rem;font-weight:700;color:var(--g800);margin-bottom:.15rem}
+.svc-d{font-size:.78rem;color:var(--c600);line-height:1.5}
+.svc-bd{padding:.95rem 1.4rem;flex:1}
+.svc-pr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.4rem}
+.svc-p{font-size:1.25rem;font-weight:700;color:var(--g600)}
+.svc-p span{font-size:.78rem;font-weight:400;color:var(--c400)}
+.svc-tim{display:inline-flex;align-items:center;gap:.28rem;background:var(--gd100);color:var(--gd700);font-size:.7rem;font-weight:600;padding:.18rem .6rem;border-radius:6px}
+.svc-opts{list-style:none;margin-bottom:.85rem}
+.svc-opts li{font-size:.78rem;color:var(--c600);padding:.26rem 0;border-bottom:1px solid var(--c100);display:flex;align-items:center;gap:.38rem}
+.svc-opts li::before{content:'✓';color:var(--g500);font-weight:700;flex-shrink:0}
+.svc-tl{background:var(--off);border-radius:var(--r8);padding:.6rem .8rem;margin-bottom:.85rem;font-size:.74rem;color:var(--c600);display:flex;align-items:flex-start;gap:.35rem}
+.svc-tl strong{color:var(--g700)}
+.svc-ft{padding:.9rem 1.4rem;border-top:1px solid var(--c100)}
+.book-btn{width:100%;padding:.62rem;border-radius:var(--r8);font-family:inherit;font-size:.83rem;font-weight:700;cursor:pointer;border:2px solid var(--g800);background:transparent;color:var(--g800);display:flex;align-items:center;justify-content:center;gap:.38rem;transition:all var(--t) var(--ease)}
+.book-btn:hover{background:var(--g800);color:var(--white)}
+.book-btn.booked{background:var(--g500);border-color:var(--g500);color:var(--white);cursor:default}
+
+/* Timeline summary strip in booking section */
+.tl-booking-strip{background:var(--white);border:1px solid var(--c200);border-radius:var(--r16);padding:1.5rem;box-shadow:var(--sh1)}
+.tl-booking-strip h3{margin-bottom:1.1rem;display:flex;align-items:center;gap:.5rem}
+.strip-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.85rem}
+.strip-item{background:var(--off);border-radius:var(--r8);padding:.85rem;border-right:3px solid var(--c300)}
+.strip-item.c1{border-color:var(--g500)}
+.strip-item.c2{border-color:var(--gd500)}
+.strip-item.c3{border-color:var(--g400)}
+.strip-item.c4{border-color:var(--c300)}
+.si-t{font-size:.82rem;font-weight:700;color:var(--g700);margin-bottom:.22rem}
+.si-d{font-size:.76rem;color:var(--c600)}
 
 /* ================================================================
    PACKAGES
 ================================================================ */
-.pkg-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
-@media (max-width: 860px) { .pkg-grid { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 520px) { .pkg-grid { grid-template-columns: 1fr; } }
+.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+@media(max-width:840px){.pkg-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.pkg-grid{grid-template-columns:1fr}}
 
-.pkg-card {
-  background: var(--white);
-  border: 2px solid var(--gray-200);
-  border-radius: var(--r-xl);
-  padding: 2rem 1.5rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all var(--dur) var(--ease);
-  position: relative;
-}
-
-.pkg-card::before {
-  content: '';
-  position: absolute; top: 0; right: 0; left: 0; height: 4px;
-  border-radius: var(--r-xl) var(--r-xl) 0 0;
-  background: var(--gray-200);
-  transition: background var(--dur) var(--ease);
-}
-.pkg-card.basic::before   { background: var(--green-500); }
-.pkg-card.premium::before { background: var(--gold-500); }
-.pkg-card.vip::before     { background: linear-gradient(90deg, var(--gold-500), var(--green-500)); }
-.pkg-card:hover           { box-shadow: var(--shadow-md); transform: translateY(-4px); border-color: var(--green-400); }
-.pkg-card.selected        { border-color: var(--green-600); box-shadow: 0 0 0 3px rgba(29,165,116,.18), var(--shadow-md); }
-
-.popular-tag {
-  position: absolute; top: -.75rem; left: 50%; transform: translateX(-50%);
-  background: var(--gold-500);
-  color: var(--green-900);
-  font-size: .7rem; font-weight: 700;
-  padding: .18rem .8rem;
-  border-radius: 20px;
-  white-space: nowrap;
-  display: none;
-}
-.pkg-card.premium .popular-tag { display: inline-block; }
-
-.pkg-icon  { font-size: 1.9rem; margin-bottom: .8rem; }
-.pkg-name  { font-size: 1.05rem; font-weight: 700; color: var(--green-800); margin-bottom: .35rem; }
-.pkg-price { font-size: 2.2rem; font-weight: 700; color: var(--green-600); line-height: 1; margin-bottom: .2rem; }
-.pkg-price span { font-size: .9rem; font-weight: 400; color: var(--gray-400); }
-.pkg-sub   { font-size: .8rem; color: var(--gray-400); margin-bottom: 1.1rem; }
-
-.pkg-features { list-style: none; text-align: right; margin-bottom: 1.4rem; }
-.pkg-features li {
-  font-size: .82rem; color: var(--gray-600);
-  padding: .28rem 0;
-  border-bottom: 1px solid var(--gray-100);
-  display: flex; align-items: center; gap: .45rem;
-}
-.pkg-features li::before { content: '✓'; color: var(--green-500); font-weight: 700; flex-shrink: 0; }
-
-.btn-pkg {
-  width: 100%;
-  padding: .65rem;
-  border: 2px solid var(--green-800);
-  background: transparent;
-  color: var(--green-800);
-  border-radius: var(--r-sm);
-  font-family: inherit;
-  font-size: .88rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all var(--dur) var(--ease);
-}
-.btn-pkg:hover    { background: var(--green-800); color: var(--white); }
-.btn-pkg.btn-gold { border-color: var(--gold-500); color: var(--gold-700); }
-.btn-pkg.btn-gold:hover { background: var(--gold-500); color: var(--green-900); }
-
-.pkg-detail-box {
-  background: var(--green-50);
-  border: 1.5px solid var(--green-400);
-  border-radius: var(--r-md);
-  padding: 1.2rem 1.4rem;
-  margin-top: 1.5rem;
-  display: none;
-  animation: fadeUp .3s var(--ease);
-}
-.pkg-detail-box.visible { display: block; }
-.pkg-detail-box h4      { color: var(--green-800); margin-bottom: .4rem; }
-.pkg-detail-box p       { font-size: .85rem; }
+.pkg{background:var(--white);border:2px solid var(--c200);border-radius:var(--r24);padding:1.9rem 1.4rem;text-align:center;cursor:pointer;transition:all var(--t) var(--ease);position:relative;overflow:hidden}
+.pkg::after{content:'';position:absolute;top:0;right:0;left:0;height:4px;border-radius:var(--r24) var(--r24) 0 0}
+.pkg.basic::after{background:var(--g500)}
+.pkg.prem::after{background:var(--gd500)}
+.pkg.vip::after{background:linear-gradient(90deg,var(--gd500),var(--g500))}
+.pkg:hover{box-shadow:var(--sh2);transform:translateY(-4px);border-color:var(--g300)}
+.pkg.sel{border-color:var(--g600);box-shadow:0 0 0 3px rgba(29,165,116,.18),var(--sh2)}
+.pkg-pop{position:absolute;top:-.72rem;left:50%;transform:translateX(-50%);background:var(--gd500);color:var(--g900);font-size:.66rem;font-weight:700;padding:.16rem .75rem;border-radius:20px;white-space:nowrap;display:none}
+.pkg.prem .pkg-pop{display:inline-block}
+.pkg-ico{font-size:1.9rem;margin-bottom:.72rem}
+.pkg-name{font-size:1rem;font-weight:700;color:var(--g800);margin-bottom:.35rem}
+.pkg-pr{font-size:2.1rem;font-weight:700;color:var(--g600);line-height:1;margin-bottom:.18rem}
+.pkg-pr span{font-size:.85rem;font-weight:400;color:var(--c400)}
+.pkg-sub{font-size:.75rem;color:var(--c400);margin-bottom:1.1rem}
+.pkg-feats{list-style:none;text-align:right;margin-bottom:1.3rem}
+.pkg-feats li{font-size:.78rem;color:var(--c600);padding:.25rem 0;border-bottom:1px solid var(--c100);display:flex;align-items:center;gap:.4rem}
+.pkg-feats li::before{content:'✓';color:var(--g500);font-weight:700;flex-shrink:0}
+.pkg-feats li.no::before{content:'✗';color:var(--c300)}
+.pkg-feats li.no{color:var(--c300)}
+.pkg-btn{width:100%;padding:.6rem;border-radius:var(--r8);font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:2px solid var(--g800);background:transparent;color:var(--g800);transition:all var(--t) var(--ease)}
+.pkg-btn:hover{background:var(--g800);color:var(--white)}
+.pkg-btn.gd{border-color:var(--gd500);color:var(--gd700)}
+.pkg-btn.gd:hover{background:var(--gd500);color:var(--g900)}
+.pkg-detail{background:var(--g50);border:1.5px solid var(--g400);border-radius:var(--r12);padding:1.1rem 1.3rem;margin-top:1.4rem;display:none;animation:fadeUp .3s var(--ease)}
+.pkg-detail.show{display:block}
+.pkg-detail h4{color:var(--g800);margin-bottom:.35rem}
+.pkg-detail p{font-size:.83rem}
 
 /* ================================================================
    VENDORS
 ================================================================ */
-.vendor-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.25rem; }
-@media (max-width: 900px) { .vendor-grid { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 500px) { .vendor-grid { grid-template-columns: 1fr; } }
-
-.vendor-card {
-  background: var(--white);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--r-lg);
-  padding: 1.5rem 1.2rem;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  transition: all var(--dur) var(--ease);
-}
-.vendor-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
-.vendor-card::after {
-  content: '';
-  position: absolute; bottom: 0; right: 0; left: 0; height: 3px;
-  opacity: 0; transition: opacity var(--dur) var(--ease);
-}
-.vendor-card:nth-child(1)::after { background: var(--green-500); }
-.vendor-card:nth-child(2)::after { background: var(--gold-500); }
-.vendor-card:nth-child(3)::after { background: #2980b9; }
-.vendor-card:nth-child(4)::after { background: #8e44ad; }
-.vendor-card:hover::after { opacity: 1; }
-
-.v-icon {
-  width: 52px; height: 52px;
-  border-radius: 14px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.4rem;
-  margin: 0 auto .9rem;
-}
-.vi-1 { background: var(--green-100); }
-.vi-2 { background: var(--gold-100); }
-.vi-3 { background: #eaf4fb; }
-.vi-4 { background: #f5eef8; }
-
-.v-pct  { font-size: 1.9rem; font-weight: 700; color: var(--green-600); line-height: 1; display: block; margin-bottom: .25rem; }
-.v-name { font-size: .9rem; font-weight: 700; color: var(--gray-900); margin-bottom: .2rem; }
-.v-desc { font-size: .78rem; color: var(--gray-400); }
-.v-badge {
-  display: inline-block;
-  background: var(--green-100); color: var(--green-700);
-  font-size: .7rem; font-weight: 700;
-  padding: .14rem .55rem;
-  border-radius: 20px; margin-top: .45rem;
-}
+.v-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem}
+@media(max-width:860px){.v-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.v-grid{grid-template-columns:1fr}}
+.vc{background:var(--white);border:1px solid var(--c200);border-radius:var(--r16);padding:1.3rem 1.1rem;text-align:center;transition:all var(--t) var(--ease);position:relative;overflow:hidden}
+.vc:hover{box-shadow:var(--sh2);transform:translateY(-3px)}
+.vc::after{content:'';position:absolute;bottom:0;right:0;left:0;height:3px;opacity:0;transition:opacity var(--t) var(--ease)}
+.vc:nth-child(1)::after{background:var(--g500)}
+.vc:nth-child(2)::after{background:var(--gd500)}
+.vc:nth-child(3)::after{background:#2980b9}
+.vc:nth-child(4)::after{background:#8e44ad}
+.vc:hover::after{opacity:1}
+.vi{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin:0 auto .8rem}
+.vi1{background:var(--g100)} .vi2{background:var(--gd100)}
+.vi3{background:#eaf4fb}     .vi4{background:#f5eef8}
+.v-pct{font-size:1.85rem;font-weight:700;color:var(--g600);line-height:1;display:block;margin-bottom:.22rem}
+.v-name{font-size:.87rem;font-weight:700;color:var(--c900);margin-bottom:.18rem}
+.v-desc{font-size:.74rem;color:var(--c400)}
+.v-badge{display:inline-block;background:var(--g100);color:var(--g700);font-size:.66rem;font-weight:700;padding:.1rem .52rem;border-radius:20px;margin-top:.38rem}
 
 /* ================================================================
-   BEHAVIORAL SECTION
+   BEHAVIORAL
 ================================================================ */
-.section-dark { background: var(--green-900); color: var(--white); }
+.beh-card{max-width:640px;margin:0 auto;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.11);border-radius:var(--r24);padding:2.1rem;text-align:center}
+.big-pct{font-size:3.8rem;font-weight:700;color:var(--gd300);line-height:1;display:block;margin:.38rem 0}
+.beh-msg{font-size:.96rem;color:rgba(255,255,255,.78);font-style:italic;margin:.85rem 0 1rem;min-height:1.8rem;transition:all var(--t) var(--ease)}
+.beh-trk{background:rgba(255,255,255,.13);border-radius:999px;height:11px;overflow:hidden;margin-bottom:.45rem}
+.beh-fil{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gd500),var(--g500));transition:width 1s var(--ease)}
+.beh-sl{margin-top:1.4rem}
+.beh-sl label{color:rgba(255,255,255,.68);font-size:.83rem;display:block;margin-bottom:.48rem}
+input[type="range"]{-webkit-appearance:none;appearance:none;width:100%;height:5px;background:rgba(255,255,255,.18);border-radius:999px;outline:none;border:none;box-shadow:none;padding:0}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:var(--gd500);border-radius:50%;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.beh-sim{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:var(--r8);padding:.95rem;margin-top:1rem;font-size:.82rem;color:rgba(255,255,255,.72);text-align:right;line-height:1.9}
+.beh-sim strong{color:var(--gd300)}
 
-.beh-card {
-  max-width: 640px;
-  margin: 0 auto;
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: var(--r-xl);
-  padding: 2.2rem;
-  text-align: center;
-}
-
-.big-pct  { font-size: 4rem; font-weight: 700; color: var(--gold-300); line-height: 1; display: block; margin: .4rem 0; }
-.beh-msg  { font-size: 1rem; color: rgba(255,255,255,.8); font-style: italic; margin: .9rem 0 1.1rem; min-height: 1.8rem; transition: all var(--dur) var(--ease); }
-
-.beh-track { background: rgba(255,255,255,.13); border-radius: 999px; height: 12px; overflow: hidden; margin-bottom: .5rem; }
-.beh-fill  { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--gold-500), var(--green-500)); transition: width 1s var(--ease); }
-
-.beh-slider-section { margin-top: 1.5rem; }
-.beh-slider-section label { color: rgba(255,255,255,.7); font-size: .85rem; display: block; margin-bottom: .55rem; }
-
-input[type="range"] {
-  -webkit-appearance: none; appearance: none;
-  width: 100%; height: 5px;
-  background: rgba(255,255,255,.18);
-  border-radius: 999px; outline: none;
-  border: none; box-shadow: none; padding: 0;
-}
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 20px; height: 20px;
-  background: var(--gold-500);
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,.3);
-}
-
-.beh-sim {
-  background: rgba(255,255,255,.05);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: var(--r-sm);
-  padding: 1rem;
-  margin-top: 1.1rem;
-  font-size: .85rem;
-  color: rgba(255,255,255,.75);
-  text-align: right;
-  line-height: 1.8;
-}
-.beh-sim strong { color: var(--gold-300); }
+/* ================================================================
+   MODAL
+================================================================ */
+.moverlay{display:none;position:fixed;inset:0;background:rgba(5,42,30,.6);z-index:500;align-items:center;justify-content:center;padding:1.4rem}
+.moverlay.open{display:flex;animation:mfade .2s var(--ease)}
+@keyframes mfade{from{opacity:0}to{opacity:1}}
+.mbox{background:var(--white);border-radius:var(--r24);padding:1.9rem;max-width:460px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--sh3);animation:mup .22s var(--ease)}
+@keyframes mup{from{transform:translateY(22px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mbox h3{margin-bottom:.45rem}
+.mbox p{font-size:.86rem;margin-bottom:1.1rem}
+.mclose{float:left;background:none;border:none;font-size:1.25rem;cursor:pointer;color:var(--c400);line-height:1;padding:.18rem}
+.mclose:hover{color:var(--c900)}
+.mfg{margin-bottom:.95rem}
+.mfg label{font-size:.81rem;font-weight:700;color:var(--g800);margin-bottom:.32rem;display:block}
+.macts{display:flex;gap:.7rem;margin-top:1.2rem}
+.macts button{flex:1}
+.succ{text-align:center;padding:1.4rem 1rem;display:none}
+.succ.show{display:block;animation:fadeUp .3s var(--ease)}
+.succ .chk{font-size:2.8rem;display:block;margin-bottom:.55rem}
+.succ h3{color:var(--g700);margin-bottom:.38rem}
+.succ p{font-size:.86rem}
 
 /* ================================================================
    FOOTER
 ================================================================ */
-footer {
-  background: var(--green-900);
-  color: rgba(255,255,255,.5);
-  text-align: center;
-  padding: 2rem 1.5rem;
-  font-size: .8rem;
-  border-top: 1px solid rgba(255,255,255,.07);
-}
-footer strong { color: var(--gold-300); }
+footer{background:var(--g950);color:rgba(255,255,255,.42);text-align:center;padding:1.8rem 1.4rem;font-size:.77rem;border-top:1px solid rgba(255,255,255,.06)}
+footer strong{color:var(--gd300)}
 
 /* ================================================================
-   MISC UTILITIES
+   RESPONSIVE
 ================================================================ */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
-  padding: .7rem 1.6rem;
-  border: none; border-radius: var(--r-sm);
-  font-family: inherit; font-size: .95rem; font-weight: 700;
-  cursor: pointer; text-decoration: none;
-  transition: all var(--dur) var(--ease);
-}
-.btn-primary { background: var(--green-800); color: var(--white); box-shadow: 0 4px 14px rgba(10,61,46,.25); }
-.btn-primary:hover { background: var(--green-700); transform: translateY(-1px); }
-.btn-gold    { background: var(--gold-500); color: var(--green-900); }
-.btn-gold:hover { background: var(--gold-300); }
-
-::-moz-selection { background: var(--green-100); }
-::selection       { background: var(--green-100); }
-
-@media (max-width: 480px) {
-  .section { padding: 3rem 0; }
-  .form-panel { padding: 1.4rem; }
+@media(max-width:480px){
+  .sec{padding:3.2rem 0}
+  .fpanel{padding:1.3rem}
+  .tot-card{padding:1.3rem}
+  .tc-bot{grid-template-columns:1fr}
+  .mini-row{grid-template-columns:1fr}
+  .cg{grid-template-columns:1fr}
+  .wi-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 
-<!-- ============================================================
+<!-- ================================================================
      HEADER
-============================================================ -->
+================================================================ -->
 <header>
   <nav>
     <a href="#" class="logo">
       <div class="logo-mark">💍</div>
       <div>
-        <span class="logo-title">خطة زواجي</span>
-        <span class="logo-sub">Wedding Cost Engine™</span>
+        <span class="logo-t">خطة زواجي</span>
+        <span class="logo-s">المنصة المتكاملة لإدارة الزواج</span>
       </div>
     </a>
     <div class="nav-links">
       <a href="#calculator">الحاسبة</a>
+      <a href="#timeline">الجدول الزمني</a>
+      <a href="#madinah">المدينة المنورة</a>
       <a href="#packages">الباقات</a>
       <a href="#vendors">الموردون</a>
-      <a href="#behavioral">التحفيز</a>
-      <a href="#packages" class="btn-cta">ابدأ مجاناً</a>
+      <a href="#timeline" class="nav-cta">🗓️ جدولتي</a>
     </div>
   </nav>
 </header>
 
-<!-- ============================================================
+<!-- ================================================================
      HERO
-============================================================ -->
+================================================================ -->
 <section class="hero">
-  <div class="hero-inner">
-    <div class="hero-engine-tag">⚙️ Wedding Cost Engine™</div>
-    <span class="hero-badge">🇸🇦 مُعتمَد على بيانات السوق السعودي</span>
-    <h1>خطط زواجك بمحرك حساب ذكي</h1>
+  <div class="hero-in">
+    <div class="h-badge">⚙️ Wedding Cost Engine™ + Timeline Planner — الإصدار 4</div>
+    <h1>المنصة المتكاملة<br>لإدارة زواجك بذكاء</h1>
     <p class="lead">
-      نظام احترافي يحسب تكلفة زواجك بدقة مبنية على معاملات مدن سعودية حقيقية،
-      ويُخرج لك خطة ادخار واقعية مع تحليل مالي متكامل.
+      احسب تكاليفك بدقة، خطط جدولك الزمني التفاعلي، احجز خدمات المدينة المنورة —
+      كل شيء في منصة واحدة.
     </p>
-    <a href="#calculator" class="btn btn-gold">🧮 احسب خطتك الآن</a>
+    <div class="hero-pills">
+      <span class="hpill">⚙️ Wedding Cost Engine</span>
+      <span class="hpill">🗓️ Timeline Planner</span>
+      <span class="hpill">📍 المدينة المنورة</span>
+      <span class="hpill">🎭 محاكاة "ماذا لو"</span>
+      <span class="hpill">🔔 تنبيهات ذكية</span>
+    </div>
+    <div style="display:flex;justify-content:center;gap:.8rem;flex-wrap:wrap">
+      <a href="#calculator" class="btn btn-g">🧮 احسب التكاليف</a>
+      <a href="#timeline" class="btn btn-o" style="border-color:rgba(255,255,255,.5);color:rgba(255,255,255,.85)">🗓️ الجدول الزمني</a>
+    </div>
     <div class="hero-stats">
-      <div class="hero-stat"><span class="num">8</span><span class="lbl">مدن بمعاملات خاصة</span></div>
-      <div class="hero-stat"><span class="num">±8%</span><span class="lbl">نطاق سعري دقيق</span></div>
-      <div class="hero-stat"><span class="num">6</span><span class="lbl">مكونات مستقلة</span></div>
-      <div class="hero-stat"><span class="num">3</span><span class="lbl">سيناريوهات مقارنة</span></div>
+      <div><span class="hs-num">8</span><span class="hs-lbl">مدن بمعاملات خاصة</span></div>
+      <div><span class="hs-num">11</span><span class="hs-lbl">مهمة في الجدول</span></div>
+      <div><span class="hs-num">6</span><span class="hs-lbl">محاكاة "ماذا لو"</span></div>
+      <div><span class="hs-num">4</span><span class="hs-lbl">خدمات حجز بالمدينة</span></div>
     </div>
   </div>
 </section>
 
-<!-- ============================================================
+<!-- ================================================================
      CALCULATOR SECTION
-============================================================ -->
-<section id="calculator" class="section section-w">
-  <div class="container">
-    <div class="s-header">
-      <span class="s-tag">🧮 محرك الحساب</span>
-      <h2>احسب تكلفة زواجك</h2>
-      <p>كل مكوّن يُحسب بشكل مستقل عبر معاملات مدن مرجعية موثّقة.</p>
+================================================================ -->
+<section id="calculator" class="sec sec-w">
+  <div class="wrap">
+    <div class="sh">
+      <span class="stag">⚙️ Wedding Cost Engine</span>
+      <h2>احسب تكلفة زواجك بدقة</h2>
+      <p>كل مكوّن يُحسب بمعامل مدينتك مع هامش أمان 10% ونطاق سعري ±8%.</p>
     </div>
 
     <div class="calc-grid">
 
-      <!-- ======== INPUT FORM ======== -->
-      <div class="form-panel">
+      <!-- ══ FORM ══ -->
+      <div class="fpanel">
         <h3>📋 بيانات الخطة</h3>
 
-        <!-- City -->
-        <div class="form-group">
+        <div class="fg">
           <label for="city">🏙️ المدينة</label>
           <select id="city" onchange="onCityChange()">
             <option value="riyadh">الرياض</option>
             <option value="jeddah">جدة</option>
             <option value="dammam">الدمام</option>
-            <option value="madinah">المدينة المنورة</option>
+            <option value="madinah" selected>المدينة المنورة</option>
             <option value="makkah">مكة المكرمة</option>
             <option value="abha">أبها</option>
             <option value="qassim">القصيم</option>
@@ -843,786 +580,1150 @@ footer strong { color: var(--gold-300); }
           </select>
         </div>
 
-        <!-- Party Type -->
-        <div class="form-group">
+        <div class="fg">
           <label>🎉 نوع الحفل</label>
-          <div class="radio-row">
-            <div class="radio-pill">
-              <input type="radio" name="party" id="p-eco" value="economy">
-              <label for="p-eco">اقتصادي</label>
-            </div>
-            <div class="radio-pill">
-              <input type="radio" name="party" id="p-med" value="medium" checked>
-              <label for="p-med">متوسط</label>
-            </div>
-            <div class="radio-pill">
-              <input type="radio" name="party" id="p-lux" value="luxury">
-              <label for="p-lux">فاخر</label>
-            </div>
+          <div class="rrow">
+            <div class="rpill"><input type="radio" name="party" id="p-e" value="economy"><label for="p-e">اقتصادي</label></div>
+            <div class="rpill"><input type="radio" name="party" id="p-m" value="medium" checked><label for="p-m">متوسط</label></div>
+            <div class="rpill"><input type="radio" name="party" id="p-l" value="luxury"><label for="p-l">فاخر</label></div>
           </div>
         </div>
 
-        <!-- Guests -->
-        <div class="form-group">
+        <div class="fg">
           <label for="guests">👥 عدد المدعوين</label>
-          <input type="number" id="guests" min="20" max="3000" value="300" placeholder="مثال: 300">
+          <input type="number" id="guests" min="20" max="3000" value="300">
           <span class="note">بين 20 و3000 ضيف</span>
         </div>
 
-        <!-- Housing -->
-        <div class="form-group">
-          <label>🏠 سكن مستقل بعد الزواج؟</label>
-          <div class="radio-row">
-            <div class="radio-pill">
-              <input type="radio" name="housing" id="h-yes" value="yes">
-              <label for="h-yes">نعم</label>
-            </div>
-            <div class="radio-pill">
-              <input type="radio" name="housing" id="h-no" value="no" checked>
-              <label for="h-no">لا</label>
-            </div>
+        <div class="fg">
+          <label>✅ العناصر الإضافية</label>
+          <div class="cg">
+            <div class="ci"><input type="checkbox" id="el-h" value="housing"><label for="el-h"><span class="cie">🏠</span>سكن مستقل</label></div>
+            <div class="ci"><input type="checkbox" id="el-p" value="photo" checked><label for="el-p"><span class="cie">📸</span>التصوير</label></div>
+            <div class="ci"><input type="checkbox" id="el-g" value="gold" checked><label for="el-g"><span class="cie">💍</span>الشبكة/الذهب</label></div>
+            <div class="ci"><input type="checkbox" id="el-d" value="decor"><label for="el-d"><span class="cie">🌸</span>الزينة والديكور</label></div>
           </div>
         </div>
 
-        <hr class="form-divider">
+        <hr class="fd">
 
-        <!-- Mahr -->
-        <div class="form-group">
+        <div class="fg">
           <label for="mahr">💍 قيمة الشبكة (ريال)</label>
-          <input type="number" id="mahr" min="0" value="25000" placeholder="مثال: 25000">
+          <input type="number" id="mahr" min="0" value="22000">
         </div>
 
-        <!-- Income -->
-        <div class="form-group">
-          <label for="income">💰 الدخل الشهري (ريال) — اختياري</label>
+        <div class="fg">
+          <label for="msav">💰 مدخراتك / شهر (ريال)</label>
+          <input type="number" id="msav" min="0" value="2000">
+          <span class="note">لمقارنة سيناريو 24 شهراً</span>
+        </div>
+
+        <div class="fg">
+          <label for="income">🏦 الدخل الشهري — اختياري</label>
           <input type="number" id="income" min="0" placeholder="مثال: 12000">
-          <span class="note">لتقييم واقعية الخطة فقط</span>
         </div>
 
-        <!-- Duration -->
-        <div class="form-group">
-          <label>⏳ مدة الادخار المستهدفة</label>
-          <div class="radio-row">
-            <div class="radio-pill">
-              <input type="radio" name="duration" id="d-12" value="12">
-              <label for="d-12">12 شهر</label>
-            </div>
-            <div class="radio-pill">
-              <input type="radio" name="duration" id="d-18" value="18" checked>
-              <label for="d-18">18 شهر</label>
-            </div>
-            <div class="radio-pill">
-              <input type="radio" name="duration" id="d-24" value="24">
-              <label for="d-24">24 شهر</label>
-            </div>
-            <div class="radio-pill">
-              <input type="radio" name="duration" id="d-36" value="36">
-              <label for="d-36">36 شهر</label>
-            </div>
+        <div class="fg">
+          <label>⏳ مدة الادخار</label>
+          <div class="rrow">
+            <div class="rpill"><input type="radio" name="dur" id="d12" value="12"><label for="d12">12</label></div>
+            <div class="rpill"><input type="radio" name="dur" id="d18" value="18" checked><label for="d18">18</label></div>
+            <div class="rpill"><input type="radio" name="dur" id="d24" value="24"><label for="d24">24</label></div>
+            <div class="rpill"><input type="radio" name="dur" id="d36" value="36"><label for="d36">36</label></div>
           </div>
         </div>
 
-        <button class="btn-calc" onclick="runEngine()">
-          ⚙️ تشغيل محرك الحساب
-        </button>
+        <button class="btn-calc" onclick="runEngine()">⚙️ تشغيل محرك الحساب</button>
       </div>
 
-      <!-- ======== RESULTS AREA ======== -->
+      <!-- ══ RESULTS ══ -->
       <div id="resultsArea">
-        <div id="placeholder" class="results-placeholder">
-          <span class="icon">⚙️</span>
-          <h4>Wedding Cost Engine</h4>
-          <p>أدخل بياناتك واضغط "تشغيل محرك الحساب"<br>لتظهر نتائجك هنا بشكل تفصيلي</p>
+        <div id="rph" class="rph">
+          <span class="ico">⚙️</span>
+          <h4>Wedding Cost Engine™</h4>
+          <p>أدخل بياناتك واضغط "تشغيل محرك الحساب"</p>
         </div>
 
-        <div id="resultsPanel" class="results-panel">
-
-          <!-- City Index Strip -->
-          <div class="city-index-strip" id="cityIndexStrip">
-            <div>
-              <div class="label">مؤشر تكلفة الزواج</div>
-              <div class="val" id="ciCity">—</div>
-            </div>
-            <div class="ci-divider"></div>
-            <div>
-              <div class="label">معامل المدينة</div>
-              <div class="val" id="ciMultiplier">—</div>
-            </div>
-            <div class="ci-divider"></div>
-            <div>
-              <div class="label">المرجع</div>
-              <div class="ref">الرياض = 1.00</div>
-            </div>
+        <div id="rpanel" class="rpanel">
+          <!-- City strip -->
+          <div class="cstrip">
+            <div><div class="cs-lbl">مؤشر التكلفة</div><div class="cs-val" id="rc-city">—</div></div>
+            <div class="cs-div"></div>
+            <div><div class="cs-lbl">معامل المدينة</div><div class="cs-val" id="rc-mul">—</div></div>
+            <div class="cs-div"></div>
+            <div><div class="cs-lbl">نوع الحفل</div><div class="cs-val" id="rc-party">—</div></div>
           </div>
 
-          <!-- Plan Alerts -->
-          <div class="plan-alert red" id="alertRed">
-            <span class="alert-icon">🔴</span>
-            <span id="alertRedText"></span>
-          </div>
-          <div class="plan-alert amber" id="alertAmber">
-            <span class="alert-icon">🟡</span>
-            <span id="alertAmberText"></span>
-          </div>
-          <div class="plan-alert green-ok" id="alertGreen">
-            <span class="alert-icon">🟢</span>
-            <span id="alertGreenText"></span>
-          </div>
+          <!-- Alerts -->
+          <div class="pal al-r" id="al-r"><span class="ai">🔴</span><span id="al-r-t"></span></div>
+          <div class="pal al-a" id="al-a"><span class="ai">🟡</span><span id="al-a-t"></span></div>
+          <div class="pal al-g" id="al-g"><span class="ai">🟢</span><span id="al-g-t"></span></div>
 
-          <!-- Total Hero Card -->
-          <div class="total-card">
-            <div class="card-label">إجمالي تكلفة الزواج المقدّرة (شامل هامش 10%)</div>
-            <span class="total-amt" id="resTotal">—</span>
-            <div class="range-text" id="resRange">—</div>
-            <div class="monthly-row">
-              <div class="m-box">
-                <div class="m-lbl">الادخار الشهري المطلوب</div>
-                <div class="m-dur" id="resDurLabel">—</div>
-                <div class="m-val" id="resMonthly">—</div>
+          <!-- Total card -->
+          <div class="tot-card">
+            <div class="tc-lbl">الإجمالي الكلي (شامل هامش أمان 10%)</div>
+            <span class="tc-amt" id="r-total">—</span>
+            <div class="tc-rng" id="r-range">—</div>
+            <div class="tc-bot">
+              <div>
+                <div class="tb-lbl">الادخار الشهري المطلوب</div>
+                <div class="tb-dur" id="r-dur-lbl">—</div>
+                <div class="tb-val" id="r-monthly">—</div>
               </div>
-              <div class="m-box">
-                <div class="m-lbl">التوفير إذا ادخرت 2000/شهر</div>
-                <div class="m-dur">× 24 شهراً = 48,000 ريال</div>
-                <div class="m-val" id="resCompareDiff">—</div>
+              <div>
+                <div class="tb-lbl">تغطية مدخراتك × 24 شهر</div>
+                <div class="tb-dur" id="r-cmp-lbl">—</div>
+                <div class="tb-val" id="r-cmp-diff">—</div>
               </div>
             </div>
           </div>
 
-          <!-- Progress Bars -->
-          <div class="prog-card">
+          <!-- Mini cards -->
+          <div class="mini-row">
+            <div class="mc">
+              <div class="mc-lbl">ادخارك المتوقع (24 شهر)</div>
+              <div class="mc-val" id="r-cmp-total">—</div>
+              <div class="mc-note" id="r-cmp-note">—</div>
+            </div>
+            <div class="mc">
+              <div class="mc-lbl">نسبة تغطية الادخار</div>
+              <div class="mc-val" id="r-coverage">—</div>
+              <div class="mc-note">مقارنةً بالتكلفة الكاملة</div>
+            </div>
+          </div>
+
+          <!-- Progress bars -->
+          <div class="pc">
             <h4>📊 شريط التقدم</h4>
-            <!-- Bar 1: plan progress (month 1 / total) -->
-            <div class="prog-row">
-              <div class="prog-meta">
-                <span>تقدم الشهر الأول</span>
-                <span id="prog1Pct">0%</span>
-              </div>
-              <div class="prog-track">
-                <div class="prog-fill green" id="prog1Fill" style="width:0%"></div>
-              </div>
+            <div class="prow">
+              <div class="pmeta"><span>تقدم الشهر الأول من خطتك</span><span id="pp1">0%</span></div>
+              <div class="ptrk"><div class="pfil gr" id="pf1" style="width:0%"></div></div>
             </div>
-            <!-- Bar 2: fixed scenario 2000/month × 24 -->
-            <div class="prog-row" style="margin-top:.6rem;">
-              <div class="prog-meta">
-                <span>سيناريو 2000 ريال/شهر × 24 شهراً</span>
-                <span id="prog2Pct">0%</span>
-              </div>
-              <div class="prog-track">
-                <div class="prog-fill gold" id="prog2Fill" style="width:0%"></div>
-              </div>
+            <div class="prow" style="margin-top:.55rem">
+              <div class="pmeta"><span>سيناريو مدخراتك × 24 شهراً</span><span id="pp2">0%</span></div>
+              <div class="ptrk"><div class="pfil gd" id="pf2" style="width:0%"></div></div>
             </div>
           </div>
 
-          <!-- Cost Breakdown Table -->
-          <div class="breakdown-card">
+          <!-- Breakdown table -->
+          <div class="bdc">
             <h4>📋 تفصيل مكونات التكلفة</h4>
-            <table class="c-table">
-              <thead>
-                <tr>
-                  <th>المكوّن</th>
-                  <th>القاعدة</th>
-                  <th>المعامل</th>
-                  <th style="text-align:left;">التكلفة</th>
-                </tr>
-              </thead>
-              <tbody id="breakdownBody"></tbody>
+            <table class="ctbl">
+              <thead><tr><th>المكوّن</th><th>القاعدة</th><th>المعامل</th><th style="text-align:left">التكلفة</th></tr></thead>
+              <tbody id="breakdown-body"></tbody>
             </table>
           </div>
 
-          <!-- Comparison Card -->
-          <div class="comp-card">
-            <h4>⚖️ مقارنة السيناريوهات</h4>
-            <div class="comp-row" id="compRow"></div>
+          <!-- Scenarios -->
+          <div class="scc">
+            <h4>⚖️ مقارنة سيناريوهات الادخار</h4>
+            <div class="sc-row" id="scen-row"></div>
           </div>
 
-        </div><!-- /resultsPanel -->
-      </div><!-- /resultsArea -->
+          <!-- What-If Simulator -->
+          <div class="whatif-wrap">
+            <h4>🎭 محاكاة "ماذا لو"</h4>
+            <div class="wi-grid" id="wi-grid"></div>
+            <div class="wi-result" id="wi-result"></div>
+          </div>
+        </div>
+      </div>
 
     </div><!-- /calc-grid -->
   </div>
 </section>
 
-<!-- ============================================================
-     PACKAGES SECTION
-============================================================ -->
-<section id="packages" class="section section-g">
-  <div class="container">
-    <div class="s-header">
-      <span class="s-tag">💎 الباقات</span>
+<!-- ================================================================
+     TIMELINE PLANNER
+================================================================ -->
+<section id="timeline" class="sec sec-g" style="background:linear-gradient(180deg,var(--g50) 0%,var(--white) 100%)">
+  <div class="wrap">
+    <div class="sh">
+      <span class="stag">🗓️ التخطيط الزمني التفاعلي</span>
+      <h2>جدول مهام زواجك</h2>
+      <p>حدد تاريخ زفافك وسيحسب النظام تلقائياً مواعيد كل مهمة مع تنبيهات ذكية وشريط إنجاز.</p>
+    </div>
+
+    <!-- Controls -->
+    <div class="tl-controls">
+      <div class="tl-date-input">
+        <label for="wedding-date">📅 تاريخ الزفاف:</label>
+        <input type="date" id="wedding-date" onchange="updateTimelineProgress()">
+        <button class="btn btn-p btn-sm" onclick="updateTimelineProgress()">تحديث الجدول</button>
+      </div>
+      <div class="tl-summary" id="tl-summary">
+        <div class="tls-box"><span class="tls-n" id="tls-days">—</span><span class="tls-l">يوم متبقي</span></div>
+        <div class="tls-box"><span class="tls-n" id="tls-done">0</span><span class="tls-l">مهمة منجزة</span></div>
+        <div class="tls-box"><span class="tls-n" id="tls-pending">0</span><span class="tls-l">قيد التنفيذ</span></div>
+        <div class="tls-box"><span class="tls-n" id="tls-urgent">0</span><span class="tls-l">عاجلة</span></div>
+      </div>
+    </div>
+
+    <!-- Urgent alert bar -->
+    <div class="tl-alert-bar" id="tl-alert-bar">
+      <span class="tab-icon">⚠️</span>
+      <div class="tab-text" id="tab-text">—</div>
+    </div>
+
+    <!-- Master progress -->
+    <div class="tl-master-prog">
+      <div class="tlmp-top">
+        <h4>📈 نسبة الإنجاز الكلية</h4>
+        <div class="tlmp-pct" id="tl-master-pct">0%</div>
+      </div>
+      <div class="tlmp-trk">
+        <div class="tlmp-fil" id="tl-master-fil" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Task grid -->
+    <div class="tl-grid" id="tl-grid"></div>
+
+  </div>
+</section>
+
+<!-- ================================================================
+     MADINAH BOOKING SERVICES
+================================================================ -->
+<section id="madinah" class="sec sec-au">
+  <div class="wrap">
+    <div class="booking-banner">
+      <div class="excl-badge">📍 المدينة المنورة · خدمة حصرية · المرحلة الأولى</div>
+      <h2>خدمة الاستعداد الكامل للزواج</h2>
+      <p>نتولى عنك حجز القاعة، الطعام، التصوير، والذهب في المدينة المنورة مع جدول زمني وضمان الجودة.</p>
+    </div>
+
+    <div class="svc-grid">
+      <!-- القاعة -->
+      <div class="svc-card">
+        <div class="svc-hd">
+          <div class="svc-iw tci-g">🏛️</div>
+          <div><div class="svc-t">حجز قاعة الأفراح</div><div class="svc-d">نختار لك أفضل قاعات المدينة المنورة حسب ميزانيتك وعدد ضيوفك.</div></div>
+        </div>
+        <div class="svc-bd">
+          <div class="svc-pr"><div class="svc-p">18,000 – 45,000 <span>ريال</span></div><div class="svc-tim">⏰ قبل 3–6 أشهر</div></div>
+          <ul class="svc-opts">
+            <li>اقتصادية: 18,000 – 22,000 ريال</li>
+            <li>متوسطة: 25,000 – 32,000 ريال</li>
+            <li>فاخرة: 38,000 – 45,000 ريال</li>
+            <li>سعة 200 – 1,000 ضيف مع الخدمات</li>
+          </ul>
+          <div class="svc-tl">📅 <span><strong>التوصية:</strong> احجز القاعة أولاً — 4 إلى 6 أشهر قبل موعد الفرح.</span></div>
+        </div>
+        <div class="svc-ft"><button class="book-btn" id="book-hall" onclick="openModal('hall','حجز قاعة الأفراح')">📋 اشترك في الخدمة</button></div>
+      </div>
+
+      <!-- الطعام -->
+      <div class="svc-card">
+        <div class="svc-hd">
+          <div class="svc-iw tci-gd">🍽️</div>
+          <div><div class="svc-t">الطعام والحلويات</div><div class="svc-d">قائمة موردين موثوقين للطعام والحلويات بأسعار تنافسية وضمان الجودة.</div></div>
+        </div>
+        <div class="svc-bd">
+          <div class="svc-pr"><div class="svc-p">70 – 150 <span>ريال/فرد</span></div><div class="svc-tim">⏰ قبل 6–8 أسابيع</div></div>
+          <ul class="svc-opts">
+            <li>اقتصادية: 70 ريال/فرد (بوفيه)</li>
+            <li>متوسطة: 100 ريال/فرد</li>
+            <li>فاخرة: 130–150 ريال/فرد مع خدمة</li>
+            <li>كيك زفاف مخصص: 800 – 2,000 ريال</li>
+          </ul>
+          <div class="svc-tl">📅 <span><strong>التوصية:</strong> أكّد العدد النهائي قبل 6 أسابيع على الأقل.</span></div>
+        </div>
+        <div class="svc-ft"><button class="book-btn" id="book-food" onclick="openModal('food','خدمة الطعام والحلويات')">📋 اشترك في الخدمة</button></div>
+      </div>
+
+      <!-- التصوير -->
+      <div class="svc-card">
+        <div class="svc-hd">
+          <div class="svc-iw tci-b">📸</div>
+          <div><div class="svc-t">اختيار المصورين</div><div class="svc-d">شبكة مصورين محترفين معتمدين في المدينة المنورة بمستويات متعددة.</div></div>
+        </div>
+        <div class="svc-bd">
+          <div class="svc-pr"><div class="svc-p">4,000 – 9,000 <span>ريال</span></div><div class="svc-tim">⏰ قبل 2–4 أشهر</div></div>
+          <ul class="svc-opts">
+            <li>أساسية: 4,000 – 5,500 ريال (صور)</li>
+            <li>متوسطة: 6,000 – 7,000 ريال (صور+فيديو)</li>
+            <li>كاملة: 7,500 – 9,000 ريال سينمائي</li>
+            <li>جلسة قبل الفرح: +1,500 ريال</li>
+          </ul>
+          <div class="svc-tl">📅 <span><strong>التوصية:</strong> احجز 3 أشهر مسبقاً لضمان توفر المصور.</span></div>
+        </div>
+        <div class="svc-ft"><button class="book-btn" id="book-photo" onclick="openModal('photo','اختيار المصورين')">📋 اشترك في الخدمة</button></div>
+      </div>
+
+      <!-- الذهب -->
+      <div class="svc-card">
+        <div class="svc-hd">
+          <div class="svc-iw tci-p">💍</div>
+          <div><div class="svc-t">الشبكة والذهب</div><div class="svc-d">أفضل محلات الذهب والمجوهرات الموثوقة بالمدينة مع ضمان الأسعار.</div></div>
+        </div>
+        <div class="svc-bd">
+          <div class="svc-pr"><div class="svc-p">15,000 – 60,000 <span>ريال</span></div><div class="svc-tim">⏰ قبل 4–8 أسابيع</div></div>
+          <ul class="svc-opts">
+            <li>بسيطة: 15,000 – 22,000 ريال</li>
+            <li>متوسطة: 25,000 – 38,000 ريال</li>
+            <li>فاخرة: 40,000 – 60,000+ ريال</li>
+            <li>خصم يصل 8% من خلال شراكاتنا</li>
+          </ul>
+          <div class="svc-tl">📅 <span><strong>التوصية:</strong> اختر الشبكة قبل 4 أسابيع وحجز الطراز المناسب مسبقاً.</span></div>
+        </div>
+        <div class="svc-ft"><button class="book-btn" id="book-gold" onclick="openModal('gold','الشبكة والذهب')">📋 اشترك في الخدمة</button></div>
+      </div>
+    </div><!-- /svc-grid -->
+
+    <!-- Timeline booking summary -->
+    <div class="tl-booking-strip">
+      <h3>📅 الجدول الزمني الكامل للاستعداد</h3>
+      <div class="strip-grid">
+        <div class="strip-item c1"><div class="si-t">6+ أشهر قبل الفرح</div><div class="si-d">حجز القاعة، تحديد الميزانية، إنشاء الخطة المالية</div></div>
+        <div class="strip-item c2"><div class="si-t">3–4 أشهر قبل الفرح</div><div class="si-d">حجز المصور، اختيار الشبكة، تأكيد الطعام</div></div>
+        <div class="strip-item c3"><div class="si-t">4–6 أسابيع قبل الفرح</div><div class="si-d">تأكيد عدد الضيوف، توزيع الدعوات، استلام الشبكة</div></div>
+        <div class="strip-item c4"><div class="si-t">أسبوع قبل الفرح</div><div class="si-d">مراجعة جميع العقود وتأكيد المواعيد النهائية</div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================================================
+     PACKAGES
+================================================================ -->
+<section id="packages" class="sec sec-w">
+  <div class="wrap">
+    <div class="sh">
+      <span class="stag gold">💎 الباقات</span>
       <h2>اختر الباقة المناسبة</h2>
       <p>استثمر في تخطيطك لتوفير أضعاف قيمة الاشتراك من تكاليف زواجك.</p>
     </div>
 
     <div class="pkg-grid">
-      <div class="pkg-card basic" id="pkg-basic" onclick="selectPkg('basic')">
-        <span class="popular-tag"></span>
-        <div class="pkg-icon">📋</div>
+      <div class="pkg basic" id="pk-basic" onclick="selectPkg('basic')">
+        <span class="pkg-pop"></span>
+        <div class="pkg-ico">📋</div>
         <div class="pkg-name">الأساسية</div>
-        <div class="pkg-price">29 <span>ريال/شهر</span></div>
-        <div class="pkg-sub">للتخطيط الذاتي المستقل</div>
-        <ul class="pkg-features">
-          <li>محرك الحساب الكامل</li>
+        <div class="pkg-pr">29 <span>ريال/شهر</span></div>
+        <div class="pkg-sub">للتخطيط الذاتي</div>
+        <ul class="pkg-feats">
+          <li>Wedding Cost Engine كامل</li>
+          <li>جدول مهمات أساسي</li>
           <li>خطة ادخار مخصصة</li>
-          <li>جدول تكاليف مفصّل</li>
           <li>تقرير PDF للخطة</li>
-          <li>تنبيهات بريد شهرية</li>
+          <li>تنبيه شهري بالبريد</li>
+          <li class="no">محاكاة سيناريوهات</li>
+          <li class="no">إدارة الحجوزات</li>
+          <li class="no">دعم مباشر</li>
         </ul>
-        <button class="btn-pkg">اشترك الآن</button>
+        <button class="pkg-btn" onclick="event.stopPropagation()">اشترك — 29 ريال</button>
       </div>
 
-      <div class="pkg-card premium" id="pkg-premium" onclick="selectPkg('premium')">
-        <span class="popular-tag">الأكثر طلباً ⭐</span>
-        <div class="pkg-icon">⭐</div>
+      <div class="pkg prem" id="pk-prem" onclick="selectPkg('prem')">
+        <span class="pkg-pop">الأكثر طلباً ⭐</span>
+        <div class="pkg-ico">⭐</div>
         <div class="pkg-name">المميزة</div>
-        <div class="pkg-price">59 <span>ريال/شهر</span></div>
-        <div class="pkg-sub">مع استشارة مالية شخصية</div>
-        <ul class="pkg-features">
+        <div class="pkg-pr">59 <span>ريال/شهر</span></div>
+        <div class="pkg-sub">مع استشارة + سيناريوهات</div>
+        <ul class="pkg-feats">
           <li>كل مزايا الأساسية</li>
+          <li>محاكاة سيناريوهات "ماذا لو"</li>
+          <li>تحديثات أسبوعية بالتقدم</li>
+          <li>نصائح تنظيمية مخصصة</li>
           <li>استشارة مالية 30 دقيقة</li>
-          <li>مقارنة أسعار موردين</li>
           <li>خصم 5% على الموردين</li>
-          <li>متابعة شهرية للادخار</li>
-          <li>دعم واتساب مباشر</li>
+          <li>دعم واتساب أوقات الدوام</li>
+          <li class="no">إدارة الحجوزات الكاملة</li>
         </ul>
-        <button class="btn-pkg">اشترك الآن</button>
+        <button class="pkg-btn" onclick="event.stopPropagation()">اشترك — 59 ريال</button>
       </div>
 
-      <div class="pkg-card vip" id="pkg-vip" onclick="selectPkg('vip')">
-        <span class="popular-tag"></span>
-        <div class="pkg-icon">👑</div>
-        <div class="pkg-name">الذهبية VIP</div>
-        <div class="pkg-price">99 <span>ريال/شهر</span></div>
-        <div class="pkg-sub">تخطيط شامل + خصومات حصرية</div>
-        <ul class="pkg-features">
+      <div class="pkg vip" id="pk-vip" onclick="selectPkg('vip')">
+        <span class="pkg-pop"></span>
+        <div class="pkg-ico">👑</div>
+        <div class="pkg-name">VIP الذهبية</div>
+        <div class="pkg-pr">99 <span>ريال/شهر</span></div>
+        <div class="pkg-sub" style="font-size:.7rem">+ 1,299 ريال خدمة المدينة المنورة</div>
+        <ul class="pkg-feats">
           <li>كل مزايا المميزة</li>
-          <li>مخطط زفاف شخصي</li>
+          <li>إدارة حجوزات المدينة كاملة</li>
+          <li>جدول زمني تفاعلي VIP</li>
+          <li>تفاوض بالنيابة مع الموردين</li>
+          <li>متابعة أسبوعية مع المستشار</li>
+          <li>دعم واتساب فوري 7 أيام</li>
           <li>خصومات حتى 20%</li>
-          <li>شبكة 30+ مورد معتمد</li>
-          <li>استشارات غير محدودة</li>
-          <li>تفاوض بالنيابة عنك</li>
           <li>ضمان استرجاع 7 أيام</li>
         </ul>
-        <button class="btn-pkg btn-gold">اشترك الآن</button>
+        <button class="pkg-btn gd" onclick="event.stopPropagation()">اشترك — 99 ريال</button>
       </div>
     </div>
-
-    <div class="pkg-detail-box" id="pkgDetailBox"></div>
+    <div class="pkg-detail" id="pkg-detail-box"></div>
   </div>
 </section>
 
-<!-- ============================================================
-     VENDORS SECTION
-============================================================ -->
-<section id="vendors" class="section section-w">
-  <div class="container">
-    <div class="s-header">
-      <span class="s-tag">🤝 موردون شركاء</span>
+<!-- ================================================================
+     VENDORS
+================================================================ -->
+<section id="vendors" class="sec sec-g">
+  <div class="wrap">
+    <div class="sh">
+      <span class="stag">🤝 موردون شركاء</span>
       <h2>خصومات حصرية لأعضائنا</h2>
-      <p>نتفاوض بالنيابة عنك مع كبار الموردين لتوفير آلاف الريالات.</p>
+      <p>نتفاوض بالنيابة عنك لتوفير آلاف الريالات.</p>
     </div>
-
-    <div class="vendor-grid">
-      <div class="vendor-card">
-        <div class="v-icon vi-1">🏛️</div>
-        <span class="v-pct">15%</span>
-        <div class="v-name">قاعات الأفراح</div>
-        <div class="v-desc">خصم على حجز القاعات الفاخرة في 8 مدن سعودية</div>
-        <span class="v-badge">30+ قاعة</span>
-      </div>
-      <div class="vendor-card">
-        <div class="v-icon vi-2">💛</div>
-        <span class="v-pct">8%</span>
-        <div class="v-name">الذهب والمجوهرات</div>
-        <div class="v-desc">خصم إضافي على الشبكة والخواتم من محلات معتمدة</div>
-        <span class="v-badge">20+ محل</span>
-      </div>
-      <div class="vendor-card">
-        <div class="v-icon vi-3">📸</div>
-        <span class="v-pct">20%</span>
-        <div class="v-name">التصوير والفيديو</div>
-        <div class="v-desc">خصم على باقات التصوير الاحترافي وفيديو الذكريات</div>
-        <span class="v-badge">50+ مصور</span>
-      </div>
-      <div class="vendor-card">
-        <div class="v-icon vi-4">✈️</div>
-        <span class="v-pct">12%</span>
-        <div class="v-name">شهر العسل</div>
-        <div class="v-desc">خصم على باقات السفر والفنادق الفاخرة</div>
-        <span class="v-badge">15+ وجهة</span>
-      </div>
+    <div class="v-grid">
+      <div class="vc"><div class="vi vi1">🏛️</div><span class="v-pct">15%</span><div class="v-name">قاعات الأفراح</div><div class="v-desc">خصم مباشر على حجز القاعات في 8 مدن</div><span class="v-badge">30+ قاعة</span></div>
+      <div class="vc"><div class="vi vi2">💛</div><span class="v-pct">8%</span><div class="v-name">الذهب والمجوهرات</div><div class="v-desc">خصم إضافي على الشبكة من محلات معتمدة</div><span class="v-badge">20+ محل</span></div>
+      <div class="vc"><div class="vi vi3">📸</div><span class="v-pct">20%</span><div class="v-name">التصوير والفيديو</div><div class="v-desc">خصم على باقات التصوير الاحترافي</div><span class="v-badge">50+ مصور</span></div>
+      <div class="vc"><div class="vi vi4">✈️</div><span class="v-pct">12%</span><div class="v-name">شهر العسل</div><div class="v-desc">خصم على باقات السفر والفنادق</div><span class="v-badge">15+ وجهة</span></div>
     </div>
-    <p style="text-align:center;margin-top:1.3rem;font-size:.8rem;color:var(--gray-400);">
-      * الخصومات متاحة لمشتركي الباقة المميزة والذهبية VIP فقط.
-    </p>
   </div>
 </section>
 
-<!-- ============================================================
-     BEHAVIORAL SECTION
-============================================================ -->
-<section id="behavioral" class="section section-dark">
-  <div class="container">
-    <div class="s-header s-header-dark">
-      <span class="s-tag">🎯 التحفيز السلوكي</span>
-      <h2>تابع تقدمك نحو هدفك</h2>
-      <p>حرّك الشريط لمحاكاة مدخراتك الحالية وشاهد تحليلاً فورياً للمسافة المتبقية.</p>
+<!-- ================================================================
+     BEHAVIORAL
+================================================================ -->
+<section class="sec sec-d">
+  <div class="wrap">
+    <div class="sh dk">
+      <span class="stag dark">🎯 التحفيز السلوكي</span>
+      <h2>تابع إنجازك نحو يوم الفرح</h2>
+      <p>حرّك الشريط وشاهد تحليلاً فورياً لمدخراتك.</p>
     </div>
-
     <div class="beh-card">
-      <div style="font-size:.82rem;color:rgba(255,255,255,.5);">نسبة الإنجاز</div>
-      <span class="big-pct" id="behPct">0%</span>
-      <div class="beh-track">
-        <div class="beh-fill" id="behFill" style="width:0%"></div>
+      <div style="font-size:.76rem;color:rgba(255,255,255,.42)">نسبة الإنجاز</div>
+      <span class="big-pct" id="beh-pct">0%</span>
+      <div class="beh-trk"><div class="beh-fil" id="beh-fil" style="width:0%"></div></div>
+      <div class="beh-msg" id="beh-msg">🌱 كل ريال تدخره اليوم هو خطوة نحو يوم لا تنساه.</div>
+      <div class="beh-sl">
+        <label>💸 المبلغ المدّخر حتى الآن: <strong id="beh-saved-lbl" style="color:var(--gd300)">0 ريال</strong></label>
+        <input type="range" id="beh-slider" min="0" max="120000" step="500" value="0" oninput="updateBehavioral(this.value)">
       </div>
-      <div class="beh-msg" id="behMsg">🌱 كل ريال تدخره اليوم هو خطوة نحو يوم لا تنساه.</div>
-      <div class="beh-slider-section">
-        <label>💸 المبلغ المدّخر حتى الآن: <strong id="savedLabel" style="color:var(--gold-300)">0 ريال</strong></label>
-        <input type="range" id="behSlider" min="0" max="100000" step="500" value="0"
-               oninput="updateBehavioral(this.value)">
-      </div>
-      <div class="beh-sim" id="behSim">
-        أدخل المبلغ المدّخر بالشريط أعلاه لرؤية التحليل الفوري.
-      </div>
+      <div class="beh-sim" id="beh-sim">أدخل مبلغك المدّخر بالشريط لرؤية التحليل الفوري.</div>
     </div>
   </div>
 </section>
 
-<!-- ============================================================
-     FOOTER
-============================================================ -->
+<!-- FOOTER -->
 <footer>
-  <strong>خطة زواجي</strong> — Wedding Cost Engine™ | منصة التخطيط المالي للزواج في المملكة العربية السعودية
-  <br>
-  <span style="font-size:.72rem;opacity:.5;display:block;margin-top:.4rem;">
-    جميع الأرقام تقديرية وتعتمد على متوسطات السوق السعودي. لا تُعدّ هذه المنصة استشارة مالية ملزمة. © 2025 خطة زواجي
-  </span>
+  <strong>خطة زواجي</strong> — Wedding Cost Engine™ + Timeline Planner | منصة متكاملة لإدارة الزواج في المملكة العربية السعودية
+  <br><span style="font-size:.7rem;display:block;margin-top:.35rem;opacity:.55">جميع الأرقام تقديرية وتعتمد على متوسطات السوق السعودي. © 2025 خطة زواجي</span>
 </footer>
 
 <!-- ================================================================
-     JAVASCRIPT — Wedding Cost Engine
+     BOOKING MODAL
+================================================================ -->
+<div class="moverlay" id="bk-modal" onclick="closeModal(event)">
+  <div class="mbox">
+    <div id="mfv">
+      <button class="mclose" onclick="closeModalDirect()">✕</button>
+      <h3 id="m-title">—</h3>
+      <p>أدخل بياناتك وسنتواصل خلال 24 ساعة لتأكيد الحجز.</p>
+      <div class="mfg"><label>الاسم الكامل</label><input type="text" id="m-name" placeholder="محمد عبدالله"></div>
+      <div class="mfg"><label>رقم الجوال</label><input type="tel" id="m-phone" placeholder="05XXXXXXXX" maxlength="10"></div>
+      <div class="mfg"><label>تاريخ الفرح المتوقع</label><input type="date" id="m-date"></div>
+      <div class="mfg"><label>عدد المدعوين التقريبي</label><input type="number" id="m-guests" min="20" placeholder="300"></div>
+      <div class="macts">
+        <button class="btn btn-p" onclick="submitBooking()">✅ إرسال طلب الحجز</button>
+        <button class="btn btn-o" onclick="closeModalDirect()">إلغاء</button>
+      </div>
+    </div>
+    <div class="succ" id="m-succ">
+      <span class="chk">✅</span>
+      <h3>تم استلام طلبك!</h3>
+      <p>سيتواصل معك أحد مستشارينا خلال <strong>24 ساعة</strong> لتأكيد التفاصيل.</p>
+      <p style="margin-top:.5rem;font-size:.78rem;color:var(--c400)">رقم الطلب: <strong id="m-order-num">—</strong></p>
+      <button class="btn btn-p btn-sm" style="margin-top:1.1rem" onclick="closeModalDirect()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     JAVASCRIPT — Wedding Cost Engine + Timeline Planner
 ================================================================ -->
 <script>
 'use strict';
 
-// ================================================================
-//  ENGINE CONSTANTS
-//  الثوابت الأساسية لمحرك الحساب
-// ================================================================
+/* ================================================================
+   ENGINE CONSTANTS
+================================================================ */
 
-/** معامل مدينة الرياض = 1.00 (المرجع الأساسي) */
-const BASE_CITY = 'riyadh';
-
-/** معاملات تكلفة كل مدينة نسبةً للرياض */
-const CITY_MULTIPLIERS = {
-  riyadh:  { label: 'الرياض',           multiplier: 1.00 },
-  jeddah:  { label: 'جدة',              multiplier: 0.95 },
-  dammam:  { label: 'الدمام',           multiplier: 0.90 },
-  madinah: { label: 'المدينة المنورة',   multiplier: 0.85 },
-  makkah:  { label: 'مكة المكرمة',      multiplier: 0.90 },
-  abha:    { label: 'أبها',             multiplier: 0.75 },
-  qassim:  { label: 'القصيم',           multiplier: 0.80 },
-  tabuk:   { label: 'تبوك',             multiplier: 0.78 },
+/** معاملات المدن نسبةً للرياض = 1.00 */
+const CITY_DATA = {
+  riyadh:  { label:'الرياض',          mul:1.00 },
+  jeddah:  { label:'جدة',             mul:0.95 },
+  dammam:  { label:'الدمام',          mul:0.90 },
+  madinah: { label:'المدينة المنورة', mul:0.85 },
+  makkah:  { label:'مكة المكرمة',     mul:0.90 },
+  abha:    { label:'أبها',            mul:0.75 },
+  qassim:  { label:'القصيم',          mul:0.80 },
+  tabuk:   { label:'تبوك',            mul:0.78 },
 };
 
-/** معاملات نوع الحفل على القاعة */
-const PARTY_MULTIPLIERS = {
-  economy: 0.75,
-  medium:  1.00,
-  luxury:  1.40,
-};
-
-/** أسعار قاعدية مرجعية (بالريال — مبنية على متوسط السوق السعودي) */
+/** الأسعار القاعدية المرجعية (ريال) */
 const BASE = {
-  hall:        35000,   // تكلفة القاعة المرجعية (نوع متوسط)
-  guestCost:   180,     // تكلفة الفرد الواحد (طعام + ضيافة)
-  photography: 8000,    // التصوير والفيديو
-  furniture:   40000,   // الأثاث (إن وُجد سكن مستقل)
-  misc:        0.08,    // مصاريف متنوعة 8% من المجموع
-  safety:      0.10,    // هامش أمان 10%
-  priceRange:  0.08,    // نطاق السعر ± 8%
+  hall:        35000,
+  guestCost:   180,
+  photography: 8000,
+  furniture:   40000,
+  decor:       5000,
+  misc:        0.08,   // 8% مصاريف متنوعة
+  safety:      0.10,   // 10% هامش أمان
+  priceRange:  0.08,   // ±8% نطاق سعري
 };
 
-/** ثوابت سيناريو المقارنة */
-const COMPARE_MONTHLY = 2000;
-const COMPARE_MONTHS  = 24;
-const COMPARE_TOTAL   = COMPARE_MONTHLY * COMPARE_MONTHS; // 48,000
+/** معاملات نوع الحفل */
+const PARTY_MUL   = { economy:0.75, medium:1.00, luxury:1.40 };
+const PARTY_LABEL = { economy:'اقتصادي', medium:'متوسط', luxury:'فاخر' };
 
-// ================================================================
-//  HELPER: FORMAT SAR
-//  تنسيق الأرقام بالريال السعودي
-// ================================================================
-function formatSAR(amount) {
-  return amount.toLocaleString('ar-SA', {
-    style:                 'currency',
-    currency:              'SAR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
+/** حالة المحرك العالمية */
+let engineState = { grand:0, duration:18, cityMul:0.85 };
+
+/* ================================================================
+   FORMAT SAR
+================================================================ */
+const SAR = n => n.toLocaleString('ar-SA',{style:'currency',currency:'SAR',minimumFractionDigits:0,maximumFractionDigits:0});
+
+/* ================================================================
+   GET RADIO
+================================================================ */
+const radio = name => { const e=document.querySelector(`input[name="${name}"]:checked`); return e?e.value:null; };
+
+/* ================================================================
+   ENGINE: calculateHall()
+   Hall = Base × CityMul × PartyMul
+================================================================ */
+function calculateHall(mul, party) {
+  return Math.round(BASE.hall * mul * PARTY_MUL[party]);
 }
 
-// ================================================================
-//  HELPER: GET RADIO VALUE
-// ================================================================
-function getRadio(name) {
-  const el = document.querySelector(`input[name="${name}"]:checked`);
-  return el ? el.value : null;
+/* ================================================================
+   ENGINE: calculateGuests()
+   Guest = 180 × count × CityMul
+================================================================ */
+function calculateGuests(count, mul) {
+  return Math.round(BASE.guestCost * count * mul);
 }
 
-// ================================================================
-//  ENGINE FUNCTION: calculateHall()
-//  حساب تكلفة القاعة
-//  Hall Cost = Base Hall × City Multiplier × Party Multiplier
-// ================================================================
-function calculateHall(cityMultiplier, partyType) {
-  const partyMul = PARTY_MULTIPLIERS[partyType] || 1.00;
-  return Math.round(BASE.hall * cityMultiplier * partyMul);
+/* ================================================================
+   ENGINE: calculateTotal()
+   يجمع كل المكونات ويحسب هامش الأمان
+================================================================ */
+function calculateTotal(hall, guests, photo, furniture, gold, decor) {
+  const sub    = hall + guests + photo + furniture + gold + decor;
+  const misc   = Math.round(sub * BASE.misc);
+  const preMrg = sub + misc;
+  const safety = Math.round(preMrg * BASE.safety);
+  const grand  = preMrg + safety;
+  return { sub, misc, safety, grand };
 }
 
-// ================================================================
-//  ENGINE FUNCTION: calculateGuests()
-//  حساب تكلفة الضيوف
-//  Guest Cost = 180 × عدد الضيوف × City Multiplier
-// ================================================================
-function calculateGuests(guests, cityMultiplier) {
-  return Math.round(BASE.guestCost * guests * cityMultiplier);
+/* ================================================================
+   ENGINE: calculateBookingCost()
+   (wrapper for Madinah service)
+================================================================ */
+function calculateBookingCost(guests, partyType) {
+  const mul = 0.85; // Madinah
+  const hall = calculateHall(mul, partyType);
+  const gc   = calculateGuests(guests, mul);
+  const photo = Math.round(BASE.photography * mul);
+  return { hall, gc, photo, total: hall + gc + photo };
 }
 
-// ================================================================
-//  ENGINE FUNCTION: calculatePhotography()
-//  حساب تكلفة التصوير
-//  Photography = Base Photography × City Multiplier
-// ================================================================
-function calculatePhotography(cityMultiplier) {
-  return Math.round(BASE.photography * cityMultiplier);
-}
+/* ================================================================
+   ENGINE: analyzePlan()
+   < 70% → أحمر | 70-90% → أصفر | > 90% → أخضر
+================================================================ */
+function analyzePlan(grand, duration, income, monthSav) {
+  const monthly      = Math.ceil(grand / duration);
+  const cmpTotal     = monthSav * 24;
+  const coverPct     = (cmpTotal / grand) * 100;
+  const incomeCover  = income > 0 ? (income * 0.30 * duration / grand) * 100 : null;
 
-// ================================================================
-//  ENGINE FUNCTION: calculateFurniture()
-//  حساب تكلفة الأثاث (فقط إذا اختار سكن مستقل)
-//  Furniture = Base Furniture (لا معامل مدينة هنا، ثابت وطني)
-// ================================================================
-function calculateFurniture(hasHousing) {
-  return hasHousing ? BASE.furniture : 0;
-}
-
-// ================================================================
-//  ENGINE FUNCTION: calculateTotal()
-//  حساب الإجمالي الكامل
-// ================================================================
-function calculateTotal(hall, guests, photo, furniture, mahr) {
-  const subTotal    = hall + guests + photo + furniture + mahr;
-  const misc        = Math.round(subTotal * BASE.misc);
-  const preMargin   = subTotal + misc;
-  const safety      = Math.round(preMargin * BASE.safety);
-  const grand       = preMargin + safety;
-  return { subTotal, misc, safety, grand };
-}
-
-// ================================================================
-//  ENGINE FUNCTION: analyzePlan()
-//  تحليل واقعية الخطة
-//  < 70%  → أحمر  | 70-90% → أصفر | > 90% → أخضر
-// ================================================================
-function analyzePlan(grandTotal, duration, income) {
-  const monthly        = Math.ceil(grandTotal / duration);
-  const savedIfIncome  = income > 0 ? income * duration * 0.30 : null;
-  // نسبة التغطية بافتراض ادخار 30% من الدخل طوال المدة
-  const coverageRatio  = savedIfIncome ? (savedIfIncome / grandTotal) : null;
-
-  return { monthly, coverageRatio };
-}
-
-// ================================================================
-//  INPUT VALIDATION
-// ================================================================
-function validateInputs(guests, mahr, income) {
-  if (guests < 20 || guests > 3000) {
-    alert('⚠️ يرجى إدخال عدد مدعوين بين 20 و3000 ضيف.');
-    return false;
+  let type='', msg='';
+  const pct = incomeCover !== null ? incomeCover : coverPct;
+  if (pct < 70) {
+    type='r';
+    msg=`خطتك غير واقعية — الادخار المتوقع يغطي ${Math.round(pct)}% فقط. قلّل عدد الضيوف أو مدّد فترة الادخار.`;
+  } else if (pct < 90) {
+    type='a';
+    msg=`خطتك تحتاج مراجعة — الادخار يغطي ${Math.round(pct)}% من التكلفة. ننصح بزيادة مدة الادخار.`;
+  } else {
+    type='g';
+    msg=`خطتك واقعية ✓ — الادخار يغطي ${Math.round(pct)}% من التكلفة. أنت على المسار الصحيح!`;
   }
-  if (mahr < 0) {
-    alert('⚠️ قيمة الشبكة لا يمكن أن تكون سالبة.');
-    return false;
-  }
-  if (income < 0) {
-    alert('⚠️ الدخل الشهري لا يمكن أن يكون سالباً.');
-    return false;
-  }
-  return true;
+  return { monthly, cmpTotal, coverPct, incomeCover, alertType:type, alertMsg:msg };
 }
 
-// ================================================================
-//  CLEAR ALERTS
-// ================================================================
-function clearAlerts() {
-  ['alertRed','alertAmber','alertGreen'].forEach(id => {
-    document.getElementById(id).classList.remove('visible');
-  });
-}
-
-// ================================================================
-//  SHOW ALERT
-// ================================================================
-function showAlert(type, msg) {
-  const map = { red: 'alertRed', amber: 'alertAmber', green: 'alertGreen' };
-  const textMap = { red: 'alertRedText', amber: 'alertAmberText', green: 'alertGreenText' };
-  document.getElementById(textMap[type]).textContent = msg;
-  document.getElementById(map[type]).classList.add('visible');
-}
-
-// ================================================================
-//  ANIMATE PROGRESS BAR
-// ================================================================
-function animateProg(fillId, pctId, pct) {
-  const clamp = Math.min(100, Math.max(0, pct));
-  document.getElementById(pctId).textContent = Math.round(clamp) + '%';
-  setTimeout(() => {
-    document.getElementById(fillId).style.width = clamp + '%';
-  }, 80);
-}
-
-// ================================================================
-//  MAIN ENGINE RUNNER — runEngine()
-//  نقطة الدخول الرئيسية عند الضغط على الزر
-// ================================================================
+/* ================================================================
+   ENGINE RUNNER — runEngine()
+================================================================ */
 function runEngine() {
-  // ---- جمع المدخلات ----
-  const cityKey   = document.getElementById('city').value;
-  const partyType = getRadio('party')    || 'medium';
-  const housing   = getRadio('housing')  === 'yes';
-  const duration  = parseInt(getRadio('duration') || '18', 10);
-  const guests    = Math.max(0, parseInt(document.getElementById('guests').value,  10) || 0);
-  const mahr      = Math.max(0, parseFloat(document.getElementById('mahr').value)  || 0);
-  const income    = Math.max(0, parseFloat(document.getElementById('income').value)|| 0);
+  const cityKey  = document.getElementById('city').value;
+  const partyType= radio('party') || 'medium';
+  const duration = parseInt(radio('dur') || '18', 10);
+  const guests   = Math.max(0, parseInt(document.getElementById('guests').value, 10) || 0);
+  const mahr     = Math.max(0, parseFloat(document.getElementById('mahr').value) || 0);
+  const income   = Math.max(0, parseFloat(document.getElementById('income').value) || 0);
+  const monthSav = Math.max(0, parseFloat(document.getElementById('msav').value) || 0);
 
-  if (!validateInputs(guests, mahr, income)) return;
+  if (guests < 20 || guests > 3000) { alert('⚠️ عدد المدعوين يجب بين 20 و3000.'); return; }
 
-  // ---- البيانات المدينة ----
-  const cityData   = CITY_MULTIPLIERS[cityKey];
-  const multiplier = cityData.multiplier;
+  const city = CITY_DATA[cityKey];
+  const mul  = city.mul;
 
-  // ---- المكونات المستقلة ----
-  const hall      = calculateHall(multiplier, partyType);
-  const guestsCost= calculateGuests(guests, multiplier);
-  const photo     = calculatePhotography(multiplier);
-  const furniture = calculateFurniture(housing);
-  const mahrs     = mahr;
+  // --- مكونات مستقلة ---
+  const hall      = calculateHall(mul, partyType);
+  const guestCost = calculateGuests(guests, mul);
+  const photo     = document.getElementById('el-p').checked  ? Math.round(BASE.photography * mul) : 0;
+  const furniture = document.getElementById('el-h').checked  ? BASE.furniture : 0;
+  const goldVal   = document.getElementById('el-g').checked  ? mahr : 0;
+  const decorVal  = document.getElementById('el-d').checked  ? Math.round(BASE.decor * mul) : 0;
 
-  // ---- الإجمالي ----
-  const { subTotal, misc, safety, grand } = calculateTotal(hall, guestsCost, photo, furniture, mahrs);
+  // --- إجمالي ---
+  const { sub, misc, safety, grand } = calculateTotal(hall, guestCost, photo, furniture, goldVal, decorVal);
 
-  // ---- التحليل ----
-  const { monthly, coverageRatio } = analyzePlan(grand, duration, income);
+  // --- تحليل ---
+  const analysis = analyzePlan(grand, duration, income, monthSav);
 
-  // ---- نطاق السعر ± 8% ----
+  // --- نطاق السعر ---
   const low  = Math.round(grand * (1 - BASE.priceRange));
   const high = Math.round(grand * (1 + BASE.priceRange));
 
-  // ---- سيناريو المقارنة ----
-  const compareTotal = COMPARE_TOTAL;
-  const compareDiff  = grand - compareTotal; // موجب = يحتاج أكثر
+  // --- حفظ الحالة ---
+  engineState = { grand, duration, cityMul: mul };
 
-  // ================================================================
-  //  UPDATE UI
-  // ================================================================
+  /* ── تحديث الواجهة ── */
+  document.getElementById('rc-city').textContent    = city.label;
+  document.getElementById('rc-mul').textContent     = mul.toFixed(2);
+  document.getElementById('rc-party').textContent   = PARTY_LABEL[partyType];
+  document.getElementById('r-total').textContent    = SAR(grand);
+  document.getElementById('r-range').textContent    = `النطاق: ${SAR(low)} — ${SAR(high)}`;
+  document.getElementById('r-dur-lbl').textContent  = `خلال ${duration} شهراً`;
+  document.getElementById('r-monthly').textContent  = SAR(analysis.monthly);
+  document.getElementById('r-cmp-lbl').textContent  = `× 24 شهراً`;
+  document.getElementById('r-cmp-total').textContent= SAR(analysis.cmpTotal);
+  document.getElementById('r-coverage').textContent = Math.round(analysis.coverPct) + '%';
 
-  // مؤشر المدينة
-  document.getElementById('ciCity').textContent       = cityData.label;
-  document.getElementById('ciMultiplier').textContent = multiplier.toFixed(2);
-
-  // البطاقة الرئيسية
-  document.getElementById('resTotal').textContent   = formatSAR(grand);
-  document.getElementById('resRange').textContent   = `النطاق: ${formatSAR(low)} — ${formatSAR(high)}`;
-  document.getElementById('resDurLabel').textContent= `خلال ${duration} شهراً`;
-  document.getElementById('resMonthly').textContent = formatSAR(monthly);
-
-  // مقارنة سيناريو 2000 ريال
-  if (compareDiff > 0) {
-    document.getElementById('resCompareDiff').textContent = `يعجز بـ ${formatSAR(compareDiff)}`;
-    document.getElementById('resCompareDiff').style.color = '#ef9a9a';
+  if (analysis.cmpTotal >= grand) {
+    document.getElementById('r-cmp-diff').textContent = 'يغطي بالكامل ✓';
+    document.getElementById('r-cmp-diff').style.color = 'var(--g400)';
+    document.getElementById('r-cmp-note').textContent = 'مدخراتك × 24 شهر تكفي';
   } else {
-    document.getElementById('resCompareDiff').textContent = `يغطي ✓`;
-    document.getElementById('resCompareDiff').style.color = 'var(--green-400)';
+    const def = grand - analysis.cmpTotal;
+    document.getElementById('r-cmp-diff').textContent = `عجز ${SAR(def)}`;
+    document.getElementById('r-cmp-diff').style.color = '#ef9a9a';
+    document.getElementById('r-cmp-note').textContent = 'مدخراتك × 24 شهر لا تكفي';
   }
 
   // أشرطة التقدم
-  const prog1 = (monthly / grand) * 100;
-  animateProg('prog1Fill', 'prog1Pct', prog1);
-  const prog2 = Math.min(100, (compareTotal / grand) * 100);
-  animateProg('prog2Fill', 'prog2Pct', prog2);
+  animProg('pf1','pp1', (analysis.monthly/grand)*100);
+  animProg('pf2','pp2', Math.min(100, analysis.coverPct));
 
   // جدول التكاليف
   const rows = [
-    { label: '🏛️ تكلفة القاعة',       base: `${formatSAR(BASE.hall)}`, mul: `×${multiplier.toFixed(2)} ×${PARTY_MULTIPLIERS[partyType]}`, val: hall },
-    { label: '🍽️ الطعام والضيافة',    base: `${BASE.guestCost} ريال/فرد × ${guests}`, mul: `×${multiplier.toFixed(2)}`,      val: guestsCost },
-    { label: '📸 التصوير',             base: `${formatSAR(BASE.photography)}`, mul: `×${multiplier.toFixed(2)}`,             val: photo },
-    { label: '💍 الشبكة والمهر',       base: 'مدخل المستخدم',          mul: '×1.00',                                         val: mahrs },
-    ...(housing ? [{ label: '🛋️ أثاث المنزل', base: formatSAR(BASE.furniture), mul: '—', val: furniture }] : []),
-    { label: '🎀 مصاريف متنوعة (8%)', base: 'من المجموع',             mul: '×0.08',                                         val: misc },
-    { label: '🛡️ هامش أمان (10%)',    base: 'من الإجمالي',            mul: '×0.10',                                         val: safety },
-    { label: '✅ الإجمالي الكلي',      base: '—',                       mul: '—',                                             val: grand, isTotal: true },
+    { l:'🏛️ قاعة الأفراح',      b:SAR(BASE.hall),          m:`×${mul.toFixed(2)} ×${PARTY_MUL[partyType]}`, v:hall },
+    { l:'🍽️ الطعام والضيافة',   b:`${BASE.guestCost}ر/فرد ×${guests}`, m:`×${mul.toFixed(2)}`,   v:guestCost },
+    ...(photo    ?[{l:'📸 التصوير',       b:SAR(BASE.photography),  m:`×${mul.toFixed(2)}`, v:photo}]:[]),
+    ...(goldVal  ?[{l:'💍 الشبكة/الذهب', b:'مدخل المستخدم',       m:'×1.00',              v:goldVal}]:[]),
+    ...(furniture?[{l:'🛋️ الأثاث',       b:SAR(BASE.furniture),   m:'×1.00',              v:furniture}]:[]),
+    ...(decorVal ?[{l:'🌸 الزينة',        b:SAR(BASE.decor),       m:`×${mul.toFixed(2)}`, v:decorVal}]:[]),
+    { l:'🎀 متنوعة (8%)',        b:'من المجموع',              m:'×0.08',               v:misc },
+    { l:'🛡️ هامش أمان (10%)',   b:'من الإجمالي',             m:'×0.10',               v:safety },
+    { l:'✅ الإجمالي الكلي',     b:'—',                       m:'—',                   v:grand, tot:true },
   ];
-
-  const tbody = document.getElementById('breakdownBody');
-  tbody.innerHTML = '';
+  const tb = document.getElementById('breakdown-body');
+  tb.innerHTML = '';
   rows.forEach(r => {
     const tr = document.createElement('tr');
-    if (r.isTotal) tr.classList.add('total-row');
-    tr.innerHTML = `
-      <td>${r.label}</td>
-      <td style="font-size:.78rem;color:var(--gray-400)">${r.base}</td>
-      <td style="font-size:.78rem;color:var(--gray-400)">${r.mul}</td>
-      <td>${formatSAR(r.val)}</td>
-    `;
-    tbody.appendChild(tr);
+    if (r.tot) tr.classList.add('tr-tot');
+    tr.innerHTML=`<td>${r.l}</td><td style="font-size:.74rem;color:var(--c400)">${r.b}</td><td style="font-size:.74rem;color:var(--c400)">${r.m}</td><td>${SAR(r.v)}</td>`;
+    tb.appendChild(tr);
   });
 
-  // بطاقة مقارنة السيناريوهات
+  // سيناريوهات الادخار
+  document.getElementById('scen-row').innerHTML =
+    [12,18,24,36].map(d=>`
+      <div class="scb ${d===duration?'act':''}">
+        <div class="scb-d">${d} شهراً</div>
+        <div class="scb-v">${SAR(Math.ceil(grand/d))}</div>
+        <div class="scb-n">/ شهر${d===duration?' ← اختيارك':''}</div>
+      </div>`).join('');
+
+  // تنبيهات
+  ['r','a','g'].forEach(x=>document.getElementById('al-'+x).classList.remove('show'));
+  document.getElementById('al-'+analysis.alertType+'-t').textContent = analysis.alertMsg;
+  document.getElementById('al-'+analysis.alertType).classList.add('show');
+
+  // محاكاة "ماذا لو"
+  renderWhatIf(grand, guests, partyType, mul, duration, mul);
+
+  // شريط التحفيز
+  document.getElementById('beh-slider').max = grand;
+  updateBehavioral(0);
+  document.getElementById('beh-slider').value = 0;
+
+  // إظهار النتائج
+  document.getElementById('rph').style.display = 'none';
+  const rp = document.getElementById('rpanel');
+  rp.classList.add('vis');
+  setTimeout(()=>rp.scrollIntoView({behavior:'smooth',block:'start'}), 100);
+}
+
+/* ================================================================
+   WHAT-IF SIMULATOR
+   محاكاة سيناريوهات "ماذا لو"
+================================================================ */
+function renderWhatIf(baseGrand, baseGuests, baseParty, baseMul, baseDur, currentMul) {
   const scenarios = [
-    { dur: 12, monthly: Math.ceil(grand / 12), highlight: duration === 12 },
-    { dur: 18, monthly: Math.ceil(grand / 18), highlight: duration === 18 },
-    { dur: 24, monthly: Math.ceil(grand / 24), highlight: duration === 24 },
-    { dur: 36, monthly: Math.ceil(grand / 36), highlight: duration === 36 },
+    { ico:'👥', lbl:'زيادة 100 ضيف', sub:`من ${baseGuests} إلى ${baseGuests+100}`,
+      calc:()=>{ const g=calculateGuests(baseGuests+100,baseMul); const h=calculateHall(baseMul,baseParty); const {grand}=calculateTotal(h,g,0,0,0,0); return grand; }},
+    { ico:'👥', lbl:'تخفيض 100 ضيف', sub:`من ${baseGuests} إلى ${baseGuests-100}`,
+      calc:()=>{ const g=calculateGuests(Math.max(20,baseGuests-100),baseMul); const h=calculateHall(baseMul,baseParty); const {grand}=calculateTotal(h,g,0,0,0,0); return grand; }},
+    { ico:'✨', lbl:'ترقية لفاخر', sub:'تغيير نوع الحفل',
+      calc:()=>{ const h=calculateHall(baseMul,'luxury'); const g=calculateGuests(baseGuests,baseMul); const {grand}=calculateTotal(h,g,0,0,0,0); return grand; }},
+    { ico:'💡', lbl:'تخفيض لاقتصادي', sub:'تغيير نوع الحفل',
+      calc:()=>{ const h=calculateHall(baseMul,'economy'); const g=calculateGuests(baseGuests,baseMul); const {grand}=calculateTotal(h,g,0,0,0,0); return grand; }},
+    { ico:'⏳', lbl:'36 شهر ادخار', sub:`بدلاً من ${baseDur} شهراً`,
+      calc:()=>baseGrand },
+    { ico:'🏙️', lbl:'لو في الرياض', sub:'معامل 1.00 بدل '+baseMul.toFixed(2),
+      calc:()=>{ const h=calculateHall(1.00,baseParty); const g=calculateGuests(baseGuests,1.00); const {grand}=calculateTotal(h,g,0,0,0,0); return grand; }},
   ];
 
-  const compRow = document.getElementById('compRow');
-  compRow.innerHTML = scenarios.map(s => `
-    <div class="comp-box ${s.highlight ? 'highlight' : ''}">
-      <div class="c-lbl">${s.dur} شهراً</div>
-      <div class="c-val">${formatSAR(s.monthly)}</div>
-      <div class="c-note">/ شهر${s.highlight ? ' ← اختيارك' : ''}</div>
-    </div>
-  `).join('');
-
-  // ---- تنبيهات واقعية الخطة ----
-  clearAlerts();
-  if (income > 0 && coverageRatio !== null) {
-    if (coverageRatio < 0.70) {
-      showAlert('red',
-        `خطتك غير واقعية — ادخار 30% من دخلك طوال ${duration} شهراً يغطي فقط ${Math.round(coverageRatio * 100)}% من التكلفة. قلّل عدد الضيوف أو مدّد فترة الادخار.`);
-    } else if (coverageRatio < 0.90) {
-      showAlert('amber',
-        `خطتك تحتاج مراجعة — ادخارك المتوقع يغطي ${Math.round(coverageRatio * 100)}% من التكلفة. ننصح بزيادة مدة الادخار أو تقليل البنود.`);
-    } else {
-      showAlert('green',
-        `خطتك واقعية ✓ — ادخارك المتوقع يغطي ${Math.round(coverageRatio * 100)}% من التكلفة. أنت على المسار الصحيح!`);
-    }
-  } else if (income === 0) {
-    if (monthly > 15000) {
-      showAlert('amber',
-        `مبلغ الادخار الشهري (${formatSAR(monthly)}) مرتفع نسبياً. أدخل دخلك الشهري للحصول على تقييم دقيق للخطة.`);
-    }
-  }
-
-  // ---- تحديث شريط التحفيز ----
-  document.getElementById('behSlider').max = grand;
-  updateBehavioral(0);
-  document.getElementById('behSlider').value = 0;
-
-  // ---- إظهار النتائج ----
-  document.getElementById('placeholder').style.display = 'none';
-  const panel = document.getElementById('resultsPanel');
-  panel.classList.add('visible');
-
-  // تمرير للنتائج
-  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  const container = document.getElementById('wi-grid');
+  container.innerHTML = '';
+  scenarios.forEach((s,i)=>{
+    const d = document.createElement('div');
+    d.className='wi-box';
+    d.innerHTML=`<span class="wi-ico">${s.ico}</span><div class="wi-lbl">${s.lbl}</div><div class="wi-sub">${s.sub}</div>`;
+    d.onclick=()=>showWhatIf(s, i, baseGrand, baseDur, container);
+    container.appendChild(d);
+  });
 }
 
-// ================================================================
-//  CITY INDEX LIVE UPDATE
-//  تحديث فوري لمؤشر المدينة عند التغيير
-// ================================================================
-function onCityChange() {
-  const key  = document.getElementById('city').value;
-  const data = CITY_MULTIPLIERS[key];
-  const ciStrip = document.getElementById('cityIndexStrip');
-  if (ciStrip.style.display !== 'none') {
-    document.getElementById('ciCity').textContent       = data.label;
-    document.getElementById('ciMultiplier').textContent = data.multiplier.toFixed(2);
-  }
-}
+function showWhatIf(scenario, idx, baseGrand, baseDur, container) {
+  // toggle selection
+  container.querySelectorAll('.wi-box').forEach((b,i)=>{b.classList.toggle('sel',i===idx)});
+  const newGrand   = scenario.calc();
+  const diff       = newGrand - baseGrand;
+  const sign       = diff > 0 ? '+' : '';
+  const durToShow  = idx===4 ? 36 : baseDur;
+  const monthly    = Math.ceil(newGrand / durToShow);
 
-// ================================================================
-//  PACKAGE SELECTION
-// ================================================================
-const PKG_INFO = {
-  basic: {
-    title: '📋 الباقة الأساسية — 29 ريال/شهر',
-    body:  'مثالية للتخطيط الذاتي. تحصل على محرك الحساب الكامل مع خطة ادخار مخصصة وتقرير PDF. الدفع شهري ويمكن الإلغاء في أي وقت.',
-  },
-  premium: {
-    title: '⭐ الباقة المميزة — 59 ريال/شهر',
-    body:  'تشمل جلسة استشارة مالية مباشرة (30 دقيقة) مع مستشار معتمد، مقارنة أسعار موردين، دعم واتساب مستمر، وخصم 5% على الموردين الشركاء.',
-  },
-  vip: {
-    title: '👑 الباقة الذهبية VIP — 99 ريال/شهر',
-    body:  'الحل الشامل: مخطط زفاف شخصي، خصومات حصرية حتى 20% مع 30+ مورد، استشارات غير محدودة، تفاوض بالنيابة عنك لضمان أفضل الأسعار. مع ضمان استرجاع 7 أيام.',
-  },
-};
-
-function selectPkg(key) {
-  document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('selected'));
-  document.getElementById('pkg-' + key).classList.add('selected');
-
-  const box = document.getElementById('pkgDetailBox');
-  const info = PKG_INFO[key];
-  box.innerHTML = `<h4>${info.title}</h4><p style="margin-top:.4rem;font-size:.88rem;">${info.body}</p>`;
-  box.classList.add('visible');
-  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-// ================================================================
-//  BEHAVIORAL ENGINE
-//  محرك التحفيز السلوكي
-// ================================================================
-const BEH_MESSAGES = [
-  { min:  0, max: 10,  msg: '🌱 كل ريال تدخره اليوم هو خطوة نحو يوم لا تنساه.' },
-  { min: 10, max: 25,  msg: '💪 أحسنت! البداية دائماً الأصعب وقد تجاوزتها.' },
-  { min: 25, max: 40,  msg: '🔥 ربع الطريق! أنت تسير بخطى ثابتة.' },
-  { min: 40, max: 60,  msg: '⚡ منتصف الرحلة! بدأت تشعر بالفرق الحقيقي.' },
-  { min: 60, max: 75,  msg: '🚀 أكثر من النصف! هدفك بات قريباً جداً.' },
-  { min: 75, max: 90,  msg: '🌟 في المنعطف الأخير! قليل من الصبر وتصل.' },
-  { min: 90, max: 101, msg: '🎉 على وشك تحقيق حلمك! تهانينا المبكرة.' },
-];
-
-function updateBehavioral(saved) {
-  saved = parseFloat(saved) || 0;
-  const max    = parseFloat(document.getElementById('behSlider').max) || 100000;
-  const pct    = Math.min(100, Math.round((saved / max) * 100));
-  const remain = Math.max(0, max - saved);
-
-  document.getElementById('behPct').textContent    = pct + '%';
-  document.getElementById('savedLabel').textContent= formatSAR(saved);
-  document.getElementById('behFill').style.width   = pct + '%';
-
-  const entry = BEH_MESSAGES.find(m => pct >= m.min && pct < m.max) || BEH_MESSAGES.at(-1);
-  document.getElementById('behMsg').textContent = entry.msg;
-
-  const m12 = Math.ceil(remain / 12);
-  const m18 = Math.ceil(remain / 18);
-  const m24 = Math.ceil(remain / 24);
-  document.getElementById('behSim').innerHTML = `
-    المبلغ المتبقي: <strong>${formatSAR(remain)}</strong><br>
-    لإتمامه خلال <strong>12 شهراً</strong>: <strong>${formatSAR(m12)}</strong> / شهر<br>
-    لإتمامه خلال <strong>18 شهراً</strong>: <strong>${formatSAR(m18)}</strong> / شهر<br>
-    لإتمامه خلال <strong>24 شهراً</strong>: <strong>${formatSAR(m24)}</strong> / شهر
+  const res = document.getElementById('wi-result');
+  res.classList.add('show');
+  res.innerHTML = `
+    <strong>${scenario.lbl}:</strong><br>
+    التكلفة المتوقعة: <strong>${SAR(newGrand)}</strong><br>
+    الفرق عن الخطة الحالية: <strong style="color:${diff>0?'var(--r600)':'var(--g600)'}">${sign}${SAR(Math.abs(diff))}</strong><br>
+    الادخار الشهري المطلوب: <strong>${SAR(monthly)}</strong> / شهر خلال ${durToShow} شهراً
   `;
 }
 
-// ================================================================
-//  PREVENT NEGATIVE INPUTS
-//  منع إدخال أرقام سالبة
-// ================================================================
-document.querySelectorAll('input[type="number"]').forEach(inp => {
-  inp.addEventListener('input', function () {
-    if (parseFloat(this.value) < 0) this.value = 0;
+/* ================================================================
+   CITY CHANGE LIVE UPDATE
+================================================================ */
+function onCityChange() {
+  const k = document.getElementById('city').value;
+  const d = CITY_DATA[k];
+  const cs = document.querySelector('.cstrip');
+  if (cs && cs.style.display!=='none') {
+    document.getElementById('rc-city').textContent = d.label;
+    document.getElementById('rc-mul').textContent  = d.mul.toFixed(2);
+  }
+}
+
+/* ================================================================
+   TIMELINE PLANNER
+   ميزة التخطيط الزمني التفاعلي الرئيسية
+================================================================ */
+
+/**
+ * بيانات المهام: كل مهمة تحتوي:
+ * - id, name, icon, color
+ * - daysBeforeWedding: عدد الأيام قبل الزفاف لإنجاز المهمة
+ * - budgetRange: النطاق السعري المرجعي
+ * - tips: نصائح تنظيمية
+ */
+const TASKS = [
+  { id:'hall',     name:'حجز قاعة الأفراح',       icon:'🏛️', color:'tci-g',
+    days:180, budgetRange:'18,000 – 45,000 ريال',
+    tips:'احجز القاعة أولاً — 6 أشهر قبل الفرح للحصول على التاريخ المثالي.' },
+  { id:'budget',   name:'إعداد الميزانية الكاملة', icon:'💰', color:'tci-gd',
+    days:170, budgetRange:'—',
+    tips:'أنشئ خطة مالية تفصيلية قبل أي حجز آخر.' },
+  { id:'photo',    name:'حجز المصور الفوتوغرافي',  icon:'📸', color:'tci-b',
+    days:120, budgetRange:'4,000 – 9,000 ريال',
+    tips:'المصورون الجيدون يُحجزون مبكراً — احجز قبل 4 أشهر.' },
+  { id:'gold',     name:'اختيار الشبكة والذهب',    icon:'💍', color:'tci-p',
+    days:90,  budgetRange:'15,000 – 60,000 ريال',
+    tips:'تسوّق في محلات متعددة وقارن الأسعار قبل الشراء.' },
+  { id:'food',     name:'حجز خدمة الطعام',         icon:'🍽️', color:'tci-gd',
+    days:60,  budgetRange:'70 – 150 ريال/فرد',
+    tips:'أكّد العدد النهائي للضيوف قبل توقيع عقد الطعام.' },
+  { id:'furniture',name:'تجهيز الأثاث والمنزل',    icon:'🛋️', color:'tci-g',
+    days:60,  budgetRange:'30,000 – 50,000 ريال',
+    tips:'ابدأ بالأثاث الأساسي أولاً وأضف التفاصيل لاحقاً.' },
+  { id:'invites',  name:'طباعة وتوزيع الدعوات',    icon:'✉️', color:'tci-b',
+    days:45,  budgetRange:'500 – 2,000 ريال',
+    tips:'أرسل الدعوات قبل 6 أسابيع ورقمياً قبل 3 أسابيع.' },
+  { id:'decor',    name:'تجهيز الديكور والزينة',   icon:'🌸', color:'tci-r',
+    days:30,  budgetRange:'3,000 – 8,000 ريال',
+    tips:'اتفق على الألوان والثيم مع قاعة الأفراح مسبقاً.' },
+  { id:'dress',    name:'الزي وجهاز العريس',        icon:'👔', color:'tci-p',
+    days:30,  budgetRange:'2,000 – 8,000 ريال',
+    tips:'جرّب الزي قبل أسبوعين على الأقل لأي تعديلات.' },
+  { id:'honeymoon',name:'حجز شهر العسل',           icon:'✈️', color:'tci-b',
+    days:21,  budgetRange:'5,000 – 20,000+ ريال',
+    tips:'احجز مبكراً للحصول على أفضل الأسعار والأماكن.' },
+  { id:'contracts',name:'مراجعة جميع العقود',      icon:'📋', color:'tci-g',
+    days:7,   budgetRange:'—',
+    tips:'راجع جميع العقود والتفاصيل قبل أسبوع من الفرح.' },
+];
+
+/** حالة الجدول الزمني */
+let tlState = {
+  weddingDate: null,
+  tasks: TASKS.map(t => ({ ...t, done: false, notified: false })),
+};
+
+/**
+ * updateTimelineProgress()
+ * يحدث الجدول الزمني بالكامل حسب تاريخ الزفاف
+ */
+function updateTimelineProgress() {
+  const dateInput = document.getElementById('wedding-date').value;
+  if (!dateInput) { alert('⚠️ يرجى تحديد تاريخ الزفاف أولاً.'); return; }
+
+  const wDate  = new Date(dateInput);
+  const today  = new Date();
+  today.setHours(0,0,0,0);
+  wDate.setHours(0,0,0,0);
+
+  if (wDate <= today) { alert('⚠️ يرجى اختيار تاريخ مستقبلي.'); return; }
+
+  const daysToWedding = Math.ceil((wDate - today) / (1000*60*60*24));
+  tlState.weddingDate = wDate;
+
+  // بناء بطاقات المهام
+  renderTimelineCards(daysToWedding, today, wDate);
+
+  // تحديث الإحصائيات
+  updateTlSummary(daysToWedding);
+
+  // فحص التنبيهات العاجلة
+  checkUrgentAlerts(daysToWedding);
+}
+
+/**
+ * renderTimelineCards()
+ * ينشئ بطاقات كل مهمة مع شريط التقدم والحالة
+ */
+function renderTimelineCards(daysToWedding, today, wDate) {
+  const grid = document.getElementById('tl-grid');
+  grid.innerHTML = '';
+
+  tlState.tasks.forEach(task => {
+    const dueDate  = new Date(wDate);
+    dueDate.setDate(dueDate.getDate() - task.days);
+    const daysUntilDue = Math.ceil((dueDate - today) / (1000*60*60*24));
+    const isOverdue    = daysUntilDue < 0 && !task.done;
+    const isUrgent     = daysUntilDue >= 0 && daysUntilDue <= 14 && !task.done;
+    const isWarn       = daysUntilDue > 14 && daysUntilDue <= 30 && !task.done;
+
+    // نسبة التقدم الزمني (كم مضى من الوقت المخصص)
+    const totalWindowDays = daysToWedding - task.days + 30;
+    const elapsed = Math.max(0, totalWindowDays - Math.max(0, daysUntilDue));
+    let progressPct = task.done ? 100 : Math.min(95, Math.round((elapsed / totalWindowDays) * 100));
+
+    // حالة البطاقة
+    let cardClass = 'task-card';
+    if (task.done)      cardClass += ' done';
+    else if (isOverdue || isUrgent) cardClass += ' urgent';
+    else if (isWarn)    cardClass += ' warn';
+
+    // شارة الحالة
+    let statusBadge = '', statusClass = '';
+    if (task.done)    { statusBadge='✓ منجزة';  statusClass='sb-done'; }
+    else if (isOverdue){ statusBadge='⚠️ متأخرة'; statusClass='sb-urgent'; }
+    else if (isUrgent) { statusBadge='🔥 عاجلة';  statusClass='sb-urgent'; }
+    else if (isWarn)   { statusBadge='⏰ قريباً';  statusClass='sb-warn'; }
+    else               { statusBadge='🕐 قيد الانتظار'; statusClass='sb-pending'; }
+
+    // لون شريط التقدم
+    let progFillClass = 'tpf-ok';
+    if (task.done)              progFillClass = 'tpf-done';
+    else if (isOverdue||isUrgent) progFillClass = 'tpf-urgent';
+    else if (isWarn)            progFillClass = 'tpf-warn';
+
+    // وقت الاستحقاق
+    let dueTxt = '';
+    if (task.done)       dueTxt = '<span class="tc-days-left dl-done">✓ مكتمل</span>';
+    else if (isOverdue)  dueTxt = `<span class="tc-days-left dl-urgent">متأخر ${Math.abs(daysUntilDue)} يوم</span>`;
+    else if (isUrgent)   dueTxt = `<span class="tc-days-left dl-urgent">باقي ${daysUntilDue} يوم</span>`;
+    else if (isWarn)     dueTxt = `<span class="tc-days-left dl-warn">باقي ${daysUntilDue} يوم</span>`;
+    else                 dueTxt = `<span class="tc-days-left dl-ok">باقي ${daysUntilDue} يوم</span>`;
+
+    const dueDateStr = dueDate.toLocaleDateString('ar-SA',{year:'numeric',month:'long',day:'numeric'});
+
+    const card = document.createElement('div');
+    card.className  = cardClass;
+    card.id         = 'tc-' + task.id;
+    card.innerHTML  = `
+      <div class="tc-head">
+        <div class="tc-icon ${task.color}">${task.icon}</div>
+        <div class="tc-info">
+          <div class="tc-title">${task.name}</div>
+          <div class="tc-sub">يجب الإنجاز قبل ${task.days} يوم من الفرح</div>
+        </div>
+        <div class="tc-status"><span class="status-badge ${statusClass}">${statusBadge}</span></div>
+      </div>
+      <div class="tc-body">
+        <div class="tc-timeline">
+          <div class="tc-when">الموعد المقترح: <strong>${dueDateStr}</strong></div>
+          ${dueTxt}
+        </div>
+        <div class="tc-prog-wrap">
+          <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--c400);margin-bottom:.2rem">
+            <span>التقدم الزمني</span><span>${progressPct}%</span>
+          </div>
+          <div class="tc-prog-trk">
+            <div class="tc-prog-fil ${progFillClass}" style="width:${progressPct}%"></div>
+          </div>
+        </div>
+        ${task.budgetRange!=='—'?`<div class="tc-price">التكلفة المرجعية: <strong>${task.budgetRange}</strong></div>`:''}
+        <div style="font-size:.73rem;color:var(--c400);margin-bottom:.7rem;font-style:italic">💡 ${task.tips}</div>
+        <div class="tc-actions">
+          <button class="chk-btn ${task.done?'done-btn':''}" onclick="toggleTask('${task.id}')" ${task.done?'disabled':''}>
+            ${task.done?'✓ تم الإنجاز':'✓ تحديد كمنجزة'}
+          </button>
+          <button class="notif-btn ${task.notified?'active':''}" onclick="toggleNotif('${task.id}')" title="تفعيل التنبيه">
+            ${task.notified?'🔔 تنبّه':'🔕 تنبيه'}
+          </button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
   });
+
+  // تحديث شريط التقدم الرئيسي
+  const doneCnt = tlState.tasks.filter(t=>t.done).length;
+  const masterPct = Math.round((doneCnt / tlState.tasks.length) * 100);
+  document.getElementById('tl-master-pct').textContent = masterPct + '%';
+  setTimeout(()=>{ document.getElementById('tl-master-fil').style.width = masterPct + '%'; }, 80);
+}
+
+/**
+ * toggleTask()
+ * تبديل حالة المهمة (منجزة / غير منجزة)
+ */
+function toggleTask(id) {
+  const task = tlState.tasks.find(t=>t.id===id);
+  if (!task || task.done) return;
+  task.done = true;
+
+  if (tlState.weddingDate) {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const wDate = new Date(tlState.weddingDate);
+    const daysToWedding = Math.ceil((wDate - today) / (1000*60*60*24));
+    renderTimelineCards(daysToWedding, today, wDate);
+    updateTlSummary(daysToWedding);
+    checkUrgentAlerts(daysToWedding);
+  }
+}
+
+/**
+ * toggleNotif()
+ * تفعيل/إيقاف التنبيه لمهمة معينة
+ */
+function toggleNotif(id) {
+  const task = tlState.tasks.find(t=>t.id===id);
+  if (!task) return;
+  task.notified = !task.notified;
+  const btn = document.querySelector(`#tc-${id} .notif-btn`);
+  if (btn) {
+    btn.textContent = task.notified ? '🔔 تنبّه' : '🔕 تنبيه';
+    btn.classList.toggle('active', task.notified);
+  }
+  if (task.notified) {
+    // محاكاة إشعار المتصفح
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }
+}
+
+/**
+ * updateTlSummary()
+ * يحدث إحصائيات الجدول الزمني
+ */
+function updateTlSummary(daysToWedding) {
+  const today  = new Date(); today.setHours(0,0,0,0);
+  const wDate  = tlState.weddingDate;
+
+  const done    = tlState.tasks.filter(t=>t.done).length;
+  const urgent  = tlState.tasks.filter(t=>{
+    if (t.done) return false;
+    const due = new Date(wDate); due.setDate(due.getDate()-t.days);
+    const dl  = Math.ceil((due-today)/(1000*60*60*24));
+    return dl >= 0 && dl <= 14;
+  }).length;
+  const pending = tlState.tasks.length - done;
+
+  document.getElementById('tls-days').textContent    = daysToWedding;
+  document.getElementById('tls-done').textContent    = done;
+  document.getElementById('tls-pending').textContent = pending;
+  document.getElementById('tls-urgent').textContent  = urgent;
+  document.getElementById('tls-urgent').style.color  = urgent > 0 ? 'var(--r600)' : 'var(--g600)';
+}
+
+/**
+ * checkUrgentAlerts()
+ * يفحص المهام العاجلة ويعرض شريط التنبيه
+ */
+function checkUrgentAlerts(daysToWedding) {
+  const today  = new Date(); today.setHours(0,0,0,0);
+  const wDate  = tlState.weddingDate;
+
+  const urgent = tlState.tasks.filter(t => {
+    if (t.done) return false;
+    const due = new Date(wDate); due.setDate(due.getDate() - t.days);
+    const dl  = Math.ceil((due - today) / (1000*60*60*24));
+    return dl >= 0 && dl <= 14;
+  });
+
+  const overdue = tlState.tasks.filter(t => {
+    if (t.done) return false;
+    const due = new Date(wDate); due.setDate(due.getDate() - t.days);
+    const dl  = Math.ceil((due - today) / (1000*60*60*24));
+    return dl < 0;
+  });
+
+  const bar  = document.getElementById('tl-alert-bar');
+  const txt  = document.getElementById('tab-text');
+
+  if (overdue.length > 0) {
+    bar.classList.add('show');
+    bar.style.background = 'linear-gradient(90deg,var(--r100),#fff9f9)';
+    bar.style.borderColor = '#e74c3c';
+    txt.innerHTML = `<strong style="color:var(--r600)">⚠️ مهام متأخرة (${overdue.length}):</strong> ${overdue.map(t=>t.name).join('، ')} — يجب الإنجاز فوراً!`;
+    document.querySelector('#tl-alert-bar .tab-icon').textContent = '🚨';
+  } else if (urgent.length > 0) {
+    bar.classList.add('show');
+    bar.style.background = 'linear-gradient(90deg,#fdf3e7,var(--gd50))';
+    bar.style.borderColor = 'var(--gd500)';
+    txt.innerHTML = `<strong>مهام تقترب مواعيدها (${urgent.length}):</strong> ${urgent.map(t=>t.name).join('، ')} — يُنصح بإنجازها خلال أسبوعين.`;
+    document.querySelector('#tl-alert-bar .tab-icon').textContent = '⚠️';
+  } else {
+    bar.classList.remove('show');
+  }
+}
+
+/* ================================================================
+   PACKAGES
+================================================================ */
+const PKG_INFO = {
+  basic: { title:'📋 الأساسية — 29 ريال/شهر', body:'محرك الحساب الكامل، جدول مهمات أساسي، خطة ادخار مخصصة، تقرير PDF، وتنبيه شهري. مثالية للبداية والتخطيط الذاتي.' },
+  prem:  { title:'⭐ المميزة — 59 ريال/شهر',   body:'كل مزايا الأساسية + محاكاة سيناريوهات "ماذا لو"، تحديثات أسبوعية، نصائح تنظيمية، استشارة مالية 30 دقيقة، وخصم 5% على الموردين.' },
+  vip:   { title:'👑 VIP — 99 ريال/شهر + 1,299 ريال خدمة المدينة', body:'الحل الشامل: إدارة حجوزات المدينة المنورة كاملة، جدول زمني تفاعلي VIP، تفاوض احترافي، متابعة أسبوعية، دعم واتساب فوري 7 أيام، وضمان استرجاع.' },
+};
+
+function selectPkg(key) {
+  document.querySelectorAll('.pkg').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('pk-'+key).classList.add('sel');
+  const box = document.getElementById('pkg-detail-box');
+  box.innerHTML = `<h4>${PKG_INFO[key].title}</h4><p style="margin-top:.38rem;font-size:.86rem">${PKG_INFO[key].body}</p>`;
+  box.classList.add('show');
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* ================================================================
+   BEHAVIORAL ENGINE
+================================================================ */
+const BEH_MSG = [
+  {min:0,max:10,msg:'🌱 كل ريال تدخره اليوم هو خطوة نحو يوم لا تنساه.'},
+  {min:10,max:25,msg:'💪 أحسنت! البداية دائماً الأصعب وقد تجاوزتها.'},
+  {min:25,max:40,msg:'🔥 ربع الطريق! أنت تسير بخطى ثابتة.'},
+  {min:40,max:60,msg:'⚡ منتصف الرحلة! بدأت تشعر بالفرق الحقيقي.'},
+  {min:60,max:75,msg:'🚀 أكثر من النصف! هدفك بات قريباً جداً.'},
+  {min:75,max:90,msg:'🌟 في المنعطف الأخير! قليل من الصبر وتصل.'},
+  {min:90,max:101,msg:'🎉 على وشك تحقيق حلمك! تهانينا المبكرة.'},
+];
+
+function updateBehavioral(saved) {
+  saved = parseFloat(saved)||0;
+  const max    = parseFloat(document.getElementById('beh-slider').max)||120000;
+  const pct    = Math.min(100,Math.round((saved/max)*100));
+  const remain = Math.max(0,max-saved);
+  document.getElementById('beh-pct').textContent      = pct+'%';
+  document.getElementById('beh-saved-lbl').textContent= SAR(saved);
+  document.getElementById('beh-fil').style.width      = pct+'%';
+  const e = BEH_MSG.find(m=>pct>=m.min&&pct<m.max)||BEH_MSG.at(-1);
+  document.getElementById('beh-msg').textContent = e.msg;
+  document.getElementById('beh-sim').innerHTML = `
+    المبلغ المتبقي: <strong>${SAR(remain)}</strong><br>
+    لإتمامه خلال <strong>12 شهراً</strong>: <strong>${SAR(Math.ceil(remain/12))}</strong> / شهر<br>
+    لإتمامه خلال <strong>18 شهراً</strong>: <strong>${SAR(Math.ceil(remain/18))}</strong> / شهر<br>
+    لإتمامه خلال <strong>24 شهراً</strong>: <strong>${SAR(Math.ceil(remain/24))}</strong> / شهر`;
+}
+
+/* ================================================================
+   PROGRESS BAR ANIMATE
+================================================================ */
+function animProg(fillId, pctId, pct) {
+  const v = Math.min(100,Math.max(0,pct));
+  document.getElementById(pctId).textContent = Math.round(v)+'%';
+  setTimeout(()=>{ document.getElementById(fillId).style.width = v+'%'; }, 80);
+}
+
+/* ================================================================
+   MODAL
+================================================================ */
+let currentSvc = '';
+function openModal(svc, name) {
+  currentSvc = svc;
+  document.getElementById('m-title').textContent = '📋 حجز خدمة: '+name;
+  document.getElementById('mfv').style.display='block';
+  document.getElementById('m-succ').classList.remove('show');
+  document.getElementById('bk-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(e) { if (!e||e.target===document.getElementById('bk-modal')) closeModalDirect(); }
+function closeModalDirect() {
+  document.getElementById('bk-modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+function submitBooking() {
+  const name  = document.getElementById('m-name').value.trim();
+  const phone = document.getElementById('m-phone').value.trim();
+  const date  = document.getElementById('m-date').value;
+  const guests= document.getElementById('m-guests').value;
+  if (!name)   { alert('⚠️ يرجى إدخال الاسم الكامل.'); return; }
+  if (!phone||phone.length<10) { alert('⚠️ يرجى إدخال رقم جوال صحيح.'); return; }
+  if (!date)   { alert('⚠️ يرجى تحديد تاريخ الفرح المتوقع.'); return; }
+  if (!guests) { alert('⚠️ يرجى إدخال عدد المدعوين.'); return; }
+
+  document.getElementById('m-order-num').textContent = 'MD-'+Date.now().toString().slice(-6);
+  const btn = document.getElementById('book-'+currentSvc);
+  if (btn) { btn.textContent='✅ تم الطلب'; btn.classList.add('booked'); btn.disabled=true; }
+  document.getElementById('mfv').style.display='none';
+  document.getElementById('m-succ').classList.add('show');
+}
+
+/* ================================================================
+   PREVENT NEGATIVE INPUTS
+================================================================ */
+document.querySelectorAll('input[type="number"]').forEach(i=>{
+  i.addEventListener('input',function(){ if(parseFloat(this.value)<0)this.value=0; });
 });
 
-// ================================================================
-//  INIT
-// ================================================================
-updateBehavioral(0);
+/* ================================================================
+   INIT
+================================================================ */
+// تعيين تاريخ افتراضي = سنة من اليوم
+(function initDefaults(){
+  const d = new Date();
+  d.setFullYear(d.getFullYear()+1);
+  const fmt = d.toISOString().split('T')[0];
+  document.getElementById('wedding-date').value = fmt;
+  updateBehavioral(0);
+})();
 </script>
 
 </body>
