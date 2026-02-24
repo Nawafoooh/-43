@@ -1,55 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>VAR · OFFSIDE · AI</title>
+<title>VAR · OFFSIDE · AI · تحليل التسلل</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#080f08;font-family:'Courier New',monospace;color:#c8e6c9;overflow-x:hidden}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:#0a180a}
-::-webkit-scrollbar-thumb{background:#1e4020;border-radius:2px}
-button{font-family:'Courier New',monospace;cursor:pointer}
-canvas{display:block;width:100%;height:auto}
-.media-modal {
-  position: fixed;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #0a1a0a;
+  font-family: 'Cairo', 'Courier New', monospace;
+  color: #e0f0e0;
+  overflow-x: hidden;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.scan-line {
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #22ee66, transparent);
+  animation: scan 2s linear infinite;
+  pointer-events: none;
+  z-index: 10;
 }
-.media-content {
-  max-width: 90%;
-  max-height: 90%;
-  position: relative;
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
 }
-.media-content img, .media-content video {
-  max-width: 100%;
-  max-height: 80vh;
-  border: 2px solid #22ee66;
-  border-radius: 8px;
+
+::-webkit-scrollbar-track {
+  background: #1a2a1a;
 }
-.close-btn {
+
+::-webkit-scrollbar-thumb {
+  background: #2a5a2a;
+  border-radius: 3px;
+}
+
+button, input {
+  font-family: 'Cairo', 'Courier New', monospace;
+}
+
+.upload-area {
+  border: 2px dashed #2a5a2a;
+  transition: all 0.3s;
+}
+
+.upload-area:hover {
+  border-color: #22ee66;
+  background: rgba(34, 238, 102, 0.05);
+}
+
+.upload-area.dragover {
+  border-color: #ffaa00;
+  background: rgba(255, 170, 0, 0.05);
+}
+
+.offside-line {
   position: absolute;
-  top: -30px;
-  right: 0;
-  background: #ff4040;
-  color: white;
-  border: none;
-  padding: 5px 15px;
-  border-radius: 4px;
-  cursor: pointer;
+  width: 3px;
+  background: repeating-linear-gradient(
+    45deg,
+    #ff3333,
+    #ff3333 10px,
+    #ff9999 10px,
+    #ff9999 20px
+  );
+  box-shadow: 0 0 15px #ff0000;
+  animation: pulse 1.5s infinite;
+}
+
+canvas {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
 }
 </style>
 </head>
@@ -57,872 +101,588 @@ canvas{display:block;width:100%;height:auto}
 <div id="root"></div>
 
 <script type="text/babel">
-const { useState, useEffect, useRef, useCallback } = React;
+const { useState, useRef, useEffect } = React;
 
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
-const FW = 760;
-const FH = 480;
-const OFFSIDE_X = 562;
-
-// ─── DATA ─────────────────────────────────────────────────────────────────────
-const PLAYERS = [
-  {
-    id:"A1", team:"attack", x:575, y:185, name:"Müller", num:9, offside:true, conf:0.97,
-    bp:[[575,170],[573,182],[571,196],[570,210],[568,224]]
-  },
-  {
-    id:"A2", team:"attack", x:510, y:285, name:"Sané", num:10, offside:false, conf:0.94,
-    bp:[[510,270],[509,282],[508,296],[507,310],[505,324]]
-  },
-  {
-    id:"A3", team:"attack", x:548, y:355, name:"Gnabry", num:7, offside:true, conf:0.91,
-    bp:[[548,340],[546,352],[545,366],[544,380],[542,394]]
-  },
-  { id:"D1", team:"defend", x:568, y:135, name:"Rüdiger", num:5,  offside:false, conf:null },
-  { id:"D2", team:"defend", x:564, y:325, name:"Süle",    num:15, offside:false, conf:null },
-  { id:"D3", team:"defend", x:570, y:415, name:"Kimmich", num:6,  offside:false, conf:null },
-  { id:"GK", team:"defend", x:700, y:255, name:"Neuer",   num:1,  offside:false, conf:null, isGK:true },
-];
-
-const EVENTS = [
-  { id:1, time:"47:23", player:"Müller (#9)",  status:"OFFSIDE", conf:0.97 },
-  { id:2, time:"47:23", player:"Gnabry (#7)",  status:"OFFSIDE", conf:0.91 },
-  { id:3, time:"47:23", player:"Sané (#10)",   status:"ONSIDE",  conf:0.94 },
-];
-
-const JSON_DATA = {
-  match_id: "UCL_2025_QF_G2",
-  timestamp: "47:23.4",
-  frame_id: 84234,
-  offside_line_x: OFFSIDE_X,
-  second_last_defender: { player:"Süle", id:"D2", x:OFFSIDE_X },
-  players: PLAYERS.filter(p => p.team === "attack").map(p => ({
-    timestamp: "47:23.4",
-    player_id: p.id,
-    player_name: p.name,
-    jersey_number: p.num,
-    offside_status: p.offside ? "OFFSIDE" : "ONSIDE",
-    confidence_score: p.conf,
-    contact_point_coordinates: { x: p.x, y: p.y },
-    pixels_beyond_line: p.offside ? p.x - OFFSIDE_X : 0
-  }))
+// قوانين التسلل
+const OFFSIDE_RULES = {
+  // لاعب في نصف ملعب الخصم
+  MUST_BE_IN_OPPONENT_HALF: true,
+  // أقرب لخط المرمى من ثاني آخر مدافع
+  MUST_BE_AHEAD_OF_SECOND_LAST_DEFENDER: true,
+  // مشارك في اللعب النشط
+  MUST_BE_INVOLVED_IN_PLAY: true
 };
 
-// Add media URLs for offside verification
-const MEDIA_URLS = {
-  image: "https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", // Football pitch image
-  video: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" // Sample video
+// خوارزمية تحليل التسلل (محاكاة)
+const analyzeOffside = (players, ballPosition, lastDefenderLine) => {
+  if (!players || players.length === 0) return null;
+  
+  // تحديد أقرب لاعب هجومي لخط المرمى
+  const attackingPlayers = players.filter(p => p.team === 'attack');
+  if (attackingPlayers.length === 0) return null;
+  
+  // ترتيب اللاعبين حسب المسافة من خط المرمى
+  const sortedAttackers = [...attackingPlayers].sort((a, b) => b.x - a.x);
+  const furthestAttacker = sortedAttackers[0];
+  
+  // التحقق من التسلل
+  const isOffside = furthestAttacker.x > lastDefenderLine && 
+                    furthestAttacker.x > 400 && // نصف الملعب
+                    furthestAttacker.involvedInPlay !== false;
+  
+  // حساب المسافة
+  const distanceBeyond = furthestAttacker.x - lastDefenderLine;
+  
+  // تفاصيل اللاعبين
+  const details = attackingPlayers.map(p => ({
+    ...p,
+    isOffside: p.x > lastDefenderLine && p.x > 400,
+    distanceBeyond: p.x > lastDefenderLine ? p.x - lastDefenderLine : 0
+  }));
+  
+  return {
+    isOffside,
+    furthestAttacker,
+    distanceBeyond: distanceBeyond > 0 ? distanceBeyond : 0,
+    lastDefenderLine,
+    details,
+    decision: isOffside ? 'تسلل ❌' : 'تسلل ✅',
+    confidence: isOffside ? 
+      85 + Math.floor(Math.random() * 10) : // تسلل: 85-95%
+      90 + Math.floor(Math.random() * 8)     // غير تسلل: 90-98%
+  };
 };
 
-// ─── MEDIA MODAL COMPONENT ───────────────────────────────────────────────────
-function MediaModal({ isOpen, onClose, mediaType, mediaUrl }) {
-  if (!isOpen) return null;
+// كشف اللاعبين (محاكاة)
+const detectPlayers = (imageData, width, height) => {
+  // هذه محاكاة لكشف اللاعبين باستخدام الذكاء الاصطناعي
+  // في التطبيق الحقيقي، نستخدم نموذج تعلم عميق مثل YOLO أو TensorFlow.js
+  
+  const players = [];
+  const numPlayers = 7 + Math.floor(Math.random() * 4); // 7-10 لاعبين
+  
+  // ألوان الفرق
+  const colors = {
+    attack: '#22ee66', // أخضر
+    defend: '#3d90ff'  // أزرق
+  };
+  
+  // خط الـ 18 ياردة (منطقة الجزاء)
+  const PENALTY_AREA_START = width * 0.7;
+  const PENALTY_AREA_END = width * 0.95;
+  
+  for (let i = 0; i < numPlayers; i++) {
+    // توزيع عشوائي للاعبين
+    const team = i < numPlayers * 0.4 ? 'attack' : 'defend'; // 40% هجوم، 60% دفاع
+    const isAttacker = team === 'attack';
+    
+    // اللاعبون الهجوميون يكونون أقرب لمرمى الخصم
+    let x, y;
+    
+    if (isAttacker) {
+      // مهاجمون في منطقة الخصم
+      x = PENALTY_AREA_START + Math.random() * (width * 0.25);
+      y = 50 + Math.random() * (height - 100);
+    } else {
+      // مدافعون في مناطق متفرقة
+      x = 50 + Math.random() * (width * 0.6);
+      y = 50 + Math.random() * (height - 100);
+    }
+    
+    // حارس مرمى
+    if (i === numPlayers - 1 && team === 'defend') {
+      x = width * 0.9;
+      y = height / 2;
+    }
+    
+    players.push({
+      id: i,
+      team,
+      x,
+      y,
+      num: Math.floor(Math.random() * 30) + 1,
+      name: isAttacker ? ['مهاجم', 'جناح', 'رأس حربة'][Math.floor(Math.random() * 3)] : 
+                         ['مدافع', 'قلب دفاع', 'ظهير'][Math.floor(Math.random() * 3)],
+      involvedInPlay: Math.random() > 0.2 // 80% مشارك في اللعب
+    });
+  }
+  
+  return players;
+};
+
+// مكون عرض الصورة مع التحليل
+function ImageAnalyzer({ imageSrc }) {
+  const canvasRef = useRef(null);
+  const [analysis, setAnalysis] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [lastDefenderLine, setLastDefenderLine] = useState(400);
+  const [showScanLine, setShowScanLine] = useState(false);
+  const [players, setPlayers] = useState([]);
+  
+  useEffect(() => {
+    if (!imageSrc || !canvasRef.current) return;
+    
+    const analyzeImage = async () => {
+      setLoading(true);
+      setShowScanLine(true);
+      
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      img.onload = () => {
+        // ضبط حجم الكانفس
+        canvas.width = 800;
+        canvas.height = 500;
+        
+        // رسم الصورة
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        // محاكاة كشف اللاعبين
+        setTimeout(() => {
+          // كشف اللاعبين
+          const detectedPlayers = detectPlayers(null, canvas.width, canvas.height);
+          setPlayers(detectedPlayers);
+          
+          // تحديد خط ثاني آخر مدافع
+          const defenders = detectedPlayers.filter(p => p.team === 'defend');
+          const sortedDefenders = defenders.sort((a, b) => b.x - a.x);
+          const secondLastDefender = sortedDefenders[1] || defenders[0];
+          
+          const offsideLine = secondLastDefender ? secondLastDefender.x : 400;
+          setLastDefenderLine(offsideLine);
+          
+          // تحليل التسلل
+          const result = analyzeOffside(detectedPlayers, null, offsideLine);
+          setAnalysis(result);
+          
+          // رسم العناصر على الصورة
+          drawAnalysis(ctx, detectedPlayers, offsideLine, result);
+          
+          setLoading(false);
+          setTimeout(() => setShowScanLine(false), 1000);
+        }, 2000); // محاكاة وقت المعالجة
+      };
+      
+      img.src = imageSrc;
+    };
+    
+    analyzeImage();
+  }, [imageSrc]);
+  
+  const drawAnalysis = (ctx, players, offsideLine, result) => {
+    // رسم خط التسلل
+    ctx.beginPath();
+    ctx.strokeStyle = '#ff3333';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([10, 5]);
+    ctx.moveTo(offsideLine, 0);
+    ctx.lineTo(offsideLine, ctx.canvas.height);
+    ctx.stroke();
+    
+    // رسم اللاعبين
+    players.forEach(player => {
+      const isAttacker = player.team === 'attack';
+      const isOffside = player.x > offsideLine && player.x > 400;
+      
+      // اختيار اللون
+      ctx.fillStyle = isAttacker 
+        ? (isOffside ? '#ff4444' : '#22ee66')
+        : '#3d90ff';
+      
+      // رسم دائرة اللاعب
+      ctx.beginPath();
+      ctx.arc(player.x, player.y, 15, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // حدود بيضاء
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
+      // رقم اللاعب
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 12px "Cairo", Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(player.num, player.x, player.y);
+      
+      // علامة التسلل
+      if (isAttacker && isOffside) {
+        ctx.fillStyle = '#ff0000';
+        ctx.font = 'bold 14px "Cairo", Arial';
+        ctx.fillText('🚩', player.x - 25, player.y - 20);
+      }
+    });
+    
+    // رسم الكرة
+    ctx.beginPath();
+    ctx.arc(450, 250, 10, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // إعادة تعيين الخط المتقطع
+    ctx.setLineDash([]);
+  };
   
   return (
-    <div className="media-modal" onClick={onClose}>
-      <div className="media-content" onClick={e => e.stopPropagation()}>
-        <button className="close-btn" onClick={onClose}>✕ إغلاق</button>
-        {mediaType === 'image' ? (
-          <img src={mediaUrl} alt="Offside verification" />
-        ) : (
-          <video controls autoPlay>
-            <source src={mediaUrl} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        )}
-        <div style={{ 
-          textAlign: 'center', 
-          color: '#22ee66', 
-          marginTop: '10px',
-          fontSize: '14px',
+    <div style={{ position: 'relative' }}>
+      <canvas 
+        ref={canvasRef} 
+        style={{ 
+          width: '100%', 
+          height: 'auto', 
+          border: '2px solid #2a5a2a',
+          borderRadius: '8px'
+        }} 
+      />
+      {showScanLine && <div className="scan-line" />}
+      
+      {loading && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          background: 'rgba(0,0,0,0.8)',
+          padding: '20px 40px',
+          borderRadius: '10px',
+          border: '2px solid #22ee66',
+          color: '#22ee66',
+          fontSize: '18px',
           fontWeight: 'bold'
         }}>
-          {mediaType === 'image' ? 'صورة توضيحية لحظة التسلل' : 'مقطع فيديو لحظة التسلل'}
+          🔍 جاري تحليل الصورة...
         </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── CANVAS FIELD ─────────────────────────────────────────────────────────────
-function FieldCanvas({ skeleton, lines, scanning }) {
-  const canvasRef = useRef(null);
-  const animRef   = useRef(null);
-  const tick      = useRef(0);
-  const scanY     = useRef(0);
-
-  const render = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    const W = FW, H = FH;
-    tick.current += 0.045;
-    const pulse = Math.sin(tick.current);
-
-    // ── Background grass stripes
-    for (let i = 0; i < 10; i++) {
-      ctx.fillStyle = i % 2 === 0 ? "#0d3318" : "#0a2b14";
-      ctx.fillRect(i * (W / 10), 0, W / 10, H);
-    }
-
-    // ── Scan line effect
-    if (scanning) {
-      scanY.current = (scanY.current + 5) % (H + 80);
-      const g = ctx.createLinearGradient(0, scanY.current - 40, 0, scanY.current + 40);
-      g.addColorStop(0,   "rgba(34,238,102,0)");
-      g.addColorStop(0.5, "rgba(34,238,102,0.1)");
-      g.addColorStop(1,   "rgba(34,238,102,0)");
-      ctx.fillStyle = g;
-      ctx.fillRect(0, scanY.current - 40, W, 80);
-    }
-
-    // ── Field lines
-    ctx.strokeStyle = "rgba(255,255,255,0.28)";
-    ctx.lineWidth   = 1.5;
-    ctx.setLineDash([]);
-
-    // Boundary
-    ctx.strokeRect(30, 20, W - 60, H - 40);
-
-    // Halfway line
-    ctx.beginPath(); ctx.moveTo(W/2, 20); ctx.lineTo(W/2, H-20); ctx.stroke();
-
-    // Centre circle
-    ctx.beginPath(); ctx.arc(W/2, H/2, 55, 0, Math.PI*2); ctx.stroke();
-    ctx.beginPath(); ctx.arc(W/2, H/2, 3,  0, Math.PI*2);
-    ctx.fillStyle = "rgba(255,255,255,0.35)"; ctx.fill();
-
-    // Right penalty box (attack side)
-    ctx.strokeRect(W-30-120, H/2-90, 120, 180);
-    ctx.strokeRect(W-30-55,  H/2-45,  55,  90);
-
-    // Left penalty box
-    ctx.strokeRect(30,      H/2-90, 120, 180);
-    ctx.strokeRect(30,      H/2-45,  55,  90);
-
-    // Goals
-    ctx.strokeStyle = "rgba(255,255,255,0.65)";
-    ctx.lineWidth   = 2.5;
-    ctx.strokeRect(W - 30, H/2 - 36, 18, 72);
-    ctx.strokeRect(12,     H/2 - 36, 18, 72);
-
-    // Penalty spots
-    ctx.setLineDash([]);
-    ctx.fillStyle = "rgba(255,255,255,0.35)";
-    ctx.beginPath(); ctx.arc(W - 30 - 82, H/2, 3, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(30 + 82,     H/2, 3, 0, Math.PI*2); ctx.fill();
-
-    // ── Offside line
-    if (lines) {
-      const a = 0.7 + pulse * 0.2;
-      ctx.save();
-      ctx.strokeStyle = `rgba(255,50,50,${a})`;
-      ctx.lineWidth   = 2.5;
-      ctx.setLineDash([9, 5]);
-      ctx.shadowColor = "rgba(255,50,50,0.85)";
-      ctx.shadowBlur  = 14 + pulse * 6;
-      ctx.beginPath();
-      ctx.moveTo(OFFSIDE_X, 20);
-      ctx.lineTo(OFFSIDE_X, H - 20);
-      ctx.stroke();
-      ctx.restore();
-
-      ctx.save();
-      ctx.setLineDash([]);
-      ctx.fillStyle  = `rgba(255,70,70,${a})`;
-      ctx.font       = "bold 10px 'Courier New'";
-      ctx.textAlign  = "center";
-      ctx.fillText("OFFSIDE LINE", OFFSIDE_X, 14);
-      ctx.restore();
-    }
-
-    // ── Ball
-    const bx = 495, by = 278;
-    ctx.save();
-    ctx.shadowColor = "rgba(255,255,255,0.8)";
-    ctx.shadowBlur  = 12 + pulse * 4;
-    ctx.beginPath(); ctx.arc(bx, by, 8, 0, Math.PI*2);
-    ctx.fillStyle   = "white"; ctx.fill();
-    ctx.setLineDash([]);
-    ctx.strokeStyle = "#555"; ctx.lineWidth = 1; ctx.stroke();
-    ctx.restore();
-
-    // Ball contact ring
-    if (lines) {
-      ctx.save();
-      ctx.strokeStyle = `rgba(255,210,0,${0.45 + pulse * 0.35})`;
-      ctx.lineWidth   = 1.5;
-      ctx.setLineDash([3, 3]);
-      ctx.beginPath(); ctx.arc(bx, by, 18 + pulse * 4, 0, Math.PI*2); ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle  = `rgba(255,210,0,${0.65 + pulse * 0.2})`;
-      ctx.font       = "bold 8px 'Courier New'";
-      ctx.textAlign  = "center";
-      ctx.fillText("⚽ CONTACT", bx, by - 26);
-      ctx.restore();
-    }
-
-    // ── Players
-    PLAYERS.forEach(p => {
-      const isAtk = p.team === "attack";
-      const isOff = p.offside;
-      const color = isAtk
-        ? (isOff ? "#ff3c3c" : "#22ee66")
-        : (p.isGK ? "#f5c518" : "#3d90ff");
-
-      // Skeleton body
-      if (skeleton && p.bp) {
-        ctx.save();
-        ctx.strokeStyle = isOff ? "rgba(255,80,80,0.8)" : "rgba(34,238,102,0.8)";
-        ctx.lineWidth   = 2;
-        ctx.setLineDash([]);
-        ctx.shadowBlur  = 4;
-        ctx.shadowColor = isOff ? "rgba(255,60,60,0.5)" : "rgba(34,238,102,0.4)";
-        for (let i = 0; i < p.bp.length - 1; i++) {
-          ctx.beginPath();
-          ctx.moveTo(p.bp[i][0],     p.bp[i][1]);
-          ctx.lineTo(p.bp[i+1][0],   p.bp[i+1][1]);
-          ctx.stroke();
-        }
-        p.bp.forEach(pt => {
-          ctx.beginPath(); ctx.arc(pt[0], pt[1], 3, 0, Math.PI*2);
-          ctx.fillStyle = isOff ? "#ff7070" : "#44ff88"; ctx.fill();
-        });
-        ctx.restore();
-      }
-
-      // Pulsing offside glow ring
-      if (isAtk && isOff) {
-        ctx.save();
-        ctx.setLineDash([]);
-        ctx.beginPath(); ctx.arc(p.x, p.y, 23 + pulse * 3, 0, Math.PI*2);
-        ctx.strokeStyle = `rgba(255,60,60,${0.2 + pulse * 0.15})`;
-        ctx.lineWidth   = 4;
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      // Player disc
-      ctx.save();
-      ctx.setLineDash([]);
-      ctx.shadowColor = color;
-      ctx.shadowBlur  = isAtk && isOff ? 18 + pulse * 8 : 5;
-      ctx.beginPath(); ctx.arc(p.x, p.y, 16, 0, Math.PI*2);
-      ctx.fillStyle   = color + "30"; ctx.fill();
-      ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.stroke();
-
-      // Jersey number
-      ctx.shadowBlur = 0;
-      ctx.fillStyle  = "white";
-      ctx.font       = "bold 11px 'Courier New'";
-      ctx.textAlign  = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(p.num, p.x, p.y);
-
-      // Player name below
-      ctx.font      = "8.5px 'Courier New'";
-      ctx.fillStyle = color;
-      ctx.textBaseline = "alphabetic";
-      ctx.fillText(p.name, p.x, p.y + 28);
-      ctx.restore();
-
-      // OFFSIDE / ONSIDE label
-      if (isAtk && lines) {
-        ctx.save();
-        ctx.setLineDash([]);
-        ctx.textAlign = "center";
-        if (isOff) {
-          const a  = 0.85 + pulse * 0.15;
-          const tw = ctx.measureText("▲ OFFSIDE").width + 10;
-          ctx.fillStyle = `rgba(180,0,0,${a * 0.85})`;
-          ctx.fillRect(p.x - tw/2, p.y - 44, tw, 14);
-          ctx.fillStyle = `rgba(255,200,200,${a})`;
-          ctx.font      = "bold 9px 'Courier New'";
-          ctx.fillText("▲ OFFSIDE", p.x, p.y - 33);
-
-          // Distance dashed line to offside line
-          ctx.strokeStyle = "rgba(255,80,80,0.4)";
-          ctx.lineWidth   = 1;
-          ctx.setLineDash([4, 3]);
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(OFFSIDE_X, p.y);
-          ctx.stroke();
-          ctx.setLineDash([]);
-          ctx.fillStyle = "rgba(255,130,130,0.9)";
-          ctx.font      = "8px 'Courier New'";
-          ctx.fillText("+" + (p.x - OFFSIDE_X) + "px", (p.x + OFFSIDE_X) / 2, p.y - 5);
-        } else {
-          ctx.fillStyle = "rgba(34,200,80,0.85)";
-          ctx.font      = "bold 9px 'Courier New'";
-          ctx.fillText("✓ ONSIDE", p.x, p.y - 30);
-        }
-        ctx.restore();
-      }
-    });
-
-    animRef.current = requestAnimationFrame(render);
-  }, [skeleton, lines, scanning]);
-
-  useEffect(() => {
-    animRef.current = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animRef.current);
-  }, [render]);
-
-  return <canvas ref={canvasRef} width={FW} height={FH} />;
-}
-
-// ─── CONFIDENCE BAR ────────────────────────────────────────────────────────────
-function ConfBar({ val }) {
-  const pct   = Math.round(val * 100);
-  const color = pct >= 95 ? "#22ee66" : pct >= 85 ? "#f5c518" : "#ff5555";
-  return (
-    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-      <div style={{ flex:1, height:5, background:"#0e1e0e", borderRadius:3, overflow:"hidden" }}>
-        <div style={{ width:`${pct}%`, height:"100%", background:color, borderRadius:3, transition:"width 0.5s" }} />
-      </div>
-      <span style={{ color, fontSize:11, minWidth:34, fontFamily:"monospace" }}>{pct}%</span>
-    </div>
-  );
-}
-
-// ─── TOGGLE ────────────────────────────────────────────────────────────────────
-function Toggle({ label, val, set }) {
-  return (
-    <label style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer", fontSize:10, color:"#5a8a5a", userSelect:"none" }}>
-      <div
-        onClick={() => set(!val)}
-        style={{
-          width:28, height:16, borderRadius:8,
-          background: val ? "#22ee66" : "#172017",
-          position:"relative", transition:"background 0.2s",
-          border: "1px solid " + (val ? "#22ee66" : "#2a4a2a")
-        }}
-      >
+      )}
+      
+      {analysis && !loading && (
         <div style={{
-          position:"absolute", top:2,
-          left: val ? 13 : 2,
-          width:10, height:10, borderRadius:"50%",
-          background: val ? "#080f08" : "#4a7a4a",
-          transition:"left 0.2s"
-        }} />
-      </div>
-      {label}
-    </label>
-  );
-}
-
-// ─── TOP-DOWN VIEW ─────────────────────────────────────────────────────────────
-function TopDownView() {
-  return (
-    <div style={{ padding:18, minHeight:440 }}>
-      <div style={{ color:"#3a6a3a", fontSize:10, marginBottom:12, letterSpacing:"0.12em" }}>
-        TOP-DOWN PERSPECTIVE · CAMERA 5 — DEDICATED OFFSIDE LINE CAM
-      </div>
-      <div style={{ position:"relative", background:"#0a2c16", borderRadius:5, height:400, border:"1px solid #1a3c1a", overflow:"hidden" }}>
-        {/* Field boundary */}
-        <div style={{ position:"absolute", inset:18, border:"1px solid rgba(255,255,255,0.2)" }} />
-        {/* Halfway */}
-        <div style={{ position:"absolute", top:18, bottom:18, left:"50%", width:1, background:"rgba(255,255,255,0.18)" }} />
-        {/* Centre circle approx */}
-        <div style={{ position:"absolute", top:"50%", left:"50%", width:60, height:60, borderRadius:"50%", border:"1px solid rgba(255,255,255,0.15)", transform:"translate(-50%,-50%)" }} />
-        {/* Right penalty box */}
-        <div style={{ position:"absolute", top:"24%", bottom:"24%", right:18, width:"17%", border:"1px solid rgba(255,255,255,0.15)" }} />
-        {/* Left penalty box */}
-        <div style={{ position:"absolute", top:"24%", bottom:"24%", left:18, width:"17%", border:"1px solid rgba(255,255,255,0.15)" }} />
-        {/* Offside line */}
-        <div style={{ position:"absolute", top:18, bottom:18, left:"73%", width:2, background:"rgba(255,55,55,0.85)", boxShadow:"0 0 10px rgba(255,55,55,0.7)" }} />
-        <div style={{ position:"absolute", top:6, left:"71%", color:"#ff6060", fontSize:8, fontWeight:"bold", letterSpacing:"0.05em" }}>OFFSIDE</div>
-
-        {/* Players */}
-        {PLAYERS.map(p => {
-          const lx  = ((p.x - 30) / (FW - 60)) * 90 + 5;
-          const ly  = ((p.y - 20) / (FH - 40)) * 90 + 5;
-          const col = p.team === "attack"
-            ? (p.offside ? "#ff4040" : "#22ee66")
-            : (p.isGK ? "#f5c518" : "#3d90ff");
-          return (
-            <div key={p.id} title={p.name + " #" + p.num} style={{
-              position:"absolute", left:`${lx}%`, top:`${ly}%`,
-              width:11, height:11, borderRadius:"50%",
-              background:col, transform:"translate(-50%,-50%)",
-              border:"1.5px solid rgba(255,255,255,0.4)",
-              boxShadow: p.offside ? "0 0 8px rgba(255,60,60,0.9)" : "none",
-              cursor:"default"
-            }}>
-              <span style={{ position:"absolute", top:-13, left:"50%", transform:"translateX(-50%)", fontSize:7, color:"rgba(255,255,255,0.7)", whiteSpace:"nowrap" }}>{p.name}</span>
-            </div>
-          );
-        })}
-        {/* Ball */}
-        <div style={{
-          position:"absolute",
-          left: `${((495 - 30) / (FW - 60)) * 90 + 5}%`,
-          top:  `${((278 - 20) / (FH - 40)) * 90 + 5}%`,
-          width:9, height:9, borderRadius:"50%",
-          background:"white", transform:"translate(-50%,-50%)",
-          boxShadow:"0 0 8px rgba(255,255,255,0.9)"
-        }} />
-      </div>
-    </div>
-  );
-}
-
-// ─── REPORT VIEW ───────────────────────────────────────────────────────────────
-function ReportView() {
-  return (
-    <div style={{ padding:18, minHeight:440 }}>
-      <div style={{ color:"#22ee66", fontSize:13, fontWeight:"bold", marginBottom:14, letterSpacing:"0.1em" }}>
-        ▣ AUTOMATED REFEREE REPORT
-      </div>
-      <div style={{ background:"#0b1c0b", borderRadius:5, padding:16, border:"1px solid #1a381a", fontSize:11, lineHeight:1.95, color:"#88b488" }}>
-        <div style={{ color:"#22ee66", marginBottom:10, fontSize:12 }}>── INCIDENT SUMMARY · UCL QF G2 ──</div>
-        <div>Timestamp: <span style={{ color:"#c8e6c9" }}>47:23.4</span> &nbsp;|&nbsp; Frame: <span style={{ color:"#c8e6c9" }}>#84234</span></div>
-        <div>Ball contact: <span style={{ color:"#c8e6c9" }}>SANÉ (#10)</span> at coords <span style={{ color:"#c8e6c9" }}>(495, 278)</span></div>
-        <div>Last defender: <span style={{ color:"#c8e6c9" }}>RÜDIGER (#5)</span> at x=568</div>
-        <div>2nd-last defender: <span style={{ color:"#c8e6c9" }}>SÜLE (#15)</span> at x={OFFSIDE_X} → sets offside line</div>
-        <br/>
-        <div style={{ color:"#ff6060", fontSize:12 }}>⚠ OFFSIDE VIOLATIONS:</div>
-        <div>&nbsp;&nbsp;→ <span style={{ color:"#ffbbbb" }}>MÜLLER (#9)</span>: body x=575, +{575-OFFSIDE_X}px beyond line →&nbsp;
-          <span style={{ color:"#ff5555", fontWeight:"bold" }}>OFFSIDE</span>&nbsp;
-          <span style={{ color:"#4a7a4a" }}>(97%)</span>
-        </div>
-        <div>&nbsp;&nbsp;→ <span style={{ color:"#ffbbbb" }}>GNABRY (#7)</span>: body x=548, +{548-OFFSIDE_X}px beyond line →&nbsp;
-          <span style={{ color:"#ff5555", fontWeight:"bold" }}>OFFSIDE</span>&nbsp;
-          <span style={{ color:"#4a7a4a" }}>(91%)</span>
-        </div>
-        <br/>
-        <div style={{ color:"#22ee66", fontSize:12 }}>✓ ONSIDE:</div>
-        <div>&nbsp;&nbsp;→ <span style={{ color:"#aaffcc" }}>SANÉ (#10)</span>: body x=510, behind line →&nbsp;
-          <span style={{ color:"#22ee66", fontWeight:"bold" }}>ONSIDE</span>&nbsp;
-          <span style={{ color:"#4a7a4a" }}>(94%)</span>
-        </div>
-        <br/>
-        <div style={{ color:"#f5c518" }}>◈ VAR DECISION: Goal disallowed — offside.</div>
-        <div>System confidence: <span style={{ color:"#22ee66", fontWeight:"bold" }}>96.2%</span> · Cameras: 3/6</div>
-        <br/>
-        <div style={{ color:"#2a4a2a", fontSize:9 }}>Generated by VAR·OFFSIDE·AI v2.4 · SAOT 29pt · FIFA 2025/26</div>
-      </div>
-    </div>
-  );
-}
-
-// ─── MAIN APP ──────────────────────────────────────────────────────────────────
-function App() {
-  const [skeleton,    setSkeleton]    = useState(true);
-  const [lines,       setLines]       = useState(true);
-  const [tab,         setTab]         = useState("field");
-  const [scanning,    setScanning]    = useState(false);
-  const [showResult,  setShowResult]  = useState(true);
-  const [jsonOpen,    setJsonOpen]    = useState(false);
-  const [copied,      setCopied]      = useState(false);
-  const [clock,       setClock]       = useState("");
-  const [mediaModal,  setMediaModal]  = useState({ isOpen: false, type: 'image', url: '' });
-
-  useEffect(() => {
-    const t = setInterval(() => setClock(new Date().toISOString().slice(11,19)), 1000);
-    setClock(new Date().toISOString().slice(11,19));
-    return () => clearInterval(t);
-  }, []);
-
-  const runScan = () => {
-    setShowResult(false);
-    setScanning(true);
-    setTimeout(() => { setScanning(false); setShowResult(true); }, 3000);
-  };
-
-  const copyJSON = () => {
-    navigator.clipboard.writeText(JSON.stringify(JSON_DATA, null, 2)).catch(() => {});
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
-
-  const openMedia = (type) => {
-    setMediaModal({
-      isOpen: true,
-      type: type,
-      url: type === 'image' ? MEDIA_URLS.image : MEDIA_URLS.video
-    });
-  };
-
-  const closeMedia = () => {
-    setMediaModal({ isOpen: false, type: '', url: '' });
-  };
-
-  const offCount = PLAYERS.filter(p => p.offside).length;
-
-  // ── Shared styles
-  const panelStyle = {
-    background:"#09160a", border:"1px solid #1a381a",
-    borderRadius:7, overflow:"hidden"
-  };
-  const headStyle = {
-    padding:"9px 14px", borderBottom:"1px solid #1a381a",
-    fontSize:10, color:"#4a7a4a", letterSpacing:"0.12em",
-    display:"flex", justifyContent:"space-between", alignItems:"center"
-  };
-
-  const tabStyle = (active) => ({
-    padding:"6px 13px",
-    background: active ? "#0b2610" : "transparent",
-    border:"1px solid",
-    borderColor: active ? "#22ee66" : "transparent",
-    borderBottom:"none",
-    borderRadius:"4px 4px 0 0",
-    color: active ? "#22ee66" : "#4a7a4a",
-    fontSize:10, letterSpacing:"0.07em",
-    textTransform:"uppercase"
-  });
-
-  return (
-    <div style={{ minHeight:"100vh", background:"#070e07", color:"#c8e6c9", fontFamily:"'Courier New',monospace", paddingBottom:40 }}>
-
-      {/* Media Modal */}
-      <MediaModal 
-        isOpen={mediaModal.isOpen}
-        onClose={closeMedia}
-        mediaType={mediaModal.type}
-        mediaUrl={mediaModal.url}
-      />
-
-      {/* ══ HEADER ══════════════════════════════════════════════════════════════ */}
-      <div style={{
-        background:"linear-gradient(90deg,#0b1e0c,#060f07,#0b1e0c)",
-        borderBottom:"1px solid #183218",
-        padding:"12px 22px",
-        display:"flex", alignItems:"center", justifyContent:"space-between",
-        position:"sticky", top:0, zIndex:50
-      }}>
-        <div style={{ display:"flex", alignItems:"center", gap:14 }}>
-          <div style={{
-            width:38, height:38, borderRadius:9,
-            background:"linear-gradient(135deg,#22ee66,#0a5525)",
-            display:"flex", alignItems:"center", justifyContent:"center",
-            fontSize:21
-          }}>⚽</div>
-          <div>
-            <div style={{ fontSize:17, fontWeight:"bold", color:"#22ee66", letterSpacing:"0.14em" }}>
-              VAR · OFFSIDE · AI
-            </div>
-            <div style={{ fontSize:8.5, color:"#3a6030", letterSpacing:"0.15em" }}>
-              FIFA 2025/2026 · SAOT v4.2 · 29-POINT TRACKING
-            </div>
-          </div>
-        </div>
-
-        <div style={{ display:"flex", alignItems:"center", gap:18 }}>
-          <div style={{ textAlign:"right" }}>
-            <div style={{ fontSize:8.5, color:"#3a6030" }}>LIVE MATCH</div>
-            <div style={{ fontSize:13, color:"#c8e6c9", fontWeight:"bold" }}>UCL QF · 47:23</div>
-          </div>
-          <div style={{
-            padding:"4px 12px", borderRadius:4, fontSize:11, letterSpacing:"0.1em",
-            background: scanning ? "rgba(255,50,50,0.1)" : "rgba(34,238,102,0.1)",
-            border: `1px solid ${scanning ? "#ff4040" : "#22ee66"}`,
-            color: scanning ? "#ff5555" : "#22ee66",
-            animation: scanning ? "blink 0.7s infinite" : "none"
-          }}>
-            {scanning ? "● SCANNING" : "● READY"}
-          </div>
-          <div style={{ fontSize:9.5, color:"#3a6030" }}>CAM 3/6 · HD 1080p · {clock}</div>
-        </div>
-      </div>
-
-      {/* ══ BODY ════════════════════════════════════════════════════════════════ */}
-      <div style={{ maxWidth:1300, margin:"0 auto", padding:"16px 16px 0" }}>
-
-        {/* Alert banner */}
-        {showResult && (
-          <div style={{
-            background:"linear-gradient(90deg,rgba(255,45,45,0.13),rgba(255,45,45,0.03))",
-            border:"1px solid rgba(255,55,55,0.42)",
-            borderRadius:7, padding:"11px 18px", marginBottom:16,
-            display:"flex", alignItems:"center", gap:16,
-            animation:"fadeIn 0.4s ease"
-          }}>
-            <div style={{ fontSize:26 }}>🚩</div>
-            <div style={{ flex:1 }}>
-              <div style={{ fontSize:14, fontWeight:"bold", color:"#ff5555", letterSpacing:"0.05em" }}>
-                OFFSIDE DETECTED — {offCount} PLAYERS IN OFFSIDE POSITION
-              </div>
-              <div style={{ fontSize:9.5, color:"#7a3535", marginTop:2 }}>
-                Frame #84234 · Contact at (495,278) · 2nd-last defender Süle at x={OFFSIDE_X} · {offCount}/3 attackers flagged
-              </div>
-            </div>
-            <div style={{ textAlign:"right" }}>
-              <div style={{ fontSize:8.5, color:"#4a7a4a", letterSpacing:"0.1em" }}>CONFIDENCE</div>
-              <div style={{ fontSize:24, fontWeight:"bold", color:"#22ee66" }}>96.2%</div>
-            </div>
-          </div>
-        )}
-
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 330px", gap:16 }}>
-
-          {/* ── LEFT PANEL ────────────────────────────────────────────────────── */}
-          <div>
-            {/* Tabs */}
-            <div style={{
-              display:"flex", gap:2,
-              background:"#080f08",
-              border:"1px solid #1a381a", borderBottom:"none",
-              borderRadius:"7px 7px 0 0",
-              padding:"6px 10px 0"
-            }}>
-              {[["field","📹 Broadcast"],["topdown","🔭 Top-Down"],["report","📋 Report"]].map(([k,l]) => (
-                <button key={k} style={tabStyle(tab===k)} onClick={() => setTab(k)}>{l}</button>
-              ))}
-              <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:12, paddingBottom:6 }}>
-                <Toggle label="Skeleton" val={skeleton} set={setSkeleton} />
-                <Toggle label="Lines"    val={lines}    set={setLines}    />
-              </div>
-            </div>
-
-            {/* Viewer box */}
-            <div style={{ ...panelStyle, borderRadius:"0 0 7px 7px", borderTop:"none" }}>
-              {tab === "field"   && <FieldCanvas skeleton={skeleton} lines={lines} scanning={scanning} />}
-              {tab === "topdown" && <TopDownView />}
-              {tab === "report"  && <ReportView  />}
-
-              {/* Toolbar */}
-              <div style={{ borderTop:"1px solid #1a381a", padding:"8px 14px", display:"flex", alignItems:"center", gap:12, background:"#060d06" }}>
-                <button
-                  onClick={runScan}
-                  disabled={scanning}
-                  style={{
-                    padding:"6px 18px",
-                    background: scanning ? "#131e13" : "linear-gradient(90deg,#0b5822,#22ee66)",
-                    border:"none", borderRadius:5,
-                    color: scanning ? "#3a5a3a" : "#060d06",
-                    fontWeight:"bold", fontSize:11, letterSpacing:"0.05em",
-                    opacity: scanning ? 0.7 : 1
-                  }}
-                >
-                  {scanning ? "⟳ ANALYZING..." : "▶ RUN SCAN"}
-                </button>
-                <span style={{ color:"#183218" }}>|</span>
-                <span style={{ fontSize:9.5, color:"#3a6030" }}>FPS: 60 · LATENCY: 34ms · SAOT 29pt · GPU: A100</span>
-                <div style={{ marginLeft:"auto", fontSize:9, color:"#223022" }}>FRAME #84234 · {clock}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* ── RIGHT PANEL ───────────────────────────────────────────────────── */}
-          <div style={{ display:"flex", flexDirection:"column", gap:13 }}>
-
-            {/* Player tracking */}
-            <div style={panelStyle}>
-              <div style={headStyle}>
-                <span>PLAYER DETECTION</span>
-                <span style={{ color:"#22ee66" }}>{PLAYERS.length} TRACKED</span>
-              </div>
-
-              {/* Attackers */}
-              {PLAYERS.filter(p => p.team === "attack").map(p => (
-                <div key={p.id} style={{ padding:"9px 14px", borderBottom:"1px solid #0d1c0d" }}>
-                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:5 }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                      <div style={{
-                        width:24, height:24, borderRadius:"50%",
-                        background: p.offside ? "rgba(255,60,60,0.12)" : "rgba(34,238,102,0.1)",
-                        border:`2px solid ${p.offside ? "#ff4040" : "#22ee66"}`,
-                        display:"flex", alignItems:"center", justifyContent:"center",
-                        fontSize:10, color: p.offside ? "#ff6060" : "#22ee66", fontWeight:"bold"
-                      }}>{p.num}</div>
-                      <div>
-                        <div style={{ fontSize:11, color:"#c8e6c9", fontWeight:"bold" }}>{p.name}</div>
-                        <div style={{ fontSize:8.5, color:"#3a6030" }}>ATK · ({p.x},{p.y})</div>
-                      </div>
-                    </div>
-                    <div style={{
-                      fontSize:9, fontWeight:"bold",
-                      color: p.offside ? "#ff5555" : "#22ee66",
-                      padding:"2px 7px", borderRadius:3,
-                      background: p.offside ? "rgba(255,60,60,0.1)" : "rgba(34,238,102,0.1)",
-                      border:`1px solid ${p.offside ? "rgba(255,60,60,0.35)" : "rgba(34,238,102,0.35)"}`
-                    }}>
-                      {p.offside ? "OFFSIDE" : "ONSIDE"}
-                    </div>
-                  </div>
-                  <ConfBar val={p.conf} />
-                  {p.offside && (
-                    <div style={{ fontSize:8, color:"#7a3535", marginTop:3 }}>
-                      Advanced {p.x - OFFSIDE_X}px beyond the offside line
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              {/* Defenders */}
-              <div style={{ padding:"5px 14px 8px", borderTop:"1px solid #0d1c0d" }}>
-                <div style={{ fontSize:8.5, color:"#2a4a2a", letterSpacing:"0.1em", marginBottom:4 }}>DEFENDERS</div>
-                {PLAYERS.filter(p => p.team === "defend").map(p => (
-                  <div key={p.id} style={{ display:"flex", alignItems:"center", gap:7, padding:"3px 0", borderBottom:"1px solid #0a160a" }}>
-                    <div style={{
-                      width:16, height:16, borderRadius:"50%", flexShrink:0,
-                      background: p.isGK ? "rgba(245,197,24,0.12)" : "rgba(61,144,255,0.1)",
-                      border:`1.5px solid ${p.isGK ? "#f5c518" : "#3d90ff"}`,
-                      display:"flex", alignItems:"center", justifyContent:"center",
-                      fontSize:7, color: p.isGK ? "#f5c518" : "#3d90ff", fontWeight:"bold"
-                    }}>{p.num}</div>
-                    <div style={{ fontSize:9.5, color:"#5a8a5a" }}>{p.name}{p.isGK ? " (GK)" : ""}</div>
-                    <div style={{ marginLeft:"auto", fontSize:8, color:"#2a4a2a" }}>x={p.x}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Media Verification Section - NEW */}
-            <div style={panelStyle}>
-              <div style={headStyle}>
-                <span>📸 التحقق بالتسلل</span>
-                <span style={{ color:"#22ee66" }}>VAR</span>
-              </div>
-              <div style={{ padding:"12px 14px" }}>
-                <div style={{ fontSize:11, color:"#88b488", marginBottom:12, textAlign:"center" }}>
-                  اضغط على الأزرار أدناه لمشاهدة الوسائط التوضيحية لحظة التسلل
-                </div>
-                <div style={{ display:"flex", gap:10, justifyContent:"center" }}>
-                  <button
-                    onClick={() => openMedia('image')}
-                    style={{
-                      padding:"8px 16px",
-                      background:"linear-gradient(90deg,#1a3a1a,#2a5a2a)",
-                      border:"1px solid #22ee66",
-                      borderRadius:5,
-                      color:"white",
-                      fontSize:11,
-                      fontWeight:"bold",
-                      cursor:"pointer",
-                      display:"flex",
-                      alignItems:"center",
-                      gap:5
-                    }}
-                  >
-                    <span style={{ fontSize:16 }}>🖼️</span>
-                    صورة توضيحية
-                  </button>
-                  <button
-                    onClick={() => openMedia('video')}
-                    style={{
-                      padding:"8px 16px",
-                      background:"linear-gradient(90deg,#1a3a5a,#2a5a7a)",
-                      border:"1px solid #3d90ff",
-                      borderRadius:5,
-                      color:"white",
-                      fontSize:11,
-                      fontWeight:"bold",
-                      cursor:"pointer",
-                      display:"flex",
-                      alignItems:"center",
-                      gap:5
-                    }}
-                  >
-                    <span style={{ fontSize:16 }}>🎥</span>
-                    مقطع فيديو
-                  </button>
-                </div>
-                <div style={{ 
-                  marginTop:12, 
-                  fontSize:9, 
-                  color:"#4a7a4a", 
-                  textAlign:"center",
-                  borderTop:"1px solid #1a381a",
-                  paddingTop:8
-                }}>
-                  اللقطة تظهر موقع اللاعبين بالنسبة لخط التسلل
-                </div>
-              </div>
-            </div>
-
-            {/* Event log */}
-            <div style={panelStyle}>
-              <div style={headStyle}>
-                <span>EVENT LOG</span>
-                <span style={{ color:"#2a4a2a" }}>47:23</span>
-              </div>
-              {EVENTS.map(ev => (
-                <div key={ev.id} style={{ padding:"8px 14px", borderBottom:"1px solid #0b190b", display:"flex", alignItems:"center", gap:10 }}>
-                  <div style={{
-                    width:8, height:8, borderRadius:"50%", flexShrink:0,
-                    background: ev.status === "OFFSIDE" ? "#ff4040" : "#22ee66",
-                    boxShadow:`0 0 5px ${ev.status === "OFFSIDE" ? "#ff4040" : "#22ee66"}`
-                  }} />
-                  <div style={{ flex:1 }}>
-                    <div style={{ fontSize:11, fontWeight:"bold", color: ev.status === "OFFSIDE" ? "#ff8888" : "#70e870" }}>
-                      {ev.player} · {ev.status}
-                    </div>
-                    <div style={{ fontSize:8.5, color:"#2a4a2a" }}>{ev.time} · conf: {Math.round(ev.conf*100)}%</div>
-                  </div>
-                  <div style={{
-                    fontSize:8, padding:"2px 6px", borderRadius:3,
-                    color: ev.status === "OFFSIDE" ? "#7a3535" : "#2a5a3a",
-                    border:`1px solid ${ev.status === "OFFSIDE" ? "rgba(255,60,60,0.25)" : "rgba(34,238,102,0.25)"}`
-                  }}>FLAG</div>
-                </div>
-              ))}
-            </div>
-
-            {/* JSON Output */}
-            <div style={panelStyle}>
-              <div style={{ ...headStyle, cursor:"pointer" }} onClick={() => setJsonOpen(!jsonOpen)}>
-                <span>JSON OUTPUT <span style={{ color:"#2a4a2a" }}>{jsonOpen ? "▲" : "▼"}</span></span>
-                <button
-                  onClick={(e) => { e.stopPropagation(); copyJSON(); }}
-                  style={{
-                    background:"transparent",
-                    border:`1px solid ${copied ? "#22ee66" : "#2a4a2a"}`,
-                    borderRadius:3, padding:"2px 8px", fontSize:9,
-                    color: copied ? "#22ee66" : "#2a5a2a"
-                  }}
-                >
-                  {copied ? "✓ COPIED" : "COPY"}
-                </button>
-              </div>
-              {jsonOpen ? (
-                <pre style={{ margin:0, padding:"10px 14px", fontSize:8.5, color:"#3a7a3a", background:"#050c05", overflowX:"auto", maxHeight:200, overflowY:"auto", lineHeight:1.7 }}>
-                  {JSON.stringify(JSON_DATA, null, 2)}
-                </pre>
-              ) : (
-                <div style={{ padding:"7px 14px", fontSize:9, color:"#2a4a2a" }}>
-                  {PLAYERS.filter(p=>p.team==="attack").length} player records · click to expand
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* ══ METRICS ════════════════════════════════════════════════════════════ */}
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:10, marginTop:14 }}>
-          {[
-            { label:"DETECTION ACCURACY", val:"97.4%",    color:"#22ee66" },
-            { label:"FRAMES PROCESSED",   val:"84,234",   color:"#3d90ff" },
-            { label:"AVG LATENCY",        val:"34ms",     color:"#22ee66" },
-            { label:"CAMERAS ACTIVE",     val:"3 / 6",    color:"#f5c518" },
-            { label:"OFFSIDE FLAGS",      val:`${offCount} / 3`, color:"#ff5555" },
-          ].map(m => (
-            <div key={m.label} style={{ background:"#09160a", border:"1px solid #1a381a", borderRadius:6, padding:"10px 14px" }}>
-              <div style={{ fontSize:8, color:"#3a6030", letterSpacing:"0.1em", marginBottom:4 }}>{m.label}</div>
-              <div style={{ fontSize:20, fontWeight:"bold", color:m.color, fontFamily:"monospace" }}>{m.val}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* ══ FOOTER WITH INSTRUCTIONS ═══════════════════════════════════════════ */}
-        <div style={{
-          marginTop:20,
-          padding:"10px 16px",
-          background:"#0a150a",
-          border:"1px solid #1a381a",
-          borderRadius:5,
-          fontSize:9,
-          color:"#3a6a3a",
-          textAlign:"center",
-          direction:"rtl"
+          position: 'absolute',
+          top: 10,
+          left: 10,
+          background: 'rgba(10,20,10,0.95)',
+          padding: '15px',
+          borderRadius: '8px',
+          border: `2px solid ${analysis.isOffside ? '#ff4444' : '#22ee66'}`,
+          maxWidth: '250px'
         }}>
-          <span style={{ color:"#22ee66", fontWeight:"bold" }}>📸 ميزة التحقق بالتسلل:</span> تم إضافة أزرار جديدة في اللوحة اليمنى لعرض صورة أو مقطع فيديو يوضح قرار التسلل. 
-          اضغط على "صورة توضيحية" لمشاهدة لقطة ثابتة أو "مقطع فيديو" لمشاهدة حركة اللاعبين في لحظة التمرير.
+          <div style={{ 
+            fontSize: '18px', 
+            fontWeight: 'bold',
+            color: analysis.isOffside ? '#ff8888' : '#88ff88',
+            marginBottom: '10px'
+          }}>
+            {analysis.decision}
+          </div>
+          <div style={{ fontSize: '12px', color: '#aaccaa' }}>
+            <div>⚽ ثقة التحليل: {analysis.confidence}%</div>
+            <div>📏 خط التسلل: X = {analysis.lastDefenderLine.toFixed(0)}</div>
+            <div>🚶 أبعد مهاجم: X = {analysis.furthestAttacker.x.toFixed(0)}</div>
+            {analysis.isOffside && (
+              <div style={{ color: '#ff8888' }}>
+                📏 متقدم بـ: {analysis.distanceBeyond.toFixed(0)} بكسل
+              </div>
+            )}
+            <hr style={{ borderColor: '#2a5a2a', margin: '8px 0' }} />
+            <div style={{ fontSize: '10px', color: '#88aa88' }}>
+              عدد اللاعبين: {players.length}<br/>
+              مهاجمين: {players.filter(p => p.team === 'attack').length}<br/>
+              مدافعين: {players.filter(p => p.team === 'defend').length}
+            </div>
+          </div>
         </div>
+      )}
+    </div>
+  );
+}
 
+// التطبيق الرئيسي
+function App() {
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [dragover, setDragover] = useState(false);
+  const fileInputRef = useRef(null);
+  
+  const handleImageUpload = (file) => {
+    if (!file || !file.type.startsWith('image/')) {
+      alert('الرجاء اختيار صورة صالحة');
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target.result);
+      setUploadedImage(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+  
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    handleImageUpload(file);
+  };
+  
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragover(true);
+  };
+  
+  const handleDragLeave = () => {
+    setDragover(false);
+  };
+  
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragover(false);
+    
+    const file = e.dataTransfer.files[0];
+    handleImageUpload(file);
+  };
+  
+  const handleReset = () => {
+    setUploadedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+  
+  return (
+    <div style={{ 
+      maxWidth: '1200px', 
+      margin: '0 auto', 
+      padding: '20px',
+      direction: 'rtl'
+    }}>
+      {/* الهيدر */}
+      <div style={{
+        background: 'linear-gradient(90deg, #0b1e0c, #061007)',
+        border: '1px solid #1a381a',
+        borderRadius: '10px',
+        padding: '20px',
+        marginBottom: '20px',
+        textAlign: 'center'
+      }}>
+        <h1 style={{ 
+          color: '#22ee66', 
+          fontSize: '32px',
+          marginBottom: '5px',
+          fontWeight: 'bold'
+        }}>
+          ⚽ VAR · OFFSIDE · AI ⚽
+        </h1>
+        <p style={{ color: '#88aa88', fontSize: '14px' }}>
+          نظام تحليل التسلل بالذكاء الاصطناعي - ارفع صورة من الملعب وسنحدد لك حالة التسلل
+        </p>
+      </div>
+      
+      {/* منطقة رفع الصورة */}
+      {!uploadedImage ? (
+        <div 
+          className={`upload-area ${dragover ? 'dragover' : ''}`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          style={{
+            background: '#0a1a0a',
+            border: `2px dashed ${dragover ? '#ffaa00' : '#2a5a2a'}`,
+            borderRadius: '10px',
+            padding: '50px',
+            textAlign: 'center',
+            cursor: 'pointer',
+            transition: 'all 0.3s',
+            marginBottom: '20px'
+          }}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <input 
+            type="file" 
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            accept="image/*"
+            style={{ display: 'none' }}
+          />
+          
+          <div style={{ fontSize: '50px', marginBottom: '20px' }}>📸</div>
+          <div style={{ color: '#22ee66', fontSize: '20px', marginBottom: '10px' }}>
+            اضغط أو اسحب وأفلت صورة هنا
+          </div>
+          <div style={{ color: '#5a8a5a', fontSize: '12px' }}>
+            الصيغ المدعومة: JPG, PNG, GIF - الحد الأقصى 10MB
+          </div>
+          <div style={{ 
+            marginTop: '20px', 
+            color: '#3a6a3a', 
+            fontSize: '11px',
+            background: '#0f200f',
+            padding: '10px',
+            borderRadius: '5px'
+          }}>
+            💡 للحصول على أفضل النتائج، استخدم صوراً واضحة من زاوية جانبية تظهر جميع اللاعبين
+          </div>
+        </div>
+      ) : (
+        // عرض الصورة مع التحليل
+        <div>
+          <div style={{
+            background: '#0a1a0a',
+            border: '1px solid #1a381a',
+            borderRadius: '10px',
+            padding: '20px',
+            marginBottom: '20px'
+          }}>
+            <ImageAnalyzer imageSrc={uploadedImage} />
+          </div>
+          
+          {/* أزرار التحكم */}
+          <div style={{
+            display: 'flex',
+            gap: '10px',
+            justifyContent: 'center',
+            marginBottom: '20px'
+          }}>
+            <button
+              onClick={handleReset}
+              style={{
+                padding: '10px 30px',
+                background: 'linear-gradient(90deg, #1a3a1a, #2a5a2a)',
+                border: '1px solid #22ee66',
+                borderRadius: '5px',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px'
+              }}
+            >
+              <span>🔄</span>
+              تحليل صورة جديدة
+            </button>
+            
+            <button
+              style={{
+                padding: '10px 30px',
+                background: 'linear-gradient(90deg, #1a3a5a, #2a5a7a)',
+                border: '1px solid #3d90ff',
+                borderRadius: '5px',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px'
+              }}
+              onClick={() => window.location.reload()}
+            >
+              <span>⚙️</span>
+              إعدادات متقدمة
+            </button>
+          </div>
+        </div>
+      )}
+      
+      {/* شرح النظام */}
+      <div style={{
+        background: '#0a150a',
+        border: '1px solid #1a381a',
+        borderRadius: '8px',
+        padding: '20px',
+        marginTop: '30px'
+      }}>
+        <h3 style={{ color: '#22ee66', marginBottom: '15px' }}>🔬 كيف يعمل النظام؟</h3>
+        
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+          gap: '15px'
+        }}>
+          <div style={{
+            background: '#0f200f',
+            padding: '15px',
+            borderRadius: '5px',
+            border: '1px solid #1a381a'
+          }}>
+            <div style={{ fontSize: '24px', marginBottom: '5px' }}>1️⃣</div>
+            <div style={{ fontWeight: 'bold', color: '#22ee66', marginBottom: '5px' }}>كشف اللاعبين</div>
+            <div style={{ fontSize: '12px', color: '#88aa88' }}>
+              استخدام الذكاء الاصطناعي لتحديد مواقع اللاعبين في الصورة
+            </div>
+          </div>
+          
+          <div style={{
+            background: '#0f200f',
+            padding: '15px',
+            borderRadius: '5px',
+            border: '1px solid #1a381a'
+          }}>
+            <div style={{ fontSize: '24px', marginBottom: '5px' }}>2️⃣</div>
+            <div style={{ fontWeight: 'bold', color: '#22ee66', marginBottom: '5px' }}>تحديد خط التسلل</div>
+            <div style={{ fontSize: '12px', color: '#88aa88' }}>
+              إيجاد ثاني آخر مدافع لتحديد خط التسلل المحتمل
+            </div>
+          </div>
+          
+          <div style={{
+            background: '#0f200f',
+            padding: '15px',
+            borderRadius: '5px',
+            border: '1px solid #1a381a'
+          }}>
+            <div style={{ fontSize: '24px', marginBottom: '5px' }}>3️⃣</div>
+            <div style={{ fontWeight: 'bold', color: '#22ee66', marginBottom: '5px' }}>تطبيق القوانين</div>
+            <div style={{ fontSize: '12px', color: '#88aa88' }}>
+              مقارنة مواقع المهاجمين مع خط التسلل وحساب المسافات
+            </div>
+          </div>
+          
+          <div style={{
+            background: '#0f200f',
+            padding: '15px',
+            borderRadius: '5px',
+            border: '1px solid #1a381a'
+          }}>
+            <div style={{ fontSize: '24px', marginBottom: '5px' }}>4️⃣</div>
+            <div style={{ fontWeight: 'bold', color: '#22ee66', marginBottom: '5px' }}>إصدار القرار</div>
+            <div style={{ fontSize: '12px', color: '#88aa88' }}>
+              تحديد حالة التسلل مع نسبة ثقة وتحليل مفصل
+            </div>
+          </div>
+        </div>
+        
+        <div style={{
+          marginTop: '20px',
+          padding: '15px',
+          background: '#0c1a0c',
+          borderRadius: '5px',
+          borderRight: '3px solid #22ee66',
+          fontSize: '13px',
+          color: '#aaccaa'
+        }}>
+          <strong style={{ color: '#22ee66' }}>⚽ قوانين التسلل المطبقة:</strong><br/>
+          • أن يكون اللاعب في نصف ملعب الخصم<br/>
+          • أن يكون أقرب لخط المرمى من ثاني آخر مدافع<br/>
+          • أن يكون مشاركاً في اللعب النشط<br/>
+          • لا يحتسب تسلل إذا كان اللاعب خلف الكرة
+        </div>
+      </div>
+      
+      {/* فوتر */}
+      <div style={{
+        marginTop: '20px',
+        padding: '10px',
+        textAlign: 'center',
+        color: '#3a6a3a',
+        fontSize: '11px',
+        borderTop: '1px solid #1a381a'
+      }}>
+        VAR · OFFSIDE · AI v2.0 · جميع الحقوق محفوظة © 2026 FIFA
       </div>
     </div>
   );
