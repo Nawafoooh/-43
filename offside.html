@@ -17,6 +17,40 @@ body{background:#080f08;font-family:'Courier New',monospace;color:#c8e6c9;overfl
 ::-webkit-scrollbar-thumb{background:#1e4020;border-radius:2px}
 button{font-family:'Courier New',monospace;cursor:pointer}
 canvas{display:block;width:100%;height:auto}
+.media-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.media-content {
+  max-width: 90%;
+  max-height: 90%;
+  position: relative;
+}
+.media-content img, .media-content video {
+  max-width: 100%;
+  max-height: 80vh;
+  border: 2px solid #22ee66;
+  border-radius: 8px;
+}
+.close-btn {
+  position: absolute;
+  top: -30px;
+  right: 0;
+  background: #ff4040;
+  color: white;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -73,6 +107,42 @@ const JSON_DATA = {
     pixels_beyond_line: p.offside ? p.x - OFFSIDE_X : 0
   }))
 };
+
+// Add media URLs for offside verification
+const MEDIA_URLS = {
+  image: "https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", // Football pitch image
+  video: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" // Sample video
+};
+
+// ─── MEDIA MODAL COMPONENT ───────────────────────────────────────────────────
+function MediaModal({ isOpen, onClose, mediaType, mediaUrl }) {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="media-modal" onClick={onClose}>
+      <div className="media-content" onClick={e => e.stopPropagation()}>
+        <button className="close-btn" onClick={onClose}>✕ إغلاق</button>
+        {mediaType === 'image' ? (
+          <img src={mediaUrl} alt="Offside verification" />
+        ) : (
+          <video controls autoPlay>
+            <source src={mediaUrl} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        )}
+        <div style={{ 
+          textAlign: 'center', 
+          color: '#22ee66', 
+          marginTop: '10px',
+          fontSize: '14px',
+          fontWeight: 'bold'
+        }}>
+          {mediaType === 'image' ? 'صورة توضيحية لحظة التسلل' : 'مقطع فيديو لحظة التسلل'}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ─── CANVAS FIELD ─────────────────────────────────────────────────────────────
 function FieldCanvas({ skeleton, lines, scanning }) {
@@ -447,6 +517,7 @@ function App() {
   const [jsonOpen,    setJsonOpen]    = useState(false);
   const [copied,      setCopied]      = useState(false);
   const [clock,       setClock]       = useState("");
+  const [mediaModal,  setMediaModal]  = useState({ isOpen: false, type: 'image', url: '' });
 
   useEffect(() => {
     const t = setInterval(() => setClock(new Date().toISOString().slice(11,19)), 1000);
@@ -464,6 +535,18 @@ function App() {
     navigator.clipboard.writeText(JSON.stringify(JSON_DATA, null, 2)).catch(() => {});
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
+  };
+
+  const openMedia = (type) => {
+    setMediaModal({
+      isOpen: true,
+      type: type,
+      url: type === 'image' ? MEDIA_URLS.image : MEDIA_URLS.video
+    });
+  };
+
+  const closeMedia = () => {
+    setMediaModal({ isOpen: false, type: '', url: '' });
   };
 
   const offCount = PLAYERS.filter(p => p.offside).length;
@@ -493,6 +576,14 @@ function App() {
 
   return (
     <div style={{ minHeight:"100vh", background:"#070e07", color:"#c8e6c9", fontFamily:"'Courier New',monospace", paddingBottom:40 }}>
+
+      {/* Media Modal */}
+      <MediaModal 
+        isOpen={mediaModal.isOpen}
+        onClose={closeMedia}
+        mediaType={mediaModal.type}
+        mediaUrl={mediaModal.url}
+      />
 
       {/* ══ HEADER ══════════════════════════════════════════════════════════════ */}
       <div style={{
@@ -680,6 +771,69 @@ function App() {
               </div>
             </div>
 
+            {/* Media Verification Section - NEW */}
+            <div style={panelStyle}>
+              <div style={headStyle}>
+                <span>📸 التحقق بالتسلل</span>
+                <span style={{ color:"#22ee66" }}>VAR</span>
+              </div>
+              <div style={{ padding:"12px 14px" }}>
+                <div style={{ fontSize:11, color:"#88b488", marginBottom:12, textAlign:"center" }}>
+                  اضغط على الأزرار أدناه لمشاهدة الوسائط التوضيحية لحظة التسلل
+                </div>
+                <div style={{ display:"flex", gap:10, justifyContent:"center" }}>
+                  <button
+                    onClick={() => openMedia('image')}
+                    style={{
+                      padding:"8px 16px",
+                      background:"linear-gradient(90deg,#1a3a1a,#2a5a2a)",
+                      border:"1px solid #22ee66",
+                      borderRadius:5,
+                      color:"white",
+                      fontSize:11,
+                      fontWeight:"bold",
+                      cursor:"pointer",
+                      display:"flex",
+                      alignItems:"center",
+                      gap:5
+                    }}
+                  >
+                    <span style={{ fontSize:16 }}>🖼️</span>
+                    صورة توضيحية
+                  </button>
+                  <button
+                    onClick={() => openMedia('video')}
+                    style={{
+                      padding:"8px 16px",
+                      background:"linear-gradient(90deg,#1a3a5a,#2a5a7a)",
+                      border:"1px solid #3d90ff",
+                      borderRadius:5,
+                      color:"white",
+                      fontSize:11,
+                      fontWeight:"bold",
+                      cursor:"pointer",
+                      display:"flex",
+                      alignItems:"center",
+                      gap:5
+                    }}
+                  >
+                    <span style={{ fontSize:16 }}>🎥</span>
+                    مقطع فيديو
+                  </button>
+                </div>
+                <div style={{ 
+                  marginTop:12, 
+                  fontSize:9, 
+                  color:"#4a7a4a", 
+                  textAlign:"center",
+                  borderTop:"1px solid #1a381a",
+                  paddingTop:8
+                }}>
+                  اللقطة تظهر موقع اللاعبين بالنسبة لخط التسلل
+                </div>
+              </div>
+            </div>
+
             {/* Event log */}
             <div style={panelStyle}>
               <div style={headStyle}>
@@ -751,6 +905,22 @@ function App() {
               <div style={{ fontSize:20, fontWeight:"bold", color:m.color, fontFamily:"monospace" }}>{m.val}</div>
             </div>
           ))}
+        </div>
+
+        {/* ══ FOOTER WITH INSTRUCTIONS ═══════════════════════════════════════════ */}
+        <div style={{
+          marginTop:20,
+          padding:"10px 16px",
+          background:"#0a150a",
+          border:"1px solid #1a381a",
+          borderRadius:5,
+          fontSize:9,
+          color:"#3a6a3a",
+          textAlign:"center",
+          direction:"rtl"
+        }}>
+          <span style={{ color:"#22ee66", fontWeight:"bold" }}>📸 ميزة التحقق بالتسلل:</span> تم إضافة أزرار جديدة في اللوحة اليمنى لعرض صورة أو مقطع فيديو يوضح قرار التسلل. 
+          اضغط على "صورة توضيحية" لمشاهدة لقطة ثابتة أو "مقطع فيديو" لمشاهدة حركة اللاعبين في لحظة التمرير.
         </div>
 
       </div>
