@@ -1,0 +1,2420 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>منصة التقارير المدرسية - متوسطة المنذر بن عمرو الأنصاري</title>
+
+  <!-- Bootstrap 5 RTL -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.rtl.min.css" />
+  <!-- Google Fonts Arabic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    :root {
+      --noor-dark:   #0d4a2f;
+      --noor-mid:    #1a6b47;
+      --noor-light:  #2e9e6b;
+      --noor-pale:   #d4ede2;
+      --noor-accent: #f0c040;
+      --sidebar-w:   270px;
+      --header-h:    80px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      background: #f4f7f5;
+      color: #1a2e25;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .site-header {
+      position: fixed;
+      top: 0; right: 0; left: 0;
+      height: var(--header-h);
+      background: linear-gradient(135deg, var(--noor-dark) 0%, var(--noor-mid) 100%);
+      box-shadow: 0 3px 16px rgba(0,0,0,.25);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 1050;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-emblem {
+      width: 52px; height: 52px;
+      background: rgba(255,255,255,.12);
+      border: 2px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: var(--noor-accent);
+    }
+
+    .header-title h1 {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #fff;
+      margin: 0;
+      letter-spacing: .2px;
+    }
+
+    .header-title p {
+      font-size: .72rem;
+      color: rgba(255,255,255,.65);
+      margin: 0;
+    }
+
+    .header-meta {
+      display: flex;
+      gap: 28px;
+    }
+
+    .meta-item {
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,.2);
+      padding-right: 28px;
+    }
+
+    .meta-item:last-child { border-right: none; padding-right: 0; }
+
+    .meta-item .label {
+      font-size: .68rem;
+      color: rgba(255,255,255,.6);
+      display: block;
+    }
+
+    .meta-item .value {
+      font-size: .88rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .header-badge {
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 8px;
+      padding: 6px 16px;
+      color: var(--noor-accent);
+      font-size: .78rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ── SIDEBAR ── */
+    .site-sidebar {
+      position: fixed;
+      top: var(--header-h);
+      right: 0;
+      width: var(--sidebar-w);
+      height: calc(100vh - var(--header-h));
+      background: #fff;
+      border-left: 1px solid #dde8e2;
+      overflow-y: auto;
+      z-index: 1040;
+      padding-bottom: 20px;
+    }
+
+    .sidebar-section-title {
+      font-size: .68rem;
+      font-weight: 700;
+      color: var(--noor-light);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 18px 20px 8px;
+    }
+
+    .sidebar-nav { list-style: none; padding: 0; margin: 0; }
+
+    .sidebar-nav li a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 20px;
+      text-decoration: none;
+      color: #3a5544;
+      font-size: .88rem;
+      font-weight: 600;
+      border-right: 3px solid transparent;
+      transition: all .2s;
+    }
+
+    .sidebar-nav li a i {
+      font-size: 1rem;
+      color: var(--noor-light);
+      width: 20px;
+      text-align: center;
+    }
+
+    .sidebar-nav li a:hover,
+    .sidebar-nav li a.active {
+      background: var(--noor-pale);
+      border-right-color: var(--noor-mid);
+      color: var(--noor-dark);
+    }
+
+    .sidebar-nav li a:hover i,
+    .sidebar-nav li a.active i {
+      color: var(--noor-dark);
+    }
+
+    .sidebar-footer {
+      margin: 20px 16px 0;
+      background: linear-gradient(135deg, var(--noor-pale), #e8f5ee);
+      border: 1px solid #b8ddc8;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: .78rem;
+      color: var(--noor-dark);
+    }
+
+    .sidebar-footer strong { display: block; font-size: .82rem; margin-bottom: 4px; }
+
+    /* ── MAIN CONTENT ── */
+    .main-content {
+      margin-right: var(--sidebar-w);
+      margin-top: var(--header-h);
+      padding: 28px 30px;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    /* ── PAGE TITLE ── */
+    .page-title-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .page-title-bar h2 {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--noor-dark);
+      margin: 0;
+    }
+
+    .page-title-bar .breadcrumb {
+      font-size: .78rem;
+      background: transparent;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* ── CARDS ── */
+    .report-card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #dde8e2;
+      box-shadow: 0 2px 12px rgba(0,60,30,.06);
+      margin-bottom: 24px;
+      overflow: hidden;
+      transition: box-shadow .2s;
+    }
+
+    .report-card:hover {
+      box-shadow: 0 6px 24px rgba(0,60,30,.1);
+    }
+
+    .card-header-custom {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 22px;
+      background: linear-gradient(135deg, var(--noor-dark), var(--noor-mid));
+      color: #fff;
+    }
+
+    .card-header-custom .card-icon {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,.15);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+
+    .card-header-custom h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .card-header-custom .card-number {
+      margin-right: auto;
+      background: rgba(255,255,255,.15);
+      border-radius: 20px;
+      padding: 2px 12px;
+      font-size: .75rem;
+      font-weight: 700;
+      color: var(--noor-accent);
+    }
+
+    .card-body-custom {
+      padding: 22px;
+    }
+
+    /* placeholder blocks */
+    .content-placeholder {
+      background: #f8faf9;
+      border: 1.5px dashed #c2d9cc;
+      border-radius: 10px;
+      padding: 32px 24px;
+      text-align: center;
+      color: #7aaa90;
+      font-size: .88rem;
+    }
+
+    .content-placeholder i {
+      display: block;
+      font-size: 2rem;
+      margin-bottom: 8px;
+      opacity: .5;
+    }
+
+    /* summary stats row */
+    .stat-box {
+      background: var(--noor-pale);
+      border: 1px solid #b8ddc8;
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-align: center;
+    }
+
+    .stat-box .stat-num {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--noor-dark);
+      line-height: 1;
+    }
+
+    .stat-box .stat-label {
+      font-size: .78rem;
+      color: #5a8a6a;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .stat-box.accent { background: #fff8e1; border-color: #f0c040; }
+    .stat-box.accent .stat-num { color: #b8860b; }
+    .stat-box.accent .stat-label { color: #a07820; }
+
+    /* divider */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(to left, transparent, #c2d9cc, transparent);
+      margin: 20px 0;
+    }
+
+    /* table styles */
+    .noor-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: .88rem;
+    }
+
+    .noor-table thead tr th {
+      background: var(--noor-mid);
+      color: #fff;
+      font-weight: 700;
+      padding: 11px 16px;
+      text-align: right;
+    }
+
+    .noor-table thead tr th:first-child { border-radius: 0 8px 0 0; }
+    .noor-table thead tr th:last-child  { border-radius: 8px 0 0 0; }
+
+    .noor-table tbody tr td {
+      padding: 10px 16px;
+      border-bottom: 1px solid #edf3ef;
+      color: #2a4a38;
+    }
+
+    .noor-table tbody tr:hover td { background: var(--noor-pale); }
+
+    /* badges */
+    .badge-noor {
+      background: var(--noor-pale);
+      color: var(--noor-dark);
+      border: 1px solid #a8d0b8;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: .75rem;
+      font-weight: 700;
+    }
+
+    /* ── ATTENDANCE FORM ── */
+    .att-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .att-field-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      position: relative;
+    }
+
+    .att-label {
+      font-size: .82rem;
+      font-weight: 700;
+      color: var(--noor-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .att-label i { color: var(--noor-light); font-size: .9rem; }
+
+    .att-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #c8ddd4;
+      border-radius: 10px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--noor-dark);
+      background: #f9fdfb;
+      text-align: center;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+
+    .att-input::-webkit-inner-spin-button,
+    .att-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+    .att-input:focus {
+      border-color: var(--noor-light);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(46,158,107,.15);
+    }
+
+    .att-input.is-valid {
+      border-color: #28a745;
+      background: #f5fff8;
+    }
+
+    .att-input.is-invalid {
+      border-color: #dc3545;
+      background: #fff8f8;
+      box-shadow: 0 0 0 3px rgba(220,53,69,.12);
+    }
+
+    .att-hint {
+      font-size: .7rem;
+      color: #7aaa8a;
+      font-weight: 500;
+    }
+
+    .att-err {
+      font-size: .72rem;
+      color: #dc3545;
+      font-weight: 600;
+      min-height: 16px;
+    }
+
+    .att-global-err {
+      background: #fff3f3;
+      border: 1.5px solid #f5c2c7;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: .84rem;
+      color: #842029;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── RESULTS PANEL ── */
+    .att-results-panel {
+      background: #f4f9f6;
+      border: 1.5px solid #c2d9cc;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .att-results-header {
+      background: linear-gradient(135deg, var(--noor-dark), var(--noor-mid));
+      color: #fff;
+      padding: 12px 20px;
+      font-size: .88rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .att-results-grid {
+      display: grid;
+      grid-template-columns: 1.4fr repeat(5, 1fr);
+      gap: 0;
+    }
+
+    @media (max-width: 900px) {
+      .att-results-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 550px) {
+      .att-results-grid { grid-template-columns: repeat(2, 1fr); }
+      .att-form-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .att-result-card {
+      padding: 16px 12px;
+      text-align: center;
+      border-left: 1px solid #dde8e2;
+      border-bottom: 1px solid #dde8e2;
+      background: #fff;
+      transition: background .3s;
+    }
+
+    .att-result-card:first-child { border-right: none; }
+
+    .att-result-card.primary {
+      background: linear-gradient(160deg, #edf7f2, #d8f0e5);
+      border-right: none;
+    }
+
+    .att-result-card.warn  { background: #fffdf0; }
+    .att-result-card.danger { background: #fff8f8; }
+    .att-result-card.late  { background: #f8f5ff; }
+
+    .arc-icon {
+      font-size: 1.3rem;
+      margin-bottom: 4px;
+      color: #888;
+    }
+
+    .arc-label {
+      font-size: .72rem;
+      color: #6a8a78;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .arc-value {
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: var(--noor-dark);
+      line-height: 1;
+      transition: all .4s;
+    }
+
+    .att-result-card.primary .arc-value {
+      font-size: 2.2rem;
+      color: var(--noor-dark);
+    }
+
+    .att-result-card.danger .arc-value { color: #b83232; }
+    .att-result-card.warn   .arc-value { color: #8a6a00; }
+    .att-result-card.late   .arc-value { color: #5a3a9a; }
+
+    .arc-bar-track {
+      height: 6px;
+      background: #c8e6d4;
+      border-radius: 4px;
+      margin: 8px auto 4px;
+      overflow: hidden;
+      max-width: 120px;
+    }
+
+    .arc-bar-fill {
+      height: 100%;
+      background: linear-gradient(to left, var(--noor-light), var(--noor-dark));
+      border-radius: 4px;
+      transition: width .6s ease, background .4s;
+    }
+
+    .arc-bar-fill.low  { background: linear-gradient(to left, #dc3545, #8b1d1d); }
+    .arc-bar-fill.med  { background: linear-gradient(to left, #f0a500, #c07800); }
+
+    .arc-status {
+      font-size: .7rem;
+      font-weight: 700;
+      margin-top: 2px;
+      min-height: 16px;
+    }
+
+    .arc-status.good   { color: var(--noor-mid); }
+    .arc-status.medium { color: #c07800; }
+    .arc-status.bad    { color: #dc3545; }
+
+    /* Breakdown */
+    .att-breakdown {
+      padding: 16px 20px;
+      background: #f0f7f3;
+      border-top: 1px solid #c8ddd4;
+    }
+
+    .att-breakdown-title {
+      font-size: .82rem;
+      font-weight: 700;
+      color: var(--noor-dark);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .att-breakdown-text-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .att-chip {
+      background: #fff;
+      border: 1px solid #c2d9cc;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--noor-dark);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .att-chip.chip-red   { border-color: #f5c2c7; color: #8b1d1d; background: #fff3f3; }
+    .att-chip.chip-gold  { border-color: #f0d080; color: #7a5500; background: #fffdf0; }
+    .att-chip.chip-blue  { border-color: #b0d0e8; color: #1a4a6a; background: #f0f7ff; }
+    .att-chip.chip-purple{ border-color: #c8b8f0; color: #3a1a7a; background: #f8f5ff; }
+
+    /* ── CHARTS CARD ── */
+    .charts-wrapper {
+      margin-top: 20px;
+    }
+
+    .charts-card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #dde8e2;
+      box-shadow: 0 2px 14px rgba(0,60,30,.07);
+      overflow: hidden;
+    }
+
+    .charts-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, #0d4a2f, #1a6b47);
+      color: #fff;
+    }
+
+    .charts-card-header .ch-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: .92rem;
+      font-weight: 700;
+    }
+
+    .charts-card-header .ch-icon {
+      width: 32px; height: 32px;
+      background: rgba(255,255,255,.15);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .95rem;
+    }
+
+    .charts-empty {
+      padding: 40px 20px;
+      text-align: center;
+      color: #9abfaa;
+      font-size: .88rem;
+    }
+
+    .charts-empty i { display: block; font-size: 2.2rem; margin-bottom: 8px; opacity: .45; }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    @media (max-width: 720px) {
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+
+    .chart-panel {
+      padding: 20px 18px 16px;
+      position: relative;
+    }
+
+    .chart-panel:first-child {
+      border-left: 1px solid #e8f0eb;
+    }
+
+    .chart-panel-title {
+      font-size: .8rem;
+      font-weight: 700;
+      color: var(--noor-dark);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chart-panel-title i { color: var(--noor-light); }
+
+    .chart-canvas-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .chart-canvas-wrap.bar-wrap  { height: 240px; }
+    .chart-canvas-wrap.pie-wrap  { height: 240px; }
+
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      justify-content: center;
+    }
+
+    .chart-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: .72rem;
+      font-weight: 600;
+      color: #3a5544;
+    }
+
+    .chart-legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── scrollbar ── */
+    .site-sidebar::-webkit-scrollbar { width: 4px; }
+    .site-sidebar::-webkit-scrollbar-track { background: #f0f5f2; }
+    .site-sidebar::-webkit-scrollbar-thumb { background: #a8d0b8; border-radius: 4px; }
+
+    /* ── ACTION TOOLBAR ── */
+    .action-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: #fff;
+      border: 1px solid #dde8e2;
+      border-radius: 14px;
+      padding: 14px 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 10px rgba(0,60,30,.06);
+    }
+
+    .action-toolbar .toolbar-label {
+      font-size: .75rem;
+      font-weight: 700;
+      color: #7aaa8a;
+      letter-spacing: .8px;
+      margin-left: 4px;
+    }
+
+    .toolbar-divider {
+      width: 1px;
+      height: 32px;
+      background: #dde8e2;
+      margin: 0 4px;
+    }
+
+    .btn-noor {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-family: 'Cairo', sans-serif;
+      font-size: .82rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+
+    .btn-noor-primary {
+      background: linear-gradient(135deg, var(--noor-dark), var(--noor-mid));
+      color: #fff;
+      box-shadow: 0 3px 10px rgba(13,74,47,.3);
+    }
+    .btn-noor-primary:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+    .btn-noor-gold {
+      background: linear-gradient(135deg, #c89010, #e8b020);
+      color: #fff;
+      box-shadow: 0 3px 10px rgba(180,130,0,.25);
+    }
+    .btn-noor-gold:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+    .btn-noor-outline {
+      background: #fff;
+      color: var(--noor-dark);
+      border: 2px solid var(--noor-light);
+    }
+    .btn-noor-outline:hover { background: var(--noor-pale); }
+
+    .btn-noor-danger {
+      background: #fff;
+      color: #b83232;
+      border: 2px solid #e8b0b0;
+    }
+    .btn-noor-danger:hover { background: #fff0f0; }
+
+    .btn-noor i { font-size: .95rem; }
+
+    /* ── DRAFT STATUS ── */
+    .draft-status {
+      margin-right: auto;
+      font-size: .75rem;
+      color: #9abfaa;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .draft-status.saved { color: var(--noor-light); }
+    .draft-status.unsaved { color: #d4860a; }
+
+    /* ── ATTACHMENTS CARD ── */
+    .attach-card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #dde8e2;
+      box-shadow: 0 2px 12px rgba(0,60,30,.06);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .attach-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 22px;
+      background: linear-gradient(135deg, #1a4a6b, #2a6a9b);
+      color: #fff;
+    }
+
+    .attach-header .ah-icon {
+      width: 34px; height: 34px;
+      background: rgba(255,255,255,.15);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+
+    .attach-header h3 { font-size: .98rem; font-weight: 700; margin: 0; }
+
+    .attach-body { padding: 20px 22px; }
+
+    /* Drop zone */
+    .drop-zone {
+      border: 2.5px dashed #b0cce0;
+      border-radius: 12px;
+      background: #f5f9fd;
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+      position: relative;
+    }
+
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: #2a6a9b;
+      background: #eaf3fb;
+    }
+
+    .drop-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .drop-zone-icon { font-size: 2.4rem; color: #5080a0; opacity: .6; margin-bottom: 8px; display: block; }
+    .drop-zone-text { font-size: .88rem; font-weight: 700; color: #3a6a8a; }
+    .drop-zone-sub  { font-size: .75rem; color: #8aaaaа; margin-top: 4px; color: #8aaabb; }
+
+    .attach-types {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .attach-type-badge {
+      background: #fff;
+      border: 1px solid #b0cce0;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: .7rem;
+      font-weight: 700;
+      color: #3a6a8a;
+    }
+
+    /* File list */
+    .file-list { margin-top: 16px; }
+
+    .file-list-header {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--noor-dark);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: #f9fdfb;
+      border: 1px solid #e0eee8;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      animation: slideIn .25s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .file-type-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .file-type-icon.pdf    { background: #fff0f0; color: #c03030; }
+    .file-type-icon.excel  { background: #f0fff4; color: #1a7a3a; }
+    .file-type-icon.image  { background: #f0f7ff; color: #2a5a9a; }
+    .file-type-icon.other  { background: #f8f8f8; color: #666; }
+
+    .file-info { flex: 1; min-width: 0; }
+    .file-name { font-size: .82rem; font-weight: 700; color: var(--noor-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .file-meta { font-size: .7rem; color: #9abfaa; margin-top: 2px; }
+
+    .file-remove {
+      background: none;
+      border: none;
+      color: #c06060;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 6px;
+      transition: background .15s;
+      flex-shrink: 0;
+    }
+    .file-remove:hover { background: #fff0f0; }
+
+    .file-empty {
+      text-align: center;
+      color: #9abfaa;
+      font-size: .82rem;
+      padding: 16px 0;
+    }
+
+    /* ── TOAST NOTIFICATION ── */
+    .noor-toast {
+      position: fixed;
+      bottom: 28px;
+      left: 28px;
+      background: var(--noor-dark);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: .84rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 24px rgba(0,0,0,.25);
+      z-index: 9999;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .35s cubic-bezier(.34,1.56,.64,1);
+      max-width: 340px;
+    }
+
+    .noor-toast.show { transform: translateY(0); opacity: 1; }
+    .noor-toast.success { background: linear-gradient(135deg, #0d4a2f, #1a7a4a); }
+    .noor-toast.error   { background: linear-gradient(135deg, #7a1a1a, #b03030); }
+    .noor-toast.info    { background: linear-gradient(135deg, #1a3a6a, #2a5a9a); }
+    .noor-toast i { font-size: 1.1rem; flex-shrink: 0; }
+
+    /* ── PDF PREVIEW MODAL ── */
+    .pdf-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      z-index: 9000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+
+    .pdf-modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .pdf-modal {
+      background: #fff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 560px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+      transform: scale(.95);
+      transition: transform .3s;
+    }
+
+    .pdf-modal-overlay.open .pdf-modal { transform: scale(1); }
+
+    .pdf-modal-header {
+      background: linear-gradient(135deg, var(--noor-dark), var(--noor-mid));
+      padding: 18px 22px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pdf-modal-header h4 { font-size: 1rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; }
+
+    .pdf-modal-close {
+      background: rgba(255,255,255,.15);
+      border: none;
+      color: #fff;
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .pdf-modal-close:hover { background: rgba(255,255,255,.25); }
+
+    .pdf-modal-body { padding: 24px; }
+
+    .pdf-preview-box {
+      background: #f4f7f5;
+      border: 1px solid #dde8e2;
+      border-radius: 12px;
+      padding: 20px;
+      font-size: .82rem;
+      color: #3a5544;
+      line-height: 2;
+      margin-bottom: 20px;
+    }
+
+    .pdf-preview-box .pv-school { font-size: 1rem; font-weight: 900; color: var(--noor-dark); text-align: center; margin-bottom: 4px; }
+    .pdf-preview-box .pv-sub    { font-size: .75rem; color: #7aaa8a; text-align: center; margin-bottom: 14px; }
+    .pdf-preview-box .pv-row    { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #c8ddd4; }
+    .pdf-preview-box .pv-row:last-child { border-bottom: none; }
+    .pdf-preview-box .pv-key    { font-weight: 700; color: var(--noor-dark); }
+    .pdf-preview-box .pv-val    { color: #2a5a3a; font-weight: 600; }
+
+    .pdf-modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ── responsive ── */
+    @media (max-width: 768px) {
+      :root { --sidebar-w: 0px; }
+      .site-sidebar { display: none; }
+      .main-content { margin-right: 0; padding: 16px; }
+      .header-meta { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════ HEADER ════════════════════════════ -->
+<header class="site-header">
+  <div class="header-logo">
+    <div class="header-emblem"><i class="bi bi-award-fill"></i></div>
+    <div class="header-title">
+      <h1>متوسطة المنذر بن عمرو الأنصاري</h1>
+      <p>منصة التقارير والمتابعة المدرسية &mdash; نظام نور</p>
+    </div>
+  </div>
+
+  <div class="header-meta">
+    <div class="meta-item">
+      <span class="label"><i class="bi bi-person-badge"></i> مدير المدرسة</span>
+      <span class="value">خالد المطيري</span>
+    </div>
+    <div class="meta-item">
+      <span class="label"><i class="bi bi-person-workspace"></i> وكيل المدرسة</span>
+      <span class="value">نواف الصبحي</span>
+    </div>
+  </div>
+
+  <div class="header-badge">
+    <i class="bi bi-calendar3"></i>
+    الفصل الدراسي الثاني
+  </div>
+</header>
+
+<!-- ════════════════════════════ SIDEBAR ════════════════════════════ -->
+<aside class="site-sidebar">
+  <div class="sidebar-section-title">التقرير الأسبوعي</div>
+  <ul class="sidebar-nav">
+    <li><a href="#summary" class="active"><i class="bi bi-grid-1x2-fill"></i> الملخص التنفيذي</a></li>
+    <li><a href="#process"><i class="bi bi-book-fill"></i> سير العملية التعليمية</a></li>
+    <li><a href="#attendance"><i class="bi bi-people-fill"></i> الحضور والانضباط</a></li>
+    <li><a href="#activities"><i class="bi bi-stars"></i> الأنشطة</a></li>
+    <li><a href="#performance"><i class="bi bi-graph-up-arrow"></i> متابعة الأداء</a></li>
+    <li><a href="#challenges"><i class="bi bi-exclamation-triangle-fill"></i> التحديات</a></li>
+    <li><a href="#recommendations"><i class="bi bi-lightbulb-fill"></i> التوصيات</a></li>
+    <li><a href="#next-week"><i class="bi bi-calendar-week-fill"></i> خطة الأسبوع القادم</a></li>
+    <li><a href="#attachments"><i class="bi bi-paperclip"></i> المرفقات</a></li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <strong><i class="bi bi-shield-check"></i> المصادقة الرسمية</strong>
+    تقرير معتمد من إدارة المدرسة ومرفوع على منصة نور.
+  </div>
+</aside>
+
+<!-- ════════════════════════════ MAIN ════════════════════════════ -->
+<main class="main-content">
+
+  <!-- Page Title Bar -->
+  <div class="page-title-bar">
+    <div>
+      <h2><i class="bi bi-file-earmark-text-fill text-success me-2"></i>التقرير الأسبوعي</h2>
+    </div>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#" class="text-success text-decoration-none">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a href="#" class="text-success text-decoration-none">التقارير</a></li>
+        <li class="breadcrumb-item active text-muted">التقرير الأسبوعي</li>
+      </ol>
+    </nav>
+  </div>
+
+  <!-- Action Toolbar -->
+  <div class="action-toolbar">
+    <span class="toolbar-label"><i class="bi bi-lightning-fill"></i> إجراءات سريعة</span>
+    <div class="toolbar-divider"></div>
+    <button class="btn-noor btn-noor-primary" id="btn-pdf" onclick="openPdfModal()">
+      <i class="bi bi-file-earmark-pdf-fill"></i> إنشاء تقرير PDF
+    </button>
+    <button class="btn-noor btn-noor-gold" id="btn-save-draft" onclick="saveDraft()">
+      <i class="bi bi-floppy-fill"></i> حفظ مسودة
+    </button>
+    <button class="btn-noor btn-noor-outline" id="btn-restore" onclick="restoreDraft()">
+      <i class="bi bi-arrow-counterclockwise"></i> استعادة البيانات
+    </button>
+    <button class="btn-noor btn-noor-danger" id="btn-clear" onclick="clearDraft()">
+      <i class="bi bi-trash3"></i> مسح المسودة
+    </button>
+    <div class="draft-status" id="draft-status">
+      <i class="bi bi-circle-fill" style="font-size:.5rem;"></i>
+      لم يتم الحفظ بعد
+    </div>
+  </div>
+
+  <!-- ─── 1. الملخص التنفيذي ─── -->
+  <section id="summary">
+    <div class="report-card">
+      <div class="card-header-custom">
+        <div class="card-icon"><i class="bi bi-grid-1x2-fill"></i></div>
+        <h3>الملخص التنفيذي</h3>
+        <span class="card-number">١</span>
+      </div>
+      <div class="card-body-custom">
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3">
+            <div class="stat-box">
+              <div class="stat-num">—</div>
+              <div class="stat-label">إجمالي الطلاب</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-box">
+              <div class="stat-num">—</div>
+              <div class="stat-label">عدد الفصول</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-box accent">
+              <div class="stat-num">—</div>
+              <div class="stat-label">نسبة الحضور %</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="stat-box">
+              <div class="stat-num">—</div>
+              <div class="stat-label">عدد المعلمين</div>
+            </div>
+          </div>
+        </div>
+        <div class="content-placeholder">
+          <i class="bi bi-pencil-square"></i>
+          يُكتب هنا ملخص تنفيذي موجز للأسبوع الدراسي
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 2. سير العملية التعليمية ─── -->
+  <section id="process">
+    <div class="report-card">
+      <div class="card-header-custom">
+        <div class="card-icon"><i class="bi bi-book-fill"></i></div>
+        <h3>سير العملية التعليمية</h3>
+        <span class="card-number">٢</span>
+      </div>
+      <div class="card-body-custom">
+        <table class="noor-table mb-4">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>المادة</th>
+              <th>المعلم</th>
+              <th>الحصص المنفذة</th>
+              <th>الحصص المقررة</th>
+              <th>الحالة</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>١</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td><span class="badge-noor">—</span></td>
+            </tr>
+            <tr>
+              <td>٢</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td><span class="badge-noor">—</span></td>
+            </tr>
+            <tr>
+              <td>٣</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td><span class="badge-noor">—</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="content-placeholder">
+          <i class="bi bi-journal-text"></i>
+          تفاصيل سير المناهج وتنفيذ الخطة الدراسية الأسبوعية
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 3. الحضور والانضباط ─── -->
+  <section id="attendance">
+    <div class="report-card">
+      <div class="card-header-custom">
+        <div class="card-icon"><i class="bi bi-people-fill"></i></div>
+        <h3>الحضور والانضباط</h3>
+        <span class="card-number">٣</span>
+      </div>
+      <div class="card-body-custom">
+
+        <!-- Input Fields -->
+        <div class="att-form-grid">
+
+          <div class="att-field-wrap" id="wrap-total">
+            <label class="att-label" for="att-total">
+              <i class="bi bi-people-fill"></i> إجمالي الطلاب
+            </label>
+            <input type="number" id="att-total" class="att-input" placeholder="0" min="0" max="9999" />
+            <span class="att-hint">العدد الكلي للطلاب المسجلين</span>
+            <span class="att-err" id="err-total"></span>
+          </div>
+
+          <div class="att-field-wrap" id="wrap-present">
+            <label class="att-label" for="att-present">
+              <i class="bi bi-person-check-fill"></i> عدد الحضور
+            </label>
+            <input type="number" id="att-present" class="att-input" placeholder="0" min="0" max="9999" />
+            <span class="att-hint">الطلاب الحاضرون فعلياً</span>
+            <span class="att-err" id="err-present"></span>
+          </div>
+
+          <div class="att-field-wrap" id="wrap-excused">
+            <label class="att-label" for="att-excused">
+              <i class="bi bi-file-earmark-check-fill"></i> غياب بعذر
+            </label>
+            <input type="number" id="att-excused" class="att-input" placeholder="0" min="0" max="9999" />
+            <span class="att-hint">غياب بعذر موثق أو طبي</span>
+            <span class="att-err" id="err-excused"></span>
+          </div>
+
+          <div class="att-field-wrap" id="wrap-unexcused">
+            <label class="att-label" for="att-unexcused">
+              <i class="bi bi-person-x-fill"></i> غياب بدون عذر
+            </label>
+            <input type="number" id="att-unexcused" class="att-input" placeholder="0" min="0" max="9999" />
+            <span class="att-hint">غياب غير مبرر</span>
+            <span class="att-err" id="err-unexcused"></span>
+          </div>
+
+          <div class="att-field-wrap" id="wrap-late">
+            <label class="att-label" for="att-late">
+              <i class="bi bi-clock-history"></i> تأخر
+            </label>
+            <input type="number" id="att-late" class="att-input" placeholder="0" min="0" max="9999" />
+            <span class="att-hint">الطلاب الذين تأخروا عن الحضور</span>
+            <span class="att-err" id="err-late"></span>
+          </div>
+
+        </div><!-- /att-form-grid -->
+
+        <!-- Alert Zone -->
+        <div id="att-global-err" class="att-global-err" style="display:none;"></div>
+
+        <div class="section-divider"></div>
+
+        <!-- Results Panel -->
+        <div class="att-results-panel" id="att-results">
+
+          <div class="att-results-header">
+            <i class="bi bi-calculator-fill"></i> النتائج المحسوبة تلقائياً
+          </div>
+
+          <div class="att-results-grid">
+
+            <div class="att-result-card primary" id="res-rate-card">
+              <div class="arc-label">نسبة الحضور</div>
+              <div class="arc-value" id="res-rate">—</div>
+              <div class="arc-bar-track">
+                <div class="arc-bar-fill" id="res-rate-bar" style="width:0%"></div>
+              </div>
+              <div class="arc-status" id="res-rate-status"></div>
+            </div>
+
+            <div class="att-result-card">
+              <div class="arc-icon text-success"><i class="bi bi-person-check-fill"></i></div>
+              <div class="arc-label">الحضور</div>
+              <div class="arc-value" id="res-present">—</div>
+            </div>
+
+            <div class="att-result-card warn">
+              <div class="arc-icon"><i class="bi bi-file-earmark-x-fill"></i></div>
+              <div class="arc-label">إجمالي الغياب</div>
+              <div class="arc-value" id="res-absent">—</div>
+            </div>
+
+            <div class="att-result-card">
+              <div class="arc-icon" style="color:#5a8aaa;"><i class="bi bi-file-earmark-check-fill"></i></div>
+              <div class="arc-label">غياب بعذر</div>
+              <div class="arc-value" id="res-excused">—</div>
+            </div>
+
+            <div class="att-result-card danger">
+              <div class="arc-icon"><i class="bi bi-person-x-fill"></i></div>
+              <div class="arc-label">غياب بدون عذر</div>
+              <div class="arc-value" id="res-unexcused">—</div>
+            </div>
+
+            <div class="att-result-card late">
+              <div class="arc-icon"><i class="bi bi-clock-history"></i></div>
+              <div class="arc-label">تأخر</div>
+              <div class="arc-value" id="res-late">—</div>
+            </div>
+
+          </div><!-- /att-results-grid -->
+
+          <!-- Breakdown text -->
+          <div class="att-breakdown" id="att-breakdown" style="display:none;">
+            <div class="att-breakdown-title"><i class="bi bi-info-circle-fill"></i> تفصيل الإحصاءات</div>
+            <div id="att-breakdown-text"></div>
+          </div>
+
+        </div><!-- /att-results -->
+
+        <!-- ── CHARTS SECTION ── -->
+        <div class="charts-wrapper" id="charts-wrapper">
+          <div class="charts-card">
+            <div class="charts-card-header">
+              <div class="ch-title">
+                <div class="ch-icon"><i class="bi bi-bar-chart-fill"></i></div>
+                التمثيل البياني للحضور والانضباط
+              </div>
+              <span style="font-size:.72rem; color:rgba(255,255,255,.6); font-weight:600;">
+                <i class="bi bi-arrow-repeat"></i> يتحدث تلقائياً
+              </span>
+            </div>
+
+            <!-- Empty state -->
+            <div class="charts-empty" id="charts-empty">
+              <i class="bi bi-bar-chart"></i>
+              أدخل بيانات الحضور أعلاه لعرض الرسوم البيانية
+            </div>
+
+            <!-- Charts Grid (hidden until data) -->
+            <div class="charts-grid" id="charts-grid" style="display:none;">
+
+              <!-- Bar Chart -->
+              <div class="chart-panel">
+                <div class="chart-panel-title">
+                  <i class="bi bi-bar-chart-fill"></i> المخطط العمودي — توزيع الحضور
+                </div>
+                <div class="chart-canvas-wrap bar-wrap">
+                  <canvas id="attBarChart"></canvas>
+                </div>
+              </div>
+
+              <!-- Pie Chart -->
+              <div class="chart-panel">
+                <div class="chart-panel-title">
+                  <i class="bi bi-pie-chart-fill"></i> المخطط الدائري — نسب التوزيع
+                </div>
+                <div class="chart-canvas-wrap pie-wrap">
+                  <canvas id="attPieChart"></canvas>
+                </div>
+                <div class="chart-legend" id="pie-legend"></div>
+              </div>
+
+            </div><!-- /charts-grid -->
+          </div><!-- /charts-card -->
+        </div><!-- /charts-wrapper -->
+
+      </div><!-- /card-body-custom -->
+    </div>
+  </section>
+
+  <!-- ─── 4. الأنشطة ─── -->
+  <section id="activities">
+    <div class="report-card">
+      <div class="card-header-custom">
+        <div class="card-icon"><i class="bi bi-stars"></i></div>
+        <h3>الأنشطة</h3>
+        <span class="card-number">٤</span>
+      </div>
+      <div class="card-body-custom">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="stat-box">
+              <div class="stat-num">—</div>
+              <div class="stat-label">أنشطة صفية</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-box">
+              <div class="stat-num">—</div>
+              <div class="stat-label">أنشطة لاصفية</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-box accent">
+              <div class="stat-num">—</div>
+              <div class="stat-label">طلاب مشاركون</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-divider"></div>
+        <div class="content-placeholder">
+          <i class="bi bi-trophy"></i>
+          وصف الأنشطة المدرسية والرياضية والثقافية المنفذة خلال الأسبوع
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 5. متابعة الأداء ─── -->
+  <section id="performance">
+    <div class="report-card">
+      <div class="card-header-custom">
+        <div class="card-icon"><i class="bi bi-graph-up-arrow"></i></div>
+        <h3>متابعة الأداء</h3>
+        <span class="card-number">٥</span>
+      </div>
+      <div class="card-body-custom">
+        <table class="noor-table mb-4">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>المؤشر</th>
+              <th>الهدف</th>
+              <th>المحقق</th>
+              <th>التقييم</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>١</td>
+              <td>نسبة حضور الطلاب</td>
+              <td>—</td>
+              <td>—</td>
+              <td><span class="badge-noor">—</span></td>
+            </tr>
+            <tr>
+              <td>٢</td>
+              <td>تنفيذ الخطة الدراسية</td>
+              <td>—</td>
+              <td>—</td>
+              <td><span class="badge-noor">—</span></td>
+            </tr>
+            <tr>
+              <td>٣</td>
+              <td>الأنشطة المنفذة</td>
+              <td>—</td>
+              <td>—</td>
+              <td><span class="badge-noor">—</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="content-placeholder">
+          <i class="bi bi-bar-chart-line"></i>
+          مؤشرات الأداء التفصيلية ومقارنتها بالأهداف المرسومة
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 6. التحديات ─── -->
+  <section id="challenges">
+    <div class="report-card">
+      <div class="card-header-custom" style="background: linear-gradient(135deg,#7b2d1e,#b04030);">
+        <div class="card-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+        <h3>التحديات</h3>
+        <span class="card-number">٦</span>
+      </div>
+      <div class="card-body-custom">
+        <div class="content-placeholder" style="border-color:#e8c0bb; background:#fff8f7; color:#9a4a40;">
+          <i class="bi bi-exclamation-circle" style="color:#c06050;"></i>
+          تُدرج هنا التحديات والصعوبات التي واجهت المدرسة خلال الأسبوع
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 7. التوصيات ─── -->
+  <section id="recommendations">
+    <div class="report-card">
+      <div class="card-header-custom" style="background: linear-gradient(135deg,#1a4a6b,#2a6a9b);">
+        <div class="card-icon"><i class="bi bi-lightbulb-fill"></i></div>
+        <h3>التوصيات</h3>
+        <span class="card-number">٧</span>
+      </div>
+      <div class="card-body-custom">
+        <div class="content-placeholder" style="border-color:#b0c8e0; background:#f5f8fc; color:#4a6a8a;">
+          <i class="bi bi-lightbulb" style="color:#5080a0;"></i>
+          توصيات إدارة المدرسة لمعالجة التحديات وتطوير الأداء
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 8. خطة الأسبوع القادم ─── -->
+  <section id="next-week">
+    <div class="report-card">
+      <div class="card-header-custom" style="background: linear-gradient(135deg,#4a3a0a,#7a6010);">
+        <div class="card-icon"><i class="bi bi-calendar-week-fill"></i></div>
+        <h3>خطة الأسبوع القادم</h3>
+        <span class="card-number">٨</span>
+      </div>
+      <div class="card-body-custom">
+        <table class="noor-table mb-4">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>النشاط / الفعالية</th>
+              <th>المسؤول</th>
+              <th>الموعد</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>١</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>٢</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>٣</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="content-placeholder" style="border-color:#d4c070; background:#fffdf0; color:#8a7020;">
+          <i class="bi bi-calendar-plus" style="color:#a08030;"></i>
+          تفاصيل البرنامج والخطط المقررة للأسبوع القادم
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── المرفقات ─── -->
+  <section id="attachments">
+    <div class="attach-card">
+      <div class="attach-header">
+        <div class="ah-icon"><i class="bi bi-paperclip"></i></div>
+        <h3>المرفقات</h3>
+        <span style="margin-right:auto; font-size:.72rem; color:rgba(255,255,255,.6); font-weight:600;" id="attach-count-badge">لا توجد ملفات</span>
+      </div>
+      <div class="attach-body">
+        <div class="drop-zone" id="drop-zone">
+          <input type="file" id="file-input" multiple
+            accept=".pdf,.xls,.xlsx,.csv,.jpg,.jpeg,.png,.gif,.webp,.bmp" />
+          <i class="bi bi-cloud-upload drop-zone-icon"></i>
+          <div class="drop-zone-text">اسحب الملفات هنا أو انقر للاختيار</div>
+          <div class="drop-zone-sub">الملفات المدعومة:</div>
+          <div class="attach-types">
+            <span class="attach-type-badge"><i class="bi bi-file-earmark-pdf-fill" style="color:#c03030;"></i> PDF</span>
+            <span class="attach-type-badge"><i class="bi bi-file-earmark-excel-fill" style="color:#1a7a3a;"></i> Excel</span>
+            <span class="attach-type-badge"><i class="bi bi-image-fill" style="color:#2a5a9a;"></i> صور</span>
+          </div>
+        </div>
+
+        <div class="file-list" id="file-list">
+          <div class="file-empty" id="file-empty">
+            <i class="bi bi-inbox" style="font-size:1.8rem; display:block; margin-bottom:6px; opacity:.4;"></i>
+            لم يتم إرفاق أي ملفات بعد
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center py-3 mt-2" style="color:#7a9a8a; font-size:.78rem; border-top:1px solid #dde8e2;">
+    <i class="bi bi-shield-check text-success"></i>
+    منصة التقارير المدرسية &mdash; متوسطة المنذر بن عمرو الأنصاري &mdash; نظام نور &copy; ١٤٤٦
+  </footer>
+
+</main>
+
+<!-- ══════════ TOAST ══════════ -->
+<div class="noor-toast" id="noor-toast">
+  <i class="bi bi-check-circle-fill" id="toast-icon"></i>
+  <span id="toast-msg">تم الحفظ</span>
+</div>
+
+<!-- ══════════ PDF MODAL ══════════ -->
+<div class="pdf-modal-overlay" id="pdf-modal-overlay" onclick="closePdfModal(event)">
+  <div class="pdf-modal">
+    <div class="pdf-modal-header">
+      <h4><i class="bi bi-file-earmark-pdf-fill"></i> معاينة التقرير وتصديره</h4>
+      <button class="pdf-modal-close" onclick="closePdfModal(null)"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="pdf-modal-body">
+      <div class="pdf-preview-box" id="pdf-preview-content">
+        <!-- filled by JS -->
+      </div>
+      <div class="pdf-modal-actions">
+        <button class="btn-noor btn-noor-outline" onclick="closePdfModal(null)">
+          <i class="bi bi-x"></i> إغلاق
+        </button>
+        <button class="btn-noor btn-noor-primary" onclick="generatePDF()">
+          <i class="bi bi-download"></i> تحميل PDF
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+  // ══════════════════════════════════════════
+  // ATTENDANCE MODULE
+  // ══════════════════════════════════════════
+  const attFields = {
+    total:     document.getElementById('att-total'),
+    present:   document.getElementById('att-present'),
+    excused:   document.getElementById('att-excused'),
+    unexcused: document.getElementById('att-unexcused'),
+    late:      document.getElementById('att-late'),
+  };
+
+  const resEls = {
+    rate:      document.getElementById('res-rate'),
+    rateBar:   document.getElementById('res-rate-bar'),
+    rateStatus:document.getElementById('res-rate-status'),
+    rateCard:  document.getElementById('res-rate-card'),
+    present:   document.getElementById('res-present'),
+    absent:    document.getElementById('res-absent'),
+    excused:   document.getElementById('res-excused'),
+    unexcused: document.getElementById('res-unexcused'),
+    late:      document.getElementById('res-late'),
+  };
+
+  const globalErr   = document.getElementById('att-global-err');
+  const breakdown   = document.getElementById('att-breakdown');
+  const breakdownTx = document.getElementById('att-breakdown-text');
+
+  function val(id) {
+    const v = parseInt(attFields[id].value, 10);
+    return isNaN(v) ? null : v;
+  }
+
+  function setInputState(field, state, msg) {
+    // state: 'valid' | 'invalid' | 'neutral'
+    const inp = attFields[field];
+    const err = document.getElementById('err-' + field);
+    inp.classList.remove('is-valid', 'is-invalid');
+    if (state === 'valid')   inp.classList.add('is-valid');
+    if (state === 'invalid') inp.classList.add('is-invalid');
+    err.textContent = msg || '';
+  }
+
+  function calcAttendance() {
+    const total     = val('total');
+    const present   = val('present');
+    const excused   = val('excused');
+    const unexcused = val('unexcused');
+    const late      = val('late');
+
+    // Reset
+    ['total','present','excused','unexcused','late'].forEach(f => setInputState(f, 'neutral', ''));
+    globalErr.style.display = 'none';
+    globalErr.textContent   = '';
+
+    let errors = [];
+
+    // Basic range validation
+    if (total !== null) {
+      if (total <= 0) { setInputState('total','invalid','يجب أن يكون أكبر من صفر'); errors.push('total'); }
+      else setInputState('total','valid','');
+    }
+
+    if (present !== null && total !== null) {
+      if (present < 0) { setInputState('present','invalid','لا يمكن أن يكون سالباً'); errors.push('present'); }
+      else if (present > total) { setInputState('present','invalid','الحضور لا يمكن أن يتجاوز إجمالي الطلاب'); errors.push('present'); }
+      else setInputState('present','valid','');
+    }
+
+    if (excused !== null && total !== null) {
+      if (excused < 0) { setInputState('excused','invalid','لا يمكن أن يكون سالباً'); errors.push('excused'); }
+      else if (total !== null && excused > total) { setInputState('excused','invalid','يتجاوز إجمالي الطلاب'); errors.push('excused'); }
+      else setInputState('excused','valid','');
+    }
+
+    if (unexcused !== null && total !== null) {
+      if (unexcused < 0) { setInputState('unexcused','invalid','لا يمكن أن يكون سالباً'); errors.push('unexcused'); }
+      else if (total !== null && unexcused > total) { setInputState('unexcused','invalid','يتجاوز إجمالي الطلاب'); errors.push('unexcused'); }
+      else setInputState('unexcused','valid','');
+    }
+
+    if (late !== null && total !== null) {
+      if (late < 0) { setInputState('late','invalid','لا يمكن أن يكون سالباً'); errors.push('late'); }
+      else if (total !== null && late > total) { setInputState('late','invalid','يتجاوز إجمالي الطلاب'); errors.push('late'); }
+      else setInputState('late','valid','');
+    }
+
+    // Cross-field: حضور + غياب (بعذر + بدون) لا يتجاوز الإجمالي
+    if (total !== null && present !== null && excused !== null && unexcused !== null && errors.length === 0) {
+      const sumCheck = present + (excused || 0) + (unexcused || 0);
+      if (sumCheck > total) {
+        globalErr.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i> مجموع الحضور وحالات الغياب (' + sumCheck + ') يتجاوز إجمالي الطلاب (' + total + '). يرجى مراجعة الأرقام.';
+        globalErr.style.display = 'flex';
+        ['present','excused','unexcused'].forEach(f => { if (val(f) !== null) setInputState(f,'invalid',''); });
+        updateResults(null);
+        return;
+      }
+    }
+
+    if (errors.length > 0) { updateResults(null); return; }
+
+    // Compute
+    if (total === null || total <= 0) { updateResults(null); return; }
+
+    const p = present   !== null ? present   : 0;
+    const e = excused   !== null ? excused   : 0;
+    const u = unexcused !== null ? unexcused : 0;
+    const l = late      !== null ? late      : 0;
+
+    const absentTotal = e + u;
+    const rate = (p / total) * 100;
+
+    updateResults({ total, present: p, excused: e, unexcused: u, late: l, absentTotal, rate });
+  }
+
+  function updateResults(data) {
+    if (!data) {
+      resEls.rate.textContent      = '—';
+      resEls.present.textContent   = '—';
+      resEls.absent.textContent    = '—';
+      resEls.excused.textContent   = '—';
+      resEls.unexcused.textContent = '—';
+      resEls.late.textContent      = '—';
+      resEls.rateBar.style.width   = '0%';
+      resEls.rateBar.className     = 'arc-bar-fill';
+      resEls.rateStatus.textContent= '';
+      resEls.rateStatus.className  = 'arc-status';
+      breakdown.style.display      = 'none';
+      updateCharts(null);
+      return;
+    }
+
+    const r = data.rate.toFixed(1);
+    resEls.rate.textContent      = r + '%';
+    resEls.present.textContent   = data.present;
+    resEls.absent.textContent    = data.absentTotal;
+    resEls.excused.textContent   = data.excused;
+    resEls.unexcused.textContent = data.unexcused;
+    resEls.late.textContent      = data.late;
+
+    // Progress bar
+    resEls.rateBar.style.width = Math.min(data.rate, 100) + '%';
+
+    if (data.rate >= 90) {
+      resEls.rateBar.className    = 'arc-bar-fill';
+      resEls.rateStatus.textContent = '✓ ممتازة';
+      resEls.rateStatus.className = 'arc-status good';
+    } else if (data.rate >= 75) {
+      resEls.rateBar.className    = 'arc-bar-fill med';
+      resEls.rateStatus.textContent = '▲ مقبولة';
+      resEls.rateStatus.className = 'arc-status medium';
+    } else {
+      resEls.rateBar.className    = 'arc-bar-fill low';
+      resEls.rateStatus.textContent = '✕ تحتاج تدخل';
+      resEls.rateStatus.className = 'arc-status bad';
+    }
+
+    // Breakdown chips
+    breakdown.style.display = 'block';
+    breakdownTx.innerHTML = `
+      <div class="att-breakdown-text-row">
+        <span class="att-chip"><i class="bi bi-people-fill text-success"></i> الإجمالي: ${data.total} طالب</span>
+        <span class="att-chip"><i class="bi bi-person-check-fill text-success"></i> الحضور: ${data.present}</span>
+        <span class="att-chip chip-gold"><i class="bi bi-file-earmark-check-fill"></i> غياب بعذر: ${data.excused}</span>
+        <span class="att-chip chip-red"><i class="bi bi-person-x-fill"></i> غياب بدون عذر: ${data.unexcused}</span>
+        <span class="att-chip chip-purple"><i class="bi bi-clock-history"></i> تأخر: ${data.late}</span>
+        <span class="att-chip chip-blue"><i class="bi bi-percent"></i> نسبة الحضور: ${r}%</span>
+      </div>
+    `;
+    updateCharts(data);
+  }
+
+  // Attach events
+  Object.values(attFields).forEach(inp => {
+    inp.addEventListener('input', calcAttendance);
+    inp.addEventListener('blur',  calcAttendance);
+  });
+
+  // ══════════════════════════════════════════
+  // CHARTS MODULE
+  // ══════════════════════════════════════════
+
+  // Global font for Chart.js (Arabic/RTL)
+  Chart.defaults.font.family = "'Cairo', 'Tajawal', sans-serif";
+  Chart.defaults.font.size   = 12;
+  Chart.defaults.color       = '#3a5544';
+
+  const CHART_COLORS = {
+    present:   { bg: 'rgba(30,140,80,.82)',  border: '#0d6b44' },
+    excused:   { bg: 'rgba(80,150,200,.82)', border: '#1a6a9a' },
+    unexcused: { bg: 'rgba(210,60,60,.82)',  border: '#8b1d1d' },
+    late:      { bg: 'rgba(150,100,220,.82)',border: '#5a2a9a' },
+  };
+
+  let barChart = null;
+  let pieChart = null;
+
+  function buildTooltipPlugin(suffix) {
+    return {
+      callbacks: {
+        label(ctx) {
+          const label = ctx.dataset.label || ctx.label || '';
+          const v     = ctx.parsed.y ?? ctx.parsed;
+          return ` ${label}: ${v}${suffix}`;
+        }
+      }
+    };
+  }
+
+  function initBarChart() {
+    const ctx = document.getElementById('attBarChart').getContext('2d');
+    barChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['حضور', 'غياب بعذر', 'غياب بدون عذر', 'تأخر'],
+        datasets: [{
+          label: 'عدد الطلاب',
+          data: [0, 0, 0, 0],
+          backgroundColor: [
+            CHART_COLORS.present.bg,
+            CHART_COLORS.excused.bg,
+            CHART_COLORS.unexcused.bg,
+            CHART_COLORS.late.bg,
+          ],
+          borderColor: [
+            CHART_COLORS.present.border,
+            CHART_COLORS.excused.border,
+            CHART_COLORS.unexcused.border,
+            CHART_COLORS.late.border,
+          ],
+          borderWidth: 2,
+          borderRadius: 8,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 500, easing: 'easeInOutQuart' },
+        layout: { padding: { top: 8, bottom: 0 } },
+        plugins: {
+          legend: { display: false },
+          tooltip: buildTooltipPlugin(' طلاب'),
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { font: { weight: '700', size: 11 }, color: '#3a5544' },
+            border: { color: '#dde8e2' },
+          },
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,.05)', lineWidth: 1 },
+            ticks: {
+              stepSize: 1,
+              font: { weight: '600', size: 10 },
+              color: '#7aaa8a',
+              callback: v => Number.isInteger(v) ? v : '',
+            },
+            border: { dash: [4,4], color: 'transparent' },
+          }
+        }
+      }
+    });
+  }
+
+  function initPieChart() {
+    const ctx = document.getElementById('attPieChart').getContext('2d');
+    pieChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['حضور', 'غياب بعذر', 'غياب بدون عذر', 'تأخر'],
+        datasets: [{
+          data: [0, 0, 0, 0],
+          backgroundColor: [
+            CHART_COLORS.present.bg,
+            CHART_COLORS.excused.bg,
+            CHART_COLORS.unexcused.bg,
+            CHART_COLORS.late.bg,
+          ],
+          borderColor: '#fff',
+          borderWidth: 3,
+          hoverOffset: 10,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 600, easing: 'easeInOutQuart' },
+        cutout: '58%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label(ctx) {
+                const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+                const pct   = total > 0 ? ((ctx.parsed / total)*100).toFixed(1) : 0;
+                return ` ${ctx.label}: ${ctx.parsed} (${pct}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function updatePieLegend(labels, colors) {
+    const legend = document.getElementById('pie-legend');
+    legend.innerHTML = labels.map((lbl, i) => `
+      <div class="chart-legend-item">
+        <div class="chart-legend-dot" style="background:${colors[i]}"></div>
+        ${lbl}
+      </div>
+    `).join('');
+  }
+
+  function updateCharts(data) {
+    const chartsEmpty = document.getElementById('charts-empty');
+    const chartsGrid  = document.getElementById('charts-grid');
+
+    if (!data) {
+      chartsEmpty.style.display = 'block';
+      chartsGrid.style.display  = 'none';
+      return;
+    }
+
+    chartsEmpty.style.display = 'none';
+    chartsGrid.style.display  = 'grid';
+
+    // Init charts once
+    if (!barChart) initBarChart();
+    if (!pieChart) initPieChart();
+
+    const barData = [data.present, data.excused, data.unexcused, data.late];
+    const pieData = [data.present, data.excused, data.unexcused, data.late];
+
+    // Update Bar
+    barChart.data.datasets[0].data = barData;
+    // Dynamic y-axis max
+    const maxVal = Math.max(...barData, 1);
+    barChart.options.scales.y.max = Math.ceil(maxVal * 1.25);
+    barChart.update();
+
+    // Update Pie
+    pieChart.data.datasets[0].data = pieData;
+    pieChart.update();
+
+    // Legend
+    updatePieLegend(
+      ['حضور', 'غياب بعذر', 'غياب بدون عذر', 'تأخر'],
+      [CHART_COLORS.present.bg, CHART_COLORS.excused.bg, CHART_COLORS.unexcused.bg, CHART_COLORS.late.bg]
+    );
+  }
+
+  // ══════════════════════════════════════════
+  // TOAST UTILITY
+  // ══════════════════════════════════════════
+  let toastTimer = null;
+  function showToast(msg, type, icon) {
+    type = type || 'success'; icon = icon || 'bi-check-circle-fill';
+    const toast = document.getElementById('noor-toast');
+    document.getElementById('toast-msg').textContent = msg;
+    document.getElementById('toast-icon').className  = 'bi ' + icon;
+    toast.className = 'noor-toast ' + type + ' show';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+  }
+
+  // ══════════════════════════════════════════
+  // DRAFT — LocalStorage
+  // ══════════════════════════════════════════
+  const DRAFT_KEY = 'noor_report_draft_v1';
+
+  function collectFormData() {
+    return {
+      att_total:     document.getElementById('att-total').value,
+      att_present:   document.getElementById('att-present').value,
+      att_excused:   document.getElementById('att-excused').value,
+      att_unexcused: document.getElementById('att-unexcused').value,
+      att_late:      document.getElementById('att-late').value,
+      savedAt:       new Date().toLocaleString('ar-SA'),
+    };
+  }
+
+  function setDraftStatus(state, text) {
+    const el = document.getElementById('draft-status');
+    el.className = 'draft-status ' + state;
+    el.innerHTML = '<i class="bi bi-circle-fill" style="font-size:.5rem;"></i> ' + text;
+  }
+
+  function saveDraft() {
+    try {
+      const data = collectFormData();
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+      setDraftStatus('saved', 'تم الحفظ: ' + data.savedAt);
+      showToast('تم حفظ المسودة بنجاح', 'success', 'bi-floppy-fill');
+    } catch(e) {
+      showToast('فشل الحفظ — تحقق من إعدادات المتصفح', 'error', 'bi-exclamation-triangle-fill');
+    }
+  }
+
+  function restoreDraft() {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) { showToast('لا توجد مسودة محفوظة', 'info', 'bi-info-circle-fill'); return; }
+      const data = JSON.parse(raw);
+      document.getElementById('att-total').value     = data.att_total     || '';
+      document.getElementById('att-present').value   = data.att_present   || '';
+      document.getElementById('att-excused').value   = data.att_excused   || '';
+      document.getElementById('att-unexcused').value = data.att_unexcused || '';
+      document.getElementById('att-late').value      = data.att_late      || '';
+      calcAttendance();
+      setDraftStatus('saved', 'تم الاستعادة: ' + (data.savedAt || ''));
+      showToast('تم استعادة بيانات المسودة', 'info', 'bi-arrow-counterclockwise');
+    } catch(e) {
+      showToast('تعذّر استعادة البيانات', 'error', 'bi-exclamation-triangle-fill');
+    }
+  }
+
+  function clearDraft() {
+    if (!localStorage.getItem(DRAFT_KEY)) {
+      showToast('لا توجد مسودة لحذفها', 'info', 'bi-info-circle-fill');
+      return;
+    }
+    localStorage.removeItem(DRAFT_KEY);
+    setDraftStatus('unsaved', 'تم مسح المسودة');
+    showToast('تم مسح المسودة المحفوظة', 'error', 'bi-trash3-fill');
+  }
+
+  // Mark unsaved on any input change
+  document.querySelectorAll('.att-input').forEach(function(inp) {
+    inp.addEventListener('input', function() { setDraftStatus('unsaved', 'بيانات غير محفوظة'); });
+  });
+
+  // Check draft on load
+  (function checkDraftOnLoad() {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (raw) {
+      try {
+        const d = JSON.parse(raw);
+        setDraftStatus('saved', 'يوجد مسودة محفوظة: ' + (d.savedAt || ''));
+      } catch(e) {}
+    }
+  })();
+
+  // ══════════════════════════════════════════
+  // PDF GENERATION — jsPDF
+  // ══════════════════════════════════════════
+  function getAttData() {
+    return {
+      total:     document.getElementById('att-total').value     || '—',
+      present:   document.getElementById('att-present').value   || '—',
+      excused:   document.getElementById('att-excused').value   || '—',
+      unexcused: document.getElementById('att-unexcused').value || '—',
+      late:      document.getElementById('att-late').value      || '—',
+      rate:      document.getElementById('res-rate').textContent || '—',
+    };
+  }
+
+  function openPdfModal() {
+    const d = getAttData();
+    const today = new Date().toLocaleDateString('ar-SA', { year:'numeric', month:'long', day:'numeric' });
+    const rows = [
+      ['المدرسة',          'متوسطة المنذر بن عمرو الأنصاري'],
+      ['مدير المدرسة',    'خالد المطيري'],
+      ['وكيل المدرسة',    'نواف الصبحي'],
+      ['تاريخ التقرير',    today],
+      ['الفصل الدراسي',    'الثاني'],
+      ['━━━━━━━━',         '━━━━━━━━'],
+      ['إجمالي الطلاب',   d.total],
+      ['عدد الحضور',       d.present],
+      ['غياب بعذر',        d.excused],
+      ['غياب بدون عذر',   d.unexcused],
+      ['تأخر',             d.late],
+      ['نسبة الحضور',     d.rate],
+    ];
+    const html = '<div class="pv-school">متوسطة المنذر بن عمرو الأنصاري</div>'
+      + '<div class="pv-sub">التقرير الأسبوعي الرسمي — الفصل الدراسي الثاني</div>'
+      + rows.map(function(r) {
+          return '<div class="pv-row"><span class="pv-key">' + r[0] + '</span><span class="pv-val">' + r[1] + '</span></div>';
+        }).join('');
+    document.getElementById('pdf-preview-content').innerHTML = html;
+    document.getElementById('pdf-modal-overlay').classList.add('open');
+  }
+
+  function closePdfModal(e) {
+    if (e && e.target !== document.getElementById('pdf-modal-overlay')) return;
+    document.getElementById('pdf-modal-overlay').classList.remove('open');
+  }
+
+  function generatePDF() {
+    var jsPDFLib = window.jspdf ? window.jspdf.jsPDF : (window.jsPDF);
+    if (!jsPDFLib) { showToast('مكتبة jsPDF غير محملة بعد، حاول مجدداً', 'error', 'bi-exclamation-triangle-fill'); return; }
+
+    var d = getAttData();
+    var today = new Date().toLocaleDateString('en-GB');
+    var doc = new jsPDFLib({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    var pageW = doc.internal.pageSize.getWidth();
+    var pageH = doc.internal.pageSize.getHeight();
+    var margin = 18;
+    var y = 0;
+
+    // Header band
+    doc.setFillColor(13, 74, 47);
+    doc.rect(0, 0, pageW, 40, 'F');
+
+    // Decorative accent line
+    doc.setFillColor(46, 158, 107);
+    doc.rect(0, 36, pageW, 4, 'F');
+
+    // School name
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Mutawassitat Al-Munthir bin Amr Al-Ansari', pageW - margin, 14, { align: 'right' });
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(180, 230, 200);
+    doc.text('Official Weekly Report  |  Noor Education System  |  Second Semester', pageW - margin, 22, { align: 'right' });
+    doc.text('Report Date: ' + today, pageW - margin, 30, { align: 'right' });
+
+    y = 52;
+
+    // Admin info card
+    doc.setFillColor(212, 237, 226);
+    doc.roundedRect(margin, y, pageW - margin * 2, 26, 4, 4, 'F');
+    doc.setDrawColor(176, 215, 195);
+    doc.setLineWidth(0.5);
+    doc.roundedRect(margin, y, pageW - margin * 2, 26, 4, 4, 'S');
+
+    doc.setTextColor(13, 74, 47);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('School Principal:', margin + 6, y + 9);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Khalid Al-Mutairi', margin + 44, y + 9);
+
+    doc.setFont('helvetica', 'bold');
+    doc.text('Vice Principal:', margin + 6, y + 19);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Nawaf Al-Sobhi', margin + 40, y + 19);
+
+    y += 36;
+
+    // Attendance section title
+    doc.setFillColor(26, 107, 71);
+    doc.roundedRect(margin, y, pageW - margin * 2, 11, 3, 3, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Attendance & Discipline Report', pageW - margin - 4, y + 7.5, { align: 'right' });
+    y += 17;
+
+    // Table rows
+    var tableRows = [
+      ['Total Students',    d.total],
+      ['Present',           d.present],
+      ['Excused Absence',   d.excused],
+      ['Unexcused Absence', d.unexcused],
+      ['Late Arrivals',     d.late],
+    ];
+
+    tableRows.forEach(function(row, i) {
+      // Alternating row background
+      if (i % 2 === 0) {
+        doc.setFillColor(244, 249, 246);
+        doc.rect(margin, y - 1.5, pageW - margin * 2, 11, 'F');
+      }
+      doc.setTextColor(13, 74, 47);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text(row[0], pageW - margin - 4, y + 6, { align: 'right' });
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(42, 90, 58);
+      doc.text(String(row[1]), margin + 6, y + 6);
+      doc.setDrawColor(210, 232, 218);
+      doc.setLineWidth(0.2);
+      doc.line(margin, y + 9.5, pageW - margin, y + 9.5);
+      y += 12;
+    });
+
+    y += 4;
+
+    // Attendance rate highlight
+    var rateColor = [13, 74, 47];
+    var rateVal = parseFloat(d.rate);
+    if (!isNaN(rateVal)) {
+      if (rateVal < 75)      rateColor = [139, 29, 29];
+      else if (rateVal < 90) rateColor = [160, 100, 0];
+    }
+    doc.setFillColor(rateColor[0], rateColor[1], rateColor[2]);
+    doc.roundedRect(margin, y, pageW - margin * 2, 18, 4, 4, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Attendance Rate: ' + d.rate, pageW / 2, y + 12, { align: 'center' });
+    y += 26;
+
+    // Attachments
+    if (uploadedFiles.length > 0) {
+      doc.setDrawColor(200, 221, 204);
+      doc.setLineWidth(0.3);
+      doc.line(margin, y, pageW - margin, y);
+      y += 8;
+      doc.setTextColor(13, 74, 47);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Attached Files (' + uploadedFiles.length + '):', pageW - margin, y, { align: 'right' });
+      y += 7;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(60, 90, 70);
+      uploadedFiles.forEach(function(f) {
+        doc.text('  \u2022  ' + f.name + '  (' + formatBytes(f.size) + ')', pageW - margin - 4, y, { align: 'right' });
+        y += 7;
+      });
+    }
+
+    // Footer
+    doc.setFillColor(13, 74, 47);
+    doc.rect(0, pageH - 13, pageW, 13, 'F');
+    doc.setTextColor(180, 230, 200);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Generated by Noor School Reports Platform  \u2022  Page 1 of 1', pageW / 2, pageH - 4.5, { align: 'center' });
+
+    doc.save('weekly-report-' + new Date().toISOString().slice(0,10) + '.pdf');
+    closePdfModal(null);
+    showToast('تم تحميل التقرير بصيغة PDF', 'success', 'bi-file-earmark-pdf-fill');
+  }
+
+  // ══════════════════════════════════════════
+  // ATTACHMENTS MODULE
+  // ══════════════════════════════════════════
+  var uploadedFiles = [];
+
+  var dropZone  = document.getElementById('drop-zone');
+  var fileInput = document.getElementById('file-input');
+
+  function getFileTypeInfo(file) {
+    var name = file.name.toLowerCase();
+    if (name.endsWith('.pdf'))
+      return { icon: 'bi-file-earmark-pdf-fill',   cls: 'pdf',   label: 'PDF' };
+    if (['.xls','.xlsx','.csv'].some(function(e){ return name.endsWith(e); }))
+      return { icon: 'bi-file-earmark-excel-fill',  cls: 'excel', label: 'Excel' };
+    if (['.jpg','.jpeg','.png','.gif','.webp','.bmp'].some(function(e){ return name.endsWith(e); }))
+      return { icon: 'bi-image-fill',               cls: 'image', label: 'صورة' };
+    return { icon: 'bi-file-earmark-fill', cls: 'other', label: 'ملف' };
+  }
+
+  function formatBytes(bytes) {
+    if (bytes < 1024)    return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
+  }
+
+  function renderFileList() {
+    var list  = document.getElementById('file-list');
+    var empty = document.getElementById('file-empty');
+    var badge = document.getElementById('attach-count-badge');
+
+    list.querySelectorAll('.file-item').forEach(function(el){ el.remove(); });
+
+    if (uploadedFiles.length === 0) {
+      empty.style.display = 'block';
+      badge.textContent   = 'لا توجد ملفات';
+      return;
+    }
+
+    empty.style.display = 'none';
+    badge.textContent   = uploadedFiles.length + ' ملف مرفق';
+
+    uploadedFiles.forEach(function(file, idx) {
+      var info = getFileTypeInfo(file);
+      var item = document.createElement('div');
+      item.className = 'file-item';
+      item.innerHTML =
+        '<div class="file-type-icon ' + info.cls + '"><i class="bi ' + info.icon + '"></i></div>'
+        + '<div class="file-info">'
+        + '<div class="file-name" title="' + file.name + '">' + file.name + '</div>'
+        + '<div class="file-meta">' + info.label + ' &bull; ' + formatBytes(file.size) + '</div>'
+        + '</div>'
+        + '<button class="file-remove" title="حذف" onclick="removeFile(' + idx + ')">'
+        + '<i class="bi bi-x-circle-fill"></i></button>';
+      list.appendChild(item);
+    });
+  }
+
+  function addFiles(fileList) {
+    var allowed = ['.pdf','.xls','.xlsx','.csv','.jpg','.jpeg','.png','.gif','.webp','.bmp'];
+    var added = 0;
+    Array.from(fileList).forEach(function(file) {
+      var ext = '.' + file.name.split('.').pop().toLowerCase();
+      if (!allowed.includes(ext)) {
+        showToast('الملف غير مدعوم: ' + file.name, 'error', 'bi-exclamation-triangle-fill'); return;
+      }
+      var dup = uploadedFiles.some(function(f){ return f.name === file.name && f.size === file.size; });
+      if (dup) { showToast('مرفق مسبقاً: ' + file.name, 'info', 'bi-info-circle-fill'); return; }
+      uploadedFiles.push(file);
+      added++;
+    });
+    if (added > 0) {
+      renderFileList();
+      showToast('تم إرفاق ' + added + ' ملف', 'success', 'bi-paperclip');
+    }
+  }
+
+  function removeFile(idx) {
+    var name = uploadedFiles[idx].name;
+    uploadedFiles.splice(idx, 1);
+    renderFileList();
+    showToast('تم حذف: ' + name, 'info', 'bi-trash3-fill');
+  }
+
+  fileInput.addEventListener('change', function(e){ addFiles(e.target.files); fileInput.value = ''; });
+  dropZone.addEventListener('dragover',  function(e){ e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', function(){ dropZone.classList.remove('drag-over'); });
+  dropZone.addEventListener('drop', function(e){
+    e.preventDefault(); dropZone.classList.remove('drag-over'); addFiles(e.dataTransfer.files);
+  });
+
+  // ══════════════════════════════════════════
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const active = document.querySelector(`.sidebar-nav a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.4 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Smooth scroll
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>
