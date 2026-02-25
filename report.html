@@ -1058,6 +1058,484 @@
 
     .pdf-modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
+    /* ══════════════════════════════════════════
+       PROCESS SECTION ENHANCEMENTS
+    ══════════════════════════════════════════ */
+
+    .proc-kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .proc-kpi {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      border: 1px solid #dde8e2;
+      border-radius: 12px;
+      padding: 12px 14px;
+      box-shadow: 0 1px 6px rgba(0,60,30,.05);
+      transition: box-shadow .2s;
+    }
+    .proc-kpi:hover { box-shadow: 0 4px 14px rgba(0,60,30,.1); }
+    .proc-kpi.accent-kpi { border-color: #f0d880; background: #fffdf5; }
+
+    .pkpi-icon {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .pkpi-body { flex: 1; min-width: 0; }
+
+    .pkpi-val {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--noor-dark);
+      line-height: 1;
+    }
+
+    .pkpi-label {
+      font-size: .68rem;
+      color: #7aaa8a;
+      font-weight: 600;
+      margin-top: 3px;
+      line-height: 1.3;
+    }
+
+    /* ── Overall progress bar ── */
+    .proc-overall-bar-wrap {
+      background: linear-gradient(135deg, #f0f7f3, #e4f5ec);
+      border: 1px solid #c0ddd0;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 4px;
+    }
+
+    .proc-overall-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: .82rem;
+      font-weight: 700;
+      color: var(--noor-dark);
+      margin-bottom: 8px;
+    }
+
+    .proc-overall-pct {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--noor-mid);
+    }
+
+    .proc-overall-track {
+      height: 10px;
+      background: #b8ddc8;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .proc-overall-fill {
+      height: 100%;
+      background: linear-gradient(to left, var(--noor-light), var(--noor-dark));
+      border-radius: 6px;
+      transition: width .6s cubic-bezier(.34,1.3,.64,1);
+    }
+    .proc-overall-fill.low { background: linear-gradient(to left, #e06060, #8b2020); }
+    .proc-overall-fill.mid { background: linear-gradient(to left, #e0a030, #8a6000); }
+
+    /* ── Performance rating stars ── */
+    .perf-stars {
+      display: flex;
+      gap: 3px;
+      font-size: .85rem;
+    }
+    .perf-star { color: #ddd; cursor: default; }
+    .perf-star.lit { color: #f0b800; }
+
+    /* ── Detail cards grid ── */
+    .proc-detail-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .proc-detail-card {
+      background: #fff;
+      border: 1.5px solid #dde8e2;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: box-shadow .2s;
+    }
+    .proc-detail-card:hover { box-shadow: 0 4px 16px rgba(0,60,30,.1); }
+
+    .pdc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: linear-gradient(135deg, var(--noor-dark), var(--noor-mid));
+      color: #fff;
+    }
+
+    .pdc-subject { font-size: .88rem; font-weight: 900; }
+    .pdc-teacher { font-size: .72rem; color: rgba(255,255,255,.7); }
+
+    .pdc-rating-badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: .72rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .pdc-rating-badge.excellent { background: #d4f5e0; color: #0d5a20; }
+    .pdc-rating-badge.good      { background: #d0eeff; color: #0a3a6a; }
+    .pdc-rating-badge.acceptable{ background: #fff0c0; color: #7a5000; }
+    .pdc-rating-badge.weak      { background: #ffe0e0; color: #8b1d1d; }
+    .pdc-rating-badge.empty     { background: rgba(255,255,255,.15); color: rgba(255,255,255,.7); }
+
+    .pdc-body { padding: 12px 14px; }
+
+    .pdc-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px dashed #e0ece6;
+      font-size: .8rem;
+    }
+    .pdc-row:last-child { border-bottom: none; }
+    .pdc-row-label { color: #7aaa8a; font-weight: 600; }
+    .pdc-row-val   { color: var(--noor-dark); font-weight: 700; }
+
+    .pdc-bar-wrap {
+      margin-top: 10px;
+    }
+    .pdc-bar-title {
+      display: flex;
+      justify-content: space-between;
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--noor-dark);
+      margin-bottom: 4px;
+    }
+    .pdc-bar-track {
+      height: 8px;
+      background: #d0e8d8;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .pdc-bar-fill {
+      height: 100%;
+      border-radius: 5px;
+      background: linear-gradient(to left, var(--noor-light), var(--noor-dark));
+      transition: width .5s ease;
+    }
+    .pdc-bar-fill.low { background: linear-gradient(to left, #e06060, #8b2020); }
+    .pdc-bar-fill.mid { background: linear-gradient(to left, #e0a030, #8a6000); }
+
+    .pdc-topics {
+      margin-top: 8px;
+      font-size: .78rem;
+      color: #5a8a6a;
+      line-height: 1.6;
+      background: #f4f9f6;
+      border-radius: 8px;
+      padding: 8px 10px;
+      border-right: 3px solid var(--noor-light);
+    }
+    .pdc-topics-label { font-weight: 700; color: var(--noor-dark); margin-bottom: 3px; font-size: .75rem; }
+
+    .pdc-note {
+      margin-top: 6px;
+      font-size: .76rem;
+      color: #8a6a40;
+      background: #fffdf0;
+      border-radius: 7px;
+      padding: 6px 10px;
+      border-right: 3px solid #e0c040;
+    }
+
+    /* ── responsive ── */
+    ══════════════════════════════════════════ */
+
+    /* ── Section intro textarea ── */
+    .section-textarea {
+      width: 100%;
+      border: 2px solid #c8ddd4;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-family: 'Cairo', sans-serif;
+      font-size: .88rem;
+      line-height: 1.9;
+      color: var(--noor-dark);
+      background: #f9fdfb;
+      resize: vertical;
+      min-height: 90px;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    .section-textarea:focus {
+      border-color: var(--noor-light);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(46,158,107,.12);
+    }
+    .section-textarea::placeholder { color: #aacab8; }
+
+    /* ── Field label row ── */
+    .field-label {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--noor-dark);
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .field-label i { color: var(--noor-light); }
+
+    /* ── Editable table ── */
+    .edit-table-wrap {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #c8ddd4;
+      margin-bottom: 16px;
+    }
+
+    .edit-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .84rem;
+    }
+
+    .edit-table thead th {
+      background: var(--noor-mid);
+      color: #fff;
+      padding: 10px 12px;
+      font-weight: 700;
+      text-align: right;
+      white-space: nowrap;
+      font-size: .8rem;
+    }
+
+    .edit-table tbody tr:nth-child(even) td { background: #f6fbf8; }
+    .edit-table tbody tr:hover td { background: var(--noor-pale); }
+
+    .edit-table tbody td {
+      padding: 4px 6px;
+      border-bottom: 1px solid #e4eee8;
+      vertical-align: middle;
+    }
+
+    .edit-table tbody td:first-child {
+      text-align: center;
+      font-weight: 700;
+      color: #7aaa8a;
+      font-size: .78rem;
+      width: 36px;
+      background: #f0f7f3;
+    }
+
+    .edit-table tbody td:last-child { border-left: none; }
+
+    /* ── Table cell input ── */
+    .cell-input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-family: 'Cairo', sans-serif;
+      font-size: .84rem;
+      color: var(--noor-dark);
+      padding: 6px 8px;
+      outline: none;
+      border-radius: 6px;
+      transition: background .15s;
+    }
+    .cell-input:focus { background: #fff; box-shadow: inset 0 0 0 2px var(--noor-light); }
+    .cell-input::placeholder { color: #b0ccb8; }
+
+    /* ── Table cell select ── */
+    .cell-select {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-family: 'Cairo', sans-serif;
+      font-size: .82rem;
+      color: var(--noor-dark);
+      padding: 6px 8px;
+      outline: none;
+      cursor: pointer;
+      border-radius: 6px;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .cell-select:focus { background: #fff; box-shadow: inset 0 0 0 2px var(--noor-light); }
+
+    /* ── Table cell number ── */
+    .cell-num {
+      width: 80px;
+      text-align: center;
+      -moz-appearance: textfield;
+    }
+    .cell-num::-webkit-inner-spin-button,
+    .cell-num::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    /* ── Add row button ── */
+    .btn-add-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      background: var(--noor-pale);
+      border: 1.5px dashed var(--noor-light);
+      border-radius: 8px;
+      color: var(--noor-dark);
+      font-family: 'Cairo', sans-serif;
+      font-size: .8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .btn-add-row:hover { background: #c4e8d4; border-style: solid; }
+
+    /* ── Remove row button ── */
+    .btn-del-row {
+      background: none;
+      border: none;
+      color: #c07070;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 5px;
+      transition: background .15s;
+      line-height: 1;
+    }
+    .btn-del-row:hover { background: #fff0f0; color: #b03030; }
+
+    /* ── Progress bar inline ── */
+    .inline-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .inline-bar-track {
+      flex: 1;
+      height: 7px;
+      background: #c8ddd4;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .inline-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(to left, var(--noor-light), var(--noor-dark));
+      transition: width .4s ease;
+    }
+    .inline-bar-fill.low  { background: linear-gradient(to left, #e06060, #8b2020); }
+    .inline-bar-fill.mid  { background: linear-gradient(to left, #e0a030, #906010); }
+    .inline-bar-pct { font-size: .72rem; font-weight: 700; color: var(--noor-dark); min-width: 34px; text-align: left; }
+
+    /* ── Summary input box ── */
+    .summary-input-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .summary-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .summary-input {
+      border: 2px solid #c8ddd4;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-family: 'Cairo', sans-serif;
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--noor-dark);
+      background: #f9fdfb;
+      text-align: center;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      -moz-appearance: textfield;
+    }
+    .summary-input::-webkit-inner-spin-button,
+    .summary-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .summary-input:focus { border-color: var(--noor-light); background:#fff; box-shadow:0 0 0 3px rgba(46,158,107,.12); }
+
+    /* ── Status badges inline ── */
+    .status-ok    { color: #1a7a3a; background: #eafaf0; border: 1px solid #a0d8b0; border-radius: 6px; padding: 2px 8px; font-size: .75rem; font-weight: 700; }
+    .status-warn  { color: #8a6000; background: #fff8e0; border: 1px solid #e8c840; border-radius: 6px; padding: 2px 8px; font-size: .75rem; font-weight: 700; }
+    .status-bad   { color: #8b1d1d; background: #fff3f3; border: 1px solid #f0b0b0; border-radius: 6px; padding: 2px 8px; font-size: .75rem; font-weight: 700; }
+
+    /* ── Challenge / Recommendation items ── */
+    .item-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .item-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #f9fdfb;
+      border: 1px solid #dde8e2;
+      border-radius: 10px;
+      padding: 10px 12px;
+      animation: slideIn .2s ease;
+    }
+
+    .item-row.challenge-row  { background: #fff9f8; border-color: #f0ccc8; }
+    .item-row.rec-row        { background: #f8fbff; border-color: #c0d8f0; }
+    .item-row.nextweek-row   { background: #fffdf0; border-color: #f0e070; }
+
+    .item-num {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem;
+      font-weight: 900;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .item-num.ch  { background: #f5c0bc; color: #8b1d1d; }
+    .item-num.rc  { background: #b8d8f0; color: #1a4a6a; }
+    .item-num.nw  { background: #f0e088; color: #6a5000; }
+    .item-num.act { background: var(--noor-pale); color: var(--noor-dark); }
+
+    .item-fields { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+
+    .item-input {
+      border: 1.5px solid #c8ddd4;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-family: 'Cairo', sans-serif;
+      font-size: .84rem;
+      color: var(--noor-dark);
+      background: #fff;
+      outline: none;
+      width: 100%;
+      transition: border-color .18s;
+    }
+    .item-input:focus { border-color: var(--noor-light); box-shadow: 0 0 0 2px rgba(46,158,107,.1); }
+    .item-input::placeholder { color: #b0ccb8; }
+    .item-input.challenge-i:focus { border-color: #e08080; box-shadow: 0 0 0 2px rgba(220,80,80,.1); }
+    .item-input.rec-i:focus       { border-color: #6090c0; box-shadow: 0 0 0 2px rgba(60,120,200,.1); }
+    .item-input.nw-i:focus        { border-color: #c8a820; box-shadow: 0 0 0 2px rgba(200,168,0,.1); }
+
+    .item-sub-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    @media (max-width:550px) { .item-sub-grid { grid-template-columns: 1fr; } }
+
     /* ── responsive ── */
     @media (max-width: 768px) {
       :root { --sidebar-w: 0px; }
@@ -1165,36 +1643,28 @@
         <span class="card-number">١</span>
       </div>
       <div class="card-body-custom">
-        <div class="row g-3 mb-4">
-          <div class="col-6 col-md-3">
-            <div class="stat-box">
-              <div class="stat-num">—</div>
-              <div class="stat-label">إجمالي الطلاب</div>
-            </div>
+        <div class="summary-input-grid">
+          <div class="summary-field">
+            <div class="field-label"><i class="bi bi-people-fill"></i> إجمالي الطلاب</div>
+            <input type="number" id="sum-students" class="summary-input" placeholder="0" min="0" />
           </div>
-          <div class="col-6 col-md-3">
-            <div class="stat-box">
-              <div class="stat-num">—</div>
-              <div class="stat-label">عدد الفصول</div>
-            </div>
+          <div class="summary-field">
+            <div class="field-label"><i class="bi bi-door-closed-fill"></i> عدد الفصول</div>
+            <input type="number" id="sum-classes" class="summary-input" placeholder="0" min="0" />
           </div>
-          <div class="col-6 col-md-3">
-            <div class="stat-box accent">
-              <div class="stat-num">—</div>
-              <div class="stat-label">نسبة الحضور %</div>
-            </div>
+          <div class="summary-field">
+            <div class="field-label"><i class="bi bi-percent"></i> نسبة الحضور %</div>
+            <input type="number" id="sum-rate" class="summary-input" placeholder="0.0" min="0" max="100" step="0.1" />
           </div>
-          <div class="col-6 col-md-3">
-            <div class="stat-box">
-              <div class="stat-num">—</div>
-              <div class="stat-label">عدد المعلمين</div>
-            </div>
+          <div class="summary-field">
+            <div class="field-label"><i class="bi bi-mortarboard-fill"></i> عدد المعلمين</div>
+            <input type="number" id="sum-teachers" class="summary-input" placeholder="0" min="0" />
           </div>
         </div>
-        <div class="content-placeholder">
-          <i class="bi bi-pencil-square"></i>
-          يُكتب هنا ملخص تنفيذي موجز للأسبوع الدراسي
-        </div>
+        <div class="section-divider"></div>
+        <div class="field-label mb-1"><i class="bi bi-pencil-fill"></i> الملخص التنفيذي للأسبوع</div>
+        <textarea id="sum-text" class="section-textarea" rows="4"
+          placeholder="اكتب هنا ملخصاً موجزاً لأبرز ما شهده الأسبوع الدراسي من إنجازات وأحداث..."></textarea>
       </div>
     </div>
   </section>
@@ -1208,48 +1678,102 @@
         <span class="card-number">٢</span>
       </div>
       <div class="card-body-custom">
-        <table class="noor-table mb-4">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>المادة</th>
-              <th>المعلم</th>
-              <th>الحصص المنفذة</th>
-              <th>الحصص المقررة</th>
-              <th>الحالة</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>١</td>
-              <td>—</td>
-              <td>—</td>
-              <td>—</td>
-              <td>—</td>
-              <td><span class="badge-noor">—</span></td>
-            </tr>
-            <tr>
-              <td>٢</td>
-              <td>—</td>
-              <td>—</td>
-              <td>—</td>
-              <td>—</td>
-              <td><span class="badge-noor">—</span></td>
-            </tr>
-            <tr>
-              <td>٣</td>
-              <td>—</td>
-              <td>—</td>
-              <td>—</td>
-              <td>—</td>
-              <td><span class="badge-noor">—</span></td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="content-placeholder">
-          <i class="bi bi-journal-text"></i>
-          تفاصيل سير المناهج وتنفيذ الخطة الدراسية الأسبوعية
+
+        <!-- ── Summary KPI strip ── -->
+        <div class="proc-kpi-strip" id="proc-kpi-strip">
+          <div class="proc-kpi">
+            <div class="pkpi-icon" style="background:#eaf7f0; color:#1a7a3a;"><i class="bi bi-book-half"></i></div>
+            <div class="pkpi-body">
+              <div class="pkpi-val" id="pkpi-subjects">—</div>
+              <div class="pkpi-label">المواد المُسجَّلة</div>
+            </div>
+          </div>
+          <div class="proc-kpi">
+            <div class="pkpi-icon" style="background:#eaf7f0; color:#1a7a3a;"><i class="bi bi-calendar-check-fill"></i></div>
+            <div class="pkpi-body">
+              <div class="pkpi-val" id="pkpi-planned">—</div>
+              <div class="pkpi-label">إجمالي الحصص المقررة</div>
+            </div>
+          </div>
+          <div class="proc-kpi">
+            <div class="pkpi-icon" style="background:#d8f5e8; color:#0d5a30;"><i class="bi bi-check2-all"></i></div>
+            <div class="pkpi-body">
+              <div class="pkpi-val" id="pkpi-executed">—</div>
+              <div class="pkpi-label">إجمالي الحصص المنفذة</div>
+            </div>
+          </div>
+          <div class="proc-kpi accent-kpi">
+            <div class="pkpi-icon" style="background:#fff0c0; color:#7a5000;"><i class="bi bi-percent"></i></div>
+            <div class="pkpi-body">
+              <div class="pkpi-val" id="pkpi-exec-rate">—</div>
+              <div class="pkpi-label">نسبة تنفيذ الحصص</div>
+            </div>
+          </div>
+          <div class="proc-kpi accent-kpi">
+            <div class="pkpi-icon" style="background:#e8f0ff; color:#1a3a8a;"><i class="bi bi-bar-chart-fill"></i></div>
+            <div class="pkpi-body">
+              <div class="pkpi-val" id="pkpi-cover-rate">—</div>
+              <div class="pkpi-label">متوسط تغطية المنهج</div>
+            </div>
+          </div>
+          <div class="proc-kpi">
+            <div class="pkpi-icon" style="background:#f5e8ff; color:#5a1a8a;"><i class="bi bi-star-half"></i></div>
+            <div class="pkpi-body">
+              <div class="pkpi-val" id="pkpi-avg-perf">—</div>
+              <div class="pkpi-label">متوسط تقييم الأداء</div>
+            </div>
+          </div>
         </div>
+
+        <!-- ── Overall curriculum progress bar ── -->
+        <div class="proc-overall-bar-wrap" id="proc-overall-wrap" style="display:none;">
+          <div class="proc-overall-label">
+            <span><i class="bi bi-layers-fill"></i> تقدم تغطية المناهج الإجمالي</span>
+            <span class="proc-overall-pct" id="proc-overall-pct">0%</span>
+          </div>
+          <div class="proc-overall-track">
+            <div class="proc-overall-fill" id="proc-overall-fill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- ── Table ── -->
+        <div class="field-label mb-2 mt-3"><i class="bi bi-table"></i> جدول تفصيل المواد الدراسية</div>
+        <div class="edit-table-wrap" style="overflow-x:auto;">
+          <table class="edit-table" id="process-table">
+            <thead>
+              <tr>
+                <th style="width:34px">#</th>
+                <th style="min-width:110px">المادة</th>
+                <th style="min-width:110px">المعلم</th>
+                <th style="min-width:180px">الموضوعات المُدرَّسة</th>
+                <th style="width:76px">الحصص<br>المقررة</th>
+                <th style="width:76px">الحصص<br>المنفذة</th>
+                <th style="width:96px">نسبة<br>التنفيذ</th>
+                <th style="width:80px">تغطية<br>المنهج %</th>
+                <th style="width:96px">تقييم<br>الأداء</th>
+                <th style="width:90px">ملاحظة<br>المعلم</th>
+                <th style="width:34px"></th>
+              </tr>
+            </thead>
+            <tbody id="process-tbody">
+              <!-- rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
+        <button class="btn-add-row" onclick="addProcessRow()">
+          <i class="bi bi-plus-circle-fill"></i> إضافة مادة
+        </button>
+
+        <div class="section-divider"></div>
+
+        <!-- ── Per-subject detail cards (auto-generated) ── -->
+        <div class="field-label mb-2"><i class="bi bi-layout-text-sidebar-reverse"></i> تفصيل الأداء لكل مادة</div>
+        <div id="proc-detail-cards" class="proc-detail-cards"></div>
+
+        <div class="section-divider"></div>
+        <div class="field-label mb-1"><i class="bi bi-journal-text"></i> ملاحظات على سير العملية التعليمية</div>
+        <textarea id="process-notes" class="section-textarea" rows="3"
+          placeholder="أبرز الملاحظات على سير الدروس ومستوى التفاعل والالتزام بالخطة الدراسية..."></textarea>
       </div>
     </div>
   </section>
@@ -1437,31 +1961,32 @@
         <span class="card-number">٤</span>
       </div>
       <div class="card-body-custom">
-        <div class="row g-3">
-          <div class="col-md-4">
-            <div class="stat-box">
-              <div class="stat-num">—</div>
-              <div class="stat-label">أنشطة صفية</div>
-            </div>
+        <div class="summary-input-grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr));">
+          <div class="summary-field">
+            <div class="field-label"><i class="bi bi-journal-bookmark-fill"></i> أنشطة صفية</div>
+            <input type="number" id="act-class" class="summary-input" placeholder="0" min="0" />
           </div>
-          <div class="col-md-4">
-            <div class="stat-box">
-              <div class="stat-num">—</div>
-              <div class="stat-label">أنشطة لاصفية</div>
-            </div>
+          <div class="summary-field">
+            <div class="field-label"><i class="bi bi-people-fill"></i> أنشطة لاصفية</div>
+            <input type="number" id="act-extra" class="summary-input" placeholder="0" min="0" />
           </div>
-          <div class="col-md-4">
-            <div class="stat-box accent">
-              <div class="stat-num">—</div>
-              <div class="stat-label">طلاب مشاركون</div>
-            </div>
+          <div class="summary-field">
+            <div class="field-label"><i class="bi bi-person-check-fill"></i> طلاب مشاركون</div>
+            <input type="number" id="act-students" class="summary-input" placeholder="0" min="0" />
           </div>
         </div>
+
         <div class="section-divider"></div>
-        <div class="content-placeholder">
-          <i class="bi bi-trophy"></i>
-          وصف الأنشطة المدرسية والرياضية والثقافية المنفذة خلال الأسبوع
-        </div>
+        <div class="field-label mb-2"><i class="bi bi-list-stars"></i> تفاصيل الأنشطة المنفذة</div>
+        <div class="item-list" id="activities-list"></div>
+        <button class="btn-add-row mt-2" onclick="addActivityRow()">
+          <i class="bi bi-plus-circle-fill"></i> إضافة نشاط
+        </button>
+
+        <div class="section-divider"></div>
+        <div class="field-label mb-1"><i class="bi bi-chat-left-text-fill"></i> ملاحظات عامة على الأنشطة</div>
+        <textarea id="act-notes" class="section-textarea" rows="3"
+          placeholder="ملاحظات حول مستوى التفاعل والمشاركة ونتائج الأنشطة..."></textarea>
       </div>
     </div>
   </section>
@@ -1475,44 +2000,33 @@
         <span class="card-number">٥</span>
       </div>
       <div class="card-body-custom">
-        <table class="noor-table mb-4">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>المؤشر</th>
-              <th>الهدف</th>
-              <th>المحقق</th>
-              <th>التقييم</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>١</td>
-              <td>نسبة حضور الطلاب</td>
-              <td>—</td>
-              <td>—</td>
-              <td><span class="badge-noor">—</span></td>
-            </tr>
-            <tr>
-              <td>٢</td>
-              <td>تنفيذ الخطة الدراسية</td>
-              <td>—</td>
-              <td>—</td>
-              <td><span class="badge-noor">—</span></td>
-            </tr>
-            <tr>
-              <td>٣</td>
-              <td>الأنشطة المنفذة</td>
-              <td>—</td>
-              <td>—</td>
-              <td><span class="badge-noor">—</span></td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="content-placeholder">
-          <i class="bi bi-bar-chart-line"></i>
-          مؤشرات الأداء التفصيلية ومقارنتها بالأهداف المرسومة
+        <div class="field-label mb-2"><i class="bi bi-clipboard2-data-fill"></i> مؤشرات الأداء الأسبوعية</div>
+        <div class="edit-table-wrap">
+          <table class="edit-table" id="perf-table">
+            <thead>
+              <tr>
+                <th style="width:36px">#</th>
+                <th>المؤشر</th>
+                <th style="width:100px">الهدف المستهدف</th>
+                <th style="width:100px">المحقق فعلياً</th>
+                <th style="width:120px">نسبة التحقق</th>
+                <th style="width:110px">التقييم</th>
+                <th style="width:36px"></th>
+              </tr>
+            </thead>
+            <tbody id="perf-tbody">
+              <!-- rows injected by JS -->
+            </tbody>
+          </table>
         </div>
+        <button class="btn-add-row" onclick="addPerfRow()">
+          <i class="bi bi-plus-circle-fill"></i> إضافة مؤشر
+        </button>
+
+        <div class="section-divider"></div>
+        <div class="field-label mb-1"><i class="bi bi-bar-chart-line-fill"></i> تحليل الأداء العام للأسبوع</div>
+        <textarea id="perf-notes" class="section-textarea" rows="3"
+          placeholder="تحليل موجز لمستوى الأداء مقارنةً بالأسبوع السابق وتوجهات التطوير..."></textarea>
       </div>
     </div>
   </section>
@@ -1520,16 +2034,25 @@
   <!-- ─── 6. التحديات ─── -->
   <section id="challenges">
     <div class="report-card">
-      <div class="card-header-custom" style="background: linear-gradient(135deg,#7b2d1e,#b04030);">
+      <div class="card-header-custom" style="background:linear-gradient(135deg,#7b2d1e,#b04030);">
         <div class="card-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
         <h3>التحديات</h3>
         <span class="card-number">٦</span>
       </div>
       <div class="card-body-custom">
-        <div class="content-placeholder" style="border-color:#e8c0bb; background:#fff8f7; color:#9a4a40;">
-          <i class="bi bi-exclamation-circle" style="color:#c06050;"></i>
-          تُدرج هنا التحديات والصعوبات التي واجهت المدرسة خلال الأسبوع
-        </div>
+        <div class="field-label mb-2" style="color:#8b1d1d;"><i class="bi bi-list-ul"></i> قائمة التحديات والصعوبات</div>
+        <div class="item-list" id="challenges-list"></div>
+        <button class="btn-add-row mt-2"
+          style="border-color:#e08080; color:#8b1d1d; background:#fff8f8;"
+          onclick="addChallengeRow()">
+          <i class="bi bi-plus-circle-fill"></i> إضافة تحدٍّ
+        </button>
+
+        <div class="section-divider"></div>
+        <div class="field-label mb-1" style="color:#8b1d1d;"><i class="bi bi-pencil-fill"></i> وصف عام للتحديات</div>
+        <textarea id="ch-notes" class="section-textarea" rows="3"
+          style="border-color:#f0c0bc;"
+          placeholder="وصف شامل للتحديات التي واجهت المدرسة خلال هذا الأسبوع وتأثيرها على العملية التعليمية..."></textarea>
       </div>
     </div>
   </section>
@@ -1537,16 +2060,25 @@
   <!-- ─── 7. التوصيات ─── -->
   <section id="recommendations">
     <div class="report-card">
-      <div class="card-header-custom" style="background: linear-gradient(135deg,#1a4a6b,#2a6a9b);">
+      <div class="card-header-custom" style="background:linear-gradient(135deg,#1a4a6b,#2a6a9b);">
         <div class="card-icon"><i class="bi bi-lightbulb-fill"></i></div>
         <h3>التوصيات</h3>
         <span class="card-number">٧</span>
       </div>
       <div class="card-body-custom">
-        <div class="content-placeholder" style="border-color:#b0c8e0; background:#f5f8fc; color:#4a6a8a;">
-          <i class="bi bi-lightbulb" style="color:#5080a0;"></i>
-          توصيات إدارة المدرسة لمعالجة التحديات وتطوير الأداء
-        </div>
+        <div class="field-label mb-2" style="color:#1a4a6b;"><i class="bi bi-list-check"></i> قائمة التوصيات</div>
+        <div class="item-list" id="recs-list"></div>
+        <button class="btn-add-row mt-2"
+          style="border-color:#80b0d8; color:#1a4a6b; background:#f0f7ff;"
+          onclick="addRecRow()">
+          <i class="bi bi-plus-circle-fill"></i> إضافة توصية
+        </button>
+
+        <div class="section-divider"></div>
+        <div class="field-label mb-1" style="color:#1a4a6b;"><i class="bi bi-pencil-fill"></i> ملاحظات إضافية</div>
+        <textarea id="rec-notes" class="section-textarea" rows="3"
+          style="border-color:#b0c8e8;"
+          placeholder="توصيات إضافية وملاحظات إدارة المدرسة للجهات المعنية..."></textarea>
       </div>
     </div>
   </section>
@@ -1554,46 +2086,25 @@
   <!-- ─── 8. خطة الأسبوع القادم ─── -->
   <section id="next-week">
     <div class="report-card">
-      <div class="card-header-custom" style="background: linear-gradient(135deg,#4a3a0a,#7a6010);">
+      <div class="card-header-custom" style="background:linear-gradient(135deg,#4a3a0a,#7a6010);">
         <div class="card-icon"><i class="bi bi-calendar-week-fill"></i></div>
         <h3>خطة الأسبوع القادم</h3>
         <span class="card-number">٨</span>
       </div>
       <div class="card-body-custom">
-        <table class="noor-table mb-4">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>النشاط / الفعالية</th>
-              <th>المسؤول</th>
-              <th>الموعد</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>١</td>
-              <td>—</td>
-              <td>—</td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td>٢</td>
-              <td>—</td>
-              <td>—</td>
-              <td>—</td>
-            </tr>
-            <tr>
-              <td>٣</td>
-              <td>—</td>
-              <td>—</td>
-              <td>—</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="content-placeholder" style="border-color:#d4c070; background:#fffdf0; color:#8a7020;">
-          <i class="bi bi-calendar-plus" style="color:#a08030;"></i>
-          تفاصيل البرنامج والخطط المقررة للأسبوع القادم
-        </div>
+        <div class="field-label mb-2" style="color:#5a4000;"><i class="bi bi-list-task"></i> البنود المقررة للأسبوع القادم</div>
+        <div class="item-list" id="nextweek-list"></div>
+        <button class="btn-add-row mt-2"
+          style="border-color:#d4c040; color:#5a4000; background:#fffdf0;"
+          onclick="addNextWeekRow()">
+          <i class="bi bi-plus-circle-fill"></i> إضافة بند
+        </button>
+
+        <div class="section-divider"></div>
+        <div class="field-label mb-1" style="color:#5a4000;"><i class="bi bi-pencil-fill"></i> ملاحظات تنفيذية</div>
+        <textarea id="nw-notes" class="section-textarea" rows="3"
+          style="border-color:#d4c070;"
+          placeholder="ملاحظات تنفيذية وتوجيهات للأسبوع القادم من إدارة المدرسة..."></textarea>
       </div>
     </div>
   </section>
@@ -2024,6 +2535,399 @@
   }
 
   // ══════════════════════════════════════════
+  // SECTIONS DATA MODULE
+  // ══════════════════════════════════════════
+
+  // ── Arabic ordinal numerals ──
+  const AR_NUMS = ['١','٢','٣','٤','٥','٦','٧','٨','٩','١٠','١١','١٢','١٣','١٤','١٥','١٦','١٧','١٨','١٩','٢٠'];
+  function arNum(n) { return AR_NUMS[n-1] || String(n); }
+
+  function reindexRows(tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) return;
+    Array.from(tbody.querySelectorAll('tr')).forEach((tr, i) => {
+      const first = tr.querySelector('td:first-child');
+      if (first) first.textContent = arNum(i + 1);
+    });
+  }
+
+  function reindexList(listId) {
+    const list = document.getElementById(listId);
+    if (!list) return;
+    list.querySelectorAll('.item-row').forEach((row, i) => {
+      const num = row.querySelector('.item-num');
+      if (num) num.textContent = arNum(i + 1);
+    });
+  }
+
+  // ════════════════════════════════
+  // SECTION 2: سير العملية التعليمية
+  // ════════════════════════════════
+  const PERF_LABELS = {
+    '':          { label: '—',        cls: 'empty',      stars: 0 },
+    'excellent': { label: '⭐ ممتاز', cls: 'excellent',  stars: 4 },
+    'good':      { label: '✓ جيد',    cls: 'good',       stars: 3 },
+    'acceptable':{ label: '△ مقبول',  cls: 'acceptable', stars: 2 },
+    'weak':      { label: '✕ ضعيف',   cls: 'weak',       stars: 1 },
+  };
+
+  const PERF_RATING_OPTS = [
+    { v: '', label: '— تقييم الأداء —' },
+    { v: 'excellent', label: '⭐ ممتاز' },
+    { v: 'good',      label: '✓ جيد' },
+    { v: 'acceptable',label: '△ مقبول' },
+    { v: 'weak',      label: '✕ ضعيف' },
+  ];
+
+  function calcProcessRate(tr) {
+    var planned  = parseFloat(tr.querySelector('.proc-planned').value)  || 0;
+    var executed = parseFloat(tr.querySelector('.proc-executed').value) || 0;
+    var execPct  = planned > 0 ? Math.min((executed / planned) * 100, 100) : 0;
+    var fill  = tr.querySelector('.inline-bar-fill');
+    var pctEl = tr.querySelector('.inline-bar-pct');
+    if (fill)  { fill.style.width = execPct + '%'; fill.className = 'inline-bar-fill' + (execPct < 60 ? ' low' : execPct < 85 ? ' mid' : ''); }
+    if (pctEl) pctEl.textContent = execPct.toFixed(0) + '%';
+    updateProcessKPIs();
+    renderProcessDetailCards();
+  }
+
+  function addProcessRow(data) {
+    data = data || {};
+    var tbody = document.getElementById('process-tbody');
+    var idx   = tbody.querySelectorAll('tr').length + 1;
+    var tr    = document.createElement('tr');
+    var perfOpts = PERF_RATING_OPTS.map(function(o) {
+      return '<option value="' + o.v + '"' + (data.perf === o.v ? ' selected' : '') + '>' + o.label + '</option>';
+    }).join('');
+    tr.innerHTML =
+      '<td>' + arNum(idx) + '</td>' +
+      '<td><input class="cell-input proc-subject" placeholder="اسم المادة" value="' + (data.subject||'') + '" /></td>' +
+      '<td><input class="cell-input proc-teacher" placeholder="اسم المعلم"  value="' + (data.teacher||'') + '" /></td>' +
+      '<td><input class="cell-input proc-topics"  placeholder="الموضوعات المدرسة" value="' + (data.topics||'') + '" /></td>' +
+      '<td><input class="cell-input cell-num proc-planned"  type="number" min="0" placeholder="0" value="' + (data.planned||'') + '" /></td>' +
+      '<td><input class="cell-input cell-num proc-executed" type="number" min="0" placeholder="0" value="' + (data.executed||'') + '" /></td>' +
+      '<td><div class="inline-bar-wrap"><div class="inline-bar-track"><div class="inline-bar-fill" style="width:0%"></div></div><span class="inline-bar-pct">0%</span></div></td>' +
+      '<td><div style="display:flex;align-items:center;gap:4px;"><input class="cell-input cell-num proc-cover" type="number" min="0" max="100" step="1" placeholder="0" value="' + (data.cover||'') + '" style="width:52px;" /><span style="font-size:.7rem;color:#7aaa8a;font-weight:700;">%</span></div></td>' +
+      '<td><select class="cell-select proc-perf">' + perfOpts + '</select></td>' +
+      '<td><input class="cell-input proc-note" placeholder="ملاحظة" value="' + (data.note||'') + '" /></td>' +
+      '<td><button class="btn-del-row" onclick="delProcessRow(this)"><i class="bi bi-dash-circle-fill"></i></button></td>';
+    tbody.appendChild(tr);
+    ['proc-planned','proc-executed'].forEach(function(cls) {
+      tr.querySelector('.' + cls).addEventListener('input', function() { calcProcessRate(tr); });
+    });
+    ['proc-subject','proc-teacher','proc-topics','proc-cover','proc-note'].forEach(function(cls) {
+      var el = tr.querySelector('.' + cls);
+      if (el) el.addEventListener('input', function() { updateProcessKPIs(); renderProcessDetailCards(); });
+    });
+    tr.querySelector('.proc-perf').addEventListener('change', function() { updateProcessKPIs(); renderProcessDetailCards(); });
+    if (data.planned || data.executed) calcProcessRate(tr);
+    else { updateProcessKPIs(); renderProcessDetailCards(); }
+  }
+
+  function delProcessRow(btn) {
+    btn.closest('tr').remove();
+    reindexRows('process-tbody');
+    updateProcessKPIs();
+    renderProcessDetailCards();
+  }
+
+  function delRow(btn, tbodyId) {
+    btn.closest('tr').remove();
+    reindexRows(tbodyId);
+  }
+
+  function getProcessRows() {
+    var rows = [];
+    document.querySelectorAll('#process-tbody tr').forEach(function(tr) {
+      rows.push({
+        subject:  tr.querySelector('.proc-subject')  ? tr.querySelector('.proc-subject').value  : '',
+        teacher:  tr.querySelector('.proc-teacher')  ? tr.querySelector('.proc-teacher').value  : '',
+        topics:   tr.querySelector('.proc-topics')   ? tr.querySelector('.proc-topics').value   : '',
+        planned:  parseFloat(tr.querySelector('.proc-planned')  ? tr.querySelector('.proc-planned').value  : 0) || 0,
+        executed: parseFloat(tr.querySelector('.proc-executed') ? tr.querySelector('.proc-executed').value : 0) || 0,
+        cover:    parseFloat(tr.querySelector('.proc-cover')    ? tr.querySelector('.proc-cover').value    : 0) || 0,
+        perf:     tr.querySelector('.proc-perf')     ? tr.querySelector('.proc-perf').value     : '',
+        note:     tr.querySelector('.proc-note')     ? tr.querySelector('.proc-note').value     : '',
+      });
+    });
+    return rows;
+  }
+
+  function updateProcessKPIs() {
+    var rows = getProcessRows();
+    var totalPlan = 0, totalExec = 0, totalCover = 0, coverCount = 0, perfSum = 0, perfCount = 0;
+    var PERF_VAL = { excellent: 4, good: 3, acceptable: 2, weak: 1 };
+    rows.forEach(function(r) {
+      totalPlan += r.planned; totalExec += r.executed;
+      if (r.cover > 0) { totalCover += r.cover; coverCount++; }
+      if (r.perf && PERF_VAL[r.perf]) { perfSum += PERF_VAL[r.perf]; perfCount++; }
+    });
+    var execRate = totalPlan > 0 ? (totalExec / totalPlan * 100) : 0;
+    var coverAvg = coverCount > 0 ? (totalCover / coverCount) : 0;
+    var perfAvg  = perfCount  > 0 ? (perfSum / perfCount) : 0;
+    var perfLabel = perfAvg >= 3.5 ? '⭐ ممتاز' : perfAvg >= 2.5 ? '✓ جيد' : perfAvg >= 1.5 ? '△ مقبول' : perfAvg > 0 ? '✕ ضعيف' : '—';
+    document.getElementById('pkpi-subjects').textContent   = rows.length || '—';
+    document.getElementById('pkpi-planned').textContent    = totalPlan   || '—';
+    document.getElementById('pkpi-executed').textContent   = totalExec   || '—';
+    document.getElementById('pkpi-exec-rate').textContent  = totalPlan  > 0 ? execRate.toFixed(1) + '%'  : '—';
+    document.getElementById('pkpi-cover-rate').textContent = coverCount > 0 ? coverAvg.toFixed(1) + '%'  : '—';
+    document.getElementById('pkpi-avg-perf').textContent   = perfLabel;
+    var wrap = document.getElementById('proc-overall-wrap');
+    var fill = document.getElementById('proc-overall-fill');
+    var pct  = document.getElementById('proc-overall-pct');
+    var val  = coverCount > 0 ? coverAvg : (totalPlan > 0 ? execRate : 0);
+    if (val > 0) {
+      wrap.style.display = 'block';
+      pct.textContent    = val.toFixed(1) + '%';
+      fill.style.width   = Math.min(val, 100) + '%';
+      fill.className     = 'proc-overall-fill' + (val < 60 ? ' low' : val < 85 ? ' mid' : '');
+    } else { wrap.style.display = 'none'; }
+  }
+
+  function renderProcessDetailCards() {
+    var container = document.getElementById('proc-detail-cards');
+    if (!container) return;
+    var rows = getProcessRows().filter(function(r) { return r.subject; });
+    if (rows.length === 0) {
+      container.innerHTML = '<div style="color:#9abfaa;font-size:.84rem;padding:16px 0;text-align:center;"><i class="bi bi-info-circle"></i> أدخل بيانات المادة في الجدول أعلاه لعرض البطاقة التفصيلية تلقائياً</div>';
+      return;
+    }
+    container.innerHTML = rows.map(function(r) {
+      var execPct  = r.planned > 0 ? Math.min(r.executed / r.planned * 100, 100) : 0;
+      var coverPct = r.cover;
+      var perfInfo = PERF_LABELS[r.perf] || PERF_LABELS[''];
+      var stars = '';
+      for (var s = 1; s <= 4; s++) stars += '<span class="perf-star' + (s <= perfInfo.stars ? ' lit' : '') + '">★</span>';
+      var execCls  = execPct  < 60 ? ' low' : execPct  < 85 ? ' mid' : '';
+      var coverCls = coverPct < 60 ? ' low' : coverPct < 85 ? ' mid' : '';
+      return '<div class="proc-detail-card">' +
+        '<div class="pdc-header">' +
+          '<div><div class="pdc-subject">' + r.subject + '</div>' + (r.teacher ? '<div class="pdc-teacher"><i class="bi bi-person-fill"></i> ' + r.teacher + '</div>' : '') + '</div>' +
+          '<span class="pdc-rating-badge ' + perfInfo.cls + '">' + perfInfo.label + '</span>' +
+        '</div>' +
+        '<div class="pdc-body">' +
+          '<div class="pdc-row"><span class="pdc-row-label">الحصص المقررة</span><span class="pdc-row-val">' + (r.planned||'—') + '</span></div>' +
+          '<div class="pdc-row"><span class="pdc-row-label">الحصص المنفذة</span><span class="pdc-row-val">' + (r.executed||'—') + '</span></div>' +
+          '<div class="pdc-bar-wrap">' +
+            '<div class="pdc-bar-title"><span>نسبة تنفيذ الحصص</span><span>' + execPct.toFixed(0) + '%</span></div>' +
+            '<div class="pdc-bar-track"><div class="pdc-bar-fill' + execCls + '" style="width:' + execPct + '%"></div></div>' +
+            (coverPct > 0 ? '<div class="pdc-bar-title" style="margin-top:8px;"><span>تغطية المنهج</span><span>' + coverPct + '%</span></div><div class="pdc-bar-track"><div class="pdc-bar-fill' + coverCls + '" style="width:' + Math.min(coverPct,100) + '%"></div></div>' : '') +
+          '</div>' +
+          '<div class="pdc-row" style="border-bottom:none;margin-top:6px;"><span class="pdc-row-label">تقييم الأداء</span><span class="perf-stars">' + stars + '</span></div>' +
+          (r.topics ? '<div class="pdc-topics"><div class="pdc-topics-label"><i class="bi bi-journal-bookmark-fill"></i> الموضوعات المدرسة</div>' + r.topics + '</div>' : '') +
+          (r.note   ? '<div class="pdc-note"><i class="bi bi-pencil-fill"></i> ' + r.note + '</div>' : '') +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ════════════════════════════════
+  // SECTION 5: متابعة الأداء
+  // ════════════════════════════════
+  const PERF_RATINGS = [
+    { v: '', label: '— تقييم —' },
+    { v: 'excellent', label: '⭐ ممتاز' },
+    { v: 'good',      label: '✓ جيد' },
+    { v: 'acceptable',label: '△ مقبول' },
+    { v: 'weak',      label: '✕ ضعيف' },
+  ];
+
+  function calcPerfRate(tr) {
+    const target  = parseFloat(tr.querySelector('.perf-target').value)  || 0;
+    const actual  = parseFloat(tr.querySelector('.perf-actual').value)  || 0;
+    const pct = target > 0 ? Math.min((actual / target) * 100, 100) : 0;
+    const fill  = tr.querySelector('.inline-bar-fill');
+    const pctEl = tr.querySelector('.inline-bar-pct');
+    if (fill)  { fill.style.width = pct + '%'; fill.className = 'inline-bar-fill' + (pct < 60 ? ' low' : pct < 85 ? ' mid' : ''); }
+    if (pctEl) pctEl.textContent = pct.toFixed(0) + '%';
+  }
+
+  function addPerfRow(data) {
+    data = data || {};
+    const tbody = document.getElementById('perf-tbody');
+    const idx   = tbody.querySelectorAll('tr').length + 1;
+    const tr    = document.createElement('tr');
+    const ratingOpts = PERF_RATINGS.map(o =>
+      `<option value="${o.v}" ${data.rating === o.v ? 'selected' : ''}>${o.label}</option>`
+    ).join('');
+    tr.innerHTML = `
+      <td>${arNum(idx)}</td>
+      <td><input class="cell-input" placeholder="اسم المؤشر" value="${data.indicator||''}" /></td>
+      <td><input class="cell-input cell-num perf-target" type="number" min="0" step="0.1" placeholder="—" value="${data.target||''}" /></td>
+      <td><input class="cell-input cell-num perf-actual" type="number" min="0" step="0.1" placeholder="—" value="${data.actual||''}" /></td>
+      <td>
+        <div class="inline-bar-wrap">
+          <div class="inline-bar-track"><div class="inline-bar-fill" style="width:0%"></div></div>
+          <span class="inline-bar-pct">0%</span>
+        </div>
+      </td>
+      <td>
+        <select class="cell-select">${ratingOpts}</select>
+      </td>
+      <td><button class="btn-del-row" onclick="delRow(this,'perf-tbody')"><i class="bi bi-dash-circle-fill"></i></button></td>
+    `;
+    tbody.appendChild(tr);
+    tr.querySelector('.perf-target').addEventListener('input', () => calcPerfRate(tr));
+    tr.querySelector('.perf-actual').addEventListener('input', () => calcPerfRate(tr));
+    if (data.target || data.actual) calcPerfRate(tr);
+  }
+
+  // ════════════════════════════════
+  // SECTION 4: الأنشطة
+  // ════════════════════════════════
+  const ACT_TYPES = ['— نوع النشاط —','صفي','لاصفي','رياضي','ثقافي','اجتماعي','علمي','فني','ديني'];
+
+  function addActivityRow(data) {
+    data = data || {};
+    const list = document.getElementById('activities-list');
+    const idx  = list.querySelectorAll('.item-row').length + 1;
+    const typeOpts = ACT_TYPES.map(t => `<option ${data.type===t?'selected':''}>${t}</option>`).join('');
+    const row = document.createElement('div');
+    row.className = 'item-row';
+    row.innerHTML = `
+      <div class="item-num act">${arNum(idx)}</div>
+      <div class="item-fields">
+        <input class="item-input" placeholder="اسم النشاط أو الفعالية" value="${data.name||''}" />
+        <div class="item-sub-grid">
+          <select class="item-input" style="appearance:none;">
+            ${typeOpts}
+          </select>
+          <input class="item-input" placeholder="المشرف / المنفذ" value="${data.supervisor||''}" />
+          <input class="item-input" placeholder="الفئة المستهدفة (مثل: الصف الأول)" value="${data.target||''}" />
+          <input class="item-input" placeholder="ملاحظة أو نتيجة" value="${data.note||''}" />
+        </div>
+      </div>
+      <button class="btn-del-row" onclick="delItemRow(this,'activities-list')"><i class="bi bi-dash-circle-fill"></i></button>
+    `;
+    list.appendChild(row);
+  }
+
+  // ════════════════════════════════
+  // SECTION 6: التحديات
+  // ════════════════════════════════
+  const CH_TYPES = ['— نوع التحدي —','تعليمي','سلوكي','إداري','بنية تحتية','موارد بشرية','أخرى'];
+
+  function addChallengeRow(data) {
+    data = data || {};
+    const list = document.getElementById('challenges-list');
+    const idx  = list.querySelectorAll('.item-row').length + 1;
+    const typeOpts = CH_TYPES.map(t => `<option ${data.type===t?'selected':''}>${t}</option>`).join('');
+    const row = document.createElement('div');
+    row.className = 'item-row challenge-row';
+    row.innerHTML = `
+      <div class="item-num ch">${arNum(idx)}</div>
+      <div class="item-fields">
+        <input class="item-input challenge-i" placeholder="وصف التحدي أو المشكلة" value="${data.desc||''}" />
+        <div class="item-sub-grid">
+          <select class="item-input challenge-i" style="appearance:none;">${typeOpts}</select>
+          <input class="item-input challenge-i" placeholder="التأثير / الانعكاس على العملية" value="${data.impact||''}" />
+        </div>
+      </div>
+      <button class="btn-del-row" onclick="delItemRow(this,'challenges-list')"><i class="bi bi-dash-circle-fill"></i></button>
+    `;
+    list.appendChild(row);
+  }
+
+  // ════════════════════════════════
+  // SECTION 7: التوصيات
+  // ════════════════════════════════
+  const REC_PRIORITY = ['— الأولوية —','عاجلة','مهمة','عادية'];
+
+  function addRecRow(data) {
+    data = data || {};
+    const list = document.getElementById('recs-list');
+    const idx  = list.querySelectorAll('.item-row').length + 1;
+    const prioOpts = REC_PRIORITY.map(t => `<option ${data.priority===t?'selected':''}>${t}</option>`).join('');
+    const row = document.createElement('div');
+    row.className = 'item-row rec-row';
+    row.innerHTML = `
+      <div class="item-num rc">${arNum(idx)}</div>
+      <div class="item-fields">
+        <input class="item-input rec-i" placeholder="نص التوصية" value="${data.text||''}" />
+        <div class="item-sub-grid">
+          <input class="item-input rec-i" placeholder="الجهة المستهدفة (مثل: إدارة المدرسة)" value="${data.target||''}" />
+          <select class="item-input rec-i" style="appearance:none;">${prioOpts}</select>
+        </div>
+      </div>
+      <button class="btn-del-row" onclick="delItemRow(this,'recs-list')"><i class="bi bi-dash-circle-fill"></i></button>
+    `;
+    list.appendChild(row);
+  }
+
+  // ════════════════════════════════
+  // SECTION 8: خطة الأسبوع القادم
+  // ════════════════════════════════
+  const NW_DAYS = ['— اليوم —','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'];
+
+  function addNextWeekRow(data) {
+    data = data || {};
+    const list = document.getElementById('nextweek-list');
+    const idx  = list.querySelectorAll('.item-row').length + 1;
+    const dayOpts = NW_DAYS.map(t => `<option ${data.day===t?'selected':''}>${t}</option>`).join('');
+    const row = document.createElement('div');
+    row.className = 'item-row nextweek-row';
+    row.innerHTML = `
+      <div class="item-num nw">${arNum(idx)}</div>
+      <div class="item-fields">
+        <input class="item-input nw-i" placeholder="الفعالية أو البند المقرر" value="${data.event||''}" />
+        <div class="item-sub-grid">
+          <input class="item-input nw-i" placeholder="المسؤول عن التنفيذ" value="${data.responsible||''}" />
+          <select class="item-input nw-i" style="appearance:none;">${dayOpts}</select>
+          <input class="item-input nw-i" placeholder="الوقت (مثل: 8:00 ص)" value="${data.time||''}" />
+          <input class="item-input nw-i" placeholder="ملاحظة" value="${data.note||''}" />
+        </div>
+      </div>
+      <button class="btn-del-row" onclick="delItemRow(this,'nextweek-list')"><i class="bi bi-dash-circle-fill"></i></button>
+    `;
+    list.appendChild(row);
+  }
+
+  function delItemRow(btn, listId) {
+    btn.closest('.item-row').remove();
+    reindexList(listId);
+  }
+
+  // ── Default starter rows ──
+  (function initDefaultRows() {
+    // Process table: 5 default subject rows
+    const subjects = [
+      { subject:'القرآن الكريم',      teacher:'', topics:'', planned:'5', executed:'', cover:'', perf:'' },
+      { subject:'اللغة العربية',       teacher:'', topics:'', planned:'5', executed:'', cover:'', perf:'' },
+      { subject:'الرياضيات',           teacher:'', topics:'', planned:'5', executed:'', cover:'', perf:'' },
+      { subject:'العلوم',              teacher:'', topics:'', planned:'3', executed:'', cover:'', perf:'' },
+      { subject:'التربية الإسلامية',   teacher:'', topics:'', planned:'3', executed:'', cover:'', perf:'' },
+      { subject:'اللغة الإنجليزية',    teacher:'', topics:'', planned:'3', executed:'', cover:'', perf:'' },
+      { subject:'التربية الوطنية',     teacher:'', topics:'', planned:'2', executed:'', cover:'', perf:'' },
+      { subject:'التربية البدنية',     teacher:'', topics:'', planned:'2', executed:'', cover:'', perf:'' },
+    ];
+    subjects.forEach(s => addProcessRow(s));
+
+    // Performance: 3 default indicators
+    const indicators = [
+      { indicator:'نسبة حضور الطلاب', target:'90', actual:'', rating:'' },
+      { indicator:'تنفيذ الخطة الدراسية', target:'100', actual:'', rating:'' },
+      { indicator:'الأنشطة المنفذة من المخطط', target:'100', actual:'', rating:'' },
+    ];
+    indicators.forEach(i => addPerfRow(i));
+
+    // Challenges: 2 default rows
+    addChallengeRow();
+    addChallengeRow();
+
+    // Recommendations: 2 default rows
+    addRecRow();
+    addRecRow();
+
+    // Next week: 3 default rows
+    addNextWeekRow();
+    addNextWeekRow();
+    addNextWeekRow();
+
+    // Activities: 1 default row
+    addActivityRow();
+  })();
+
+  // ══════════════════════════════════════════
   // TOAST UTILITY
   // ══════════════════════════════════════════
   let toastTimer = null;
@@ -2043,13 +2947,65 @@
   const DRAFT_KEY = 'noor_report_draft_v1';
 
   function collectFormData() {
+    // ── helpers ──
+    function tv(id) { var el = document.getElementById(id); return el ? el.value : ''; }
+    function rows(tbodyId) {
+      var out = [];
+      document.querySelectorAll('#' + tbodyId + ' tr').forEach(function(tr) {
+        var inputs = tr.querySelectorAll('input,select');
+        var r = [];
+        inputs.forEach(function(el){ r.push(el.value); });
+        out.push(r);
+      });
+      return out;
+    }
+    function itemRows(listId) {
+      var out = [];
+      document.querySelectorAll('#' + listId + ' .item-row').forEach(function(row) {
+        var inputs = row.querySelectorAll('input,select');
+        var r = [];
+        inputs.forEach(function(el){ r.push(el.value); });
+        out.push(r);
+      });
+      return out;
+    }
     return {
-      att_total:     document.getElementById('att-total').value,
-      att_present:   document.getElementById('att-present').value,
-      att_excused:   document.getElementById('att-excused').value,
-      att_unexcused: document.getElementById('att-unexcused').value,
-      att_late:      document.getElementById('att-late').value,
-      savedAt:       new Date().toLocaleString('ar-SA'),
+      // Section 1
+      sum_students: tv('sum-students'), sum_classes: tv('sum-classes'),
+      sum_rate: tv('sum-rate'),         sum_teachers: tv('sum-teachers'),
+      sum_text: tv('sum-text'),
+      // Section 2
+      process_rows: (function() {
+        var out = [];
+        document.querySelectorAll('#process-tbody tr').forEach(function(tr) {
+          out.push([
+            tr.querySelector('.proc-subject')  ? tr.querySelector('.proc-subject').value  : '',
+            tr.querySelector('.proc-teacher')  ? tr.querySelector('.proc-teacher').value  : '',
+            tr.querySelector('.proc-topics')   ? tr.querySelector('.proc-topics').value   : '',
+            tr.querySelector('.proc-planned')  ? tr.querySelector('.proc-planned').value  : '',
+            tr.querySelector('.proc-executed') ? tr.querySelector('.proc-executed').value : '',
+            tr.querySelector('.proc-cover')    ? tr.querySelector('.proc-cover').value    : '',
+            tr.querySelector('.proc-perf')     ? tr.querySelector('.proc-perf').value     : '',
+            tr.querySelector('.proc-note')     ? tr.querySelector('.proc-note').value     : '',
+          ]);
+        });
+        return out;
+      })(), process_notes: tv('process-notes'),
+      // Section 3
+      att_total: tv('att-total'), att_present: tv('att-present'),
+      att_excused: tv('att-excused'), att_unexcused: tv('att-unexcused'), att_late: tv('att-late'),
+      // Section 4
+      act_class: tv('act-class'), act_extra: tv('act-extra'), act_students: tv('act-students'),
+      act_items: itemRows('activities-list'), act_notes: tv('act-notes'),
+      // Section 5
+      perf_rows: rows('perf-tbody'), perf_notes: tv('perf-notes'),
+      // Section 6
+      ch_items: itemRows('challenges-list'), ch_notes: tv('ch-notes'),
+      // Section 7
+      rec_items: itemRows('recs-list'), rec_notes: tv('rec-notes'),
+      // Section 8
+      nw_items: itemRows('nextweek-list'), nw_notes: tv('nw-notes'),
+      savedAt: new Date().toLocaleString('ar-SA'),
     };
   }
 
@@ -2072,17 +3028,69 @@
 
   function restoreDraft() {
     try {
-      const raw = localStorage.getItem(DRAFT_KEY);
+      var raw = localStorage.getItem(DRAFT_KEY);
       if (!raw) { showToast('لا توجد مسودة محفوظة', 'info', 'bi-info-circle-fill'); return; }
-      const data = JSON.parse(raw);
-      document.getElementById('att-total').value     = data.att_total     || '';
-      document.getElementById('att-present').value   = data.att_present   || '';
-      document.getElementById('att-excused').value   = data.att_excused   || '';
-      document.getElementById('att-unexcused').value = data.att_unexcused || '';
-      document.getElementById('att-late').value      = data.att_late      || '';
+      var data = JSON.parse(raw);
+
+      function sv(id, val) { var el = document.getElementById(id); if (el && val !== undefined) el.value = val; }
+
+      // Section 1
+      sv('sum-students', data.sum_students); sv('sum-classes', data.sum_classes);
+      sv('sum-rate', data.sum_rate);          sv('sum-teachers', data.sum_teachers);
+      sv('sum-text', data.sum_text);
+
+      // Section 2
+      if (data.process_rows && data.process_rows.length) {
+        document.getElementById('process-tbody').innerHTML = '';
+        data.process_rows.forEach(function(r) {
+          addProcessRow({ subject: r[0], teacher: r[1], topics: r[2], planned: r[3], executed: r[4], cover: r[5], perf: r[6], note: r[7] });
+        });
+      }
+      sv('process-notes', data.process_notes);
+
+      // Section 3
+      sv('att-total', data.att_total); sv('att-present', data.att_present);
+      sv('att-excused', data.att_excused); sv('att-unexcused', data.att_unexcused); sv('att-late', data.att_late);
       calcAttendance();
+
+      // Section 4
+      sv('act-class', data.act_class); sv('act-extra', data.act_extra); sv('act-students', data.act_students);
+      if (data.act_items && data.act_items.length) {
+        document.getElementById('activities-list').innerHTML = '';
+        data.act_items.forEach(function(r) { addActivityRow({ name: r[0], type: r[1], supervisor: r[2], target: r[3], note: r[4] }); });
+      }
+      sv('act-notes', data.act_notes);
+
+      // Section 5
+      if (data.perf_rows && data.perf_rows.length) {
+        document.getElementById('perf-tbody').innerHTML = '';
+        data.perf_rows.forEach(function(r) { addPerfRow({ indicator: r[0], target: r[1], actual: r[2], rating: r[3] }); });
+      }
+      sv('perf-notes', data.perf_notes);
+
+      // Section 6
+      if (data.ch_items && data.ch_items.length) {
+        document.getElementById('challenges-list').innerHTML = '';
+        data.ch_items.forEach(function(r) { addChallengeRow({ desc: r[0], type: r[1], impact: r[2] }); });
+      }
+      sv('ch-notes', data.ch_notes);
+
+      // Section 7
+      if (data.rec_items && data.rec_items.length) {
+        document.getElementById('recs-list').innerHTML = '';
+        data.rec_items.forEach(function(r) { addRecRow({ text: r[0], target: r[1], priority: r[2] }); });
+      }
+      sv('rec-notes', data.rec_notes);
+
+      // Section 8
+      if (data.nw_items && data.nw_items.length) {
+        document.getElementById('nextweek-list').innerHTML = '';
+        data.nw_items.forEach(function(r) { addNextWeekRow({ event: r[0], responsible: r[1], day: r[2], time: r[3], note: r[4] }); });
+      }
+      sv('nw-notes', data.nw_notes);
+
       setDraftStatus('saved', 'تم الاستعادة: ' + (data.savedAt || ''));
-      showToast('تم استعادة بيانات المسودة', 'info', 'bi-arrow-counterclockwise');
+      showToast('تم استعادة جميع بيانات المسودة', 'info', 'bi-arrow-counterclockwise');
     } catch(e) {
       showToast('تعذّر استعادة البيانات', 'error', 'bi-exclamation-triangle-fill');
     }
@@ -2099,8 +3107,10 @@
   }
 
   // Mark unsaved on any input change
-  document.querySelectorAll('.att-input').forEach(function(inp) {
-    inp.addEventListener('input', function() { setDraftStatus('unsaved', 'بيانات غير محفوظة'); });
+  document.addEventListener('input', function(e) {
+    if (e.target.matches('input,select,textarea')) {
+      setDraftStatus('unsaved', 'بيانات غير محفوظة');
+    }
   });
 
   // Check draft on load
