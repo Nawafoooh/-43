@@ -360,206 +360,98 @@
       font-weight: 700;
     }
 
-    /* ── ATTENDANCE v2 ── */
-    .att2-input-grid {
+    /* ── ATTENDANCE v3 ── */
+    .att2-grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 14px;
-      margin-bottom: 14px;
+      grid-template-columns: repeat(5,1fr);
+      gap: 12px;
+      margin-bottom: 12px;
     }
-    @media (max-width:900px) { .att2-input-grid { grid-template-columns: repeat(3,1fr); } }
-    @media (max-width:560px) { .att2-input-grid { grid-template-columns: repeat(2,1fr); } }
-
-    .att2-field {
+    @media(max-width:850px){.att2-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:500px){.att2-grid{grid-template-columns:repeat(2,1fr)}}
+    .att2-card {
+      border: 2px solid #c8ddd4;
+      border-radius: 14px;
+      padding: 14px 10px 10px;
+      text-align: center;
       background: #f9fdfb;
-      border: 2px solid #c8ddd4;
-      border-radius: 14px;
-      padding: 14px 12px 10px;
-      text-align: center;
-      transition: box-shadow .2s;
+      transition: box-shadow .18s;
     }
-    .att2-field:hover { box-shadow: 0 4px 16px rgba(0,60,30,.1); }
-    .att2-field.highlight-green { border-color: #7ad4a8; background: #f0fdf5; }
-    .att2-field.highlight-blue  { border-color: #80b8e0; background: #f0f7ff; }
-    .att2-field.highlight-red   { border-color: #e08888; background: #fff5f5; }
-    .att2-field.highlight-purple{ border-color: #b898e0; background: #f8f0ff; }
-
-    .att2-field-label {
-      font-size: .78rem;
-      font-weight: 700;
-      color: var(--noor-dark);
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
+    .att2-card:hover { box-shadow: 0 4px 14px rgba(0,60,30,.12); }
+    .att2-card.green  { border-color:#7ad4a8; background:#f0fdf5; }
+    .att2-card.blue   { border-color:#80b8e0; background:#f0f7ff; }
+    .att2-card.red    { border-color:#e08888; background:#fff5f5; }
+    .att2-card.purple { border-color:#b898e0; background:#f8f0ff; }
+    .att2-card-label {
+      font-size:.75rem; font-weight:700; color:var(--noor-dark);
+      margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:5px;
     }
-
-    .att2-input {
-      width: 100%;
-      padding: 10px 6px;
-      border: 2px solid #c8ddd4;
-      border-radius: 10px;
-      font-family: 'Cairo', sans-serif;
-      font-size: 1.3rem;
-      font-weight: 900;
-      color: var(--noor-dark);
-      background: #fff;
-      text-align: center;
-      outline: none;
-      -moz-appearance: textfield;
-      transition: border-color .2s, box-shadow .2s;
-    }
-    .att2-input::-webkit-inner-spin-button,
-    .att2-input::-webkit-outer-spin-button { -webkit-appearance: none; }
-    .att2-input:focus {
-      border-color: var(--noor-light);
-      box-shadow: 0 0 0 3px rgba(46,158,107,.18);
-    }
-    .att2-hint { font-size: .68rem; color: #8aaa98; margin-top: 5px; font-weight: 500; }
-
-    .att2-prev-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #f8fbff;
-      border: 1.5px dashed #a0c0e0;
-      border-radius: 10px;
-      padding: 10px 16px;
-      margin-bottom: 10px;
-    }
-    .att2-prev-label { font-size: .8rem; font-weight: 700; color: #1a4a8a; white-space: nowrap; }
-    .att2-prev-input {
-      width: 90px;
-      padding: 7px 10px;
-      border: 2px solid #a0c0e0;
-      border-radius: 8px;
-      font-family: 'Cairo', sans-serif;
-      font-size: 1rem;
-      font-weight: 900;
-      color: #1a4a8a;
-      text-align: center;
-      outline: none;
-      -moz-appearance: textfield;
-    }
-    .att2-prev-input::-webkit-inner-spin-button,
-    .att2-prev-input::-webkit-outer-spin-button { -webkit-appearance: none; }
-
-    .att2-mismatch {
-      background: #fff3cd;
-      border: 1.5px solid #ffc107;
-      border-radius: 10px;
-      padding: 10px 16px;
-      font-size: .82rem;
-      font-weight: 700;
-      color: #856404;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    /* Results */
-    .att2-results {
-      background: #f4f9f6;
-      border: 1.5px solid #c2d9cc;
-      border-radius: 14px;
-      overflow: hidden;
-    }
-
-    .att2-kpi-strip {
-      display: flex;
-      gap: 0;
-      background: #fff;
-      border-bottom: 1px solid #dde8e2;
-      flex-wrap: wrap;
-    }
-
-    .att2-kpi {
-      flex: 1;
-      min-width: 120px;
-      padding: 16px 14px;
-      text-align: center;
-      border-left: 1px solid #edf3ef;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-    .att2-kpi:last-child { border-left: none; }
-    .att2-kpi-main { flex: 1.6; background: linear-gradient(160deg,#edf7f2,#d8f0e5); }
-
-    .att2-kpi-icon {
-      width: 38px; height: 38px;
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem;
-      flex-shrink: 0;
-    }
-
-    .att2-kpi-val {
-      font-size: 1.9rem;
-      font-weight: 900;
-      color: var(--noor-dark);
-      line-height: 1;
-    }
-    .att2-kpi-main .att2-kpi-val { font-size: 2.4rem; color: #0d5a20; }
-
-    .att2-kpi-lbl {
-      font-size: .7rem;
-      font-weight: 700;
-      color: #6a8a78;
-      margin-top: 2px;
-    }
-
-    .att2-bar-track {
-      height: 6px;
-      width: 100px;
-      background: #c8e6d4;
-      border-radius: 4px;
-      overflow: hidden;
-      margin-top: 6px;
-    }
-    .att2-bar-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width .6s ease, background .4s;
-    }
-    .att2-kpi-status {
-      font-size: .7rem;
-      font-weight: 700;
-      min-height: 16px;
-    }
-
-    .att2-charts-wrap { background: #fff; }
-    .att2-charts-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
-    }
-    @media (max-width:720px) { .att2-charts-grid { grid-template-columns: 1fr; } }
-
-    .att2-ci-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-    @media (max-width:700px) { .att2-ci-grid { grid-template-columns: 1fr; } }
-
-    /* reuse for inputs */
-    .att-field-wrap { display:flex; flex-direction:column; gap:5px; }
-    .att-label { font-size:.82rem; font-weight:700; color:var(--noor-dark); display:flex; align-items:center; gap:6px; }
-    .att-input {
-      width:100%; padding:10px 14px; border:2px solid #c8ddd4; border-radius:10px;
-      font-family:'Cairo',sans-serif; font-size:1.05rem; font-weight:700;
-      color:var(--noor-dark); background:#f9fdfb; text-align:center; outline:none;
+    .att2-num {
+      width:100%; padding:9px 4px;
+      border:2px solid #c8ddd4; border-radius:10px;
+      font-family:'Cairo',sans-serif; font-size:1.4rem; font-weight:900;
+      color:var(--noor-dark); background:#fff; text-align:center; outline:none;
       -moz-appearance:textfield; transition:border-color .2s,box-shadow .2s;
     }
-    .att-input::-webkit-inner-spin-button,.att-input::-webkit-outer-spin-button{-webkit-appearance:none;}
-    .att-input:focus{border-color:var(--noor-light);background:#fff;box-shadow:0 0 0 3px rgba(46,158,107,.15);}
-    .att-hint{font-size:.7rem;color:#7aaa8a;font-weight:500;}
+    .att2-num::-webkit-inner-spin-button,.att2-num::-webkit-outer-spin-button{-webkit-appearance:none}
+    .att2-num:focus{border-color:var(--noor-light);box-shadow:0 0 0 3px rgba(46,158,107,.18)}
+    .att2-sub{font-size:.65rem;color:#8aaa98;margin-top:5px}
+    .att2-prev-row {
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+      background:#f0f7ff; border:1.5px dashed #90b8e0;
+      border-radius:10px; padding:10px 16px; margin-bottom:10px;
+    }
+    .att2-prev-lbl{font-size:.8rem;font-weight:700;color:#1a4a8a}
+    .att2-prev-inp {
+      width:120px; padding:7px 10px;
+      border:2px solid #90b8e0; border-radius:8px;
+      font-family:'Cairo',sans-serif; font-size:1rem; font-weight:700;
+      color:#1a4a8a; text-align:center; outline:none; -moz-appearance:textfield;
+    }
+    .att2-prev-inp::-webkit-inner-spin-button,.att2-prev-inp::-webkit-outer-spin-button{-webkit-appearance:none}
+    .att2-warn {
+      background:#fff3cd; border:1.5px solid #ffc107;
+      border-radius:10px; padding:10px 16px;
+      font-size:.82rem; font-weight:700; color:#856404;
+      display:flex; align-items:center; gap:8px; margin-top:6px;
+    }
+    .att2-results {
+      background:#f4f9f6; border:1.5px solid #c2d9cc; border-radius:14px; overflow:hidden;
+    }
+    .att2-res-header {
+      background:linear-gradient(135deg,var(--noor-dark),var(--noor-mid));
+      color:#fff; padding:12px 20px; font-size:.88rem; font-weight:700;
+      display:flex; align-items:center; gap:8px;
+    }
+    .att2-kpis {
+      display:flex; flex-wrap:wrap; background:#fff; border-bottom:1px solid #dde8e2;
+    }
+    .att2-kpi {
+      flex:1; min-width:110px; padding:16px 12px;
+      text-align:center; border-left:1px solid #edf3ef;
+      display:flex; flex-direction:column; align-items:center; gap:6px;
+    }
+    .att2-kpi:last-child{border-left:none}
+    .att2-kpi-main{flex:1.6;background:linear-gradient(160deg,#edf7f2,#d8f0e5)}
+    .att2-kpi-ico {
+      width:36px;height:36px;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;
+    }
+    .att2-kpi-val{font-size:1.9rem;font-weight:900;color:var(--noor-dark);line-height:1}
+    .att2-kpi-main .att2-kpi-val{font-size:2.3rem;color:#0d5a20}
+    .att2-kpi-lbl{font-size:.68rem;font-weight:700;color:#6a8a78}
+    .att2-bar-t{height:6px;width:90px;background:#c8e6d4;border-radius:4px;overflow:hidden;margin-top:4px}
+    .att2-bar-f{height:100%;border-radius:4px;transition:width .6s ease}
+    .att2-kpi-st{font-size:.68rem;font-weight:700;min-height:14px}
+    .att2-charts-row{display:grid;grid-template-columns:1fr 1fr;background:#fff}
+    @media(max-width:720px){.att2-charts-row{grid-template-columns:1fr}}
+    .att2-ci{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    @media(max-width:700px){.att2-ci{grid-template-columns:1fr}}
+    /* keep old helpers */
+    .att-field-wrap{display:flex;flex-direction:column;gap:5px}
+    .att-label{font-size:.82rem;font-weight:700;color:var(--noor-dark);display:flex;align-items:center;gap:6px}
+    .att-hint{font-size:.7rem;color:#7aaa8a;font-weight:500}
 
-    /* ── CHARTS CARD ── */
     /* ── CHARTS CARD ── */
     /* ── CHARTS CARD ── */
     .charts-wrapper {
@@ -1554,9 +1446,6 @@
 
 <!-- ════════════════════════════ MAIN ════════════════════════════ -->
 <main class="main-content">
-        <!-- Date range -->
-    </div>
-  </div>
 
   <!-- Page Title Bar -->
   <div class="page-title-bar">
@@ -1636,152 +1525,106 @@
       </div>
       <div class="card-body-custom">
 
-        <!-- ══ INPUT ROW ══ -->
-        <div class="att2-input-grid">
-
-          <div class="att2-field">
-            <div class="att2-field-label"><i class="bi bi-people-fill"></i> إجمالي الطلاب</div>
-            <input type="number" id="a2-total" class="att2-input" placeholder="0" min="0" oninput="att2Calc()" />
-            <div class="att2-hint">العدد الكلي للطلاب</div>
+        <div class="att2-grid">
+          <div class="att2-card">
+            <div class="att2-card-label"><i class="bi bi-people-fill"></i> إجمالي الطلاب</div>
+            <input type="number" id="a2-total" class="att2-num" placeholder="0" min="0" oninput="att2Calc()">
+            <div class="att2-sub">العدد الكلي المسجلين</div>
           </div>
-
-          <div class="att2-field highlight-green">
-            <div class="att2-field-label"><i class="bi bi-person-check-fill"></i> الحضور</div>
-            <input type="number" id="a2-present" class="att2-input" placeholder="0" min="0" oninput="att2Calc()" />
-            <div class="att2-hint">عدد الحاضرين فعلياً</div>
+          <div class="att2-card green">
+            <div class="att2-card-label"><i class="bi bi-person-check-fill"></i> الحضور</div>
+            <input type="number" id="a2-present" class="att2-num" placeholder="0" min="0" oninput="att2Calc()">
+            <div class="att2-sub">الحاضرون فعلياً</div>
           </div>
-
-          <div class="att2-field highlight-blue">
-            <div class="att2-field-label"><i class="bi bi-file-earmark-check-fill"></i> غياب بعذر</div>
-            <input type="number" id="a2-excused" class="att2-input" placeholder="0" min="0" oninput="att2Calc()" />
-            <div class="att2-hint">موثق أو طبي</div>
+          <div class="att2-card blue">
+            <div class="att2-card-label"><i class="bi bi-file-earmark-check-fill"></i> غياب بعذر</div>
+            <input type="number" id="a2-excused" class="att2-num" placeholder="0" min="0" oninput="att2Calc()">
+            <div class="att2-sub">موثق أو طبي</div>
           </div>
-
-          <div class="att2-field highlight-red">
-            <div class="att2-field-label"><i class="bi bi-person-x-fill"></i> غياب بدون عذر</div>
-            <input type="number" id="a2-unexcused" class="att2-input" placeholder="0" min="0" oninput="att2Calc()" />
-            <div class="att2-hint">غياب غير مبرر</div>
+          <div class="att2-card red">
+            <div class="att2-card-label"><i class="bi bi-person-x-fill"></i> غياب بدون عذر</div>
+            <input type="number" id="a2-unexcused" class="att2-num" placeholder="0" min="0" oninput="att2Calc()">
+            <div class="att2-sub">غير مبرر</div>
           </div>
-
-          <div class="att2-field highlight-purple">
-            <div class="att2-field-label"><i class="bi bi-clock-history"></i> المتأخرون</div>
-            <input type="number" id="a2-late" class="att2-input" placeholder="0" min="0" oninput="att2Calc()" />
-            <div class="att2-hint">وصلوا بعد الطابور</div>
+          <div class="att2-card purple">
+            <div class="att2-card-label"><i class="bi bi-clock-history"></i> المتأخرون</div>
+            <input type="number" id="a2-late" class="att2-num" placeholder="0" min="0" oninput="att2Calc()">
+            <div class="att2-sub">بعد الطابور</div>
           </div>
-
         </div>
 
-        <!-- مقارنة الأسبوع السابق -->
         <div class="att2-prev-row">
-          <div class="att2-prev-label"><i class="bi bi-arrow-left-right"></i> مقارنة بالأسبوع السابق — حضور الأسبوع السابق:</div>
-          <input type="number" id="a2-prev" class="att2-prev-input" placeholder="0" min="0" oninput="att2Calc()" />
-          <div class="att2-hint" style="margin-right:8px;">اختياري</div>
+          <span class="att2-prev-lbl"><i class="bi bi-arrow-left-right"></i> حضور الأسبوع السابق (للمقارنة):</span>
+          <input type="number" id="a2-prev" class="att2-prev-inp" placeholder="اختياري" min="0" oninput="att2Calc()">
         </div>
 
-        <!-- تحذير عدم التطابق -->
-        <div id="a2-mismatch" class="att2-mismatch" style="display:none;">
-          <i class="bi bi-exclamation-triangle-fill"></i> <span id="a2-mismatch-text"></span>
+        <div id="a2-warn" class="att2-warn" style="display:none">
+          <i class="bi bi-exclamation-triangle-fill"></i> <span id="a2-warn-txt"></span>
         </div>
 
         <div class="section-divider"></div>
 
-        <!-- ══ RESULTS ══ -->
-        <div class="att2-results" id="att2-results">
-
-          <!-- KPI Strip -->
-          <div class="att2-kpi-strip">
-
+        <div id="att2-results" class="att2-results">
+          <div class="att2-res-header"><i class="bi bi-calculator-fill"></i> النتائج المحسوبة تلقائياً</div>
+          <div class="att2-kpis">
             <div class="att2-kpi att2-kpi-main">
-              <div class="att2-kpi-icon" style="background:#e0f7ec;color:#0d5a20;"><i class="bi bi-percent"></i></div>
-              <div>
-                <div class="att2-kpi-val" id="r2-rate">—</div>
-                <div class="att2-kpi-lbl">نسبة الحضور</div>
-                <div class="att2-bar-track"><div class="att2-bar-fill" id="r2-rate-bar" style="width:0%"></div></div>
-                <div class="att2-kpi-status" id="r2-status"></div>
-              </div>
+              <div class="att2-kpi-ico" style="background:#e0f7ec;color:#0d5a20"><i class="bi bi-percent"></i></div>
+              <div class="att2-kpi-val" id="r2-rate">—</div>
+              <div class="att2-kpi-lbl">نسبة الحضور</div>
+              <div class="att2-bar-t"><div class="att2-bar-f" id="r2-bar"></div></div>
+              <div class="att2-kpi-st" id="r2-status"></div>
             </div>
-
             <div class="att2-kpi">
-              <div class="att2-kpi-icon" style="background:#e0f7ec;color:#1a7a3a;"><i class="bi bi-person-check-fill"></i></div>
-              <div>
-                <div class="att2-kpi-val" id="r2-present">—</div>
-                <div class="att2-kpi-lbl">الحاضرون</div>
-              </div>
+              <div class="att2-kpi-ico" style="background:#e0f7ec;color:#1a7a3a"><i class="bi bi-person-check-fill"></i></div>
+              <div class="att2-kpi-val" id="r2-present">—</div>
+              <div class="att2-kpi-lbl">الحاضرون</div>
             </div>
-
             <div class="att2-kpi">
-              <div class="att2-kpi-icon" style="background:#fff8e0;color:#8a6000;"><i class="bi bi-person-dash-fill"></i></div>
-              <div>
-                <div class="att2-kpi-val" id="r2-absent">—</div>
-                <div class="att2-kpi-lbl">إجمالي الغائبين</div>
-              </div>
+              <div class="att2-kpi-ico" style="background:#fff8e0;color:#8a6000"><i class="bi bi-person-dash-fill"></i></div>
+              <div class="att2-kpi-val" id="r2-absent">—</div>
+              <div class="att2-kpi-lbl">إجمالي الغائبين</div>
             </div>
-
             <div class="att2-kpi">
-              <div class="att2-kpi-icon" style="background:#f0e8ff;color:#5a1a8a;"><i class="bi bi-clock-history"></i></div>
-              <div>
-                <div class="att2-kpi-val" id="r2-late">—</div>
-                <div class="att2-kpi-lbl">المتأخرون</div>
-              </div>
+              <div class="att2-kpi-ico" style="background:#f0e8ff;color:#5a1a8a"><i class="bi bi-clock-history"></i></div>
+              <div class="att2-kpi-val" id="r2-late">—</div>
+              <div class="att2-kpi-lbl">المتأخرون</div>
             </div>
-
-            <div class="att2-kpi" id="r2-compare-kpi" style="display:none;">
-              <div class="att2-kpi-icon" id="r2-compare-icon"><i class="bi bi-arrow-up-down"></i></div>
-              <div>
-                <div class="att2-kpi-val" id="r2-compare-val">—</div>
-                <div class="att2-kpi-lbl">مقارنة بالأسبوع السابق</div>
-              </div>
-            </div>
-
-          </div><!-- /kpi strip -->
-
-          <!-- Charts -->
-          <div class="att2-charts-wrap" id="att2-charts-wrap" style="display:none;">
-            <div class="att2-charts-grid">
-              <div class="chart-panel">
-                <div class="chart-panel-title"><i class="bi bi-pie-chart-fill"></i> نسب الحضور والغياب</div>
-                <div class="chart-canvas-wrap pie-wrap"><canvas id="att2PieChart"></canvas></div>
-              </div>
-              <div class="chart-panel">
-                <div class="chart-panel-title"><i class="bi bi-bar-chart-fill"></i> تفصيل أنواع الغياب</div>
-                <div class="chart-canvas-wrap bar-wrap"><canvas id="att2BarChart"></canvas></div>
-              </div>
+            <div class="att2-kpi" id="r2-cmp-box" style="display:none">
+              <div class="att2-kpi-ico" id="r2-cmp-ico"><i class="bi bi-arrow-up-down"></i></div>
+              <div class="att2-kpi-val" id="r2-cmp-val">—</div>
+              <div class="att2-kpi-lbl" id="r2-cmp-lbl">مقارنة بالأسبوع السابق</div>
             </div>
           </div>
-
-        </div><!-- /att2-results -->
-
-        <div class="section-divider"></div>
-
-        <!-- ══ التحديات والإجراءات ══ -->
-        <div class="att2-ci-grid">
-
-          <div>
-            <div class="field-label mb-2">
-              <i class="bi bi-exclamation-diamond-fill" style="color:#dc3545;"></i> التحديات المتعلقة بالغياب
+          <div class="att2-charts-row" id="att2-charts" style="display:none">
+            <div class="chart-panel">
+              <div class="chart-panel-title"><i class="bi bi-pie-chart-fill"></i> نسب الحضور والغياب</div>
+              <div class="chart-canvas-wrap pie-wrap"><canvas id="att2Pie"></canvas></div>
             </div>
-            <div class="item-list" id="att2-challenges"></div>
-            <button class="btn-add-row mt-2" onclick="att2AddChallenge()">
-              <i class="bi bi-plus-circle-fill"></i> إضافة تحدي
-            </button>
-          </div>
-
-          <div>
-            <div class="field-label mb-2">
-              <i class="bi bi-check2-square" style="color:#1a6b47;"></i> الإجراءات المتخذة
+            <div class="chart-panel">
+              <div class="chart-panel-title"><i class="bi bi-bar-chart-fill"></i> تفصيل الغياب</div>
+              <div class="chart-canvas-wrap bar-wrap"><canvas id="att2Bar"></canvas></div>
             </div>
-            <div class="item-list" id="att2-actions"></div>
-            <button class="btn-add-row mt-2" onclick="att2AddAction()">
-              <i class="bi bi-plus-circle-fill"></i> إضافة إجراء
-            </button>
           </div>
-
         </div>
 
         <div class="section-divider"></div>
-        <div class="field-label mb-1"><i class="bi bi-journal-text"></i> ملاحظات إضافية على الحضور والانضباط</div>
-        <textarea id="att-notes" class="section-textarea" rows="3"
-          placeholder="أسباب الغياب، أنماط ملحوظة، حالات خاصة..."></textarea>
+
+        <div class="att2-ci">
+          <div>
+            <div class="field-label mb-2"><i class="bi bi-exclamation-diamond-fill" style="color:#dc3545"></i> تحديات الغياب</div>
+            <div class="item-list" id="att2-ch"></div>
+            <button class="btn-add-row mt-2" onclick="att2AddCh()"><i class="bi bi-plus-circle-fill"></i> إضافة تحدي</button>
+          </div>
+          <div>
+            <div class="field-label mb-2"><i class="bi bi-check2-square" style="color:#1a6b47"></i> الإجراءات المتخذة</div>
+            <div class="item-list" id="att2-ac"></div>
+            <button class="btn-add-row mt-2" onclick="att2AddAc()"><i class="bi bi-plus-circle-fill"></i> إضافة إجراء</button>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+        <div class="field-label mb-1"><i class="bi bi-journal-text"></i> ملاحظات إضافية</div>
+        <textarea id="att-notes" class="section-textarea" rows="3" placeholder="ملاحظات على الحضور والانضباط..."></textarea>
 
       </div>
     </div>
@@ -2017,160 +1860,79 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script>
   // ══════════════════════════════════════════
-  // ATTENDANCE MODULE v2
+  // ATTENDANCE MODULE v3
   // ══════════════════════════════════════════
-  var att2Pie = null, att2Bar = null;
+  var _pie=null,_bar=null;
 
-  function gn(id) { var v = parseInt(document.getElementById(id).value); return isNaN(v) ? 0 : Math.max(0,v); }
+  function _n(id){var v=parseInt(document.getElementById(id).value);return isNaN(v)?0:Math.max(0,v);}
 
-  function att2Calc() {
-    var total     = gn('a2-total');
-    var present   = gn('a2-present');
-    var excused   = gn('a2-excused');
-    var unexcused = gn('a2-unexcused');
-    var late      = gn('a2-late');
-    var prev      = gn('a2-prev');
-
-    var absent = excused + unexcused;
-
-    // Mismatch check
-    var mm = document.getElementById('a2-mismatch');
-    if (total > 0 && (present + excused + unexcused) > 0 && (present + excused + unexcused) !== total) {
-      mm.style.display = 'flex';
-      document.getElementById('a2-mismatch-text').textContent =
-        'الحضور (' + present + ') + الغياب بعذر (' + excused + ') + الغياب بدون عذر (' + unexcused +
-        ') = ' + (present+excused+unexcused) + ' ≠ إجمالي الطلاب (' + total + ')';
-    } else {
-      mm.style.display = 'none';
-    }
-
-    if (total === 0) return;
-
-    var rate = (present / total) * 100;
-
-    // Rate KPI
-    document.getElementById('r2-rate').textContent    = rate.toFixed(1) + '%';
-    document.getElementById('r2-present').textContent = present;
-    document.getElementById('r2-absent').textContent  = absent;
-    document.getElementById('r2-late').textContent    = late;
-
-    var bar = document.getElementById('r2-rate-bar');
-    var st  = document.getElementById('r2-status');
-    bar.style.width = Math.min(rate,100) + '%';
-
-    if (rate >= 95) {
-      bar.style.background = 'linear-gradient(to left,#2e9e6b,#0d4a2f)';
-      st.innerHTML = '<span style="color:#0d5a20">✅ ممتاز</span>';
-    } else if (rate >= 85) {
-      bar.style.background = 'linear-gradient(to left,#f0a500,#b07000)';
-      st.innerHTML = '<span style="color:#8a6000">⚠️ مقبول — يحتاج متابعة</span>';
-    } else {
-      bar.style.background = 'linear-gradient(to left,#dc3545,#8b1d1d)';
-      st.innerHTML = '<span style="color:#b83232">🚨 منخفض — إجراء عاجل</span>';
-    }
-
-    // Comparison with previous week
-    var cmpKpi = document.getElementById('r2-compare-kpi');
-    if (prev > 0) {
-      cmpKpi.style.display = 'flex';
-      var diff = present - prev;
-      var icon = document.getElementById('r2-compare-icon');
-      var val  = document.getElementById('r2-compare-val');
-      if (diff > 0) {
-        icon.style.background = '#e0f7ec'; icon.style.color = '#0d5a20';
-        val.textContent = '+' + diff + ' طالب';
-        val.style.color = '#0d5a20';
-        document.getElementById('r2-compare-kpi').querySelector('.att2-kpi-lbl').textContent = '↑ أفضل من الأسبوع السابق';
-      } else if (diff < 0) {
-        icon.style.background = '#fff0f0'; icon.style.color = '#b83232';
-        val.textContent = diff + ' طالب';
-        val.style.color = '#b83232';
-        document.getElementById('r2-compare-kpi').querySelector('.att2-kpi-lbl').textContent = '↓ أقل من الأسبوع السابق';
-      } else {
-        icon.style.background = '#f0f7ff'; icon.style.color = '#1a4a8a';
-        val.textContent = 'بدون تغيير';
-        val.style.color = '#1a4a8a';
-        document.getElementById('r2-compare-kpi').querySelector('.att2-kpi-lbl').textContent = '= نفس الأسبوع السابق';
-      }
-    } else {
-      cmpKpi.style.display = 'none';
-    }
-
-    // Charts
-    document.getElementById('att2-charts-wrap').style.display = 'block';
-
-    var pieCtx = document.getElementById('att2PieChart').getContext('2d');
-    var barCtx = document.getElementById('att2BarChart').getContext('2d');
-    if (att2Pie) att2Pie.destroy();
-    if (att2Bar) att2Bar.destroy();
-
-    att2Pie = new Chart(pieCtx, {
-      type: 'doughnut',
-      data: {
-        labels: ['الحاضرون', 'غياب بعذر', 'غياب بدون عذر'],
-        datasets: [{ data: [present, excused, unexcused],
-          backgroundColor: ['#1a7a3a','#3a8abf','#dc3545'],
-          borderWidth: 3, borderColor: '#fff' }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false, cutout: '62%',
-        plugins: {
-          legend: { position: 'bottom', labels: { font: { family:'Cairo', size:12 }, padding:14 } },
-          tooltip: { callbacks: { label: function(c) {
-            return ' ' + c.label + ': ' + c.raw + ' (' + ((c.raw/total)*100).toFixed(1) + '%)';
-          }}}
-        }
-      }
-    });
-
-    att2Bar = new Chart(barCtx, {
-      type: 'bar',
-      data: {
-        labels: ['الحاضرون', 'غياب بعذر', 'غياب بدون عذر', 'المتأخرون'],
-        datasets: [{ data: [present, excused, unexcused, late],
-          backgroundColor: ['#1a7a3a','#3a8abf','#dc3545','#7a4aaa'],
-          borderRadius: 10, borderSkipped: false }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          y: { beginAtZero: true, ticks: { font: { family:'Cairo' } } },
-          x: { ticks: { font: { family:'Cairo' } } }
-        }
-      }
-    });
+  function att2Calc(){
+    var total=_n('a2-total'), present=_n('a2-present'),
+        excused=_n('a2-excused'), unexcused=_n('a2-unexcused'),
+        late=_n('a2-late'), prev=_n('a2-prev');
+    var absent=excused+unexcused;
+    // mismatch
+    var w=document.getElementById('a2-warn');
+    if(total>0 && (present+excused+unexcused)>0 && (present+excused+unexcused)!==total){
+      w.style.display='flex';
+      document.getElementById('a2-warn-txt').textContent=
+        'الحضور('+present+')+غياب بعذر('+excused+')+غياب بدون عذر('+unexcused+
+        ')='+(present+excused+unexcused)+' ≠ الإجمالي('+total+')';
+    }else{w.style.display='none';}
+    if(!total)return;
+    var rate=(present/total)*100;
+    document.getElementById('r2-rate').textContent=rate.toFixed(1)+'%';
+    document.getElementById('r2-present').textContent=present;
+    document.getElementById('r2-absent').textContent=absent;
+    document.getElementById('r2-late').textContent=late;
+    var bar=document.getElementById('r2-bar'), st=document.getElementById('r2-status');
+    bar.style.width=Math.min(rate,100)+'%';
+    if(rate>=95){bar.style.background='linear-gradient(to left,#2e9e6b,#0d4a2f)';st.innerHTML='<span style="color:#0d5a20">✅ ممتاز</span>';}
+    else if(rate>=85){bar.style.background='linear-gradient(to left,#f0a500,#b07000)';st.innerHTML='<span style="color:#8a6000">⚠️ يحتاج متابعة</span>';}
+    else{bar.style.background='linear-gradient(to left,#dc3545,#8b1d1d)';st.innerHTML='<span style="color:#b83232">🚨 إجراء عاجل</span>';}
+    // comparison
+    var cb=document.getElementById('r2-cmp-box');
+    if(prev>0){
+      cb.style.display='flex';
+      var d=present-prev, ico=document.getElementById('r2-cmp-ico'),
+          val=document.getElementById('r2-cmp-val'), lbl=document.getElementById('r2-cmp-lbl');
+      if(d>0){ico.style.background='#e0f7ec';ico.style.color='#0d5a20';val.textContent='+'+d+' طالب';val.style.color='#0d5a20';lbl.textContent='↑ أفضل من الأسبوع السابق';}
+      else if(d<0){ico.style.background='#fff0f0';ico.style.color='#b83232';val.textContent=d+' طالب';val.style.color='#b83232';lbl.textContent='↓ أقل من الأسبوع السابق';}
+      else{ico.style.background='#f0f7ff';ico.style.color='#1a4a8a';val.textContent='بدون تغيير';val.style.color='#1a4a8a';lbl.textContent='= نفس الأسبوع السابق';}
+    }else{cb.style.display='none';}
+    // charts
+    document.getElementById('att2-charts').style.display='grid';
+    var pc=document.getElementById('att2Pie').getContext('2d');
+    var bc=document.getElementById('att2Bar').getContext('2d');
+    if(_pie)_pie.destroy(); if(_bar)_bar.destroy();
+    _pie=new Chart(pc,{type:'doughnut',data:{labels:['الحاضرون','غياب بعذر','غياب بدون عذر'],
+      datasets:[{data:[present,excused,unexcused],backgroundColor:['#1a7a3a','#3a8abf','#dc3545'],borderWidth:3,borderColor:'#fff'}]},
+      options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+        plugins:{legend:{position:'bottom',labels:{font:{family:'Cairo',size:12},padding:14}},
+          tooltip:{callbacks:{label:function(c){return ' '+c.label+': '+c.raw+' ('+((c.raw/total)*100).toFixed(1)+'%)';}}}}
+      }});
+    _bar=new Chart(bc,{type:'bar',data:{labels:['الحاضرون','غياب بعذر','غياب بدون عذر','المتأخرون'],
+      datasets:[{data:[present,excused,unexcused,late],
+        backgroundColor:['#1a7a3a','#3a8abf','#dc3545','#7a4aaa'],borderRadius:10,borderSkipped:false}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{y:{beginAtZero:true,ticks:{font:{family:'Cairo'}}},x:{ticks:{font:{family:'Cairo'}}}}}});
   }
 
-  function att2AddChallenge(txt) {
-    var list = document.getElementById('att2-challenges');
-    var n    = list.children.length + 1;
-    var row  = document.createElement('div');
-    row.className = 'item-row challenge-row';
-    row.innerHTML =
-      '<div class="item-num ch">' + n + '</div>' +
-      '<div class="item-fields"><input class="item-input challenge-i" placeholder="مثال: تكرار غياب عدد من الطلاب بدون عذر..." value="' + (txt||'') + '" /></div>' +
-      '<button class="btn-del-row" onclick="this.parentElement.remove()"><i class="bi bi-dash-circle-fill"></i></button>';
-    list.appendChild(row);
+  function att2AddCh(t){
+    var l=document.getElementById('att2-ch'),n=l.children.length+1,r=document.createElement('div');
+    r.className='item-row challenge-row';
+    r.innerHTML='<div class="item-num ch">'+n+'</div><div class="item-fields"><input class="item-input challenge-i" placeholder="اكتب التحدي..." value="'+(t||'')+'"></div><button class="btn-del-row" onclick="this.parentElement.remove()"><i class="bi bi-dash-circle-fill"></i></button>';
+    l.appendChild(r);
   }
-
-  function att2AddAction(txt) {
-    var list = document.getElementById('att2-actions');
-    var n    = list.children.length + 1;
-    var row  = document.createElement('div');
-    row.className = 'item-row rec-row';
-    row.innerHTML =
-      '<div class="item-num rc">' + n + '</div>' +
-      '<div class="item-fields"><input class="item-input rec-i" placeholder="مثال: التواصل مع ولي الأمر..." value="' + (txt||'') + '" /></div>' +
-      '<button class="btn-del-row" onclick="this.parentElement.remove()"><i class="bi bi-dash-circle-fill"></i></button>';
-    list.appendChild(row);
+  function att2AddAc(t){
+    var l=document.getElementById('att2-ac'),n=l.children.length+1,r=document.createElement('div');
+    r.className='item-row rec-row';
+    r.innerHTML='<div class="item-num rc">'+n+'</div><div class="item-fields"><input class="item-input rec-i" placeholder="اكتب الإجراء..." value="'+(t||'')+'"></div><button class="btn-del-row" onclick="this.parentElement.remove()"><i class="bi bi-dash-circle-fill"></i></button>';
+    l.appendChild(r);
   }
-
-  // Default rows
-  att2AddChallenge('');
-  att2AddChallenge('');
-  att2AddAction('التواصل مع أولياء أمور الطلاب الغائبين بدون عذر');
-  att2AddAction('');
+  att2AddCh(''); att2AddCh('');
+  att2AddAc('التواصل مع أولياء أمور الطلاب الغائبين بدون عذر'); att2AddAc('');
 
     // ══════════════════════════════════════════
   // ATTACHMENTS MODULE
@@ -2286,9 +2048,6 @@
       if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
-  // Semester 2 starts around 2026-01-18 (adjust as needed)
-
-
 </script>
 </body>
 </html>
