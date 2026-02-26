@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>منصة التقارير المدرسية - متوسطة المنذر بن عمرو الأنصاري</title>
+  <title>منصة شؤون الطلاب - متوسطة المنذر بن عمرو الأنصاري</title>
 
   <!-- Bootstrap 5 RTL -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.rtl.min.css" />
@@ -1536,6 +1536,261 @@
     }
     @media (max-width:550px) { .item-sub-grid { grid-template-columns: 1fr; } }
 
+
+    /* ── WEEK SELECTOR OVERLAY ── */
+    .week-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 30, 18, 0.82);
+      backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .week-modal {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 24px 64px rgba(0,0,0,.35);
+      width: 520px;
+      max-width: 95vw;
+      overflow: hidden;
+      animation: weekModalIn .35s cubic-bezier(.34,1.3,.64,1);
+    }
+
+    @keyframes weekModalIn {
+      from { opacity:0; transform: scale(.88) translateY(24px); }
+      to   { opacity:1; transform: scale(1)  translateY(0); }
+    }
+
+    .week-modal-header {
+      background: linear-gradient(135deg, var(--noor-dark), var(--noor-mid));
+      padding: 28px 32px 22px;
+      text-align: center;
+      color: #fff;
+    }
+
+    .week-modal-header .wm-emblem {
+      width: 64px; height: 64px;
+      background: rgba(255,255,255,.15);
+      border: 2px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 14px;
+      color: var(--noor-accent);
+    }
+
+    .week-modal-header h2 {
+      font-size: 1.25rem;
+      font-weight: 900;
+      margin: 0 0 6px;
+    }
+
+    .week-modal-header p {
+      font-size: .82rem;
+      color: rgba(255,255,255,.7);
+      margin: 0;
+    }
+
+    .week-modal-body {
+      padding: 28px 32px 32px;
+    }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .week-btn {
+      background: var(--noor-pale);
+      border: 2px solid #b8ddc8;
+      border-radius: 12px;
+      padding: 10px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .18s;
+      font-family: 'Cairo', sans-serif;
+      font-size: .82rem;
+      font-weight: 700;
+      color: var(--noor-dark);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .week-btn .wk-num {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--noor-mid);
+    }
+
+    .week-btn:hover {
+      background: var(--noor-mid);
+      border-color: var(--noor-mid);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(26,107,71,.3);
+    }
+
+    .week-btn:hover .wk-num { color: #fff; }
+
+    .week-btn.selected {
+      background: linear-gradient(135deg, var(--noor-dark), var(--noor-mid));
+      border-color: var(--noor-dark);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(13,74,47,.35);
+    }
+
+    .week-btn.selected .wk-num { color: var(--noor-accent); }
+
+    .week-date-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .week-date-field {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .week-date-label {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--noor-dark);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .week-date-label i { color: var(--noor-light); }
+
+    .week-date-input {
+      border: 2px solid #c8ddd4;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-family: 'Cairo', sans-serif;
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--noor-dark);
+      background: #f9fdfb;
+      outline: none;
+      width: 100%;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .week-date-input:focus {
+      border-color: var(--noor-light);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(46,158,107,.15);
+    }
+
+    .btn-start-report {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--noor-dark), var(--noor-mid));
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 1rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(13,74,47,.3);
+      transition: all .2s;
+    }
+
+    .btn-start-report:hover {
+      filter: brightness(1.12);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(13,74,47,.4);
+    }
+
+    .btn-start-report:disabled {
+      background: #c8ddd4;
+      color: #7aaa8a;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* ── WEEK BANNER (shows after selection) ── */
+    .week-banner {
+      background: linear-gradient(135deg, var(--noor-dark), var(--noor-mid));
+      border-radius: 14px;
+      padding: 14px 22px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 3px 14px rgba(13,74,47,.2);
+    }
+
+    .wb-week-badge {
+      background: var(--noor-accent);
+      color: var(--noor-dark);
+      border-radius: 10px;
+      padding: 8px 18px;
+      font-size: 1rem;
+      font-weight: 900;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .wb-info {
+      flex: 1;
+      color: #fff;
+    }
+
+    .wb-title {
+      font-size: .95rem;
+      font-weight: 900;
+      margin-bottom: 2px;
+    }
+
+    .wb-dates {
+      font-size: .78rem;
+      color: rgba(255,255,255,.7);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .wb-dates i { font-size: .7rem; }
+
+    .btn-change-week {
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 8px;
+      padding: 7px 14px;
+      color: #fff;
+      font-family: 'Cairo', sans-serif;
+      font-size: .78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background .18s;
+      flex-shrink: 0;
+    }
+
+    .btn-change-week:hover { background: rgba(255,255,255,.25); }
+
+    /* hide main content until week is selected */
+    .content-locked .main-sections { filter: blur(2px); pointer-events: none; opacity: .45; }
+
     /* ── responsive ── */
     @media (max-width: 768px) {
       :root { --sidebar-w: 0px; }
@@ -1553,7 +1808,7 @@
     <div class="header-emblem"><i class="bi bi-award-fill"></i></div>
     <div class="header-title">
       <h1>متوسطة المنذر بن عمرو الأنصاري</h1>
-      <p>منصة التقارير والمتابعة المدرسية &mdash; نظام نور</p>
+      <p>منصة شؤون الطلاب &mdash; نظام نور</p>
     </div>
   </div>
 
@@ -1576,10 +1831,9 @@
 
 <!-- ════════════════════════════ SIDEBAR ════════════════════════════ -->
 <aside class="site-sidebar">
-  <div class="sidebar-section-title">التقرير الأسبوعي</div>
+  <div class="sidebar-section-title">شؤون الطلاب</div>
   <ul class="sidebar-nav">
     <li><a href="#summary" class="active"><i class="bi bi-grid-1x2-fill"></i> الملخص التنفيذي</a></li>
-    <li><a href="#process"><i class="bi bi-book-fill"></i> سير العملية التعليمية</a></li>
     <li><a href="#attendance"><i class="bi bi-people-fill"></i> الحضور والانضباط</a></li>
     <li><a href="#activities"><i class="bi bi-stars"></i> الأنشطة</a></li>
     <li><a href="#performance"><i class="bi bi-graph-up-arrow"></i> متابعة الأداء</a></li>
@@ -1598,10 +1852,63 @@
 <!-- ════════════════════════════ MAIN ════════════════════════════ -->
 <main class="main-content">
 
+  <!-- ════════ WEEK SELECTOR OVERLAY ════════ -->
+  <div class="week-overlay" id="week-overlay">
+    <div class="week-modal">
+      <div class="week-modal-header">
+        <div class="wm-emblem"><i class="bi bi-calendar3-week-fill"></i></div>
+        <h2>اختر الأسبوع الدراسي</h2>
+        <p>حدد الأسبوع والفترة الزمنية قبل البدء بإدخال بيانات التقرير</p>
+      </div>
+      <div class="week-modal-body">
+
+        <!-- Week buttons 1–19 -->
+        <div class="week-grid" id="week-grid">
+          <!-- injected by JS -->
+        </div>
+
+        <!-- Date range -->
+        <div class="week-date-row">
+          <div class="week-date-field">
+            <div class="week-date-label"><i class="bi bi-calendar-event-fill"></i> تاريخ بداية الأسبوع</div>
+            <input type="date" id="week-date-from" class="week-date-input" />
+          </div>
+          <div class="week-date-field">
+            <div class="week-date-label"><i class="bi bi-calendar-check-fill"></i> تاريخ نهاية الأسبوع</div>
+            <input type="date" id="week-date-to" class="week-date-input" />
+          </div>
+        </div>
+
+        <button class="btn-start-report" id="btn-start-report" onclick="startReport()" disabled>
+          <i class="bi bi-play-fill"></i> ابدأ إدخال التقرير
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ WEEK BANNER (shown after selection) ════════ -->
+  <div class="week-banner" id="week-banner" style="display:none;">
+    <div class="wb-week-badge" id="wb-week-label">الأسبوع —</div>
+    <div class="wb-info">
+      <div class="wb-title">التقرير الأسبوعي لشؤون الطلاب</div>
+      <div class="wb-dates" id="wb-dates">
+        <i class="bi bi-calendar3"></i>
+        <span>—</span>
+      </div>
+    </div>
+    <button class="btn-change-week" onclick="changeWeek()">
+      <i class="bi bi-pencil-fill"></i> تغيير الأسبوع
+    </button>
+  </div>
+
+  <!-- wrapper for main sections -->
+  <div id="main-sections-wrap">
+
   <!-- Page Title Bar -->
   <div class="page-title-bar">
     <div>
-      <h2><i class="bi bi-file-earmark-text-fill text-success me-2"></i>التقرير الأسبوعي</h2>
+      <h2><i class="bi bi-people-fill text-success me-2"></i>منصة شؤون الطلاب</h2>
     </div>
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
@@ -1656,10 +1963,7 @@
             <div class="field-label"><i class="bi bi-percent"></i> نسبة الحضور %</div>
             <input type="number" id="sum-rate" class="summary-input" placeholder="0.0" min="0" max="100" step="0.1" />
           </div>
-          <div class="summary-field">
-            <div class="field-label"><i class="bi bi-mortarboard-fill"></i> عدد المعلمين</div>
-            <input type="number" id="sum-teachers" class="summary-input" placeholder="0" min="0" />
-          </div>
+
         </div>
         <div class="section-divider"></div>
         <div class="field-label mb-1"><i class="bi bi-pencil-fill"></i> الملخص التنفيذي للأسبوع</div>
@@ -1669,122 +1973,13 @@
     </div>
   </section>
 
-  <!-- ─── 2. سير العملية التعليمية ─── -->
-  <section id="process">
-    <div class="report-card">
-      <div class="card-header-custom">
-        <div class="card-icon"><i class="bi bi-book-fill"></i></div>
-        <h3>سير العملية التعليمية</h3>
-        <span class="card-number">٢</span>
-      </div>
-      <div class="card-body-custom">
-
-        <!-- ── Summary KPI strip ── -->
-        <div class="proc-kpi-strip" id="proc-kpi-strip">
-          <div class="proc-kpi">
-            <div class="pkpi-icon" style="background:#eaf7f0; color:#1a7a3a;"><i class="bi bi-book-half"></i></div>
-            <div class="pkpi-body">
-              <div class="pkpi-val" id="pkpi-subjects">—</div>
-              <div class="pkpi-label">المواد المُسجَّلة</div>
-            </div>
-          </div>
-          <div class="proc-kpi">
-            <div class="pkpi-icon" style="background:#eaf7f0; color:#1a7a3a;"><i class="bi bi-calendar-check-fill"></i></div>
-            <div class="pkpi-body">
-              <div class="pkpi-val" id="pkpi-planned">—</div>
-              <div class="pkpi-label">إجمالي الحصص المقررة</div>
-            </div>
-          </div>
-          <div class="proc-kpi">
-            <div class="pkpi-icon" style="background:#d8f5e8; color:#0d5a30;"><i class="bi bi-check2-all"></i></div>
-            <div class="pkpi-body">
-              <div class="pkpi-val" id="pkpi-executed">—</div>
-              <div class="pkpi-label">إجمالي الحصص المنفذة</div>
-            </div>
-          </div>
-          <div class="proc-kpi accent-kpi">
-            <div class="pkpi-icon" style="background:#fff0c0; color:#7a5000;"><i class="bi bi-percent"></i></div>
-            <div class="pkpi-body">
-              <div class="pkpi-val" id="pkpi-exec-rate">—</div>
-              <div class="pkpi-label">نسبة تنفيذ الحصص</div>
-            </div>
-          </div>
-          <div class="proc-kpi accent-kpi">
-            <div class="pkpi-icon" style="background:#e8f0ff; color:#1a3a8a;"><i class="bi bi-bar-chart-fill"></i></div>
-            <div class="pkpi-body">
-              <div class="pkpi-val" id="pkpi-cover-rate">—</div>
-              <div class="pkpi-label">متوسط تغطية المنهج</div>
-            </div>
-          </div>
-          <div class="proc-kpi">
-            <div class="pkpi-icon" style="background:#f5e8ff; color:#5a1a8a;"><i class="bi bi-star-half"></i></div>
-            <div class="pkpi-body">
-              <div class="pkpi-val" id="pkpi-avg-perf">—</div>
-              <div class="pkpi-label">متوسط تقييم الأداء</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ── Overall curriculum progress bar ── -->
-        <div class="proc-overall-bar-wrap" id="proc-overall-wrap" style="display:none;">
-          <div class="proc-overall-label">
-            <span><i class="bi bi-layers-fill"></i> تقدم تغطية المناهج الإجمالي</span>
-            <span class="proc-overall-pct" id="proc-overall-pct">0%</span>
-          </div>
-          <div class="proc-overall-track">
-            <div class="proc-overall-fill" id="proc-overall-fill" style="width:0%"></div>
-          </div>
-        </div>
-
-        <!-- ── Table ── -->
-        <div class="field-label mb-2 mt-3"><i class="bi bi-table"></i> جدول تفصيل المواد الدراسية</div>
-        <div class="edit-table-wrap" style="overflow-x:auto;">
-          <table class="edit-table" id="process-table">
-            <thead>
-              <tr>
-                <th style="width:34px">#</th>
-                <th style="min-width:110px">المادة</th>
-                <th style="min-width:110px">المعلم</th>
-                <th style="min-width:180px">الموضوعات المُدرَّسة</th>
-                <th style="width:76px">الحصص<br>المقررة</th>
-                <th style="width:76px">الحصص<br>المنفذة</th>
-                <th style="width:96px">نسبة<br>التنفيذ</th>
-                <th style="width:80px">تغطية<br>المنهج %</th>
-                <th style="width:96px">تقييم<br>الأداء</th>
-                <th style="width:90px">ملاحظة<br>المعلم</th>
-                <th style="width:34px"></th>
-              </tr>
-            </thead>
-            <tbody id="process-tbody">
-              <!-- rows injected by JS -->
-            </tbody>
-          </table>
-        </div>
-        <button class="btn-add-row" onclick="addProcessRow()">
-          <i class="bi bi-plus-circle-fill"></i> إضافة مادة
-        </button>
-
-        <div class="section-divider"></div>
-
-        <!-- ── Per-subject detail cards (auto-generated) ── -->
-        <div class="field-label mb-2"><i class="bi bi-layout-text-sidebar-reverse"></i> تفصيل الأداء لكل مادة</div>
-        <div id="proc-detail-cards" class="proc-detail-cards"></div>
-
-        <div class="section-divider"></div>
-        <div class="field-label mb-1"><i class="bi bi-journal-text"></i> ملاحظات على سير العملية التعليمية</div>
-        <textarea id="process-notes" class="section-textarea" rows="3"
-          placeholder="أبرز الملاحظات على سير الدروس ومستوى التفاعل والالتزام بالخطة الدراسية..."></textarea>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── 3. الحضور والانضباط ─── -->
+  <!-- ─── 2. الحضور والانضباط ─── -->
   <section id="attendance">
     <div class="report-card">
       <div class="card-header-custom">
         <div class="card-icon"><i class="bi bi-people-fill"></i></div>
         <h3>الحضور والانضباط</h3>
-        <span class="card-number">٣</span>
+        <span class="card-number">٢</span>
       </div>
       <div class="card-body-custom">
 
@@ -1952,13 +2147,13 @@
     </div>
   </section>
 
-  <!-- ─── 4. الأنشطة ─── -->
+  <!-- ─── 3. الأنشطة ─── -->
   <section id="activities">
     <div class="report-card">
       <div class="card-header-custom">
         <div class="card-icon"><i class="bi bi-stars"></i></div>
         <h3>الأنشطة</h3>
-        <span class="card-number">٤</span>
+        <span class="card-number">٣</span>
       </div>
       <div class="card-body-custom">
         <div class="summary-input-grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr));">
@@ -1991,13 +2186,13 @@
     </div>
   </section>
 
-  <!-- ─── 5. متابعة الأداء ─── -->
+  <!-- ─── 4. متابعة الأداء ─── -->
   <section id="performance">
     <div class="report-card">
       <div class="card-header-custom">
         <div class="card-icon"><i class="bi bi-graph-up-arrow"></i></div>
         <h3>متابعة الأداء</h3>
-        <span class="card-number">٥</span>
+        <span class="card-number">٤</span>
       </div>
       <div class="card-body-custom">
         <div class="field-label mb-2"><i class="bi bi-clipboard2-data-fill"></i> مؤشرات الأداء الأسبوعية</div>
@@ -2031,13 +2226,13 @@
     </div>
   </section>
 
-  <!-- ─── 6. التحديات ─── -->
+  <!-- ─── 5. التحديات ─── -->
   <section id="challenges">
     <div class="report-card">
       <div class="card-header-custom" style="background:linear-gradient(135deg,#7b2d1e,#b04030);">
         <div class="card-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
         <h3>التحديات</h3>
-        <span class="card-number">٦</span>
+        <span class="card-number">٥</span>
       </div>
       <div class="card-body-custom">
         <div class="field-label mb-2" style="color:#8b1d1d;"><i class="bi bi-list-ul"></i> قائمة التحديات والصعوبات</div>
@@ -2057,13 +2252,13 @@
     </div>
   </section>
 
-  <!-- ─── 7. التوصيات ─── -->
+  <!-- ─── 6. التوصيات ─── -->
   <section id="recommendations">
     <div class="report-card">
       <div class="card-header-custom" style="background:linear-gradient(135deg,#1a4a6b,#2a6a9b);">
         <div class="card-icon"><i class="bi bi-lightbulb-fill"></i></div>
         <h3>التوصيات</h3>
-        <span class="card-number">٧</span>
+        <span class="card-number">٦</span>
       </div>
       <div class="card-body-custom">
         <div class="field-label mb-2" style="color:#1a4a6b;"><i class="bi bi-list-check"></i> قائمة التوصيات</div>
@@ -2083,13 +2278,13 @@
     </div>
   </section>
 
-  <!-- ─── 8. خطة الأسبوع القادم ─── -->
+  <!-- ─── 7. خطة الأسبوع القادم ─── -->
   <section id="next-week">
     <div class="report-card">
       <div class="card-header-custom" style="background:linear-gradient(135deg,#4a3a0a,#7a6010);">
         <div class="card-icon"><i class="bi bi-calendar-week-fill"></i></div>
         <h3>خطة الأسبوع القادم</h3>
-        <span class="card-number">٨</span>
+        <span class="card-number">٧</span>
       </div>
       <div class="card-body-custom">
         <div class="field-label mb-2" style="color:#5a4000;"><i class="bi bi-list-task"></i> البنود المقررة للأسبوع القادم</div>
@@ -2147,6 +2342,7 @@
     منصة التقارير المدرسية &mdash; متوسطة المنذر بن عمرو الأنصاري &mdash; نظام نور &copy; ١٤٤٦
   </footer>
 
+  </div><!-- /main-sections-wrap -->
 </main>
 
 <!-- ══════════ TOAST ══════════ -->
@@ -3425,6 +3621,120 @@
       if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
+
+  // ══════════════════════════════════════════
+  // WEEK SELECTOR MODULE
+  // ══════════════════════════════════════════
+
+  var selectedWeek = null;
+
+  var weekNames = [
+    'الأول','الثاني','الثالث','الرابع','الخامس',
+    'السادس','السابع','الثامن','التاسع','العاشر',
+    'الحادي عشر','الثاني عشر','الثالث عشر','الرابع عشر','الخامس عشر',
+    'السادس عشر','السابع عشر','الثامن عشر','التاسع عشر'
+  ];
+
+  // Build week grid buttons
+  (function buildWeekGrid() {
+    var grid = document.getElementById('week-grid');
+    weekNames.forEach(function(name, i) {
+      var btn = document.createElement('button');
+      btn.className = 'week-btn';
+      btn.setAttribute('data-week', i + 1);
+      btn.innerHTML = '<span class="wk-num">' + (i + 1) + '</span><span>الأسبوع ' + name + '</span>';
+      btn.onclick = function() {
+        document.querySelectorAll('.week-btn').forEach(function(b){ b.classList.remove('selected'); });
+        btn.classList.add('selected');
+        selectedWeek = i + 1;
+        checkWeekReady();
+        autoFillDates(i + 1);
+      };
+      grid.appendChild(btn);
+    });
+  })();
+
+  // Auto-fill date range based on week number (approximate, from start of semester)
+  // Semester 2 starts around 2026-01-18 (adjust as needed)
+  function autoFillDates(weekNum) {
+    var semesterStart = new Date('2026-01-18');
+    var from = new Date(semesterStart);
+    from.setDate(from.getDate() + (weekNum - 1) * 7);
+    var to = new Date(from);
+    to.setDate(to.getDate() + 4); // Sun–Thu school week
+    document.getElementById('week-date-from').value = from.toISOString().slice(0,10);
+    document.getElementById('week-date-to').value   = to.toISOString().slice(0,10);
+    checkWeekReady();
+  }
+
+  document.getElementById('week-date-from').addEventListener('input', checkWeekReady);
+  document.getElementById('week-date-to').addEventListener('input', checkWeekReady);
+
+  function checkWeekReady() {
+    var ready = selectedWeek && document.getElementById('week-date-from').value && document.getElementById('week-date-to').value;
+    document.getElementById('btn-start-report').disabled = !ready;
+  }
+
+  function startReport() {
+    var from = document.getElementById('week-date-from').value;
+    var to   = document.getElementById('week-date-to').value;
+
+    // Validate dates
+    if (from && to && new Date(from) > new Date(to)) {
+      alert('تاريخ البداية يجب أن يكون قبل تاريخ النهاية');
+      return;
+    }
+
+    // Hide overlay
+    document.getElementById('week-overlay').style.display = 'none';
+
+    // Show banner
+    var banner = document.getElementById('week-banner');
+    banner.style.display = 'flex';
+    document.getElementById('wb-week-label').textContent = 'الأسبوع ' + weekNames[selectedWeek - 1];
+
+    // Format dates Arabic
+    var opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+    var fromStr = from ? new Date(from).toLocaleDateString('ar-SA', opts) : '—';
+    var toStr   = to   ? new Date(to).toLocaleDateString('ar-SA', opts)   : '—';
+    document.getElementById('wb-dates').innerHTML =
+      '<i class="bi bi-calendar3"></i> <span>' + fromStr + ' &nbsp;←&nbsp; ' + toStr + '</span>';
+
+    // Update page title breadcrumb
+    var bcActive = document.querySelector('.breadcrumb-item.active');
+    if (bcActive) bcActive.textContent = 'الأسبوع ' + weekNames[selectedWeek - 1];
+
+    // Store in draft metadata
+    try {
+      var meta = JSON.parse(localStorage.getItem('weekMeta') || '{}');
+      meta.week = selectedWeek;
+      meta.weekName = weekNames[selectedWeek - 1];
+      meta.from = from;
+      meta.to = to;
+      localStorage.setItem('weekMeta', JSON.stringify(meta));
+    } catch(e) {}
+  }
+
+  function changeWeek() {
+    document.getElementById('week-overlay').style.display = 'flex';
+    document.getElementById('week-banner').style.display = 'none';
+  }
+
+  // Restore week meta on page load
+  (function restoreWeekMeta() {
+    try {
+      var meta = JSON.parse(localStorage.getItem('weekMeta') || '{}');
+      if (meta.week) {
+        // Pre-select the week button
+        var btn = document.querySelector('.week-btn[data-week="' + meta.week + '"]');
+        if (btn) { btn.classList.add('selected'); selectedWeek = meta.week; }
+        if (meta.from) document.getElementById('week-date-from').value = meta.from;
+        if (meta.to)   document.getElementById('week-date-to').value   = meta.to;
+        checkWeekReady();
+      }
+    } catch(e) {}
+  })();
+
 </script>
 </body>
 </html>
