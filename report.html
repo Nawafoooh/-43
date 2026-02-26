@@ -2048,6 +2048,206 @@
       if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
+
+  // ══════════════════════════════════════════
+  // PDF MODULE
+  // ══════════════════════════════════════════
+
+  function tv(id) {
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  function openPdfModal() {
+    // Build preview content
+    var total     = _n('a2-total');
+    var present   = _n('a2-present');
+    var excused   = _n('a2-excused');
+    var unexcused = _n('a2-unexcused');
+    var late      = _n('a2-late');
+    var absent    = excused + unexcused;
+    var rate      = total > 0 ? ((present / total) * 100).toFixed(1) + '%' : '—';
+
+    var rows = [
+      ['إجمالي الطلاب',       total   || '—'],
+      ['الحاضرون',            present || '—'],
+      ['إجمالي الغائبين',     absent  || '—'],
+      ['غياب بعذر',           excused || '—'],
+      ['غياب بدون عذر',       unexcused || '—'],
+      ['المتأخرون',           late    || '—'],
+      ['نسبة الحضور',         rate],
+    ];
+
+    var html = '<div class="pv-school">متوسطة المنذر بن عمرو الأنصاري</div>' +
+               '<div class="pv-sub">التقرير الأسبوعي لشؤون الطلاب — الفصل الدراسي الثاني</div>';
+
+    rows.forEach(function(r) {
+      html += '<div class="pv-row"><span class="pv-key">' + r[0] + '</span><span class="pv-val">' + r[1] + '</span></div>';
+    });
+
+    // Challenges
+    var chs = document.querySelectorAll('#att2-ch .item-input');
+    if (chs.length) {
+      html += '<div class="pv-row" style="margin-top:8px;border-bottom:none"><span class="pv-key" style="color:#b83232">التحديات:</span></div>';
+      chs.forEach(function(el, i) {
+        if (el.value.trim()) html += '<div class="pv-row"><span class="pv-key">' + (i+1) + '</span><span class="pv-val">' + el.value.trim() + '</span></div>';
+      });
+    }
+
+    // Actions
+    var acs = document.querySelectorAll('#att2-ac .item-input');
+    if (acs.length) {
+      html += '<div class="pv-row" style="margin-top:8px;border-bottom:none"><span class="pv-key" style="color:#1a6b47">الإجراءات المتخذة:</span></div>';
+      acs.forEach(function(el, i) {
+        if (el.value.trim()) html += '<div class="pv-row"><span class="pv-key">' + (i+1) + '</span><span class="pv-val">' + el.value.trim() + '</span></div>';
+      });
+    }
+
+    // Notes
+    var notes = tv('att-notes');
+    if (notes) html += '<div class="pv-row"><span class="pv-key">ملاحظات</span><span class="pv-val">' + notes + '</span></div>';
+
+    document.getElementById('pdf-preview-content').innerHTML = html;
+    document.getElementById('pdf-modal-overlay').classList.add('open');
+  }
+
+  function closePdfModal(e) {
+    if (e && e.target !== document.getElementById('pdf-modal-overlay')) return;
+    document.getElementById('pdf-modal-overlay').classList.remove('open');
+  }
+
+  function generatePDF() {
+    var jsPDFLib = window.jspdf ? window.jspdf.jsPDF : (window.jsPDF || null);
+    if (!jsPDFLib) { alert('مكتبة PDF غير متاحة، تأكد من الاتصال بالإنترنت'); return; }
+
+    var total     = _n('a2-total');
+    var present   = _n('a2-present');
+    var excused   = _n('a2-excused');
+    var unexcused = _n('a2-unexcused');
+    var late      = _n('a2-late');
+    var absent    = excused + unexcused;
+    var rate      = total > 0 ? ((present / total) * 100).toFixed(1) + '%' : '—';
+    var today     = new Date().toLocaleDateString('en-GB');
+
+    var doc = new jsPDFLib({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    var W = doc.internal.pageSize.getWidth();
+    var H = doc.internal.pageSize.getHeight();
+    var M = 18;
+    var y = 0;
+
+    // ── Header ──
+    doc.setFillColor(13, 74, 47);
+    doc.rect(0, 0, W, 38, 'F');
+    doc.setFillColor(46, 158, 107);
+    doc.rect(0, 34, W, 4, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Mutawassitat Al-Munthir bin Amr Al-Ansari', W - M, 13, { align: 'right' });
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(180, 230, 200);
+    doc.text('Weekly Student Affairs Report  |  Noor System  |  Second Semester', W - M, 21, { align: 'right' });
+    doc.text('Date: ' + today, W - M, 29, { align: 'right' });
+
+    y = 50;
+
+    // ── Section title ──
+    doc.setFillColor(26, 107, 71);
+    doc.roundedRect(M, y, W - M*2, 11, 3, 3, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Attendance & Discipline Report', W - M - 4, y + 7.5, { align: 'right' });
+    y += 17;
+
+    // ── Data rows ──
+    var rows = [
+      ['Total Students',       String(total)],
+      ['Present',              String(present)],
+      ['Total Absent',         String(absent)],
+      ['Excused Absence',      String(excused)],
+      ['Unexcused Absence',    String(unexcused)],
+      ['Late Arrivals',        String(late)],
+    ];
+
+    rows.forEach(function(row, i) {
+      if (i % 2 === 0) {
+        doc.setFillColor(244, 249, 246);
+        doc.rect(M, y - 1.5, W - M*2, 11, 'F');
+      }
+      doc.setTextColor(13, 74, 47);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text(row[0], W - M - 4, y + 6, { align: 'right' });
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(42, 90, 58);
+      doc.text(row[1], M + 6, y + 6);
+      doc.setDrawColor(210, 232, 218);
+      doc.setLineWidth(0.2);
+      doc.line(M, y + 9.5, W - M, y + 9.5);
+      y += 12;
+    });
+
+    y += 4;
+
+    // ── Rate highlight ──
+    var rateVal = parseFloat(rate);
+    var rateColor = isNaN(rateVal) ? [13,74,47] : rateVal >= 95 ? [13,74,47] : rateVal >= 85 ? [160,100,0] : [139,29,29];
+    doc.setFillColor(rateColor[0], rateColor[1], rateColor[2]);
+    doc.roundedRect(M, y, W - M*2, 18, 4, 4, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Attendance Rate: ' + rate, W/2, y + 12, { align: 'center' });
+    y += 26;
+
+    // ── Challenges ──
+    var chs = [];
+    document.querySelectorAll('#att2-ch .item-input').forEach(function(el) { if (el.value.trim()) chs.push(el.value.trim()); });
+    if (chs.length) {
+      doc.setFillColor(139, 29, 29);
+      doc.roundedRect(M, y, W - M*2, 10, 3, 3, 'F');
+      doc.setTextColor(255,255,255); doc.setFontSize(10); doc.setFont('helvetica','bold');
+      doc.text('Challenges', W - M - 4, y + 7, { align: 'right' });
+      y += 14;
+      chs.forEach(function(ch, i) {
+        doc.setTextColor(90, 20, 20); doc.setFontSize(9); doc.setFont('helvetica','normal');
+        doc.text((i+1) + '. ' + ch, M + 4, y + 5);
+        y += 10;
+      });
+      y += 4;
+    }
+
+    // ── Actions ──
+    var acs = [];
+    document.querySelectorAll('#att2-ac .item-input').forEach(function(el) { if (el.value.trim()) acs.push(el.value.trim()); });
+    if (acs.length) {
+      doc.setFillColor(13, 74, 47);
+      doc.roundedRect(M, y, W - M*2, 10, 3, 3, 'F');
+      doc.setTextColor(255,255,255); doc.setFontSize(10); doc.setFont('helvetica','bold');
+      doc.text('Actions Taken', W - M - 4, y + 7, { align: 'right' });
+      y += 14;
+      acs.forEach(function(ac, i) {
+        doc.setTextColor(13, 60, 30); doc.setFontSize(9); doc.setFont('helvetica','normal');
+        doc.text((i+1) + '. ' + ac, M + 4, y + 5);
+        y += 10;
+      });
+    }
+
+    // ── Footer ──
+    doc.setFillColor(13, 74, 47);
+    doc.rect(0, H - 13, W, 13, 'F');
+    doc.setTextColor(180, 230, 200);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Generated by Noor School Reports Platform  •  Page 1 of 1', W/2, H - 4.5, { align: 'center' });
+
+    doc.save('attendance-report-' + new Date().toISOString().slice(0,10) + '.pdf');
+    closePdfModal(null);
+  }
+
 </script>
 </body>
 </html>
