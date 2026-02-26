@@ -1724,6 +1724,16 @@
       box-shadow: none;
       transform: none;
     }
+    .btn-locked {
+      opacity: 0.45 !important;
+      cursor: not-allowed !important;
+      pointer-events: none !important;
+    }
+    .btn-unlocked {
+      opacity: 1 !important;
+      cursor: pointer !important;
+      pointer-events: auto !important;
+    }
 
     /* ── WEEK BANNER (shows after selection) ── */
     .week-banner {
@@ -1879,7 +1889,7 @@
           </div>
         </div>
 
-        <button class="btn-start-report" id="btn-start-report" onclick="startReport()" style="opacity:0.45;cursor:not-allowed;pointer-events:none;">
+        <button class="btn-start-report btn-locked" id="btn-start-report" onclick="startReport()">
           <i class="bi bi-play-fill"></i> ابدأ إدخال التقرير
         </button>
 
@@ -3674,16 +3684,12 @@
     var fromVal = document.getElementById('week-date-from').value;
     var toVal   = document.getElementById('week-date-to').value;
     var btn     = document.getElementById('btn-start-report');
-    if (selectedWeek !== null && fromVal && toVal) {
-      btn.removeAttribute('disabled');
-      btn.style.opacity       = '1';
-      btn.style.cursor        = 'pointer';
-      btn.style.pointerEvents = 'auto';
+    if (selectedWeek !== null && fromVal !== '' && toVal !== '') {
+      btn.classList.remove('btn-locked');
+      btn.classList.add('btn-unlocked');
     } else {
-      btn.setAttribute('disabled', 'disabled');
-      btn.style.opacity       = '0.45';
-      btn.style.cursor        = 'not-allowed';
-      btn.style.pointerEvents = 'none';
+      btn.classList.remove('btn-unlocked');
+      btn.classList.add('btn-locked');
     }
   }
 
