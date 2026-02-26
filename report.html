@@ -3647,8 +3647,8 @@
         document.querySelectorAll('.week-btn').forEach(function(b){ b.classList.remove('selected'); });
         btn.classList.add('selected');
         selectedWeek = i + 1;
-        checkWeekReady();
         autoFillDates(i + 1);
+        // checkWeekReady called inside autoFillDates after values are set
       };
       grid.appendChild(btn);
     });
@@ -3662,17 +3662,30 @@
     from.setDate(from.getDate() + (weekNum - 1) * 7);
     var to = new Date(from);
     to.setDate(to.getDate() + 4); // Sun–Thu school week
+    // Set values directly then check — JS-assigned values don't fire 'input' event
     document.getElementById('week-date-from').value = from.toISOString().slice(0,10);
     document.getElementById('week-date-to').value   = to.toISOString().slice(0,10);
-    checkWeekReady();
+    // Force re-check AFTER values are assigned
+    setTimeout(checkWeekReady, 0);
   }
 
   document.getElementById('week-date-from').addEventListener('input', checkWeekReady);
   document.getElementById('week-date-to').addEventListener('input', checkWeekReady);
 
   function checkWeekReady() {
-    var ready = selectedWeek && document.getElementById('week-date-from').value && document.getElementById('week-date-to').value;
-    document.getElementById('btn-start-report').disabled = !ready;
+    var fromVal = document.getElementById('week-date-from').value;
+    var toVal   = document.getElementById('week-date-to').value;
+    var ready   = (selectedWeek !== null) && fromVal && toVal;
+    var btn     = document.getElementById('btn-start-report');
+    btn.disabled = !ready;
+    // Visual feedback
+    if (ready) {
+      btn.style.opacity = '1';
+      btn.style.cursor  = 'pointer';
+    } else {
+      btn.style.opacity = '0.5';
+      btn.style.cursor  = 'not-allowed';
+    }
   }
 
   function startReport() {
