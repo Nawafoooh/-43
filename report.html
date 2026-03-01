@@ -2,121 +2,1008 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>منصة التقارير الأسبوعية</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة التقارير الأسبوعية - شؤون الطلاب</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
-body{
-    font-family: Arial;
-    background:#f4f6f9;
-    padding:20px;
-}
+  :root {
+    --primary: #1a3a5c;
+    --primary-light: #2a5480;
+    --accent: #c8942a;
+    --accent-light: #e8b84b;
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --text: #1a2332;
+    --text-muted: #5a6a7a;
+    --border: #d0dae6;
+    --success: #1d7a4f;
+    --danger: #b92c2c;
+    --section-bg: #f7f9fc;
+  }
 
-.container{
-    background:white;
-    padding:30px;
-    border-radius:10px;
-    box-shadow:0 0 10px rgba(0,0,0,0.1);
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-input, textarea{
-    width:100%;
-    margin:10px 0;
-    padding:8px;
-}
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
 
-button{
-    padding:10px 20px;
-    margin-top:15px;
-    background:#2c3e50;
-    color:white;
-    border:none;
-    cursor:pointer;
-}
+  /* ===== HEADER ===== */
+  .app-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 60%, #1e4d7a 100%);
+    padding: 28px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .app-header::before {
+    content: '';
+    position: absolute;
+    top: -40px; left: -40px;
+    width: 200px; height: 200px;
+    background: rgba(200,148,42,0.15);
+    border-radius: 50%;
+  }
+  .app-header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; right: 10%;
+    width: 280px; height: 280px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo-icon {
+    width: 56px; height: 56px;
+    background: var(--accent);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    box-shadow: 0 4px 15px rgba(200,148,42,0.4);
+  }
+  .header-title h1 {
+    color: white;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+  }
+  .header-title p {
+    color: rgba(255,255,255,0.65);
+    font-size: 13px;
+    margin-top: 2px;
+  }
+  .header-badge {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-size: 13px;
+    backdrop-filter: blur(10px);
+  }
 
-.report{
-    margin-top:30px;
-    padding:20px;
-    border:1px solid #ccc;
-}
+  /* ===== TABS ===== */
+  .tab-nav {
+    background: white;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .tab-btn {
+    padding: 16px 30px;
+    border: none;
+    background: none;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--accent);
+  }
+  .tab-btn:hover:not(.active) { color: var(--primary); background: var(--section-bg); }
 
-.footer{
-    margin-top:40px;
-    border-top:1px solid #000;
-    padding-top:10px;
-    font-size:14px;
-}
+  /* ===== MAIN LAYOUT ===== */
+  .main-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px 20px;
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ===== FORM GRID ===== */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .form-grid .full-width { grid-column: 1 / -1; }
+
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    border: 1px solid var(--border);
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title-icon {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+
+  .form-field { margin-bottom: 16px; }
+  .form-field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .form-field input,
+  .form-field textarea,
+  .form-field select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--section-bg);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .form-field input:focus,
+  .form-field textarea:focus,
+  .form-field select:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(42,84,128,0.12);
+    background: white;
+  }
+  .form-field textarea { min-height: 100px; resize: vertical; line-height: 1.7; }
+
+  .date-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+
+  /* ===== STATS ROW ===== */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .stat-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .stat-icon.blue { background: #e8f0f8; }
+  .stat-icon.orange { background: #fef3e2; }
+  .stat-icon.green { background: #e6f5ec; }
+  .stat-icon.red { background: #fde8e8; }
+  .stat-info label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .stat-info input {
+    width: 80px;
+    border: none;
+    background: transparent;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--primary);
+    outline: none;
+    padding: 0;
+  }
+
+  /* ===== ACTION BUTTONS ===== */
+  .action-row {
+    display: flex;
+    gap: 14px;
+    margin-top: 26px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 13px 28px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    box-shadow: 0 4px 15px rgba(26,58,92,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,58,92,0.4); }
+  .btn-accent {
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    color: white;
+    box-shadow: 0 4px 15px rgba(200,148,42,0.3);
+  }
+  .btn-accent:hover { transform: translateY(-1px); }
+  .btn-outline {
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--primary); background: var(--section-bg); }
+  .btn-danger {
+    background: white;
+    color: var(--danger);
+    border: 2px solid #f0c0c0;
+  }
+  .btn-danger:hover { background: #fff5f5; }
+
+  /* ===== REPORT PREVIEW ===== */
+  #report-preview {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+  }
+
+  .report-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 50px 50px 40px;
+  }
+
+  /* Report Header */
+  .rpt-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 3px solid var(--primary);
+    padding-bottom: 24px;
+    margin-bottom: 30px;
+  }
+  .rpt-ministry {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .rpt-logo-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin: 16px 0;
+  }
+  .rpt-school-emblem {
+    width: 70px; height: 70px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+  }
+  .rpt-school-info {
+    text-align: center;
+    flex: 1;
+  }
+  .rpt-school-info h1 {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
+  .rpt-school-info p {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .rpt-meta {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    background: var(--section-bg);
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-top: 16px;
+  }
+  .rpt-meta-item { text-align: center; }
+  .rpt-meta-item label { display: block; font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+  .rpt-meta-item span { font-size: 14px; font-weight: 700; color: var(--primary); }
+
+  /* Report Sections */
+  .rpt-section {
+    margin-bottom: 24px;
+    page-break-inside: avoid;
+  }
+  .rpt-section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--primary);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .rpt-section-num {
+    background: var(--accent);
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+  }
+  .rpt-section-body {
+    background: var(--section-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--text);
+    min-height: 50px;
+    white-space: pre-wrap;
+  }
+
+  /* Stats in Report */
+  .rpt-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .rpt-stat {
+    text-align: center;
+    background: var(--section-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 10px;
+  }
+  .rpt-stat .num { font-size: 28px; font-weight: 900; color: var(--primary); }
+  .rpt-stat .lbl { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  /* Signatures */
+  .rpt-signatures {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 2px solid var(--border);
+  }
+  .rpt-sig {
+    text-align: center;
+  }
+  .rpt-sig .sig-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .rpt-sig .sig-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--primary);
+    border-bottom: 2px dashed var(--border);
+    padding-bottom: 30px;
+    margin-bottom: 6px;
+  }
+  .rpt-sig .sig-stamp {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* Report Footer */
+  .rpt-footer {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+  }
+
+  /* ===== EMPTY STATE ===== */
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-muted);
+  }
+  .empty-state .icon { font-size: 64px; margin-bottom: 16px; opacity: 0.4; }
+  .empty-state h3 { font-size: 18px; margin-bottom: 8px; color: var(--text); }
+  .empty-state p { font-size: 14px; }
+
+  /* ===== NOTIFICATIONS ===== */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--primary);
+    color: white;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ===== NOTES PANEL ===== */
+  .notes-panel {
+    background: linear-gradient(135deg, #fffbf0, #fef9e9);
+    border: 2px solid #f0d080;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .notes-icon { font-size: 22px; }
+  .notes-text h4 { font-size: 14px; font-weight: 700; color: #7a5800; margin-bottom: 4px; }
+  .notes-text p { font-size: 13px; color: #8a6a10; line-height: 1.6; }
+
+  @media print {
+    body { background: white; }
+    .app-header, .tab-nav, .main-wrap > .tab-panel:not(#tab-preview) { display: none !important; }
+    .report-page { padding: 20px; }
+  }
+
+  @media (max-width: 768px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .date-row { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .rpt-stats { grid-template-columns: 1fr 1fr; }
+    .header-badge { display: none; }
+    .report-page { padding: 24px 20px; }
+  }
 </style>
 </head>
-
 <body>
 
-<div class="container">
+<div class="app-header">
+  <div class="header-inner">
+    <div class="header-logo">
+      <div class="logo-icon">📋</div>
+      <div class="header-title">
+        <h1>منصة التقارير الأسبوعية</h1>
+        <p>إدارة شؤون الطلاب | وكيل المدرسة</p>
+      </div>
+    </div>
+    <div class="header-badge">📅 <span id="header-date"></span></div>
+  </div>
+</div>
 
-<h2>إعداد التقرير الأسبوعي</h2>
+<div style="background:white; border-bottom:1px solid var(--border);">
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('form')">✏️ إعداد التقرير</button>
+    <button class="tab-btn" onclick="switchTab('preview')">👁️ معاينة التقرير</button>
+  </div>
+</div>
 
-<label>الفترة:</label>
-<input type="text" id="period" placeholder="مثال: من الأحد إلى الخميس">
+<div class="main-wrap">
 
-<label>متابعة التأخير:</label>
-<textarea id="delay"></textarea>
+  <!-- ====== FORM TAB ====== -->
+  <div class="tab-panel active" id="tab-form">
 
-<label>متابعة الغياب:</label>
-<textarea id="absence"></textarea>
+    <div class="notes-panel">
+      <div class="notes-icon">💡</div>
+      <div class="notes-text">
+        <h4>إرشادات الاستخدام</h4>
+        <p>أدخل جميع البيانات بدقة. الحقول المميزة بـ (*) إلزامية. يمكنك معاينة التقرير قبل تحميله بصيغة PDF.</p>
+      </div>
+    </div>
 
-<label>حالات الغياب (3 أيام / 5 أيام):</label>
-<textarea id="cases"></textarea>
+    <!-- Info Card -->
+    <div class="card full-width" style="margin-bottom:20px;">
+      <div class="card-title">
+        <div class="card-title-icon">🏫</div>
+        بيانات التقرير الأساسية
+      </div>
+      <div class="date-row">
+        <div class="form-field">
+          <label>* اسم المدرسة</label>
+          <input type="text" id="school_name" placeholder="أدخل اسم المدرسة" value="">
+        </div>
+        <div class="form-field">
+          <label>* رقم التقرير / الأسبوع</label>
+          <input type="text" id="report_num" placeholder="مثال: الأسبوع الخامس" value="">
+        </div>
+        <div class="form-field">
+          <label>* الفصل الدراسي</label>
+          <select id="semester">
+            <option value="الفصل الدراسي الأول">الفصل الدراسي الأول</option>
+            <option value="الفصل الدراسي الثاني">الفصل الدراسي الثاني</option>
+            <option value="الفصل الدراسي الثالث">الفصل الدراسي الثالث</option>
+          </select>
+        </div>
+      </div>
+      <div class="date-row">
+        <div class="form-field">
+          <label>* تاريخ البداية (من)</label>
+          <input type="date" id="date_from">
+        </div>
+        <div class="form-field">
+          <label>* تاريخ النهاية (إلى)</label>
+          <input type="date" id="date_to">
+        </div>
+        <div class="form-field">
+          <label>* تاريخ إعداد التقرير</label>
+          <input type="date" id="report_date">
+        </div>
+      </div>
+    </div>
 
-<label>تكريم المتفوقين:</label>
-<textarea id="honor"></textarea>
+    <!-- Stats Row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon blue">👥</div>
+        <div class="stat-info">
+          <label>إجمالي الطلاب</label>
+          <input type="number" id="stat_total" placeholder="0">
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">⏰</div>
+        <div class="stat-info">
+          <label>حالات تأخر</label>
+          <input type="number" id="stat_delay" placeholder="0">
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon red">🔴</div>
+        <div class="stat-info">
+          <label>حالات غياب</label>
+          <input type="number" id="stat_absent" placeholder="0">
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">🏆</div>
+        <div class="stat-info">
+          <label>متفوقون مكرّمون</label>
+          <input type="number" id="stat_honor" placeholder="0">
+        </div>
+      </div>
+    </div>
 
-<label>متابعة المرشد الطلابي:</label>
-<textarea id="counselor"></textarea>
+    <div class="form-grid">
 
-<label>الأنشطة المدرسية:</label>
-<textarea id="activities"></textarea>
+      <!-- Delay -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon">⏰</div>
+          متابعة التأخير
+        </div>
+        <div class="form-field">
+          <label>تفاصيل حالات التأخير والإجراءات المتخذة</label>
+          <textarea id="delay" placeholder="اذكر عدد الحالات، الأسباب، والإجراءات المتبعة مع الطلاب..."></textarea>
+        </div>
+      </div>
 
-<button onclick="generateReport()">عرض التقرير</button>
-<button onclick="downloadPDF()">تحميل PDF</button>
+      <!-- Absence -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon">📋</div>
+          متابعة الغياب
+        </div>
+        <div class="form-field">
+          <label>تفاصيل حالات الغياب والإجراءات</label>
+          <textarea id="absence" placeholder="اذكر الطلاب الغائبين، أسباب الغياب، ومدى التواصل مع أولياء الأمور..."></textarea>
+        </div>
+      </div>
 
-<div id="output" class="report" style="display:none;"></div>
+      <!-- Cases -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon">🔍</div>
+          دراسة الحالات (3 أيام / 5 أيام)
+        </div>
+        <div class="form-field">
+          <label>الحالات التي تم رفعها ودراستها</label>
+          <textarea id="cases" placeholder="اذكر الطلاب الذين بلغت أيام غيابهم 3 أيام أو 5 أيام والإجراءات التصعيدية..."></textarea>
+        </div>
+      </div>
+
+      <!-- Honor -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon">🏆</div>
+          تكريم المتفوقين
+        </div>
+        <div class="form-field">
+          <label>أسماء المتفوقين وسبب التكريم</label>
+          <textarea id="honor" placeholder="اذكر أسماء الطلاب المتفوقين، إنجازاتهم، ونوع التكريم..."></textarea>
+        </div>
+      </div>
+
+      <!-- Counselor -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon">🤝</div>
+          متابعة المرشد الطلابي
+        </div>
+        <div class="form-field">
+          <label>أبرز ما تم في الإرشاد الطلابي هذا الأسبوع</label>
+          <textarea id="counselor" placeholder="اذكر الجلسات الإرشادية، الحالات المتابعة، والبرامج التوجيهية..."></textarea>
+        </div>
+      </div>
+
+      <!-- Activities -->
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-icon">🎯</div>
+          الأنشطة المدرسية
+        </div>
+        <div class="form-field">
+          <label>الأنشطة والفعاليات المنفذة هذا الأسبوع</label>
+          <textarea id="activities" placeholder="اذكر الأنشطة الصفية واللاصفية والفعاليات التي تمت أو مخطط لها..."></textarea>
+        </div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="card full-width">
+        <div class="card-title">
+          <div class="card-title-icon">📌</div>
+          التوصيات والملاحظات
+        </div>
+        <div class="form-field">
+          <label>توصيات وملاحظات وكيل شؤون الطلاب</label>
+          <textarea id="recommendations" placeholder="أدخل توصياتك للأسبوع القادم أو أي ملاحظات مهمة..."></textarea>
+        </div>
+      </div>
+
+      <!-- Signatures -->
+      <div class="card full-width">
+        <div class="card-title">
+          <div class="card-title-icon">✍️</div>
+          بيانات التوقيع
+        </div>
+        <div class="date-row">
+          <div class="form-field">
+            <label>اسم وكيل شؤون الطلاب</label>
+            <input type="text" id="deputy_name" placeholder="الاسم الكامل" value="نواف الصبحي">
+          </div>
+          <div class="form-field">
+            <label>اسم مدير المدرسة</label>
+            <input type="text" id="principal_name" placeholder="الاسم الكامل" value="خالد المطيري">
+          </div>
+          <div class="form-field">
+            <label>اسم المشرف التربوي (اختياري)</label>
+            <input type="text" id="supervisor_name" placeholder="الاسم الكامل">
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="action-row">
+      <button class="btn btn-primary" onclick="generateReport()">👁️ معاينة التقرير</button>
+      <button class="btn btn-accent" onclick="downloadPDF()">⬇️ تحميل PDF</button>
+      <button class="btn btn-outline" onclick="clearForm()">🗑️ مسح البيانات</button>
+      <button class="btn btn-outline" onclick="saveData()">💾 حفظ مؤقت</button>
+    </div>
+
+  </div>
+
+  <!-- ====== PREVIEW TAB ====== -->
+  <div class="tab-panel" id="tab-preview">
+    <div style="display:flex; gap:14px; margin-bottom:24px; flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="generateReport()">🔄 تحديث المعاينة</button>
+      <button class="btn btn-accent" onclick="downloadPDF()">⬇️ تحميل PDF</button>
+      <button class="btn btn-outline" onclick="switchTab('form')">✏️ العودة للتعديل</button>
+    </div>
+
+    <div id="report-preview">
+      <div class="empty-state">
+        <div class="icon">📄</div>
+        <h3>لا يوجد تقرير للمعاينة</h3>
+        <p>اضغط على "معاينة التقرير" في تبويب الإعداد لإنشاء التقرير</p>
+      </div>
+    </div>
+  </div>
 
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-function generateReport(){
-    const output = document.getElementById("output");
-    output.style.display="block";
-    output.innerHTML = `
-        <h2 style="text-align:center;">التقرير الأسبوعي لشؤون الطلاب</h2>
-        <p><strong>الفترة:</strong> ${period.value}</p>
-        <h3>أولاً: متابعة التأخير</h3>
-        <p>${delay.value}</p>
-        <h3>ثانياً: متابعة الغياب</h3>
-        <p>${absence.value}</p>
-        <h3>ثالثاً: دراسة الحالات</h3>
-        <p>${cases.value}</p>
-        <h3>رابعاً: تكريم المتفوقين</h3>
-        <p>${honor.value}</p>
-        <h3>خامساً: متابعة المرشد الطلابي</h3>
-        <p>${counselor.value}</p>
-        <h3>سادساً: الأنشطة المدرسية</h3>
-        <p>${activities.value}</p>
+// Set today's date everywhere
+const today = new Date();
+const todayStr = today.toISOString().split('T')[0];
+document.getElementById('report_date').value = todayStr;
 
-        <div class="footer">
-            وكيل المدرسة لشؤون الطلاب<br>
-            نواف الصبحي<br><br>
-            مدير المدرسة<br>
-            خالد المطيري
+// Header date
+const headerDate = today.toLocaleDateString('ar-SA', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+document.getElementById('header-date').textContent = headerDate;
+
+// Set default week dates (Sun-Thu)
+const dayOfWeek = today.getDay();
+const diff = dayOfWeek === 0 ? 0 : (dayOfWeek <= 4 ? -dayOfWeek : 7 - dayOfWeek);
+const sun = new Date(today); sun.setDate(today.getDate() + diff);
+const thu = new Date(sun); thu.setDate(sun.getDate() + 4);
+document.getElementById('date_from').value = sun.toISOString().split('T')[0];
+document.getElementById('date_to').value = thu.toISOString().split('T')[0];
+
+function formatDate(str) {
+  if (!str) return '—';
+  const d = new Date(str);
+  return d.toLocaleDateString('ar-SA', { year:'numeric', month:'long', day:'numeric' });
+}
+
+function formatDateHijri(str) {
+  if (!str) return '';
+  try {
+    const d = new Date(str);
+    return d.toLocaleDateString('ar-SA-u-ca-islamic', { year:'numeric', month:'long', day:'numeric' });
+  } catch(e) { return ''; }
+}
+
+function g(id) { return document.getElementById(id)?.value || ''; }
+
+function toast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.innerHTML = (type === 'success' ? '✅ ' : type === 'error' ? '❌ ' : '💡 ') + msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelectorAll('.tab-btn')[tab === 'form' ? 0 : 1].classList.add('active');
+}
+
+function generateReport() {
+  const school = g('school_name') || 'المدرسة';
+  const semester = g('semester');
+  const reportNum = g('report_num');
+  const dateFrom = formatDate(g('date_from'));
+  const dateTo = formatDate(g('date_to'));
+  const reportDate = formatDate(g('report_date'));
+  const hijriDate = formatDateHijri(g('report_date'));
+  const deputyName = g('deputy_name') || 'وكيل شؤون الطلاب';
+  const principalName = g('principal_name') || 'مدير المدرسة';
+  const supervisorName = g('supervisor_name');
+
+  const statTotal = g('stat_total') || '—';
+  const statDelay = g('stat_delay') || '—';
+  const statAbsent = g('stat_absent') || '—';
+  const statHonor = g('stat_honor') || '—';
+
+  const sections = [
+    { num:1, icon:'⏰', title:'متابعة التأخير', content: g('delay') },
+    { num:2, icon:'📋', title:'متابعة الغياب', content: g('absence') },
+    { num:3, icon:'🔍', title:'دراسة الحالات (3 أيام / 5 أيام)', content: g('cases') },
+    { num:4, icon:'🏆', title:'تكريم المتفوقين', content: g('honor') },
+    { num:5, icon:'🤝', title:'متابعة المرشد الطلابي', content: g('counselor') },
+    { num:6, icon:'🎯', title:'الأنشطة المدرسية', content: g('activities') },
+    { num:7, icon:'📌', title:'التوصيات والملاحظات', content: g('recommendations') },
+  ].filter(s => s.content.trim());
+
+  const sectionsHTML = sections.map(s => `
+    <div class="rpt-section">
+      <div class="rpt-section-title">
+        <div class="rpt-section-num">${s.num}</div>
+        ${s.icon} ${s.title}
+      </div>
+      <div class="rpt-section-body">${s.content}</div>
+    </div>
+  `).join('');
+
+  const sigSupervisor = supervisorName ? `
+    <div class="rpt-sig">
+      <div class="sig-title">المشرف التربوي</div>
+      <div class="sig-name">${supervisorName}</div>
+      <div class="sig-stamp">التوقيع / الختم</div>
+    </div>
+  ` : '';
+
+  const reportHTML = `
+    <div class="report-page" id="report-content">
+      <div class="rpt-header">
+        <div class="rpt-ministry">وزارة التعليم | إدارة التعليم</div>
+        <div class="rpt-logo-row">
+          <div class="rpt-school-emblem">🏫</div>
+          <div class="rpt-school-info">
+            <h1>${school}</h1>
+            <p>التقرير الأسبوعي لشؤون الطلاب</p>
+            <p>${semester}${reportNum ? ' | ' + reportNum : ''}</p>
+          </div>
+          <div class="rpt-school-emblem" style="background: linear-gradient(135deg,var(--accent),var(--accent-light));">🇸🇦</div>
         </div>
-    `;
+        <div class="rpt-meta">
+          <div class="rpt-meta-item">
+            <label>من</label>
+            <span>${dateFrom}</span>
+          </div>
+          <div class="rpt-meta-item">
+            <label>إلى</label>
+            <span>${dateTo}</span>
+          </div>
+          <div class="rpt-meta-item">
+            <label>تاريخ التقرير</label>
+            <span>${reportDate}</span>
+          </div>
+          ${hijriDate ? `<div class="rpt-meta-item"><label>الهجري</label><span style="font-size:12px;">${hijriDate}</span></div>` : ''}
+        </div>
+      </div>
+
+      <div class="rpt-stats">
+        <div class="rpt-stat">
+          <div class="num">${statTotal}</div>
+          <div class="lbl">إجمالي الطلاب</div>
+        </div>
+        <div class="rpt-stat">
+          <div class="num" style="color:#b86a00;">${statDelay}</div>
+          <div class="lbl">حالات تأخر</div>
+        </div>
+        <div class="rpt-stat">
+          <div class="num" style="color:#b92c2c;">${statAbsent}</div>
+          <div class="lbl">حالات غياب</div>
+        </div>
+        <div class="rpt-stat">
+          <div class="num" style="color:#1d7a4f;">${statHonor}</div>
+          <div class="lbl">متفوقون مكرّمون</div>
+        </div>
+      </div>
+
+      ${sectionsHTML || '<div class="rpt-section-body" style="text-align:center;color:var(--text-muted);">لم يتم إدخال أي بيانات</div>'}
+
+      <div class="rpt-signatures">
+        <div class="rpt-sig">
+          <div class="sig-title">وكيل المدرسة لشؤون الطلاب</div>
+          <div class="sig-name">${deputyName}</div>
+          <div class="sig-stamp">التوقيع / الختم</div>
+        </div>
+        ${sigSupervisor}
+        <div class="rpt-sig">
+          <div class="sig-title">مدير المدرسة</div>
+          <div class="sig-name">${principalName}</div>
+          <div class="sig-stamp">التوقيع / الختم</div>
+        </div>
+      </div>
+
+      <div class="rpt-footer">
+        تم إعداد هذا التقرير بواسطة منصة التقارير الأسبوعية الإلكترونية | ${school} | ${reportDate}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('report-preview').innerHTML = reportHTML;
+  switchTab('preview');
+  toast('تم إنشاء التقرير بنجاح', 'success');
 }
 
-function downloadPDF(){
-    const element = document.getElementById("output");
-    html2pdf().from(element).save("التقرير_الأسبوعي.pdf");
+function downloadPDF() {
+  const el = document.getElementById('report-content');
+  if (!el) { generateReport(); return; }
+
+  const school = g('school_name') || 'المدرسة';
+  const dateFrom = g('date_from') || 'التقرير';
+
+  const opt = {
+    margin: [10, 10, 10, 10],
+    filename: `التقرير_الأسبوعي_${school}_${dateFrom}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, rtl: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  toast('جارٍ تحضير ملف PDF...', '');
+  html2pdf().set(opt).from(el).save().then(() => {
+    toast('تم تحميل التقرير بنجاح', 'success');
+  });
 }
+
+function clearForm() {
+  if (!confirm('هل أنت متأكد من مسح جميع البيانات؟')) return;
+  ['school_name','report_num','delay','absence','cases','honor','counselor','activities','recommendations',
+   'stat_total','stat_delay','stat_absent','stat_honor'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('report_date').value = todayStr;
+  toast('تم مسح البيانات', '');
+}
+
+function saveData() {
+  const data = {};
+  ['school_name','report_num','semester','date_from','date_to','report_date',
+   'delay','absence','cases','honor','counselor','activities','recommendations',
+   'stat_total','stat_delay','stat_absent','stat_honor','deputy_name','principal_name','supervisor_name'
+  ].forEach(id => { data[id] = g(id); });
+  try {
+    localStorage.setItem('weekly_report', JSON.stringify(data));
+    toast('تم الحفظ المؤقت بنجاح', 'success');
+  } catch(e) { toast('تعذر الحفظ', 'error'); }
+}
+
+// Load saved data
+try {
+  const saved = localStorage.getItem('weekly_report');
+  if (saved) {
+    const data = JSON.parse(saved);
+    Object.entries(data).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el && val) el.value = val;
+    });
+  }
+} catch(e) {}
 </script>
-
 </body>
 </html>
