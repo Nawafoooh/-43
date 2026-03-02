@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>منصة التقارير الأسبوعية - شؤون الطلاب</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root {
     --primary: #1a3a5c;
@@ -951,22 +951,48 @@ function generateReport() {
 
 function downloadPDF() {
   const el = document.getElementById('report-content');
-  if (!el) { generateReport(); return; }
+  if (!el) { generateReport(); setTimeout(downloadPDF, 600); return; }
 
   const school = g('school_name') || 'المدرسة';
   const dateFrom = g('date_from') || 'التقرير';
 
-  const opt = {
-    margin: [10, 10, 10, 10],
-    filename: `التقرير_الأسبوعي_${school}_${dateFrom}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, rtl: true },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-
   toast('جارٍ تحضير ملف PDF...', '');
-  html2pdf().set(opt).from(el).save().then(() => {
-    toast('تم تحميل التقرير بنجاح', 'success');
+
+  // Force embed the Arabic Google Font as a style inside the cloned element
+  // html2canvas captures rendered pixels, so we need the font loaded first
+  document.fonts.ready.then(() => {
+    const opt = {
+      margin: [8, 8, 8, 8],
+      filename: `التقرير_الأسبوعي_${school}_${dateFrom}.pdf`,
+      image: { type: 'jpeg', quality: 1.0 },
+      html2canvas: {
+        scale: 3,
+        useCORS: true,
+        allowTaint: true,
+        rtl: true,
+        letterRendering: true,
+        foreignObjectRendering: false,
+        onclone: function(clonedDoc) {
+          // Inject font-face directly into cloned document to ensure Arabic renders
+          const style = clonedDoc.createElement('style');
+          style.innerHTML = `
+            @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
+            * { font-family: 'Cairo', 'Arial Unicode MS', 'Tahoma', sans-serif !important; }
+          `;
+          clonedDoc.head.appendChild(style);
+
+          // Wait a tick for style to apply
+          return new Promise(resolve => setTimeout(resolve, 500));
+        }
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(el).save().then(() => {
+      toast('تم تحميل التقرير بنجاح', 'success');
+    }).catch(() => {
+      toast('حدث خطأ أثناء التحميل', 'error');
+    });
   });
 }
 
