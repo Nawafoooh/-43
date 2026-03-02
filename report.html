@@ -734,11 +734,11 @@
         </div>
         <div class="date-row">
           <div class="form-field">
-            <label>-</label>
+            <label>اسم وكيل شؤون الطلاب</label>
             <input type="text" id="deputy_name" placeholder="الاسم الكامل" value="نواف الصبحي">
           </div>
           <div class="form-field">
-            <label>-</label>
+            <label>اسم مدير المدرسة</label>
             <input type="text" id="principal_name" placeholder="الاسم الكامل" value="خالد المطيري">
           </div>
           <div class="form-field">
@@ -836,8 +836,8 @@ function generateReport() {
   const dateTo = formatDate(g('date_to'));
   const reportDate = formatDate(g('report_date'));
   const hijriDate = formatDateHijri(g('report_date'));
-  const deputyName = g('deputy_name') || '-';
-  const principalName = g('principal_name') || '-';
+  const deputyName = g('deputy_name') || 'وكيل شؤون الطلاب';
+  const principalName = g('principal_name') || 'مدير المدرسة';
   const supervisorName = g('supervisor_name');
 
   const statTotal = g('stat_total') || '—';
@@ -926,15 +926,15 @@ function generateReport() {
 
       <div class="rpt-signatures">
         <div class="rpt-sig">
-          <div class="sig-title">-</div>
+          <div class="sig-title">وكيل المدرسة لشؤون الطلاب</div>
           <div class="sig-name">${deputyName}</div>
-          <div class="sig-stamp">التوقيع / </div>
+          <div class="sig-stamp">التوقيع / الختم</div>
         </div>
         ${sigSupervisor}
         <div class="rpt-sig">
-          <div class="sig-title">-</div>
+          <div class="sig-title">مدير المدرسة</div>
           <div class="sig-name">${principalName}</div>
-          <div class="sig-stamp">التوقيع / </div>
+          <div class="sig-stamp">التوقيع / الختم</div>
         </div>
       </div>
 
