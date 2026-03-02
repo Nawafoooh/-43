@@ -949,51 +949,210 @@ function generateReport() {
   toast('تم إنشاء التقرير بنجاح', 'success');
 }
 
+// ─────────────────────────────────────────────
+// PDF DOWNLOAD — builds a fully self-contained
+// div with INLINE styles + system Arabic fonts,
+// then screenshots it via html2canvas + jsPDF.
+// No external fonts needed = no garbled text.
+// ─────────────────────────────────────────────
 function downloadPDF() {
-  const el = document.getElementById('report-content');
-  if (!el) { generateReport(); setTimeout(downloadPDF, 600); return; }
+  const school    = g('school_name') || 'المدرسة';
+  const dateFrom  = g('date_from')   || 'التقرير';
+  const semester  = g('semester');
+  const reportNum = g('report_num');
+  const df        = formatDate(g('date_from'));
+  const dt        = formatDate(g('date_to'));
+  const rd        = formatDate(g('report_date'));
+  const hd        = formatDateHijri(g('report_date'));
+  const deputyName    = g('deputy_name')    || 'وكيل شؤون الطلاب';
+  const principalName = g('principal_name') || 'مدير المدرسة';
+  const supervisorName = g('supervisor_name');
+  const statTotal  = g('stat_total')  || '—';
+  const statDelay  = g('stat_delay')  || '—';
+  const statAbsent = g('stat_absent') || '—';
+  const statHonor  = g('stat_honor')  || '—';
 
-  const school = g('school_name') || 'المدرسة';
-  const dateFrom = g('date_from') || 'التقرير';
+  // Shared inline font stack — system fonts only, all support Arabic
+  const F = "font-family:Tahoma,'Arial Unicode MS',Arial,sans-serif;";
+  const C = "color:#1a3a5c;";
 
+  const sectionData = [
+    { num:1, title:'أولاً: متابعة التأخير',                       content: g('delay') },
+    { num:2, title:'ثانياً: متابعة الغياب',                       content: g('absence') },
+    { num:3, title:'ثالثاً: دراسة الحالات (3 أيام / 5 أيام)',    content: g('cases') },
+    { num:4, title:'رابعاً: تكريم المتفوقين',                     content: g('honor') },
+    { num:5, title:'خامساً: متابعة المرشد الطلابي',               content: g('counselor') },
+    { num:6, title:'سادساً: الأنشطة المدرسية',                    content: g('activities') },
+    { num:7, title:'سابعاً: التوصيات والملاحظات',                  content: g('recommendations') },
+  ].filter(s => s.content.trim());
+
+  const sectHTML = sectionData.map(s => `
+    <div style="margin-bottom:16px;page-break-inside:avoid;">
+      <div style="${F}background:#1a3a5c;color:white;padding:8px 14px;border-radius:6px;
+                   font-size:14px;font-weight:bold;margin-bottom:8px;direction:rtl;text-align:right;">
+        ${s.title}
+      </div>
+      <div style="${F}${C}background:#f7f9fc;border:1px solid #d0dae6;border-radius:6px;
+                   padding:12px 16px;font-size:13px;line-height:1.9;direction:rtl;
+                   text-align:right;white-space:pre-wrap;">${s.content}</div>
+    </div>`).join('');
+
+  const sigSupHTML = supervisorName ? `
+    <div style="text-align:center;flex:1;">
+      <div style="${F}font-size:11px;font-weight:bold;color:#5a6a7a;margin-bottom:6px;">المشرف التربوي</div>
+      <div style="${F}${C}font-size:15px;font-weight:bold;border-bottom:2px dashed #d0dae6;padding-bottom:28px;margin-bottom:4px;">${supervisorName}</div>
+      <div style="${F}font-size:11px;color:#5a6a7a;">التوقيع / الختم</div>
+    </div>` : '';
+
+  const pdfHTML = `
+  <div id="pdf-render-target" style="
+    width:794px;
+    background:white;
+    padding:40px 48px 32px;
+    direction:rtl;
+    ${F}
+    box-sizing:border-box;
+  ">
+    <!-- TOP BORDER -->
+    <div style="height:6px;background:linear-gradient(90deg,#1a3a5c,#c8942a);border-radius:4px;margin-bottom:24px;"></div>
+
+    <!-- MINISTRY LINE -->
+    <div style="${F}text-align:center;font-size:12px;color:#5a6a7a;margin-bottom:10px;">
+      وزارة التعليم | إدارة التعليم
+    </div>
+
+    <!-- SCHOOL NAME -->
+    <div style="${F}text-align:center;font-size:22px;font-weight:900;${C}margin-bottom:4px;">${school}</div>
+    <div style="${F}text-align:center;font-size:14px;color:#5a6a7a;margin-bottom:4px;">التقرير الأسبوعي لشؤون الطلاب</div>
+    <div style="${F}text-align:center;font-size:13px;color:#5a6a7a;margin-bottom:18px;">
+      ${semester}${reportNum ? ' | ' + reportNum : ''}
+    </div>
+
+    <!-- META ROW -->
+    <div style="display:flex;justify-content:space-between;background:#f7f9fc;
+                border:1px solid #d0dae6;border-radius:10px;padding:12px 20px;margin-bottom:22px;">
+      <div style="text-align:center;">
+        <div style="${F}font-size:10px;font-weight:bold;color:#5a6a7a;text-transform:uppercase;">من</div>
+        <div style="${F}font-size:13px;font-weight:bold;${C}">${df}</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="${F}font-size:10px;font-weight:bold;color:#5a6a7a;">إلى</div>
+        <div style="${F}font-size:13px;font-weight:bold;${C}">${dt}</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="${F}font-size:10px;font-weight:bold;color:#5a6a7a;">تاريخ التقرير</div>
+        <div style="${F}font-size:13px;font-weight:bold;${C}">${rd}</div>
+      </div>
+      ${hd ? `<div style="text-align:center;">
+        <div style="${F}font-size:10px;font-weight:bold;color:#5a6a7a;">الهجري</div>
+        <div style="${F}font-size:11px;font-weight:bold;${C}">${hd}</div>
+      </div>` : ''}
+    </div>
+
+    <!-- STATS -->
+    <div style="display:flex;gap:12px;margin-bottom:22px;">
+      <div style="flex:1;text-align:center;background:#f7f9fc;border:1px solid #d0dae6;border-radius:10px;padding:12px 8px;">
+        <div style="${F}font-size:26px;font-weight:900;${C}">${statTotal}</div>
+        <div style="${F}font-size:11px;color:#5a6a7a;">إجمالي الطلاب</div>
+      </div>
+      <div style="flex:1;text-align:center;background:#f7f9fc;border:1px solid #d0dae6;border-radius:10px;padding:12px 8px;">
+        <div style="${F}font-size:26px;font-weight:900;color:#b86a00;">${statDelay}</div>
+        <div style="${F}font-size:11px;color:#5a6a7a;">حالات تأخر</div>
+      </div>
+      <div style="flex:1;text-align:center;background:#f7f9fc;border:1px solid #d0dae6;border-radius:10px;padding:12px 8px;">
+        <div style="${F}font-size:26px;font-weight:900;color:#b92c2c;">${statAbsent}</div>
+        <div style="${F}font-size:11px;color:#5a6a7a;">حالات غياب</div>
+      </div>
+      <div style="flex:1;text-align:center;background:#f7f9fc;border:1px solid #d0dae6;border-radius:10px;padding:12px 8px;">
+        <div style="${F}font-size:26px;font-weight:900;color:#1d7a4f;">${statHonor}</div>
+        <div style="${F}font-size:11px;color:#5a6a7a;">متفوقون مكرّمون</div>
+      </div>
+    </div>
+
+    <!-- SECTIONS -->
+    ${sectHTML || `<div style="${F}text-align:center;color:#5a6a7a;padding:20px;">لم يتم إدخال أي بيانات</div>`}
+
+    <!-- SIGNATURES -->
+    <div style="margin-top:32px;padding-top:20px;border-top:2px solid #d0dae6;">
+      <div style="display:flex;gap:30px;justify-content:space-around;text-align:center;">
+        <div style="flex:1;">
+          <div style="${F}font-size:11px;font-weight:bold;color:#5a6a7a;margin-bottom:6px;">وكيل المدرسة لشؤون الطلاب</div>
+          <div style="${F}${C}font-size:15px;font-weight:bold;border-bottom:2px dashed #d0dae6;padding-bottom:28px;margin-bottom:4px;">${deputyName}</div>
+          <div style="${F}font-size:11px;color:#5a6a7a;">التوقيع / الختم</div>
+        </div>
+        ${sigSupHTML}
+        <div style="flex:1;">
+          <div style="${F}font-size:11px;font-weight:bold;color:#5a6a7a;margin-bottom:6px;">مدير المدرسة</div>
+          <div style="${F}${C}font-size:15px;font-weight:bold;border-bottom:2px dashed #d0dae6;padding-bottom:28px;margin-bottom:4px;">${principalName}</div>
+          <div style="${F}font-size:11px;color:#5a6a7a;">التوقيع / الختم</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div style="${F}margin-top:24px;text-align:center;font-size:10px;color:#5a6a7a;
+                 border-top:1px solid #d0dae6;padding-top:10px;">
+      تم إعداد هذا التقرير بواسطة منصة التقارير الأسبوعية الإلكترونية | ${school} | ${rd}
+    </div>
+
+    <!-- BOTTOM BORDER -->
+    <div style="height:4px;background:linear-gradient(90deg,#c8942a,#1a3a5c);border-radius:4px;margin-top:18px;"></div>
+  </div>`;
+
+  // Inject hidden render target
+  let wrapper = document.getElementById('pdf-wrapper');
+  if (wrapper) wrapper.remove();
+  wrapper = document.createElement('div');
+  wrapper.id = 'pdf-wrapper';
+  wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;z-index:-1;';
+  wrapper.innerHTML = pdfHTML;
+  document.body.appendChild(wrapper);
+
+  const target = document.getElementById('pdf-render-target');
   toast('جارٍ تحضير ملف PDF...', '');
 
-  // Force embed the Arabic Google Font as a style inside the cloned element
-  // html2canvas captures rendered pixels, so we need the font loaded first
-  document.fonts.ready.then(() => {
-    const opt = {
-      margin: [8, 8, 8, 8],
-      filename: `التقرير_الأسبوعي_${school}_${dateFrom}.pdf`,
-      image: { type: 'jpeg', quality: 1.0 },
-      html2canvas: {
-        scale: 3,
+  // Use html2canvas then jsPDF directly — no html2pdf wrapper
+  const script1 = document.createElement('script');
+  script1.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  script1.onload = () => {
+    const script2 = document.createElement('script');
+    script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script2.onload = () => {
+      html2canvas(target, {
+        scale: 2.5,
         useCORS: true,
         allowTaint: true,
-        rtl: true,
-        letterRendering: true,
-        foreignObjectRendering: false,
-        onclone: function(clonedDoc) {
-          // Inject font-face directly into cloned document to ensure Arabic renders
-          const style = clonedDoc.createElement('style');
-          style.innerHTML = `
-            @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap');
-            * { font-family: 'Cairo', 'Arial Unicode MS', 'Tahoma', sans-serif !important; }
-          `;
-          clonedDoc.head.appendChild(style);
+        backgroundColor: '#ffffff',
+        logging: false
+      }).then(canvas => {
+        const imgData = canvas.toDataURL('image/jpeg', 0.97);
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        const pdfW = pdf.internal.pageSize.getWidth();
+        const pdfH = pdf.internal.pageSize.getHeight();
+        const ratio = canvas.width / canvas.height;
+        const imgH = pdfW / ratio;
 
-          // Wait a tick for style to apply
-          return new Promise(resolve => setTimeout(resolve, 500));
+        if (imgH <= pdfH) {
+          pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, imgH);
+        } else {
+          // Multi-page support
+          let yOffset = 0;
+          while (yOffset < imgH) {
+            if (yOffset > 0) pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', 0, -yOffset, pdfW, imgH);
+            yOffset += pdfH;
+          }
         }
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
 
-    html2pdf().set(opt).from(el).save().then(() => {
-      toast('تم تحميل التقرير بنجاح', 'success');
-    }).catch(() => {
-      toast('حدث خطأ أثناء التحميل', 'error');
-    });
-  });
+        pdf.save(`التقرير_الأسبوعي_${school}_${dateFrom}.pdf`);
+        wrapper.remove();
+        toast('تم تحميل التقرير بنجاح', 'success');
+      });
+    };
+    document.head.appendChild(script2);
+  };
+  document.head.appendChild(script1);
 }
 
 function clearForm() {
