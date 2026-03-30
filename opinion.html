@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نافس – رأيكم يهمنا</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green:   #2ecc71;
+  --green2:  #27ae60;
+  --dark:    #0d1f13;
+  --ink:     #1a1a1a;
+  --muted:   #6b7c72;
+  --bg:      #f3faf5;
+  --border:  #d4ead9;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: "Cairo","Tajawal",sans-serif; background:var(--bg); color:var(--ink); overflow-x:hidden; }
+
+/* ── HERO ── */
+.hero {
+  position:relative; min-height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden; background:var(--dark);
+}
+.hero-bg {
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 30%, rgba(46,204,113,.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 70%, rgba(39,174,96,.12) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 50% 10%, rgba(46,204,113,.08) 0%, transparent 50%);
+  animation: meshShift 12s ease-in-out infinite alternate;
+}
+@keyframes meshShift { 0%{opacity:.8;transform:scale(1);} 100%{opacity:1;transform:scale(1.08);} }
+.hero-grid {
+  position:absolute; inset:0;
+  background-image: linear-gradient(rgba(46,204,113,.06) 1px,transparent 1px), linear-gradient(90deg,rgba(46,204,113,.06) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+.orb { position:absolute; border-radius:50%; filter:blur(60px); animation:float 8s ease-in-out infinite; }
+.orb-1 { width:320px;height:320px;background:rgba(46,204,113,.12);top:-80px;right:-80px;animation-delay:0s; }
+.orb-2 { width:200px;height:200px;background:rgba(39,174,96,.10);bottom:60px;left:10%;animation-delay:-3s; }
+.orb-3 { width:140px;height:140px;background:rgba(46,204,113,.08);top:40%;left:5%;animation-delay:-6s; }
+@keyframes float { 0%,100%{transform:translateY(0) scale(1);} 50%{transform:translateY(-30px) scale(1.05);} }
+
+.hero-content {
+  position:relative; z-index:2;
+  text-align:center; padding:40px 20px;
+  max-width:800px; width:100%;
+}
+
+.logo-badge {
+  display:inline-flex; align-items:center; gap:10px;
+  background:rgba(46,204,113,.12); border:1px solid rgba(46,204,113,.3);
+  border-radius:99px; padding:8px 20px; margin-bottom:36px;
+  animation:fadeDown .7s ease both;
+}
+.logo-dot { width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(46,204,113,.5);} 50%{box-shadow:0 0 0 8px rgba(46,204,113,0);} }
+.logo-badge span { color:var(--green);font-size:.85em;font-weight:700;letter-spacing:.05em; }
+
+.hero-title {
+  font-size:clamp(3.2em,10vw,7em); font-weight:900; color:#fff;
+  line-height:1; margin-bottom:16px; animation:fadeDown .7s .1s ease both;
+}
+.hero-title em {
+  font-style:normal;
+  background:linear-gradient(135deg,var(--green),#a8f0c0);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.hero-sub {
+  font-size:clamp(.97em,2.5vw,1.25em); color:rgba(255,255,255,.65);
+  font-weight:400; line-height:1.7; margin-bottom:42px; animation:fadeDown .7s .2s ease both;
+}
+
+.school-strip {
+  display:inline-flex; flex-wrap:wrap; justify-content:center; gap:14px;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  border-radius:14px; padding:16px 26px; margin-bottom:50px;
+  font-size:.83em; color:rgba(255,255,255,.65); animation:fadeDown .7s .3s ease both;
+}
+.school-strip strong { color:var(--green); }
+
+.stats-row {
+  display:flex; justify-content:center; gap:18px; flex-wrap:wrap;
+  margin-bottom:52px; animation:fadeDown .7s .35s ease both;
+}
+.stat-pill {
+  background:rgba(255,255,255,.06); border:1px solid rgba(46,204,113,.2);
+  border-radius:14px; padding:16px 22px; text-align:center; min-width:120px;
+}
+.stat-pill .num { font-size:1.8em;font-weight:800;color:var(--green);display:block; }
+.stat-pill .lbl { font-size:.74em;color:rgba(255,255,255,.5);display:block;margin-top:2px; }
+
+.hero-cta {
+  display:flex; justify-content:center; gap:14px; flex-wrap:wrap;
+  animation:fadeDown .7s .42s ease both;
+}
+.btn-primary {
+  display:inline-flex; align-items:center; gap:8px;
+  background:linear-gradient(135deg,var(--green),var(--green2));
+  color:#fff; padding:17px 36px; border-radius:14px;
+  font-family:inherit; font-size:1.05em; font-weight:700;
+  text-decoration:none; border:none; cursor:pointer;
+  box-shadow:0 8px 30px rgba(46,204,113,.35); transition:all .3s;
+}
+.btn-primary:hover { transform:translateY(-3px); box-shadow:0 14px 40px rgba(46,204,113,.45); }
+.btn-share {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(255,255,255,.08); border:1.5px solid rgba(255,255,255,.18);
+  color:rgba(255,255,255,.85); padding:17px 28px; border-radius:14px;
+  font-family:inherit; font-size:1.05em; font-weight:600; cursor:pointer; transition:all .3s;
+}
+.btn-share:hover { background:rgba(255,255,255,.14); transform:translateY(-3px); }
+
+.scroll-hint {
+  position:absolute; bottom:32px; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  color:rgba(255,255,255,.3); font-size:.72em; animation:fadeDown .7s .6s ease both;
+}
+.scroll-arrow {
+  width:26px;height:26px;
+  border-left:2px solid rgba(255,255,255,.2); border-bottom:2px solid rgba(255,255,255,.2);
+  transform:rotate(-45deg); animation:bounce 2s infinite;
+}
+@keyframes bounce { 0%,100%{transform:rotate(-45deg) translateY(0);} 50%{transform:rotate(-45deg) translateY(6px);} }
+@keyframes fadeDown { from{opacity:0;transform:translateY(-18px);} to{opacity:1;transform:translateY(0);} }
+
+/* ── SHARE OVERLAY ── */
+.share-overlay {
+  display:none; position:fixed; inset:0; z-index:9000;
+  background:rgba(0,0,0,.6); backdrop-filter:blur(6px);
+  align-items:center; justify-content:center; padding:20px;
+}
+.share-overlay.open { display:flex; animation:fadeIn .25s ease; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.share-panel {
+  background:#fff; border-radius:24px; padding:36px;
+  max-width:460px; width:100%;
+  box-shadow:0 30px 80px rgba(0,0,0,.3);
+  position:relative; animation:slideUp .3s ease;
+}
+@keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+.share-close {
+  position:absolute; top:16px; left:16px;
+  background:#f0f0f0; border:none; border-radius:50%;
+  width:32px;height:32px; font-size:1em; cursor:pointer;
+  display:flex;align-items:center;justify-content:center; transition:background .2s;
+}
+.share-close:hover { background:#e0e0e0; }
+.share-panel h3 { font-size:1.3em;font-weight:800;color:var(--dark);margin-bottom:6px;text-align:center; }
+.share-panel p  { color:var(--muted);font-size:.9em;text-align:center;margin-bottom:24px;line-height:1.6; }
+.share-link-box { display:flex;gap:8px;margin-bottom:22px; }
+.share-link-box input {
+  flex:1; padding:12px 14px; border:2px solid var(--border);
+  border-radius:10px; font-family:inherit; font-size:.85em;
+  color:var(--muted); background:#f8fdfb; direction:ltr; text-align:left;
+}
+.copy-btn {
+  background:linear-gradient(135deg,var(--green),var(--green2));
+  color:#fff; border:none; border-radius:10px; padding:0 18px;
+  font-family:inherit; font-weight:700; font-size:.85em; cursor:pointer; transition:all .2s;
+}
+.copy-btn:hover { transform:scale(1.04); }
+.share-channels { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.channel-btn {
+  display:flex; flex-direction:column; align-items:center; gap:7px;
+  padding:14px 8px; border-radius:13px; border:1.5px solid var(--border);
+  background:#fafafa; cursor:pointer; transition:all .22s;
+  font-family:inherit; font-size:.78em; font-weight:600; color:var(--muted);
+  text-decoration:none;
+}
+.channel-btn .ci { font-size:1.6em; }
+.channel-btn:hover { border-color:var(--green);background:#f0fdf5;color:var(--green2);transform:translateY(-2px); }
+
+/* ── SURVEY SECTION ── */
+.survey-section { padding:80px 20px; max-width:780px; margin:0 auto; }
+.section-label {
+  display:inline-flex; align-items:center; gap:8px;
+  background:#e8f8ef; border:1px solid rgba(46,204,113,.25);
+  border-radius:99px; padding:6px 18px;
+  font-size:.82em; font-weight:700; color:var(--green2); margin-bottom:14px;
+}
+.section-title { font-size:clamp(1.6em,4vw,2.4em);font-weight:800;color:var(--dark);line-height:1.3;margin-bottom:10px; }
+.section-desc  { color:var(--muted);font-size:.97em;line-height:1.8;margin-bottom:46px; }
+
+.fcard {
+  background:#fff; border-radius:20px; padding:32px; margin-bottom:20px;
+  box-shadow:0 2px 20px rgba(46,204,113,.08); border-top:4px solid var(--green);
+}
+.fcard-title { font-size:1.05em;font-weight:700;color:var(--green2);margin-bottom:24px;display:flex;align-items:center;gap:8px; }
+
+.fg { margin-bottom:18px; }
+.fg label { display:block;margin-bottom:7px;font-weight:600;font-size:.92em;color:#444; }
+.req { color:#e74c3c;margin-right:3px; }
+.fg input,.fg select,.fg textarea {
+  width:100%; padding:13px 15px; border:2px solid var(--border);
+  border-radius:11px; font-family:inherit; font-size:.95em;
+  background:#f8fdfb; color:var(--ink); transition:border-color .22s,box-shadow .22s;
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus {
+  outline:none; border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(46,204,113,.12); background:#fff;
+}
+
+.prog-wrap { background:#e0eeea;border-radius:99px;height:5px;margin:0 0 28px;overflow:hidden; }
+.prog-fill  { height:100%;background:linear-gradient(90deg,var(--green),var(--green2));border-radius:99px;width:0%;transition:width .4s ease; }
+
+.scale-head { display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px;text-align:center; }
+.scale-head span { font-size:.7em;color:var(--muted);font-weight:600;line-height:1.3; }
+
+.qblock { margin-bottom:28px;padding-bottom:24px;border-bottom:1px dashed #dceee3; }
+.qblock:last-child { border-bottom:none;margin-bottom:0;padding-bottom:0; }
+.qtext { font-size:.97em;font-weight:700;color:var(--dark);margin-bottom:14px;line-height:1.65;display:flex;align-items:flex-start;gap:10px; }
+.qnum { flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;font-size:.8em;font-weight:800; }
+
+.likert { display:grid;grid-template-columns:repeat(5,1fr);gap:6px; }
+.lopt input[type="radio"] { display:none; }
+.lopt label {
+  display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:10px 4px;
+  border-radius:12px;border:2px solid #e0eeea;background:#f8fdfb;
+  font-size:.72em;font-weight:600;color:#888;line-height:1.35;min-height:68px;
+  justify-content:center;text-align:center;transition:all .2s;
+}
+.lopt label .dot { width:18px;height:18px;border-radius:50%;border:2px solid #c0d8c5;background:#fff;transition:all .2s;flex-shrink:0; }
+.lopt input:checked + label { border-color:var(--green);background:linear-gradient(135deg,#f0fdf5,#e4f7ea);color:#1a5c2e; }
+.lopt input:checked + label .dot { background:var(--green);border-color:var(--green2);box-shadow:0 0 0 3px rgba(46,204,113,.2); }
+.lopt:hover label { border-color:var(--green);background:#f0fdf5; }
+
+.word-hint { font-size:.78em;color:#aaa;margin-top:6px;text-align:left; }
+.word-hint span { color:var(--green);font-weight:700; }
+
+.submit-btn {
+  width:100%; padding:18px;
+  background:linear-gradient(135deg,var(--green),var(--green2));
+  color:#fff; border:none; border-radius:13px; font-family:inherit;
+  font-size:1.1em; font-weight:700; cursor:pointer; transition:all .3s;
+  box-shadow:0 6px 20px rgba(46,204,113,.3); margin-top:8px;
+}
+.submit-btn:hover { transform:translateY(-2px);box-shadow:0 12px 30px rgba(46,204,113,.4); }
+
+.success-wrap {
+  display:none; text-align:center; padding:60px 30px;
+  background:#fff; border-radius:24px;
+  box-shadow:0 4px 30px rgba(46,204,113,.12); border-top:5px solid var(--green);
+}
+.success-icon { font-size:4em;margin-bottom:20px;animation:bounceIn .6s ease; }
+@keyframes bounceIn { 0%{transform:scale(.4);opacity:0} 70%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }
+.success-wrap h2 { color:var(--green2);font-size:1.8em;margin-bottom:12px; }
+.success-wrap p  { color:var(--muted);line-height:1.8;font-size:.97em; }
+.success-share-btn {
+  display:inline-flex; align-items:center; gap:8px; margin-top:28px;
+  background:linear-gradient(135deg,var(--green),var(--green2));
+  color:#fff; padding:15px 30px; border-radius:12px;
+  font-family:inherit; font-size:1em; font-weight:700; border:none; cursor:pointer;
+  box-shadow:0 5px 18px rgba(46,204,113,.3); transition:all .3s;
+}
+.success-share-btn:hover { transform:translateY(-2px); }
+
+.toast {
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:var(--dark); color:#fff; padding:12px 24px; border-radius:99px;
+  font-size:.88em; font-weight:600; z-index:9999;
+  transition:transform .3s ease; pointer-events:none; white-space:nowrap;
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+.page-footer { text-align:center;padding:40px 20px;color:#aaa;font-size:.8em;border-top:1px solid #e5f0e8; }
+
+@media(max-width:600px) {
+  .hero-title { font-size:3em; }
+  .fcard { padding:20px 16px; }
+  .lopt label { font-size:.64em;min-height:60px; }
+  .hero-cta { flex-direction:column;align-items:center; }
+  .btn-primary,.btn-share { width:100%;justify-content:center; }
+  .share-channels { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══ -->
+<section class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="hero-content">
+    <div class="logo-badge">
+      <span class="logo-dot"></span>
+      <span>منصة نافس التعليمية</span>
+    </div>
+
+    <h1 class="hero-title"><em>رأيكم</em><br>يهمنا</h1>
+
+    <p class="hero-sub">
+      شاركونا تجربتكم مع منصة <strong style="color:rgba(255,255,255,.9)">نافس</strong> لنطوّرها<br>
+      وتكون الأفضل لبناتكم الطالبات
+    </p>
+
+    <div class="school-strip">
+      🇸🇦 <strong>وزارة التعليم</strong> &nbsp;|&nbsp;
+      📍 قطاعي أحد والعواليّ &nbsp;|&nbsp;
+      🏫 متوسطة الثالثة والأربعون &nbsp;|&nbsp;
+      👩‍💼 <strong>مديرة المدرسة: منى الرشيدي</strong>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-pill">
+        <span class="num" id="hStudents">—</span>
+        <span class="lbl">طالبة مسجلة</span>
+      </div>
+      <div class="stat-pill">
+        <span class="num" id="hQuestions">—</span>
+        <span class="lbl">سؤال في البنك</span>
+      </div>
+      <div class="stat-pill">
+        <span class="num" id="hPoints">—</span>
+        <span class="lbl">نقطة محققة</span>
+      </div>
+    </div>
+
+    <div class="hero-cta">
+      <a href="#survey" class="btn-primary">📝 أبدِ رأيك الآن</a>
+      <button class="btn-share" onclick="openShare()">🔗 مشاركة الاستبانة</button>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>اسحب للأسفل</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ══ SHARE OVERLAY ══ -->
+<div class="share-overlay" id="shareOverlay" onclick="closeBg(event)">
+  <div class="share-panel">
+    <button class="share-close" onclick="closeShare()">✕</button>
+    <h3>🔗 مشاركة الاستبانة</h3>
+    <p>شارك الرابط مع أولياء الأمور الآخرين<br>حتى تعمّ الفائدة</p>
+    <div class="share-link-box">
+      <input type="text" id="shareLinkInput" value="" readonly>
+      <button class="copy-btn" onclick="copyLink()">نسخ</button>
+    </div>
+    <div class="share-channels">
+      <a class="channel-btn" id="waLink" href="#" target="_blank" rel="noopener">
+        <span class="ci">💬</span>واتساب
+      </a>
+      <a class="channel-btn" id="twLink" href="#" target="_blank" rel="noopener">
+        <span class="ci">🐦</span>تويتر / X
+      </a>
+      <button class="channel-btn" onclick="copyLink()">
+        <span class="ci">📋</span>نسخ الرابط
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SURVEY SECTION ══ -->
+<section class="survey-section" id="survey">
+
+  <div class="section-label">📋 استبانة أولياء الأمور</div>
+  <h2 class="section-title">شاركونا تقييمكم<br>لمنصة نافس</h2>
+  <p class="section-desc">
+    إجاباتكم تُرسل مباشرة إلى المشرفة <strong>الأستاذة ريم العنزي</strong>
+    وتُسهم في تطوير المنصة. لا تستغرق الاستبانة أكثر من دقيقتين.
+  </p>
+
+  <form id="surveyForm">
+
+    <!-- بيانات -->
+    <div class="fcard">
+      <div class="fcard-title">👤 بيانات ولي الأمر</div>
+      <div class="fg">
+        <label>اسم ولي الأمر <span class="req">*</span></label>
+        <input type="text" id="parentName" placeholder="أدخل اسمك" required>
+      </div>
+      <div class="fg">
+        <label>اسم الطالبة <span class="req">*</span></label>
+        <input type="text" id="studentName" placeholder="اسم ابنتك" required>
+      </div>
+      <div class="fg">
+        <label>الصف الدراسي <span class="req">*</span></label>
+        <select id="studentGrade" required>
+          <option value="">اختر الصف</option>
+          <option value="1">الصف الأول المتوسط</option>
+          <option value="2">الصف الثاني المتوسط</option>
+          <option value="3">الصف الثالث المتوسط</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>رقم جوال ولي الأمر (اختياري)</label>
+        <input type="tel" id="parentPhone" placeholder="05xxxxxxxx" maxlength="10">
+      </div>
+    </div>
+
+    <!-- أسئلة -->
+    <div class="fcard">
+      <div class="fcard-title">📋 أسئلة الاستبانة</div>
+
+      <div class="scale-head">
+        <span>غير موافق<br>بشدة</span>
+        <span>غير<br>موافق</span>
+        <span>محايد</span>
+        <span>موافق</span>
+        <span>موافق<br>بشدة</span>
+      </div>
+      <div class="prog-wrap"><div class="prog-fill" id="progressBar"></div></div>
+
+      <!-- Q1 -->
+      <div class="qblock">
+        <div class="qtext"><span class="qnum">١</span>لاحظت تحسناً في مستوى ابنتي الدراسي منذ استخدامها منصة <strong>نافس</strong></div>
+        <div class="likert">
+          <div class="lopt"><input type="radio" name="q1" id="q1a" value="1" required><label for="q1a"><div class="dot"></div>غير موافق بشدة</label></div>
+          <div class="lopt"><input type="radio" name="q1" id="q1b" value="2"><label for="q1b"><div class="dot"></div>غير موافق</label></div>
+          <div class="lopt"><input type="radio" name="q1" id="q1c" value="3"><label for="q1c"><div class="dot"></div>محايد</label></div>
+          <div class="lopt"><input type="radio" name="q1" id="q1d" value="4"><label for="q1d"><div class="dot"></div>موافق</label></div>
+          <div class="lopt"><input type="radio" name="q1" id="q1e" value="5"><label for="q1e"><div class="dot"></div>موافق بشدة</label></div>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="qblock">
+        <div class="qtext"><span class="qnum">٢</span>المنصة سهلة الاستخدام وتستطيع ابنتي التعامل معها باستقلالية</div>
+        <div class="likert">
+          <div class="lopt"><input type="radio" name="q2" id="q2a" value="1" required><label for="q2a"><div class="dot"></div>غير موافق بشدة</label></div>
+          <div class="lopt"><input type="radio" name="q2" id="q2b" value="2"><label for="q2b"><div class="dot"></div>غير موافق</label></div>
+          <div class="lopt"><input type="radio" name="q2" id="q2c" value="3"><label for="q2c"><div class="dot"></div>محايد</label></div>
+          <div class="lopt"><input type="radio" name="q2" id="q2d" value="4"><label for="q2d"><div class="dot"></div>موافق</label></div>
+          <div class="lopt"><input type="radio" name="q2" id="q2e" value="5"><label for="q2e"><div class="dot"></div>موافق بشدة</label></div>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="qblock">
+        <div class="qtext"><span class="qnum">٣</span>أشعر أن المنصة آمنة وتحافظ على خصوصية بيانات ابنتي</div>
+        <div class="likert">
+          <div class="lopt"><input type="radio" name="q3" id="q3a" value="1" required><label for="q3a"><div class="dot"></div>غير موافق بشدة</label></div>
+          <div class="lopt"><input type="radio" name="q3" id="q3b" value="2"><label for="q3b"><div class="dot"></div>غير موافق</label></div>
+          <div class="lopt"><input type="radio" name="q3" id="q3c" value="3"><label for="q3c"><div class="dot"></div>محايد</label></div>
+          <div class="lopt"><input type="radio" name="q3" id="q3d" value="4"><label for="q3d"><div class="dot"></div>موافق</label></div>
+          <div class="lopt"><input type="radio" name="q3" id="q3e" value="5"><label for="q3e"><div class="dot"></div>موافق بشدة</label></div>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="qblock">
+        <div class="qtext"><span class="qnum">٤</span>أسلوب المنافسة والنقاط يحفّز ابنتي على الدراسة بشكل أكبر</div>
+        <div class="likert">
+          <div class="lopt"><input type="radio" name="q4" id="q4a" value="1" required><label for="q4a"><div class="dot"></div>غير موافق بشدة</label></div>
+          <div class="lopt"><input type="radio" name="q4" id="q4b" value="2"><label for="q4b"><div class="dot"></div>غير موافق</label></div>
+          <div class="lopt"><input type="radio" name="q4" id="q4c" value="3"><label for="q4c"><div class="dot"></div>محايد</label></div>
+          <div class="lopt"><input type="radio" name="q4" id="q4d" value="4"><label for="q4d"><div class="dot"></div>موافق</label></div>
+          <div class="lopt"><input type="radio" name="q4" id="q4e" value="5"><label for="q4e"><div class="dot"></div>موافق بشدة</label></div>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="qblock">
+        <div class="qtext"><span class="qnum">٥</span>الجدول الزمني للمسابقة الأسبوعية مناسب لجدول ابنتي اليومي</div>
+        <div class="likert">
+          <div class="lopt"><input type="radio" name="q5" id="q5a" value="1" required><label for="q5a"><div class="dot"></div>غير موافق بشدة</label></div>
+          <div class="lopt"><input type="radio" name="q5" id="q5b" value="2"><label for="q5b"><div class="dot"></div>غير موافق</label></div>
+          <div class="lopt"><input type="radio" name="q5" id="q5c" value="3"><label for="q5c"><div class="dot"></div>محايد</label></div>
+          <div class="lopt"><input type="radio" name="q5" id="q5d" value="4"><label for="q5d"><div class="dot"></div>موافق</label></div>
+          <div class="lopt"><input type="radio" name="q5" id="q5e" value="5"><label for="q5e"><div class="dot"></div>موافق بشدة</label></div>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="qblock">
+        <div class="qtext"><span class="qnum">٦</span>أنصح أولياء الأمور الآخرين بتشجيع بناتهم على المشاركة في نافس</div>
+        <div class="likert">
+          <div class="lopt"><input type="radio" name="q6" id="q6a" value="1" required><label for="q6a"><div class="dot"></div>غير موافق بشدة</label></div>
+          <div class="lopt"><input type="radio" name="q6" id="q6b" value="2"><label for="q6b"><div class="dot"></div>غير موافق</label></div>
+          <div class="lopt"><input type="radio" name="q6" id="q6c" value="3"><label for="q6c"><div class="dot"></div>محايد</label></div>
+          <div class="lopt"><input type="radio" name="q6" id="q6d" value="4"><label for="q6d"><div class="dot"></div>موافق</label></div>
+          <div class="lopt"><input type="radio" name="q6" id="q6e" value="5"><label for="q6e"><div class="dot"></div>موافق بشدة</label></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ملاحظات -->
+    <div class="fcard">
+      <div class="fcard-title">📝 ملاحظات ولي الأمر (اختياري)</div>
+      <div class="fg">
+        <label>هل لديك اقتراحات أو ملاحظات للمشرفة؟</label>
+        <textarea id="parentNotes" rows="5" placeholder="اكتب ملاحظاتك هنا... (حد أقصى 500 كلمة)" maxlength="4000"></textarea>
+        <div class="word-hint"><span id="wordCount">0</span> / 500 كلمة</div>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn">📤 إرسال الاستبانة</button>
+  </form>
+
+  <!-- success -->
+  <div class="success-wrap" id="successScreen">
+    <div class="success-icon">🎉</div>
+    <h2>شكراً جزيلاً!</h2>
+    <p>
+      تم إرسال استبانتك بنجاح إلى المشرفة <strong>الأستاذة ريم العنزي</strong>.<br><br>
+      مشاركتكم تُسهم في تطوير منصة <strong>نافس</strong> لتكون الأفضل.<br><br>
+      🌟 جزاكم الله خيراً على اهتمامكم.
+    </p>
+    <button class="success-share-btn" onclick="openShare()">🔗 شارك الاستبانة مع غيرك</button>
+  </div>
+
+</section>
+
+<div class="page-footer">Created by wyckoffnawaf &nbsp;|&nbsp; منصة نافس © 2025</div>
+<div class="toast" id="toast">تم النسخ!</div>
+
+<script type="module">
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyDX-CG9L4XaVPtqgexD0Da0owXEa0-I3YM",
+  authDomain:"nafis-girls-school.firebaseapp.com",
+  projectId:"nafis-girls-school",
+  storageBucket:"nafis-girls-school.firebasestorage.app",
+  messagingSenderId:"998478495565",
+  appId:"1:998478495565:web:67bb560b773ea1956ac104"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+/* stats */
+async function loadStats() {
+  try {
+    const snap = await getDocs(collection(db,'students'));
+    let pts=0; snap.forEach(d=>{ pts+=d.data().score||0; });
+    document.getElementById('hStudents').textContent  = snap.size;
+    document.getElementById('hPoints').textContent    = pts;
+    const qsnap = await getDocs(collection(db,'questions'));
+    document.getElementById('hQuestions').textContent = qsnap.size||'—';
+  } catch(e) {
+    ['hStudents','hQuestions','hPoints'].forEach(id=>document.getElementById(id).textContent='—');
+  }
+}
+loadStats();
+
+/* progress */
+const groups=['q1','q2','q3','q4','q5','q6'];
+function updateProgress() {
+  const done=groups.filter(g=>document.querySelector(`input[name="${g}"]:checked`)).length;
+  document.getElementById('progressBar').style.width=(done/groups.length*100)+'%';
+}
+document.querySelectorAll('input[type="radio"]').forEach(r=>r.addEventListener('change',updateProgress));
+
+/* word count */
+document.getElementById('parentNotes').addEventListener('input',function(){
+  const w=this.value.trim()?this.value.trim().split(/\s+/).filter(x=>x).length:0;
+  const el=document.getElementById('wordCount');
+  el.textContent=w; el.style.color=w>500?'#e74c3c':'#2ecc71';
+});
+
+/* submit */
+document.getElementById('surveyForm').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const parentName  = document.getElementById('parentName').value.trim();
+  const studentName = document.getElementById('studentName').value.trim();
+  const studentGrade= document.getElementById('studentGrade').value;
+  if(!parentName||!studentName||!studentGrade){alert('يرجى تعبئة جميع الحقول المطلوبة (*)');return;}
+  const missing=groups.filter(g=>!document.querySelector(`input[name="${g}"]:checked`));
+  if(missing.length){alert('يرجى الإجابة على جميع أسئلة الاستبانة');return;}
+  const notes=document.getElementById('parentNotes').value.trim();
+  const nw=notes?notes.split(/\s+/).filter(x=>x).length:0;
+  if(nw>500){alert('الملاحظات تتجاوز 500 كلمة');return;}
+  const answers={};
+  groups.forEach(g=>{answers[g]=parseInt(document.querySelector(`input[name="${g}"]:checked`).value);});
+  const avg=(Object.values(answers).reduce((a,b)=>a+b,0)/groups.length).toFixed(2);
+  try{
+    await addDoc(collection(db,'parentSurveys'),{
+      parentName,studentName,studentGrade,
+      parentPhone:document.getElementById('parentPhone').value.trim()||null,
+      answers,averageScore:parseFloat(avg),
+      notes:notes||null,submittedAt:new Date(),read:false
+    });
+    document.getElementById('surveyForm').style.display='none';
+    document.getElementById('successScreen').style.display='block';
+    window.scrollTo({top:document.getElementById('survey').offsetTop-20,behavior:'smooth'});
+  }catch(err){console.error(err);alert('حدث خطأ أثناء الإرسال. يرجى المحاولة مرة أخرى.');}
+});
+
+/* share */
+const PAGE_URL=window.location.href.split('#')[0];
+window.openShare=function(){
+  document.getElementById('shareLinkInput').value=PAGE_URL;
+  document.getElementById('waLink').href='https://wa.me/?text='+encodeURIComponent('📝 استبانة منصة نافس – رأيك يهمنا!\n'+PAGE_URL);
+  document.getElementById('twLink').href='https://twitter.com/intent/tweet?text='+encodeURIComponent('شاركونا رأيكم في منصة نافس التعليمية 📝')+'&url='+encodeURIComponent(PAGE_URL);
+  document.getElementById('shareOverlay').classList.add('open');
+};
+window.closeShare=function(){ document.getElementById('shareOverlay').classList.remove('open'); };
+window.closeBg=function(e){ if(e.target===document.getElementById('shareOverlay')) closeShare(); };
+window.copyLink=function(){
+  navigator.clipboard.writeText(PAGE_URL).then(()=>showToast('تم نسخ الرابط! 🎉'));
+};
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+</script>
+</body>
+</html>
