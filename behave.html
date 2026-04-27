@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نموذج التعهد السلوكي - متوسطة المنذر بن عمرو الأنصاري</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
+ 
+  :root {
+    --primary: #1a3557;
+    --primary-light: #1e4a7a;
+    --accent: #c8a84b;
+    --accent-light: #e8c96a;
+    --bg: #f4f1ec;
+    --surface: #ffffff;
+    --border: #c9c0b0;
+    --border-light: #e0d8cc;
+    --text: #1a1a2e;
+    --text-muted: #5a5a6e;
+    --danger: #8b2020;
+    --success: #1a5c3a;
+    --shadow: 0 2px 12px rgba(26,53,87,0.10);
+    --radius: 4px;
+  }
+ 
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  body {
+    font-family: 'Tajawal', 'Arial', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+ 
+  /* ===== TOAST ===== */
+  #toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: var(--success);
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    z-index: 9999;
+    transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+    pointer-events: none;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+ 
+  /* ===== PAGE WRAPPER ===== */
+  .page-wrapper {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 28px 20px 48px;
+  }
+ 
+  /* ===== HEADER ===== */
+  .header {
+    background: var(--primary);
+    border-radius: var(--radius);
+    padding: 24px 32px 20px;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light), var(--accent));
+  }
+  .header-right { text-align: right; }
+  .header-left { text-align: left; }
+  .header-center { text-align: center; }
+ 
+  .ministry-name {
+    color: var(--accent-light);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .school-name {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .header-year {
+    color: var(--accent);
+    font-size: 18px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .header-title {
+    color: #fff;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+  .header-subtitle {
+    color: var(--accent-light);
+    font-size: 12px;
+    text-align: center;
+    margin-top: 4px;
+    opacity: 0.85;
+  }
+  .emblem {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 8px;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+  }
+ 
+  /* ===== CASE ID BADGE ===== */
+  .case-badge {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-right: 4px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .case-badge-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .case-badge-id {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+    font-family: monospace;
+    letter-spacing: 1px;
+    direction: ltr;
+  }
+ 
+  /* ===== SECTIONS ===== */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .section-header {
+    background: var(--primary);
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-header.accent-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    border-right: 4px solid var(--accent);
+  }
+  .section-icon {
+    width: 22px;
+    height: 22px;
+    background: rgba(200,168,75,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .section-body {
+    padding: 18px 20px;
+  }
+ 
+  /* ===== FORM GRID ===== */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 20px;
+  }
+  .form-grid.three-col { grid-template-columns: 1fr 1fr 1fr; }
+  .form-col-full { grid-column: 1 / -1; }
+ 
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .form-label .required {
+    color: var(--danger);
+    margin-right: 2px;
+  }
+ 
+  input[type="text"],
+  input[type="date"],
+  input[type="time"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: 'Tajawal', Arial, sans-serif;
+    font-size: 13.5px;
+    color: var(--text);
+    background: #fdfcfa;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    direction: rtl;
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(26,53,87,0.10);
+    background: #fff;
+  }
+  input.error, select.error, textarea.error {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(139,32,32,0.10);
+  }
+  input[readonly], select[disabled], textarea[readonly] {
+    background: #f0ede8;
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+  textarea { resize: vertical; min-height: 90px; }
+  select { cursor: pointer; }
+ 
+  /* ===== HIDDEN FIELD ===== */
+  .field-hidden { display: none !important; }
+ 
+  /* ===== PLEDGE BOX ===== */
+  .pledge-box {
+    border: 2px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    background: linear-gradient(135deg, #fffef8 0%, #fdf8ec 100%);
+    position: relative;
+    margin-bottom: 4px;
+  }
+  .pledge-box::before {
+    content: '❝';
+    position: absolute;
+    top: -10px;
+    right: 18px;
+    font-size: 30px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .pledge-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--primary);
+    line-height: 2;
+    text-align: center;
+  }
+ 
+  /* ===== TAGS ===== */
+  .tag-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tag-option {
+    padding: 6px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 50px;
+    font-size: 13px;
+    font-family: 'Tajawal', Arial, sans-serif;
+    cursor: pointer;
+    color: var(--text-muted);
+    background: #fafaf8;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  .tag-option:hover { border-color: var(--primary); color: var(--primary); }
+  .tag-option.selected {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+    font-weight: 700;
+  }
+  .tag-option.danger.selected { background: var(--danger); border-color: var(--danger); }
+  .tag-option.warning.selected { background: #8b5e00; border-color: #8b5e00; }
+  .tag-option.success.selected { background: var(--success); border-color: var(--success); }
+ 
+  /* ===== SIGNATURE AREA ===== */
+  .sig-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .sig-box {
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    text-align: center;
+    background: #fafaf8;
+  }
+  .sig-box-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+  .sig-line {
+    border-top: 1px dashed var(--border);
+    padding-top: 6px;
+    font-size: 11px;
+    color: var(--border);
+  }
+ 
+  /* ===== BUTTONS ===== */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .btn {
+    padding: 11px 28px;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'Tajawal', Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.18s;
+    letter-spacing: 0.3px;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--primary-light); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(26,53,87,0.25); }
+  .btn-accent {
+    background: var(--accent);
+    color: #1a1a2e;
+  }
+  .btn-accent:hover { background: var(--accent-light); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(200,168,75,0.35); }
+  .btn-outline {
+    background: transparent;
+    color: var(--primary);
+    border: 1.5px solid var(--primary);
+  }
+  .btn-outline:hover { background: var(--primary); color: #fff; }
+  .btn-danger {
+    background: var(--danger);
+    color: #fff;
+  }
+  .btn-danger:hover { background: #6b1818; transform: translateY(-1px); }
+ 
+  /* ===== VIEW-ONLY BANNER ===== */
+  #viewOnlyBanner {
+    display: none;
+    background: var(--danger);
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+  #viewOnlyBanner.active { display: block; }
+ 
+  /* ===== DIVIDER ===== */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border-light);
+    margin: 14px 0;
+  }
+ 
+  /* ===== PRINT STYLES ===== */
+  @media print {
+    body {
+      background: #fff;
+      font-size: 12px;
+    }
+    .page-wrapper { padding: 0; max-width: 100%; }
+    .btn-row, #toast, #viewOnlyBanner { display: none !important; }
+    .header { border-radius: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .section { box-shadow: none; page-break-inside: avoid; }
+    .section-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .pledge-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .tag-option.selected { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    input, select, textarea { border: 1px solid #ccc !important; background: #fff !important; }
+  }
+</style>
+</head>
+<body>
+ 
+<div id="toast">✓ تم حفظ التعهد بنجاح</div>
+ 
+<div class="page-wrapper">
+ 
+  <!-- BANNER -->
+  <div id="viewOnlyBanner">🔒 وضع العرض فقط — لا يمكن التعديل</div>
+ 
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-right">
+      <div class="ministry-name">وزارة التعليم</div>
+      <div class="school-name">متوسطة المنذر بن عمرو الأنصاري</div>
+    </div>
+    <div class="header-center">
+      <div class="emblem">📋</div>
+      <div class="header-title">نموذج التعهد السلوكي</div>
+      <div class="header-subtitle">توثيق رسمي — سري</div>
+    </div>
+    <div class="header-left">
+      <div class="ministry-name">العام الدراسي</div>
+      <div class="header-year">1447هـ</div>
+    </div>
+  </div>
+ 
+  <!-- CASE ID -->
+  <div class="case-badge">
+    <span class="case-badge-label">رقم الحالة التلقائي</span>
+    <span class="case-badge-id" id="caseId">—</span>
+  </div>
+ 
+  <!-- SECTION 1: STUDENT INFO -->
+  <div class="section">
+    <div class="section-header accent-header">
+      <div class="section-icon">👤</div>
+      <div class="section-title">بيانات الطالب</div>
+    </div>
+    <div class="section-body">
+      <div class="form-grid three-col">
+        <div class="form-group">
+          <label class="form-label"><span class="required">*</span> اسم الطالب</label>
+          <input type="text" id="studentName" placeholder="الاسم الرباعي">
+        </div>
+        <div class="form-group">
+          <label class="form-label">الصف</label>
+          <select id="grade">
+            <option value="">— اختر —</option>
+            <option>الأول المتوسط</option>
+            <option>الثاني المتوسط</option>
+            <option>الثالث المتوسط</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">الفصل</label>
+          <select id="classroom">
+            <option value="">— اختر —</option>
+            <option>1</option><option>2</option><option>3</option>
+            <option>4</option><option>5</option><option>6</option>
+            <option>7</option><option>8</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- SECTION 2: VIOLATION INFO -->
+  <div class="section">
+    <div class="section-header accent-header">
+      <div class="section-icon">⚠️</div>
+      <div class="section-title">بيانات المخالفة</div>
+    </div>
+    <div class="section-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label"><span class="required">*</span> نوع المخالفة</label>
+          <select id="violationType" onchange="handleViolationChange()">
+            <option value="">— اختر —</option>
+            <option value="سلوكية">سلوكية</option>
+            <option value="مشاجرة">مشاجرة</option>
+            <option value="تأخر">تأخر</option>
+            <option value="إهمال">إهمال</option>
+            <option value="أخرى">أخرى</option>
+          </select>
+        </div>
+        <div class="form-group" id="otherStudentGroup">
+          <label class="form-label">اسم الطالب الآخر (المشاجرة)</label>
+          <input type="text" id="otherStudent" placeholder="اسم الطرف الآخر">
+        </div>
+        <div class="form-group">
+          <label class="form-label">التاريخ</label>
+          <input type="date" id="incidentDate">
+        </div>
+        <div class="form-group">
+          <label class="form-label">الوقت</label>
+          <input type="time" id="incidentTime">
+        </div>
+        <div class="form-group form-col-full">
+          <label class="form-label">مكان الحادثة</label>
+          <input type="text" id="location" placeholder="مثال: الفناء — الفصل — الممر">
+        </div>
+        <div class="form-group form-col-full">
+          <label class="form-label"><span class="required">*</span> وصف تفصيلي للحادثة</label>
+          <textarea id="description" rows="4" placeholder="اكتب وصفاً دقيقاً وكاملاً للحادثة..."></textarea>
+        </div>
+      </div>
+ 
+      <hr class="divider">
+ 
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">تصنيف المخالفة</label>
+          <div class="tag-group" id="severityGroup">
+            <button type="button" class="tag-option success" onclick="selectTag(this,'severity')">بسيطة</button>
+            <button type="button" class="tag-option warning" onclick="selectTag(this,'severity')">متوسطة</button>
+            <button type="button" class="tag-option danger" onclick="selectTag(this,'severity')">جسيمة</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">حالة التكرار</label>
+          <div class="tag-group" id="repeatGroup">
+            <button type="button" class="tag-option success" onclick="selectTag(this,'repeat')">أول مرة</button>
+            <button type="button" class="tag-option danger" onclick="selectTag(this,'repeat')">مكرر</button>
+          </div>
+        </div>
+      </div>
+ 
+      <hr class="divider">
+ 
+      <div class="form-group">
+        <label class="form-label">الإجراء المتخذ</label>
+        <textarea id="action" rows="3" placeholder="الإجراء الذي تم اتخاذه بحق الطالب..."></textarea>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- SECTION 3: PLEDGE -->
+  <div class="section">
+    <div class="section-header accent-header">
+      <div class="section-icon">📜</div>
+      <div class="section-title">نص التعهد</div>
+    </div>
+    <div class="section-body">
+      <div class="pledge-box">
+        <p class="pledge-text">
+          أتعهد أنا الطالب المذكور أعلاه بالالتزام بأنظمة المدرسة وعدم تكرار هذه المخالفة،<br>
+          وفي حال التكرار أتحمل كامل الإجراءات النظامية.
+        </p>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- SECTION 4: SIGNATURES -->
+  <div class="section">
+    <div class="section-header accent-header">
+      <div class="section-icon">✍️</div>
+      <div class="section-title">التوقيعات</div>
+    </div>
+    <div class="section-body">
+      <div class="sig-grid">
+        <div class="sig-box">
+          <div class="sig-box-title">توقيع الطالب</div>
+          <div class="sig-line">التوقيع</div>
+        </div>
+        <div class="sig-box">
+          <div class="sig-box-title">توقيع ولي الأمر</div>
+          <div class="sig-line">التوقيع</div>
+        </div>
+        <div class="sig-box">
+          <div class="sig-box-title">توقيع مشرف الانضباط</div>
+          <div class="sig-line">التوقيع</div>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- BUTTONS -->
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="savePledge()">💾 حفظ التعهد</button>
+    <button class="btn btn-accent" onclick="downloadPDF()">📄 تحميل PDF</button>
+    <button class="btn btn-outline" onclick="printPage()">🖨️ طباعة</button>
+    <button class="btn btn-danger" onclick="viewOnly()">🔒 عرض فقط للطالب</button>
+    <button class="btn btn-outline" onclick="clearForm()" style="border-color:var(--text-muted);color:var(--text-muted);">🔄 نموذج جديد</button>
+  </div>
+ 
+</div>
+ 
+<script>
+// ===========================
+// STATE
+// ===========================
+let selectedSeverity = '';
+let selectedRepeat = '';
+let isViewOnly = false;
+ 
+// ===========================
+// INIT
+// ===========================
+document.addEventListener('DOMContentLoaded', () => {
+  setDefaultDateTime();
+  generateCaseId();
+  loadFromStorage();
+  handleViolationChange();
+});
+ 
+function setDefaultDateTime() {
+  const now = new Date();
+  document.getElementById('incidentDate').value = now.toISOString().split('T')[0];
+  document.getElementById('incidentTime').value = now.toTimeString().slice(0,5);
+}
+ 
+function generateCaseId() {
+  const saved = localStorage.getItem('pledge_case_id');
+  if (saved) {
+    document.getElementById('caseId').textContent = saved;
+    return saved;
+  }
+  const id = 'PLEDG-' + Date.now().toString(36).toUpperCase();
+  document.getElementById('caseId').textContent = id;
+  localStorage.setItem('pledge_case_id', id);
+  return id;
+}
+ 
+// ===========================
+// VIOLATION TYPE TOGGLE
+// ===========================
+function handleViolationChange() {
+  const v = document.getElementById('violationType').value;
+  const grp = document.getElementById('otherStudentGroup');
+  if (v === 'مشاجرة') {
+    grp.classList.remove('field-hidden');
+  } else {
+    grp.classList.add('field-hidden');
+    document.getElementById('otherStudent').value = '';
+  }
+}
+ 
+// ===========================
+// TAG SELECTION
+// ===========================
+function selectTag(btn, group) {
+  if (isViewOnly) return;
+  const container = document.getElementById(group === 'severity' ? 'severityGroup' : 'repeatGroup');
+  container.querySelectorAll('.tag-option').forEach(t => t.classList.remove('selected'));
+  btn.classList.add('selected');
+  if (group === 'severity') selectedSeverity = btn.textContent;
+  else selectedRepeat = btn.textContent;
+  saveTagsToStorage();
+}
+ 
+function saveTagsToStorage() {
+  localStorage.setItem('pledge_severity', selectedSeverity);
+  localStorage.setItem('pledge_repeat', selectedRepeat);
+}
+ 
+// ===========================
+// SAVE
+// ===========================
+function savePledge() {
+  if (isViewOnly) return;
+  const name = document.getElementById('studentName').value.trim();
+  const desc = document.getElementById('description').value.trim();
+  const type = document.getElementById('violationType').value;
+ 
+  let valid = true;
+  ['studentName','description','violationType'].forEach(id => {
+    document.getElementById(id).classList.remove('error');
+  });
+ 
+  if (!name) { document.getElementById('studentName').classList.add('error'); valid = false; }
+  if (!desc) { document.getElementById('description').classList.add('error'); valid = false; }
+  if (!type) { document.getElementById('violationType').classList.add('error'); valid = false; }
+ 
+  if (!valid) {
+    showToast('⚠️ يرجى تعبئة الحقول الإلزامية', '#8b2020');
+    return;
+  }
+ 
+  const data = gatherData();
+  localStorage.setItem('pledge_data', JSON.stringify(data));
+  saveTagsToStorage();
+  showToast('✓ تم حفظ التعهد بنجاح');
+}
+ 
+function gatherData() {
+  return {
+    caseId: document.getElementById('caseId').textContent,
+    studentName: document.getElementById('studentName').value,
+    grade: document.getElementById('grade').value,
+    classroom: document.getElementById('classroom').value,
+    violationType: document.getElementById('violationType').value,
+    otherStudent: document.getElementById('otherStudent').value,
+    incidentDate: document.getElementById('incidentDate').value,
+    incidentTime: document.getElementById('incidentTime').value,
+    location: document.getElementById('location').value,
+    description: document.getElementById('description').value,
+    severity: selectedSeverity,
+    repeat: selectedRepeat,
+    action: document.getElementById('action').value,
+  };
+}
+ 
+// ===========================
+// LOAD
+// ===========================
+function loadFromStorage() {
+  const raw = localStorage.getItem('pledge_data');
+  if (!raw) return;
+  try {
+    const d = JSON.parse(raw);
+    if (d.caseId) document.getElementById('caseId').textContent = d.caseId;
+    setVal('studentName', d.studentName);
+    setVal('grade', d.grade);
+    setVal('classroom', d.classroom);
+    setVal('violationType', d.violationType);
+    setVal('otherStudent', d.otherStudent);
+    setVal('incidentDate', d.incidentDate);
+    setVal('incidentTime', d.incidentTime);
+    setVal('location', d.location);
+    setVal('description', d.description);
+    setVal('action', d.action);
+ 
+    // Tags
+    const sev = localStorage.getItem('pledge_severity') || d.severity;
+    const rep = localStorage.getItem('pledge_repeat') || d.repeat;
+    if (sev) restoreTag('severityGroup', sev, 'severity');
+    if (rep) restoreTag('repeatGroup', rep, 'repeat');
+  } catch(e) {}
+}
+ 
+function setVal(id, val) {
+  if (val !== undefined && val !== null) document.getElementById(id).value = val;
+}
+ 
+function restoreTag(groupId, label, group) {
+  document.getElementById(groupId).querySelectorAll('.tag-option').forEach(btn => {
+    if (btn.textContent.trim() === label) {
+      btn.classList.add('selected');
+      if (group === 'severity') selectedSeverity = label;
+      else selectedRepeat = label;
+    }
+  });
+}
+ 
+// ===========================
+// VIEW ONLY
+// ===========================
+function viewOnly() {
+  isViewOnly = true;
+  const inputs = document.querySelectorAll('input, select, textarea');
+  inputs.forEach(el => {
+    if (el.tagName === 'SELECT') el.disabled = true;
+    else el.readOnly = true;
+  });
+  document.querySelectorAll('.tag-option').forEach(b => b.style.pointerEvents = 'none');
+  document.getElementById('viewOnlyBanner').classList.add('active');
+}
+ 
+// ===========================
+// CLEAR
+// ===========================
+function clearForm() {
+  if (isViewOnly) return;
+  if (!confirm('هل تريد بدء نموذج جديد؟ سيتم مسح البيانات الحالية.')) return;
+  localStorage.removeItem('pledge_data');
+  localStorage.removeItem('pledge_case_id');
+  localStorage.removeItem('pledge_severity');
+  localStorage.removeItem('pledge_repeat');
+  location.reload();
+}
+ 
+// ===========================
+// TOAST
+// ===========================
+function showToast(msg, bg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = bg || 'var(--success)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+ 
+// ===========================
+// PRINT
+// ===========================
+function printPage() {
+  window.print();
+}
+ 
+// ===========================
+// PDF (jsPDF)
+// ===========================
+function downloadPDF() {
+  const d = gatherData();
+  const { jsPDF } = window.jspdf;
+ 
+  // A4 dimensions in mm: 210 x 297
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+ 
+  const W = doc.internal.pageSize.getWidth();
+  const margin = 16;
+  let y = margin;
+ 
+  function drawRect(x, yy, w, h, fillR, fillG, fillB, strokeR, strokeG, strokeB) {
+    if (fillR !== null) { doc.setFillColor(fillR, fillG, fillB); doc.rect(x, yy, w, h, 'F'); }
+    if (strokeR !== null) { doc.setDrawColor(strokeR, strokeG, strokeB); doc.setLineWidth(0.3); doc.rect(x, yy, w, h, 'S'); }
+  }
+ 
+  // HEADER background
+  drawRect(margin, y, W - margin*2, 28, 26, 53, 87, null,null,null);
+  doc.setTextColor(200, 168, 75);
+  doc.setFontSize(7);
+  doc.text('وزارة التعليم | متوسطة المنذر بن عمرو الأنصاري | 1447هـ', W/2, y+7, { align: 'center' });
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(14);
+  doc.text('نموذج التعهد السلوكي', W/2, y+16, { align: 'center' });
+  doc.setFontSize(8);
+  doc.setTextColor(200,168,75);
+  doc.text('توثيق رسمي — سري', W/2, y+23, { align: 'center' });
+  y += 33;
+ 
+  // Case ID
+  doc.setTextColor(26,53,87);
+  doc.setFontSize(8);
+  drawRect(margin, y, W-margin*2, 8, 244,241,236, 201,192,176);
+  doc.text('رقم الحالة: ' + d.caseId, margin+4, y+5.5);
+  y += 12;
+ 
+  function sectionHeader(title) {
+    drawRect(margin, y, W-margin*2, 8, 26,53,87, null,null,null);
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(9);
+    doc.text(title, W - margin - 4, y+5.5, { align: 'right' });
+    doc.setTextColor(26,53,87);
+    y += 10;
+  }
+ 
+  function fieldRow(label, value, x1, w1, x2, w2) {
+    doc.setFontSize(7.5);
+    doc.setTextColor(90,90,110);
+    doc.text(label, x1+w1-2, y+4.5, { align: 'right' });
+    doc.setTextColor(26,26,46);
+    doc.setFontSize(8.5);
+    const val = value || '—';
+    doc.text(val, x2+w2-2, y+4.5, { align: 'right' });
+    drawRect(x1, y, w1+w2+2, 7, null,null,null, 201,192,176);
+    y += 8;
+  }
+ 
+  function fullField(label, value) {
+    doc.setFontSize(7.5);
+    doc.setTextColor(90,90,110);
+    doc.text(label, W - margin - 2, y+4.5, { align: 'right' });
+    y += 6;
+    const lines = doc.splitTextToSize(value || '—', W - margin*2 - 4);
+    const boxH = Math.max(10, lines.length * 5 + 4);
+    drawRect(margin, y, W-margin*2, boxH, 253,252,250, 201,192,176);
+    doc.setTextColor(26,26,46);
+    doc.setFontSize(8.5);
+    lines.forEach((line, i) => {
+      doc.text(line, W - margin - 3, y + 5 + i*5, { align: 'right' });
+    });
+    y += boxH + 3;
+  }
+ 
+  // Student section
+  sectionHeader('بيانات الطالب');
+  const hw = (W - margin*2 - 2) / 2;
+  fieldRow('اسم الطالب', d.studentName, margin, 30, margin+32, hw-32);
+  fieldRow('الصف', d.grade, margin, 20, margin+22, hw-22);
+ 
+  // Violation section
+  y += 3;
+  sectionHeader('بيانات المخالفة');
+  fieldRow('نوع المخالفة', d.violationType, margin, 30, margin+32, hw-32);
+  if (d.violationType === 'مشاجرة') {
+    fieldRow('الطالب الآخر', d.otherStudent, margin, 30, margin+32, hw-32);
+  }
+  fieldRow('التاريخ', d.incidentDate, margin, 25, margin+27, hw-27);
+  fieldRow('الوقت', d.incidentTime, margin, 25, margin+27, hw-27);
+  fieldRow('المكان', d.location, margin, 25, margin+27, hw-27);
+  fieldRow('التصنيف', d.severity, margin, 25, margin+27, hw-27);
+  fieldRow('التكرار', d.repeat, margin, 25, margin+27, hw-27);
+ 
+  y += 3;
+  fullField('وصف الحادثة', d.description);
+  fullField('الإجراء المتخذ', d.action);
+ 
+  // Pledge
+  y += 3;
+  sectionHeader('نص التعهد');
+  drawRect(margin, y, W-margin*2, 18, 255,254,248, 200,168,75);
+  doc.setTextColor(26,53,87);
+  doc.setFontSize(9);
+  const pledgeText = 'أتعهد أنا الطالب المذكور أعلاه بالالتزام بأنظمة المدرسة وعدم تكرار هذه المخالفة، وفي حال التكرار أتحمل كامل الإجراءات النظامية.';
+  const pLines = doc.splitTextToSize(pledgeText, W - margin*2 - 8);
+  pLines.forEach((l,i) => doc.text(l, W/2, y+6+i*5, { align: 'center' }));
+  y += 22;
+ 
+  // Signatures
+  y += 3;
+  sectionHeader('التوقيعات');
+  const sigW = (W - margin*2 - 6) / 3;
+  const sigLabels = ['توقيع الطالب', 'توقيع ولي الأمر', 'توقيع مشرف الانضباط'];
+  sigLabels.forEach((label, i) => {
+    const sx = margin + i*(sigW+3);
+    drawRect(sx, y, sigW, 18, 250,250,248, 201,192,176);
+    doc.setTextColor(90,90,110);
+    doc.setFontSize(7.5);
+    doc.text(label, sx+sigW-3, y+5, { align: 'right' });
+  });
+ 
+  doc.save('تعهد-سلوكي-' + d.caseId + '.pdf');
+}
+</script>
+</body>
+</html>
+ 
