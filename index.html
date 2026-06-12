@@ -51,12 +51,13 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
   }
 
-  .ledger-label {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 0.75rem;
-    letter-spacing: 0.35em;
+  /* Updated Tagline Label (Top of Page) */
+  .ledger-label-ar {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
     color: #c2a06b;
-    text-transform: uppercase;
+    letter-spacing: normal; /* Removed large letter spacing for Arabic */
   }
 
   .brass-rule {
@@ -85,11 +86,6 @@
 
   .reveal-text { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease-out, transform 0.7s ease-out; }
   .reveal.in-view .reveal-text { opacity: 1; transform: translateY(0); }
-  .reveal-text.d1 { transition-delay: .08s; }
-  .reveal-text.d2 { transition-delay: .16s; }
-  .reveal-text.d3 { transition-delay: .24s; }
-  .reveal-text.d4 { transition-delay: .32s; }
-  .reveal-text.d5 { transition-delay: .40s; }
 
   .feature-card {
     background: rgba(26, 32, 41, 0.35);
@@ -104,25 +100,6 @@
     border-color: rgba(194, 160, 107, 0.35);
     background: rgba(26, 32, 41, 0.55);
   }
-  .feature-icon {
-    width: 2.5rem; height: 2.5rem;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 0.5rem;
-    background: rgba(194, 160, 107, 0.08);
-    border: 1px solid rgba(194, 160, 107, 0.18);
-    color: #D4B98A;
-  }
-
-  .x-item, .check-item {
-    display: flex; align-items: flex-start; gap: 0.85rem;
-    padding: 0.85rem 0;
-    border-bottom: 1px solid rgba(231, 234, 239, 0.06);
-  }
-  .x-icon { background: rgba(231, 234, 239, 0.05); color: #5A6372; border-radius: 999px; padding: 4px; }
-  .check-icon { background: rgba(194, 160, 107, 0.12); color: #D4B98A; border-radius: 999px; padding: 4px; }
-
-  .community-bullet { display: flex; align-items: flex-start; gap: 0.85rem; padding: 0.6rem 0; }
-  .community-dot { flex-shrink: 0; width: 0.5rem; height: 0.5rem; margin-top: 0.6rem; border-radius: 9999px; background: #C2A06B; }
 
   /* Swiper Customization */
   .swiper-pagination-bullet { background: #5A6372 !important; }
@@ -154,19 +131,28 @@
 
   <!-- ============ HERO ============ -->
   <section class="relative flex min-h-screen w-full items-center justify-center overflow-hidden ink-gradient">
-    <div class="glass-panel relative z-10 mx-6 mt-16 flex max-w-3xl flex-col items-center rounded-2xl px-6 py-12 text-center sm:px-12 sm:py-16">
-      <span class="ledger-label mb-6">منهجية وايكوف · قراءة الحجم · سلوك الأموال الذكية</span>
-      <h1 class="font-display text-3xl font-black leading-[1.4] text-fog-100 sm:text-4xl md:text-5xl">
+    <div class="glass-panel relative z-10 mx-6 mt-16 flex w-full max-w-4xl flex-col items-center rounded-2xl px-6 py-12 text-center sm:px-12 sm:py-20">
+      
+      <!-- Fixed Tagline: Better Font and No Spacing -->
+      <span class="ledger-label-ar mb-8">منهجية وايكوف · قراءة الحجم · سلوك الأموال الذكية</span>
+      
+      <!-- Fixed Heading: Larger and Bolder -->
+      <h1 class="font-display text-4xl font-black leading-[1.3] text-fog-100 sm:text-5xl md:text-6xl lg:text-7xl">
         ليست المشكلة في كثرة المؤشرات...<br />
-        <span class="text-brass-400">بل في معرفة أيها يستحق أن تعتمد عليه قبل اتخاذ قرارك.</span>
+        <span class="text-brass-400 block mt-4">بل في معرفة أيها يستحق أن تعتمد عليه.</span>
       </h1>
-      <div class="my-8 w-24"><div class="brass-rule"></div></div>
-      <p class="max-w-2xl text-base leading-loose text-fog-200 sm:text-lg">
+
+      <div class="my-10 w-32"><div class="brass-rule"></div></div>
+      
+      <p class="max-w-3xl text-lg leading-loose text-fog-200 sm:text-xl">
         قضيت سنوات في دراسة الأسواق، ومنهجية وايكوف، وتحليل الحجم السعري، وسلوك الأموال الذكية، حتى أتمكن من اختصار أهم العوامل التي يعتمد عليها المحلل المحترف داخل
         <span class="text-brass-300 font-bold">مؤشر واحد</span> بسيط وواضح.
       </p>
-      <div class="mt-10">
-        <a href="https://t.me/wyckoffnawaf" target="_blank" rel="noopener" class="btn-primary">اطلب الاستراتيجية الآن</a>
+
+      <div class="mt-12">
+        <a href="https://t.me/wyckoffnawaf" target="_blank" rel="noopener" class="btn-primary !px-10 !py-5 !text-lg">
+          اطلب الاستراتيجية الآن
+        </a>
       </div>
     </div>
   </section>
@@ -174,13 +160,12 @@
   <!-- ============ SUBSCRIBER REVIEWS ============ -->
   <section id="reviews" class="relative w-full bg-ink-950 py-24 sm:py-32 overflow-hidden">
     <div class="reveal mx-auto max-w-6xl px-6 text-center">
-      <span class="ledger-label mb-6 inline-block">آراء المشتركين</span>
+      <span class="ledger-label-ar mb-6 inline-block">آراء المشتركين</span>
       <h2 class="font-display text-3xl font-bold leading-[1.4] text-fog-100 sm:text-4xl md:text-[2.5rem]">
         ماذا يقول <span class="text-brass-400">المشتركون؟</span>
       </h2>
       <div class="mx-auto my-8 h-px w-32 brass-rule"></div>
 
-      <!-- summary -->
       <div id="reviews-summary" class="mx-auto mb-12 hidden flex-col items-center gap-2">
         <div class="flex items-baseline gap-3">
           <span id="reviews-avg" class="font-display text-4xl font-black text-brass-400">0.0</span>
@@ -210,16 +195,13 @@
   <!-- ============ WHY ============ -->
   <section id="why" class="relative w-full bg-ink-900 py-24 sm:py-32">
     <div class="reveal mx-auto max-w-4xl px-6 text-center">
-      <span class="reveal-text ledger-label mb-6 inline-block">لماذا</span>
-      <h2 class="reveal-text d1 font-display text-3xl font-bold leading-[1.4] text-fog-100 sm:text-4xl md:text-[2.5rem]">
+      <span class="ledger-label-ar mb-6 inline-block">لماذا</span>
+      <h2 class="reveal-text d1 font-display text-3xl font-bold text-fog-100 sm:text-4xl md:text-[2.5rem]">
         لماذا تم تطوير هذه الاستراتيجية؟
       </h2>
       <div class="reveal-text d2 mx-auto my-8 h-px w-32 brass-rule"></div>
       <p class="reveal-text d2 text-base leading-loose text-fog-200 sm:text-lg">
         يوجد اليوم آلاف المؤشرات وآلاف الاستراتيجيات. لكن المشكلة الحقيقية ليست نقص الأدوات، بل كثرة المعلومات وتضارب الإشارات. لهذا تم بناء هذه المنهجية بهدف واحد: تبسيط القرار دون التضحية بجودة التحليل.
-      </p>
-      <p class="reveal-text d3 mt-4 font-display text-xl font-bold text-brass-400 sm:text-2xl">
-        تبسيط القرار دون التضحية بجودة التحليل.
       </p>
     </div>
   </section>
@@ -228,8 +210,8 @@
   <section id="simplicity" class="relative w-full bg-ink-950 py-24 sm:py-32">
     <div class="reveal mx-auto flex max-w-6xl flex-col items-center gap-16 px-6 lg:flex-row-reverse lg:gap-20">
       <div class="flex-1 text-center lg:text-right">
-        <span class="reveal-text ledger-label mb-6 inline-block">البساطة</span>
-        <h2 class="reveal-text d1 font-display text-3xl font-bold leading-[1.4] text-fog-100 sm:text-4xl md:text-[2.5rem]">
+        <span class="ledger-label-ar mb-6 inline-block">البساطة</span>
+        <h2 class="reveal-text d1 font-display text-3xl font-bold text-fog-100 sm:text-4xl md:text-[2.5rem]">
           البساطة هي <span class="text-brass-400">القوة</span>
         </h2>
         <div class="reveal-text d2 my-8 h-px w-full brass-rule lg:mr-0 lg:ml-auto lg:w-32"></div>
@@ -239,9 +221,9 @@
       </div>
       <div class="flex-1">
         <div class="reveal-text d2 glass-panel rounded-2xl px-6 py-8 sm:px-8">
-          <div class="x-item"><span class="x-icon">✖</span><p class="text-base text-fog-200">لا تحتاج إلى متابعة عشرات المؤشرات.</p></div>
-          <div class="x-item"><span class="x-icon">✖</span><p class="text-base text-fog-200">لا تحتاج إلى رسم عشرات الخطوط.</p></div>
-          <div class="check-item"><span class="check-icon">✔</span><p class="text-base font-bold text-fog-100">كل ما تحتاج إليه هو فهم المنهجية مرة واحدة.</p></div>
+          <div class="x-item"><span class="px-2 text-red-500">✖</span><p class="text-base text-fog-200">لا تحتاج إلى متابعة عشرات المؤشرات.</p></div>
+          <div class="x-item"><span class="px-2 text-red-500">✖</span><p class="text-base text-fog-200">لا تحتاج إلى رسم عشرات الخطوط.</p></div>
+          <div class="check-item"><span class="px-2 text-green-500">✔</span><p class="text-base font-bold text-fog-100">كل ما تحتاج إليه هو فهم المنهجية مرة واحدة.</p></div>
         </div>
       </div>
     </div>
@@ -251,17 +233,17 @@
   <section id="offer" class="relative w-full bg-ink-900 py-24 sm:py-32">
     <div class="reveal mx-auto max-w-6xl px-6">
       <div class="text-center">
-        <span class="reveal-text ledger-label mb-6 inline-block">المحتوى</span>
-        <h2 class="reveal-text d1 font-display text-3xl font-bold leading-[1.4] text-fog-100 sm:text-4xl md:text-[2.5rem]">
+        <span class="ledger-label-ar mb-6 inline-block">المحتوى</span>
+        <h2 class="reveal-text d1 font-display text-3xl font-bold text-fog-100 sm:text-4xl md:text-[2.5rem]">
           ماذا تقدم لك <span class="text-brass-400">الاستراتيجية؟</span>
         </h2>
         <div class="reveal-text d2 mx-auto my-8 h-px w-32 brass-rule"></div>
       </div>
       <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <div class="reveal-text d1 feature-card">مؤشر واحد يجمع أهم عوامل اتخاذ القرار.</div>
-        <div class="reveal-text d2 feature-card">خوارزميات تعمل في الخلفية لتبسيط قراءة السوق.</div>
-        <div class="reveal-text d3 feature-card">مناسبة للمبتدئ والمحترف.</div>
-        <div class="reveal-text d4 feature-card">تعمل على جميع الأسواق والفريمات الزمنية.</div>
+        <div class="reveal-text d1 feature-card text-center">مؤشر واحد يجمع أهم عوامل اتخاذ القرار.</div>
+        <div class="reveal-text d2 feature-card text-center">خوارزميات تعمل في الخلفية لتبسيط قراءة السوق.</div>
+        <div class="reveal-text d3 feature-card text-center">مناسبة للمبتدئ والمحترف.</div>
+        <div class="reveal-text d4 feature-card text-center">تعمل على جميع الأسواق والفريمات الزمنية.</div>
       </div>
     </div>
   </section>
@@ -270,8 +252,8 @@
   <section id="community" class="relative w-full bg-ink-950 py-24 sm:py-32">
     <div class="reveal mx-auto flex max-w-6xl flex-col items-center gap-16 px-6 lg:flex-row-reverse lg:gap-20">
       <div class="flex-1 text-center lg:text-right">
-        <span class="reveal-text ledger-label mb-6 inline-block">المجتمع</span>
-        <h2 class="reveal-text d1 font-display text-3xl font-bold leading-[1.4] text-fog-100 sm:text-4xl md:text-[2.5rem]">أكثر من <span class="text-brass-400">مجرد مؤشر</span></h2>
+        <span class="ledger-label-ar mb-6 inline-block">المجتمع</span>
+        <h2 class="reveal-text d1 font-display text-3xl font-bold text-fog-100">أكثر من <span class="text-brass-400">مجرد مؤشر</span></h2>
         <div class="reveal-text d2 my-8 h-px w-full brass-rule lg:mr-0 lg:ml-auto lg:w-32"></div>
         <p class="reveal-text d2 text-base text-fog-200">ستصبح جزءًا من مجتمع خاص على تيليجرام يتم فيه شرح المنهجية عمليًا ومشاركة تطبيقات يومية.</p>
       </div>
@@ -286,7 +268,7 @@
   <!-- ============ GUARANTEE ============ -->
   <section id="guarantee" class="relative w-full bg-ink-950 py-24 sm:py-32">
     <div class="reveal mx-auto max-w-4xl px-6 text-center">
-      <span class="reveal-text ledger-label mb-6 inline-block">الضمان</span>
+      <span class="ledger-label-ar mb-6 inline-block">الضمان</span>
       <h2 class="reveal-text d1 font-display text-3xl font-bold text-fog-100">ضمان <span class="text-brass-400">استرداد المبلغ</span></h2>
       <div class="reveal-text d2 mx-auto my-8 h-px w-32 brass-rule"></div>
       <p class="reveal-text d3 text-base text-fog-200">نؤمن أن الثقة تُبنى بالشفافية. إذا لم تحقق المنهجية الفائدة المتوقعة وفق سياسة الاسترجاع، فيمكنك طلب استرداد المبلغ.</p>
@@ -399,4 +381,3 @@
 </script>
 </body>
 </html>
-
