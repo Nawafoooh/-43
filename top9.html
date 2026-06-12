@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WyckoffNawaf | اختصر سنوات من الخبرة في مؤشر واحد</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@500;700;900&family=Tajawal:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+  rel="stylesheet"
+/>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: { 950: "#06070A", 900: "#0B0E13", 800: "#11151C", 700: "#1A2029", 600: "#242B36" },
+          brass: { 300: "#EAD9B6", 400: "#D4B98A", 500: "#C2A06B", 600: "#9C7F4F" },
+          ledger: { 300: "#6FB39A", 400: "#4C8F76", 500: "#2F6B55", 600: "#1F4D3D" },
+          fog: { 100: "#E7EAEF", 200: "#C7CDD6", 400: "#8B93A1", 600: "#5A6372", 800: "#2A313C" },
+        },
+        fontFamily: {
+          display: ["'Noto Kufi Arabic'", "sans-serif"],
+          body: ["'Tajawal'", "sans-serif"],
+          mono: ["'IBM Plex Mono'", "ui-monospace", "monospace"],
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  * { scroll-behavior: smooth; }
+  html, body { background-color: #06070a; color: #e7eaef; }
+  ::selection { background-color: rgba(194, 160, 107, 0.35); color: #f4f1ea; }
+
+  .ink-gradient {
+    background: radial-gradient(120% 80% at 50% -10%, #1A2029 0%, #0B0E13 55%, #06070A 100%);
+  }
+
+  .glass-panel {
+    background: linear-gradient(155deg, rgba(26, 32, 41, 0.55) 0%, rgba(17, 21, 28, 0.35) 100%);
+    border: 1px solid rgba(212, 185, 138, 0.12);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  }
+
+  .ledger-label {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.35em;
+    color: #c2a06b;
+    text-transform: uppercase;
+  }
+
+  .brass-rule {
+    height: 1px;
+    width: 100%;
+    background-image: linear-gradient(90deg, transparent, rgba(194, 160, 107, 0.55), transparent);
+  }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 0.375rem; padding: 1rem 2rem;
+    font-family: "Noto Kufi Arabic", sans-serif; font-weight: 700; font-size: 1rem;
+    color: #06070A;
+    background: linear-gradient(135deg, #eadab6 0%, #c2a06b 55%, #9c7f4f 100%);
+    box-shadow: 0 0 0 0 rgba(194, 160, 107, 0);
+    transition: all 0.3s;
+  }
+  .btn-primary:hover { box-shadow: 0 0 32px rgba(194, 160, 107, 0.35); transform: translateY(-1px); }
+
+  .btn-secondary {
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 0.375rem; padding: 1rem 2rem; border: 1px solid rgba(231, 234, 239, 0.18);
+    font-family: "Noto Kufi Arabic", sans-serif; font-weight: 700; font-size: 1rem;
+    color: #e7eaef; background: rgba(231, 234, 239, 0.03);
+    transition: all 0.3s;
+  }
+  .btn-secondary:hover { border-color: rgba(194, 160, 107, 0.45); background: rgba(194, 160, 107, 0.06); }
+
+  /* ---------- Hero entrance animation ---------- */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up {
+    opacity: 0;
+    animation: fadeUp 0.7s ease-out forwards;
+  }
+  .delay-1 { animation-delay: .15s; }
+  .delay-2 { animation-delay: .27s; }
+  .delay-3 { animation-delay: .39s; }
+  .delay-4 { animation-delay: .51s; }
+  .delay-5 { animation-delay: .63s; }
+  .delay-6 { animation-delay: .75s; }
+
+  /* ---------- Accumulation wave (signature element) ---------- */
+  .wave-path {
+    stroke-dasharray: 3000;
+    stroke-dashoffset: 3000;
+    animation: drawPath 3.2s ease-in-out 0.3s forwards;
+  }
+  @keyframes drawPath {
+    to { stroke-dashoffset: 0; }
+  }
+  .wave-label {
+    opacity: 0;
+    animation: fadeIn 1s ease-out forwards;
+  }
+  @keyframes fadeIn { to { opacity: 0.7; } }
+
+  .wave-dot {
+    offset-path: path("M -40 170 L 110 300 L 210 380 L 255 340 L 320 480 L 410 230 L 490 320 L 575 460 L 660 300 L 745 400 L 820 520 L 885 360 L 965 280 L 1045 235 L 1130 300 L 1215 175 L 1310 95 L 1480 30");
+    offset-distance: 0%;
+    opacity: 0;
+    animation: travel 9s linear 3.6s infinite;
+  }
+  @keyframes travel {
+    0%   { offset-distance: 0%;   opacity: 0; }
+    8%   { opacity: 1; }
+    92%  { opacity: 1; }
+    100% { offset-distance: 100%; opacity: 0; }
+  }
+
+  /* ---------- Scroll cue ---------- */
+  .scroll-cue {
+    opacity: 0;
+    animation: fadeIn2 1s ease-out 1.8s forwards;
+  }
+  @keyframes fadeIn2 { to { opacity: 1; } }
+  .scroll-track { position: relative; height: 3rem; width: 1px; overflow: hidden; background: #2A313C; }
+  .scroll-bar {
+    position: absolute; inset-inline: 0; top: 0; height: 1rem;
+    background: linear-gradient(to bottom, transparent, #D4B98A, transparent);
+    animation: scrollMove 2.2s ease-in-out infinite;
+  }
+  @keyframes scrollMove {
+    0% { transform: translateY(-20%); }
+    100% { transform: translateY(140%); }
+  }
+
+  /* ---------- Philosophy converge-lines (scroll reveal) ---------- */
+  .converge-line {
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    opacity: 0;
+    transition: stroke-dashoffset 1.4s ease-in-out, opacity 1.4s ease-in-out;
+  }
+  .converge-dot {
+    opacity: 0; transform: scale(0); transform-origin: center;
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  }
+  .reveal.in-view .converge-line { stroke-dashoffset: 0; }
+  .reveal.in-view .converge-line.center { opacity: 1; }
+  .reveal.in-view .converge-line.side { opacity: 0.6; }
+  .reveal.in-view .converge-dot { opacity: 1; transform: scale(1); transition-delay: 1.2s; }
+
+  .reveal-text {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  }
+  .reveal.in-view .reveal-text { opacity: 1; transform: translateY(0); }
+
+  /* stagger converge lines */
+  .converge-line:nth-child(1) { transition-delay: 0s; }
+  .converge-line:nth-child(2) { transition-delay: .08s; }
+  .converge-line:nth-child(3) { transition-delay: .16s; }
+  .converge-line:nth-child(4) { transition-delay: .24s; }
+  .converge-line:nth-child(5) { transition-delay: .32s; }
+  .converge-line:nth-child(6) { transition-delay: .40s; }
+  .converge-line:nth-child(7) { transition-delay: .48s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+</style>
+</head>
+
+<body class="bg-ink-950 font-body text-fog-100 antialiased">
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="relative flex min-h-screen w-full items-center justify-center overflow-hidden ink-gradient">
+
+    <!-- accumulation wave background -->
+    <div class="pointer-events-none absolute inset-0 overflow-hidden">
+      <svg viewBox="0 0 1440 600" preserveAspectRatio="xMidYMid slice" class="absolute inset-0 h-full w-full" aria-hidden="true">
+        <defs>
+          <linearGradient id="wave-stroke" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#4C8F76" stop-opacity="0.55" />
+            <stop offset="55%" stop-color="#C2A06B" stop-opacity="0.6" />
+            <stop offset="100%" stop-color="#EAD9B6" stop-opacity="0.85" />
+          </linearGradient>
+          <radialGradient id="wave-fade" cx="50%" cy="38%" r="75%">
+            <stop offset="0%" stop-color="#000000" stop-opacity="0" />
+            <stop offset="75%" stop-color="#000000" stop-opacity="0" />
+            <stop offset="100%" stop-color="#06070A" stop-opacity="0.9" />
+          </radialGradient>
+        </defs>
+
+        <g stroke="#1A2029" stroke-width="1">
+          <line x1="0" x2="1440" y1="0" y2="0" /><line x1="0" x2="1440" y1="100" y2="100" />
+          <line x1="0" x2="1440" y1="200" y2="200" /><line x1="0" x2="1440" y1="300" y2="300" />
+          <line x1="0" x2="1440" y1="400" y2="400" /><line x1="0" x2="1440" y1="500" y2="500" />
+          <line x1="0" x2="1440" y1="600" y2="600" />
+          <line x1="0" x2="0" y1="0" y2="600" /><line x1="120" x2="120" y1="0" y2="600" />
+          <line x1="240" x2="240" y1="0" y2="600" /><line x1="360" x2="360" y1="0" y2="600" />
+          <line x1="480" x2="480" y1="0" y2="600" /><line x1="600" x2="600" y1="0" y2="600" />
+          <line x1="720" x2="720" y1="0" y2="600" /><line x1="840" x2="840" y1="0" y2="600" />
+          <line x1="960" x2="960" y1="0" y2="600" /><line x1="1080" x2="1080" y1="0" y2="600" />
+          <line x1="1200" x2="1200" y1="0" y2="600" /><line x1="1320" x2="1320" y1="0" y2="600" />
+          <line x1="1440" x2="1440" y1="0" y2="600" />
+        </g>
+
+        <rect x="255" y="235" width="875" height="165" fill="rgba(194,160,107,0.04)" stroke="rgba(194,160,107,0.18)" stroke-dasharray="6 8" />
+
+        <path class="wave-path" d="M -40 170 L 110 300 L 210 380 L 255 340 L 320 480 L 410 230 L 490 320 L 575 460 L 660 300 L 745 400 L 820 520 L 885 360 L 965 280 L 1045 235 L 1130 300 L 1215 175 L 1310 95 L 1480 30"
+          fill="none" stroke="url(#wave-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+
+        <circle class="wave-dot" r="5" fill="#EAD9B6" />
+
+        <text class="wave-label" x="320" y="500" font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="0.15em" fill="#8B93A1" text-anchor="middle" style="animation-delay:2.2s">SC</text>
+        <text class="wave-label" x="410" y="210" font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="0.15em" fill="#8B93A1" text-anchor="middle" style="animation-delay:2.35s">AR</text>
+        <text class="wave-label" x="575" y="482" font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="0.15em" fill="#8B93A1" text-anchor="middle" style="animation-delay:2.5s">ST</text>
+        <text class="wave-label" x="820" y="542" font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="0.15em" fill="#8B93A1" text-anchor="middle" style="animation-delay:2.65s">Spring</text>
+        <text class="wave-label" x="885" y="340" font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="0.15em" fill="#8B93A1" text-anchor="middle" style="animation-delay:2.8s">Test</text>
+        <text class="wave-label" x="1045" y="215" font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="0.15em" fill="#8B93A1" text-anchor="middle" style="animation-delay:2.95s">SOS</text>
+        <text class="wave-label" x="1130" y="322" font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="0.15em" fill="#8B93A1" text-anchor="middle" style="animation-delay:3.1s">LPS</text>
+
+        <rect width="1440" height="600" fill="url(#wave-fade)" />
+      </svg>
+    </div>
+
+    <!-- wordmark -->
+    <div dir="ltr" class="absolute left-6 top-6 z-10 flex items-center gap-2 sm:left-10 sm:top-10 fade-up">
+      <span class="h-2 w-2 rounded-full bg-brass-400"></span>
+      <span class="font-mono text-sm tracking-[0.25em] text-fog-100">WYCKOFF<span class="text-brass-400">NAWAF</span></span>
+    </div>
+
+    <!-- content -->
+    <div class="glass-panel relative z-10 mx-6 flex max-w-3xl flex-col items-center rounded-2xl px-6 py-12 text-center sm:px-12 sm:py-16">
+
+      <span class="ledger-label mb-6 fade-up delay-1">منهجية وايكوف · قراءة الحجم · سلوك الأموال الذكية</span>
+
+      <h1 class="font-display text-4xl font-black leading-[1.3] text-fog-100 sm:text-5xl md:text-6xl fade-up delay-2">
+        اختصر سنوات من الخبرة<br />
+        <span class="text-brass-400">في مؤشر واحد</span>
+      </h1>
+
+      <div class="my-8 w-24 fade-up delay-3">
+        <div class="brass-rule"></div>
+      </div>
+
+      <p class="max-w-2xl text-base leading-loose text-fog-200 sm:text-lg fade-up delay-4">
+        قضيت سنوات في دراسة الأسواق ومنهجية وايكوف وتحليل الحجم السعري وسلوك الأموال الذكية، حتى أتمكن من دمج أهم العوامل التي يعتمد عليها المحلل المحترف داخل منهجية عملية مدعومة بمؤشر واحد واضح وسهل الاستخدام.
+      </p>
+
+      <p class="mt-4 max-w-2xl text-sm leading-loose text-fog-400 sm:text-base fade-up delay-5">
+        هذه المنهجية لا تهدف إلى تعقيد التداول، بل إلى تبسيط عملية اتخاذ القرار ومنح المتداول رؤية أكثر تنظيمًا ووضوحًا قبل الدخول في أي صفقة.
+      </p>
+
+      <div class="mt-10 flex flex-col gap-4 sm:flex-row fade-up delay-6">
+        <a href="#register" class="btn-primary">اطلب الاستراتيجية الآن</a>
+        <a href="#methodology" class="btn-secondary">تعرف على المنهجية</a>
+      </div>
+    </div>
+
+    <!-- scroll cue -->
+    <div class="scroll-cue absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3">
+      <span class="ledger-label text-[10px] text-fog-400">مرر للأسفل</span>
+      <div class="scroll-track">
+        <div class="scroll-bar"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PHILOSOPHY ============ -->
+  <section id="methodology" class="relative w-full bg-ink-900 py-24 sm:py-32">
+    <div class="reveal mx-auto flex max-w-6xl flex-col items-center gap-16 px-6 lg:flex-row-reverse lg:items-center lg:gap-20">
+
+      <!-- text -->
+      <div class="reveal-text flex-1 text-center lg:text-right">
+        <span class="ledger-label mb-6 inline-block">الفلسفة</span>
+
+        <h2 class="font-display text-3xl font-bold leading-[1.4] text-fog-100 sm:text-4xl md:text-[2.75rem]">
+          ليست المشكلة في كثرة المؤشرات...<br />
+          <span class="text-brass-400">بل في معرفة أيها يستحق أن تعتمد عليه.</span>
+        </h2>
+
+        <div class="my-8 h-px w-full brass-rule lg:mr-0 lg:ml-auto lg:w-32"></div>
+
+        <p class="text-base leading-loose text-fog-200 sm:text-lg">
+          تم تطوير هذه المنهجية لإزالة الضوضاء الناتجة عن كثرة الأدوات وتضارب الإشارات، وتحويل سنوات من الخبرة العملية إلى إطار واضح يساعد المتداول على تقييم السوق بطريقة منظمة.
+        </p>
+
+        <p class="mt-5 text-base leading-loose text-fog-400 sm:text-lg">
+          الهدف ليس إصدار أوامر بيع وشراء، وإنما مساعدة المتداول على اتخاذ قرارات أكثر جودة بناءً على أهم العناصر التي ينبغي مراعاتها قبل الدخول في أي صفقة.
+        </p>
+      </div>
+
+      <!-- converge lines illustration -->
+      <div class="reveal-text flex flex-1 items-center justify-center">
+        <svg viewBox="0 0 360 240" class="h-auto w-full max-w-xs" aria-hidden="true">
+          <path class="converge-line side" d="M 0 20 C 120 20, 160 120, 320 120" fill="none" stroke="#2A313C" stroke-width="1" stroke-linecap="round" />
+          <path class="converge-line side" d="M 0 52 C 120 52, 160 120, 320 120" fill="none" stroke="#2A313C" stroke-width="1" stroke-linecap="round" />
+          <path class="converge-line side" d="M 0 84 C 120 84, 160 120, 320 120" fill="none" stroke="#2A313C" stroke-width="1" stroke-linecap="round" />
+          <path class="converge-line center" d="M 0 116 C 120 116, 160 120, 320 120" fill="none" stroke="#C2A06B" stroke-width="2.5" stroke-linecap="round" />
+          <path class="converge-line side" d="M 0 148 C 120 148, 160 120, 320 120" fill="none" stroke="#2A313C" stroke-width="1" stroke-linecap="round" />
+          <path class="converge-line side" d="M 0 180 C 120 180, 160 120, 320 120" fill="none" stroke="#2A313C" stroke-width="1" stroke-linecap="round" />
+          <path class="converge-line side" d="M 0 212 C 120 212, 160 120, 320 120" fill="none" stroke="#2A313C" stroke-width="1" stroke-linecap="round" />
+          <circle class="converge-dot" cx="320" cy="120" r="4" fill="#EAD9B6" />
+        </svg>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // Reveal the Philosophy section once it enters the viewport
+  const reveal = document.querySelector(".reveal");
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("in-view");
+        observer.disconnect();
+      }
+    });
+  }, { threshold: 0.25, rootMargin: "-100px" });
+  if (reveal) observer.observe(reveal);
+</script>
+</body>
+</html>
