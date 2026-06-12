@@ -8,10 +8,10 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@500;700;900&family=Tajawal:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
-  rel="stylesheet"
-/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@500;700;900&family=Tajawal:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<!-- Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -76,15 +76,6 @@
   }
   .btn-primary:hover { box-shadow: 0 0 32px rgba(194, 160, 107, 0.35); transform: translateY(-1px); }
 
-  .btn-secondary {
-    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-    border-radius: 0.375rem; padding: 1rem 2rem; border: 1px solid rgba(231, 234, 239, 0.18);
-    font-family: "Noto Kufi Arabic", sans-serif; font-weight: 700; font-size: 1rem;
-    color: #e7eaef; background: rgba(231, 234, 239, 0.03);
-    transition: all 0.3s;
-  }
-  .btn-secondary:hover { border-color: rgba(194, 160, 107, 0.45); background: rgba(194, 160, 107, 0.06); }
-
   /* ---------- header ---------- */
   .site-header {
     background: rgba(6, 7, 10, 0.55);
@@ -93,57 +84,11 @@
     -webkit-backdrop-filter: blur(12px);
   }
 
-  /* ---------- Hero entrance animation ---------- */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(18px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .fade-up { opacity: 0; animation: fadeUp 0.7s ease-out forwards; }
-  .delay-1 { animation-delay: .15s; }
-  .delay-2 { animation-delay: .27s; }
-  .delay-3 { animation-delay: .39s; }
-  .delay-4 { animation-delay: .51s; }
-  .delay-5 { animation-delay: .63s; }
-  .delay-6 { animation-delay: .75s; }
-
-  /* ---------- Accumulation wave (signature element) ---------- */
-  .wave-path { stroke-dasharray: 3000; stroke-dashoffset: 3000; animation: drawPath 3.2s ease-in-out 0.3s forwards; }
-  @keyframes drawPath { to { stroke-dashoffset: 0; } }
-  .wave-label { opacity: 0; animation: fadeIn 1s ease-out forwards; }
-  @keyframes fadeIn { to { opacity: 0.7; } }
-  .wave-dot {
-    offset-path: path("M -40 170 L 110 300 L 210 380 L 255 340 L 320 480 L 410 230 L 490 320 L 575 460 L 660 300 L 745 400 L 820 520 L 885 360 L 965 280 L 1045 235 L 1130 300 L 1215 175 L 1310 95 L 1480 30");
-    offset-distance: 0%; opacity: 0; animation: travel 9s linear 3.6s infinite;
-  }
-  @keyframes travel {
-    0%   { offset-distance: 0%;   opacity: 0; }
-    8%   { opacity: 1; }
-    92%  { opacity: 1; }
-    100% { offset-distance: 100%; opacity: 0; }
-  }
-
-  /* ---------- Scroll cue ---------- */
-  .scroll-cue { opacity: 0; animation: fadeIn2 1s ease-out 1.8s forwards; }
-  @keyframes fadeIn2 { to { opacity: 1; } }
-  .scroll-track { position: relative; height: 3rem; width: 1px; overflow: hidden; background: #2A313C; }
-  .scroll-bar {
-    position: absolute; inset-inline: 0; top: 0; height: 1rem;
-    background: linear-gradient(to bottom, transparent, #D4B98A, transparent);
-    animation: scrollMove 2.2s ease-in-out infinite;
-  }
-  @keyframes scrollMove { 0% { transform: translateY(-20%); } 100% { transform: translateY(140%); } }
-
-  /* ---------- scroll reveal (generic) ---------- */
+  /* ---------- scroll reveal ---------- */
   .reveal-text { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease-out, transform 0.7s ease-out; }
   .reveal.in-view .reveal-text { opacity: 1; transform: translateY(0); }
   .reveal-text.d1 { transition-delay: .08s; }
   .reveal-text.d2 { transition-delay: .16s; }
-  .reveal-text.d3 { transition-delay: .24s; }
-  .reveal-text.d4 { transition-delay: .32s; }
-  .reveal-text.d5 { transition-delay: .40s; }
-  .reveal-text.d6 { transition-delay: .48s; }
-  .reveal-text.d7 { transition-delay: .56s; }
-  .reveal-text.d8 { transition-delay: .64s; }
 
   /* ---------- feature cards ---------- */
   .feature-card {
@@ -152,45 +97,19 @@
     border-radius: 0.75rem;
     padding: 1.75rem 1.5rem;
     transition: transform 0.3s, border-color 0.3s, background 0.3s;
+    height: 100%;
   }
   .feature-card:hover {
     transform: translateY(-4px);
     border-color: rgba(194, 160, 107, 0.35);
     background: rgba(26, 32, 41, 0.55);
   }
-  .feature-icon {
-    width: 2.5rem; height: 2.5rem;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 0.5rem;
-    background: rgba(194, 160, 107, 0.08);
-    border: 1px solid rgba(194, 160, 107, 0.18);
-    color: #D4B98A;
-  }
 
-  /* ---------- checklist items ---------- */
-  .x-item, .check-item {
-    display: flex; align-items: flex-start; gap: 0.85rem;
-    padding: 0.85rem 0;
-    border-bottom: 1px solid rgba(231, 234, 239, 0.06);
-  }
-  .x-item:last-of-type, .check-item:last-of-type { border-bottom: none; }
-  .x-icon, .check-icon {
-    flex-shrink: 0; width: 1.75rem; height: 1.75rem; margin-top: 0.1rem;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 9999px;
-  }
-  .x-icon { background: rgba(231, 234, 239, 0.05); color: #5A6372; }
-  .check-icon { background: rgba(194, 160, 107, 0.12); color: #D4B98A; }
-
-  .community-bullet {
-    display: flex; align-items: flex-start; gap: 0.85rem;
-    padding: 0.6rem 0;
-  }
-  .community-dot {
-    flex-shrink: 0; width: 0.5rem; height: 0.5rem; margin-top: 0.6rem;
-    border-radius: 9999px; background: #C2A06B;
-  }
-
+  /* Swiper Customization */
+  .swiper-pagination-bullet { background: #5A6372 !important; }
+  .swiper-pagination-bullet-active { background: #C2A06B !important; }
+  .swiper-button-next, .swiper-button-prev { color: #C2A06B !important; transform: scale(0.6); }
+  
   @media (prefers-reduced-motion: reduce) {
     * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
   }
@@ -216,82 +135,25 @@
 
   <!-- ============ HERO ============ -->
   <section class="relative flex min-h-screen w-full items-center justify-center overflow-hidden ink-gradient">
-    <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <svg viewBox="0 0 1440 600" preserveAspectRatio="xMidYMid slice" class="absolute inset-0 h-full w-full" aria-hidden="true">
-        <defs>
-          <linearGradient id="wave-stroke" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#4C8F76" stop-opacity="0.55" />
-            <stop offset="55%" stop-color="#C2A06B" stop-opacity="0.6" />
-            <stop offset="100%" stop-color="#EAD9B6" stop-opacity="0.85" />
-          </linearGradient>
-          <radialGradient id="wave-fade" cx="50%" cy="38%" r="75%">
-            <stop offset="0%" stop-color="#000000" stop-opacity="0" />
-            <stop offset="75%" stop-color="#000000" stop-opacity="0" />
-            <stop offset="100%" stop-color="#06070A" stop-opacity="0.9" />
-          </radialGradient>
-        </defs>
-        <g stroke="#1A2029" stroke-width="1">
-          <line x1="0" x2="1440" y1="0" y2="0" /><line x1="0" x2="1440" y1="100" y2="100" />
-          <line x1="0" x2="1440" y1="200" y2="200" /><line x1="0" x2="1440" y1="300" y2="300" />
-          <line x1="0" x2="1440" y1="400" y2="400" /><line x1="0" x2="1440" y1="500" y2="500" />
-          <line x1="0" x2="1440" y1="600" y2="600" />
-          <line x1="0" x2="0" y1="0" y2="600" /><line x1="120" x2="120" y1="0" y2="600" />
-          <line x1="240" x2="240" y1="0" y2="600" /><line x1="360" x2="360" y1="0" y2="600" />
-          <line x1="480" x2="480" y1="0" y2="600" /><line x1="600" x2="600" y1="0" y2="600" />
-          <line x1="720" x2="720" y1="0" y2="600" /><line x1="840" x2="840" y1="0" y2="600" />
-          <line x1="960" x2="960" y1="0" y2="600" /><line x1="1080" x2="1080" y1="0" y2="600" />
-          <line x1="1200" x2="1200" y1="0" y2="600" /><line x1="1320" x2="1320" y1="0" y2="600" />
-          <line x1="1440" x2="1440" y1="0" y2="600" />
-        </g>
-        <rect x="255" y="235" width="875" height="165" fill="rgba(194,160,107,0.04)" stroke="rgba(194,160,107,0.18)" stroke-dasharray="6 8" />
-        <path class="wave-path" d="M -40 170 L 110 300 L 210 380 L 255 340 L 320 480 L 410 230 L 490 320 L 575 460 L 660 300 L 745 400 L 820 520 L 885 360 L 965 280 L 1045 235 L 1130 300 L 1215 175 L 1310 95 L 1480 30"
-          fill="none" stroke="url(#wave-stroke)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-        <circle class="wave-dot" r="5" fill="#EAD9B6" />
-        <text class="wave-label" x="320" y="500" font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="0.15em" fill="#8B93A1" text-anchor="middle" style="animation-delay:2.2s">SC</text>
-        <text class="wave-label" x="410" y="210" font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="0.15em" fill="#8B93A1" text-anchor="middle" style="animation-delay:2.35s">AR</text>
-        <text class="wave-label" x="575" y="482" font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="0.15em" fill="#8B93A1" text-anchor="middle" style="animation-delay:2.5s">ST</text>
-        <text class="wave-label" x="820" y="542" font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="0.15em" fill="#8B93A1" text-anchor="middle" style="animation-delay:2.65s">Spring</text>
-        <text class="wave-label" x="885" y="340" font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="0.15em" fill="#8B93A1" text-anchor="middle" style="animation-delay:2.8s">Test</text>
-        <text class="wave-label" x="1045" y="215" font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="0.15em" fill="#8B93A1" text-anchor="middle" style="animation-delay:2.95s">SOS</text>
-        <text class="wave-label" x="1130" y="322" font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="0.15em" fill="#8B93A1" text-anchor="middle" style="animation-delay:3.1s">LPS</text>
-        <rect width="1440" height="600" fill="url(#wave-fade)" />
-      </svg>
-    </div>
-
     <div class="glass-panel relative z-10 mx-6 mt-16 flex max-w-3xl flex-col items-center rounded-2xl px-6 py-12 text-center sm:px-12 sm:py-16">
-      <span class="ledger-label mb-6 fade-up delay-1">منهجية وايكوف · قراءة الحجم · سلوك الأموال الذكية</span>
-      <h1 class="font-display text-3xl font-black leading-[1.4] text-fog-100 sm:text-4xl md:text-5xl fade-up delay-2">
+      <span class="ledger-label mb-6">منهجية وايكوف · قراءة الحجم · سلوك الأموال الذكية</span>
+      <h1 class="font-display text-3xl font-black leading-[1.4] text-fog-100 sm:text-4xl md:text-5xl">
         ليست المشكلة في كثرة المؤشرات...<br />
         <span class="text-brass-400">بل في معرفة أيها يستحق أن تعتمد عليه قبل اتخاذ قرارك.</span>
       </h1>
-      <div class="my-8 w-24 fade-up delay-3">
-        <div class="brass-rule"></div>
-      </div>
-      <p class="max-w-2xl text-base leading-loose text-fog-200 sm:text-lg fade-up delay-4">
+      <div class="my-8 w-24"><div class="brass-rule"></div></div>
+      <p class="max-w-2xl text-base leading-loose text-fog-200 sm:text-lg">
         قضيت سنوات في دراسة الأسواق، ومنهجية وايكوف، وتحليل الحجم السعري، وسلوك الأموال الذكية، حتى أتمكن من اختصار أهم العوامل التي يعتمد عليها المحلل المحترف داخل
         <span class="text-brass-300 font-bold">مؤشر واحد</span> بسيط وواضح.
       </p>
-      <p class="mt-4 max-w-2xl text-sm leading-loose text-fog-400 sm:text-base fade-up delay-5">
-        ليس الهدف أن يخبرك ماذا تشتري أو ماذا تبيع، بل أن يساعدك على رؤية السوق بطريقة أكثر تنظيمًا ووضوحًا وثقة.
-      </p>
-      <p class="mt-6 max-w-2xl text-sm font-bold leading-loose text-fog-100 sm:text-base fade-up delay-5">
-        تعلم المنهجية خلال أقل من ساعة، ثم ابدأ بتطبيقها على جميع الأسواق والفريمات الزمنية داخل مجتمع خاص يرافقك خطوة بخطوة.
-      </p>
-      <div class="mt-10 fade-up delay-6">
-        <a href="https://t.me/wyckoffnawaf" target="_blank" rel="noopener" class="btn-primary">
-          اطلب الاستراتيجية الآن
-        </a>
+      <div class="mt-10">
+        <a href="https://t.me/wyckoffnawaf" target="_blank" rel="noopener" class="btn-primary">اطلب الاستراتيجية الآن</a>
       </div>
-    </div>
-
-    <div class="scroll-cue absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3">
-      <span class="ledger-label text-[10px] text-fog-400">مرر للأسفل</span>
-      <div class="scroll-track"><div class="scroll-bar"></div></div>
     </div>
   </section>
 
   <!-- ============ SUBSCRIBER REVIEWS ============ -->
-  <section id="reviews" class="relative w-full bg-ink-950 py-24 sm:py-32">
+  <section id="reviews" class="relative w-full bg-ink-950 py-24 sm:py-32 overflow-hidden">
     <div class="reveal mx-auto max-w-6xl px-6 text-center">
       <span class="ledger-label mb-6 inline-block">آراء المشتركين</span>
       <h2 class="font-display text-3xl font-bold leading-[1.4] text-fog-100 sm:text-4xl md:text-[2.5rem]">
@@ -313,13 +175,16 @@
       <!-- loading -->
       <p id="reviews-loading" class="text-sm text-fog-600">جاري تحميل التقييمات...</p>
 
-      <!-- empty -->
-      <p id="reviews-empty" class="hidden text-sm leading-loose text-fog-400">
-        لا توجد تقييمات منشورة حتى الآن — كن أول من يشارك رأيه.
-      </p>
-
-      <!-- cards -->
-      <div id="reviews-grid" class="grid grid-cols-1 gap-5 text-right sm:grid-cols-2 lg:grid-cols-3"></div>
+      <!-- Swiper Slider Container -->
+      <div class="swiper reviews-swiper mt-10 !pb-14">
+        <div id="reviews-grid" class="swiper-wrapper">
+          <!-- Slides will be injected here -->
+        </div>
+        <!-- Pagination & Navigation -->
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next !hidden sm:!flex"></div>
+        <div class="swiper-button-prev !hidden sm:!flex"></div>
+      </div>
 
       <p class="mt-10 text-xs text-fog-600">
         هل أنت مشترك ولديك رمز التقييم؟
@@ -331,273 +196,14 @@
   <!-- ============ WHY ============ -->
   <section id="why" class="relative w-full bg-ink-900 py-24 sm:py-32">
     <div class="reveal mx-auto max-w-4xl px-6 text-center">
-      <span class="reveal-text ledger-label mb-6 inline-block">لماذا</span>
-      <h2 class="reveal-text d1 font-display text-3xl font-bold leading-[1.4] text-fog-100 sm:text-4xl md:text-[2.5rem]">
+      <span class="ledger-label mb-6 inline-block">لماذا</span>
+      <h2 class="font-display text-3xl font-bold leading-[1.4] text-fog-100 sm:text-4xl md:text-[2.5rem]">
         لماذا تم تطوير هذه الاستراتيجية؟
       </h2>
-      <div class="reveal-text d2 mx-auto my-8 h-px w-32 brass-rule"></div>
-
-      <p class="reveal-text d2 text-base leading-loose text-fog-200 sm:text-lg">
-        يوجد اليوم آلاف المؤشرات وآلاف الاستراتيجيات.
-        لكن المشكلة الحقيقية ليست نقص الأدوات، بل كثرة المعلومات وتضارب الإشارات، مما يجعل المتداول يتردد أو يتخذ قرارات غير مدروسة.
+      <div class="mx-auto my-8 h-px w-32 brass-rule"></div>
+      <p class="text-base leading-loose text-fog-200 sm:text-lg">
+        تم بناء هذه المنهجية بهدف واحد: تبسيط القرار دون التضحية بجودة التحليل.
       </p>
-
-      <p class="reveal-text d3 mt-6 text-base leading-loose text-fog-400 sm:text-lg">
-        لهذا تم بناء هذه المنهجية بهدف واحد:
-      </p>
-
-      <p class="reveal-text d4 mt-4 font-display text-xl font-bold text-brass-400 sm:text-2xl">
-        تبسيط القرار دون التضحية بجودة التحليل.
-      </p>
-
-      <p class="reveal-text d5 mt-6 text-base leading-loose text-fog-200 sm:text-lg">
-        تم دمج سنوات من الخبرة العملية والخوارزميات المتقدمة داخل مؤشر واحد يركز على أهم العناصر التي يجب أن يراها المتداول قبل الدخول في أي صفقة.
-      </p>
-    </div>
-  </section>
-
-  <!-- ============ SIMPLICITY ============ -->
-  <section id="simplicity" class="relative w-full bg-ink-950 py-24 sm:py-32">
-    <div class="reveal mx-auto flex max-w-6xl flex-col items-center gap-16 px-6 lg:flex-row-reverse lg:gap-20">
-
-      <!-- text -->
-      <div class="flex-1 text-center lg:text-right">
-        <span class="reveal-text ledger-label mb-6 inline-block">البساطة</span>
-        <h2 class="reveal-text d1 font-display text-3xl font-bold leading-[1.4] text-fog-100 sm:text-4xl md:text-[2.5rem]">
-          البساطة هي <span class="text-brass-400">القوة</span>
-        </h2>
-        <div class="reveal-text d2 my-8 h-px w-full brass-rule lg:mr-0 lg:ml-auto lg:w-32"></div>
-
-        <p class="reveal-text d3 text-base leading-loose text-fog-200 sm:text-lg">
-          تم تصميم الاستراتيجية لتكون واضحة وسهلة التطبيق، بحيث يستطيع معظم المشتركين فهمها والبدء باستخدامها خلال أقل من ساعة.
-        </p>
-      </div>
-
-      <!-- checklist -->
-      <div class="flex-1">
-        <div class="reveal-text d2 glass-panel rounded-2xl px-6 py-8 sm:px-8">
-          <div class="x-item">
-            <span class="x-icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-            </span>
-            <p class="text-base leading-relaxed text-fog-200">لا تحتاج إلى متابعة عشرات المؤشرات.</p>
-          </div>
-          <div class="x-item">
-            <span class="x-icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-            </span>
-            <p class="text-base leading-relaxed text-fog-200">لا تحتاج إلى رسم عشرات الخطوط.</p>
-          </div>
-          <div class="x-item">
-            <span class="x-icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-            </span>
-            <p class="text-base leading-relaxed text-fog-200">لا تحتاج إلى تحليل معقد.</p>
-          </div>
-          <div class="check-item">
-            <span class="check-icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
-            </span>
-            <p class="text-base font-bold leading-relaxed text-fog-100">كل ما تحتاج إليه هو فهم المنهجية مرة واحدة، ثم تطبيقها على الرسم البياني بثقة.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ WHAT YOU GET ============ -->
-  <section id="offer" class="relative w-full bg-ink-900 py-24 sm:py-32">
-    <div class="reveal mx-auto max-w-6xl px-6">
-      <div class="text-center">
-        <span class="reveal-text ledger-label mb-6 inline-block">المحتوى</span>
-        <h2 class="reveal-text d1 font-display text-3xl font-bold leading-[1.4] text-fog-100 sm:text-4xl md:text-[2.5rem]">
-          ماذا تقدم لك <span class="text-brass-400">الاستراتيجية؟</span>
-        </h2>
-        <div class="reveal-text d2 mx-auto my-8 h-px w-32 brass-rule"></div>
-      </div>
-
-      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-
-        <div class="reveal-text d1 feature-card text-right">
-          <div class="feature-icon mb-4">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg>
-          </div>
-          <p class="text-sm leading-relaxed text-fog-200 sm:text-base">مؤشر واحد يجمع أهم عوامل اتخاذ القرار.</p>
-        </div>
-
-        <div class="reveal-text d2 feature-card text-right">
-          <div class="feature-icon mb-4">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg>
-          </div>
-          <p class="text-sm leading-relaxed text-fog-200 sm:text-base">خوارزميات تعمل في الخلفية لتبسيط قراءة السوق.</p>
-        </div>
-
-        <div class="reveal-text d3 feature-card text-right">
-          <div class="feature-icon mb-4">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3L3 8l9 5 9-5-9-5z"/><path d="M3 12l9 5 9-5"/><path d="M3 16l9 5 9-5"/></svg>
-          </div>
-          <p class="text-sm leading-relaxed text-fog-200 sm:text-base">مناسبة للمبتدئ والمحترف.</p>
-        </div>
-
-        <div class="reveal-text d4 feature-card text-right">
-          <div class="feature-icon mb-4">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13 13 0 0 1 0 18M12 3a13 13 0 0 0 0 18"/></svg>
-          </div>
-          <p class="text-sm leading-relaxed text-fog-200 sm:text-base">تعمل على الأسهم والعملات الرقمية والفوركس والمؤشرات والسلع.</p>
-        </div>
-
-        <div class="reveal-text d5 feature-card text-right">
-          <div class="feature-icon mb-4">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-          </div>
-          <p class="text-sm leading-relaxed text-fog-200 sm:text-base">قابلة للتطبيق على جميع الفريمات الزمنية.</p>
-        </div>
-
-        <div class="reveal-text d6 feature-card text-right">
-          <div class="feature-icon mb-4">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v6M21 7h-6"/></svg>
-          </div>
-          <p class="text-sm leading-relaxed text-fog-200 sm:text-base">تساعد على تحديد مناطق الدخول والخروج بطريقة منظمة.</p>
-        </div>
-
-        <div class="reveal-text d7 feature-card text-right">
-          <div class="feature-icon mb-4">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>
-          </div>
-          <p class="text-sm leading-relaxed text-fog-200 sm:text-base">تساعد على تحديد الأهداف بصورة احترافية.</p>
-        </div>
-
-        <div class="reveal-text d8 feature-card text-right">
-          <div class="feature-icon mb-4">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.5"/></svg>
-          </div>
-          <p class="text-sm leading-relaxed text-fog-200 sm:text-base">تقلل الضوضاء وتزيد من وضوح الرؤية.</p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ COMMUNITY ============ -->
-  <section id="community" class="relative w-full bg-ink-950 py-24 sm:py-32">
-    <div class="reveal mx-auto flex max-w-6xl flex-col items-center gap-16 px-6 lg:flex-row-reverse lg:gap-20">
-
-      <!-- text -->
-      <div class="flex-1 text-center lg:text-right">
-        <span class="reveal-text ledger-label mb-6 inline-block">المجتمع</span>
-        <h2 class="reveal-text d1 font-display text-3xl font-bold leading-[1.4] text-fog-100 sm:text-4xl md:text-[2.5rem]">
-          أكثر من <span class="text-brass-400">مجرد مؤشر</span>
-        </h2>
-        <div class="reveal-text d2 my-8 h-px w-full brass-rule lg:mr-0 lg:ml-auto lg:w-32"></div>
-
-        <p class="reveal-text d2 text-base leading-loose text-fog-200 sm:text-lg">
-          عند الاشتراك لن تحصل على أداة فقط. ستصبح جزءًا من مجتمع خاص على تيليجرام يتم فيه:
-        </p>
-
-        <div class="reveal-text d3 mt-6 text-right">
-          <div class="community-bullet"><span class="community-dot"></span><p class="text-base leading-relaxed text-fog-200">شرح المنهجية عمليًا.</p></div>
-          <div class="community-bullet"><span class="community-dot"></span><p class="text-base leading-relaxed text-fog-200">عرض أمثلة حية من الأسواق.</p></div>
-          <div class="community-bullet"><span class="community-dot"></span><p class="text-base leading-relaxed text-fog-200">الإجابة عن الأسئلة.</p></div>
-          <div class="community-bullet"><span class="community-dot"></span><p class="text-base leading-relaxed text-fog-200">مشاركة تطبيقات يومية.</p></div>
-          <div class="community-bullet"><span class="community-dot"></span><p class="text-base leading-relaxed text-fog-200">متابعة أفضل طرق استخدام الاستراتيجية.</p></div>
-        </div>
-
-        <p class="reveal-text d4 mt-6 text-base leading-loose text-fog-400 sm:text-lg">
-          الهدف هو أن تتمكن من تطبيق المنهجية بنفسك بثقة واستقلالية.
-        </p>
-      </div>
-
-      <!-- telegram card -->
-      <div class="reveal-text d2 flex flex-1 items-center justify-center">
-        <div class="glass-panel flex w-full max-w-sm flex-col items-center rounded-2xl px-8 py-10 text-center">
-          <div class="feature-icon mb-5 !h-14 !w-14">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.5L2.7 11.9c-1 .4-1 1.8.1 2.1l4.2 1.3 1.6 5.1c.3.9 1.4 1.1 2 .4l2.4-2.7 4.4 3.3c.8.6 2 .2 2.2-.8l3-13.9c.2-1.1-.9-2-1.9-1.6zM8.6 14.6l8.6-7.5c.3-.2.6.1.4.4l-7 7.8-.3 3.1-1.7-3.8z"/></svg>
-          </div>
-          <h3 class="font-display text-xl font-bold text-fog-100">قناة WyckoffNawaf على تيليجرام</h3>
-          <p class="mt-3 text-sm leading-relaxed text-fog-400">
-            التسجيل والانضمام إلى المجتمع الخاص يتم عبر رسالة مباشرة على تيليجرام.
-          </p>
-          <a href="https://t.me/wyckoffnawaf" target="_blank" rel="noopener" class="btn-primary mt-6 w-full">
-            تواصل عبر تيليجرام
-          </a>
-          <span class="mt-3 font-mono text-xs tracking-widest text-fog-600" dir="ltr">@wyckoffnawaf</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ TRUST ============ -->
-  <section id="trust" class="relative w-full bg-ink-900 py-24 sm:py-32">
-    <div class="reveal mx-auto max-w-4xl px-6 text-center">
-      <span class="reveal-text ledger-label mb-6 inline-block">الثقة</span>
-      <h2 class="reveal-text d1 font-display text-3xl font-bold leading-[1.4] text-fog-100 sm:text-4xl md:text-[2.5rem]">
-        ثقة المشتركين هي <span class="text-brass-400">معيار النجاح</span>
-      </h2>
-      <div class="reveal-text d2 mx-auto my-8 h-px w-32 brass-rule"></div>
-
-      <div class="reveal-text d3 glass-panel mx-auto max-w-2xl rounded-2xl px-6 py-10 sm:px-10">
-        <p class="text-base leading-loose text-fog-200 sm:text-lg">
-          لا نعتمد على عبارات تسويقية مبالغ فيها، ولا نعرض تقييمات مجهولة المصدر.
-        </p>
-        <p class="mt-5 text-base leading-loose text-fog-200 sm:text-lg">
-          جميع التقييمات الموجودة في الموقع يتم نشرها من مشتركين موثقين فقط بعد التحقق من عضويتهم، ويتم احتساب متوسط التقييم بشكل تلقائي.
-        </p>
-        <div class="my-6 h-px w-full brass-rule"></div>
-        <p class="text-sm font-bold leading-loose text-brass-300 sm:text-base">
-          لأن أفضل من يتحدث عن قيمة المنهجية هم الأشخاص الذين استخدموها بالفعل.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ GUARANTEE ============ -->
-  <section id="guarantee" class="relative w-full bg-ink-950 py-24 sm:py-32">
-    <div class="reveal mx-auto max-w-4xl px-6 text-center">
-      <div class="reveal-text mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-brass-500/30 bg-brass-500/10 text-brass-400">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
-      </div>
-      <span class="reveal-text ledger-label mb-6 inline-block">الضمان</span>
-      <h2 class="reveal-text d1 font-display text-3xl font-bold leading-[1.4] text-fog-100 sm:text-4xl md:text-[2.5rem]">
-        ضمان <span class="text-brass-400">استرداد المبلغ</span>
-      </h2>
-      <div class="reveal-text d2 mx-auto my-8 h-px w-32 brass-rule"></div>
-
-      <p class="reveal-text d3 text-base leading-loose text-fog-200 sm:text-lg">
-        نؤمن أن الثقة تُبنى بالشفافية. إذا التزم المشترك بالاطلاع على المادة التعليمية وتطبيق المنهجية وفق الإرشادات، ثم رأى أنها لا تحقق له الفائدة المتوقعة وفق سياسة الاسترجاع المعلنة، فيمكنه طلب استرداد المبلغ.
-      </p>
-      <p class="reveal-text d4 mt-5 text-base leading-loose text-fog-400 sm:text-lg">
-        نسعى إلى بناء علاقة طويلة الأمد مع المتداول، تقوم على القيمة الحقيقية والرضا، وليس على مجرد إتمام عملية شراء.
-      </p>
-    </div>
-  </section>
-
-  <!-- ============ FINAL CTA ============ -->
-  <section id="register" class="relative w-full overflow-hidden bg-ink-900 py-28 sm:py-36">
-    <div class="pointer-events-none absolute inset-0 opacity-40">
-      <div class="brass-rule absolute top-0 w-full"></div>
-      <div class="brass-rule absolute bottom-0 w-full"></div>
-    </div>
-    <div class="reveal mx-auto max-w-4xl px-6 text-center">
-      <h2 class="reveal-text font-display text-2xl font-bold leading-[1.5] text-fog-100 sm:text-3xl md:text-4xl">
-        التداول الناجح لا يعتمد على كثرة الأدوات...
-        <br />
-        <span class="text-brass-400">بل على وضوح القرار.</span>
-      </h2>
-
-      <p class="reveal-text d1 mx-auto mt-8 max-w-2xl text-base leading-loose text-fog-200 sm:text-lg">
-        ولهذا تم إنشاء <span class="font-bold text-fog-100">WyckoffNawaf</span> — منهجية تجمع سنوات من الخبرة والتحليل والخوارزميات في مؤشر واحد، واضح، عملي، وسهل التعلم، ليمنحك إطارًا منظمًا لاتخاذ قراراتك بثقة أكبر في مختلف الأسواق والفريمات الزمنية.
-      </p>
-
-      <p class="reveal-text d2 mx-auto mt-6 max-w-2xl text-base font-bold leading-loose text-fog-100 sm:text-lg">
-        ابدأ رحلتك اليوم، واكتشف كيف يمكن للبساطة المدروسة أن تكون أحد أقوى عناصر النجاح في التداول.
-      </p>
-
-      <div class="reveal-text d3 mt-10">
-        <a href="https://t.me/wyckoffnawaf" target="_blank" rel="noopener" class="btn-primary">
-          اطلب الاستراتيجية الآن عبر تيليجرام
-        </a>
-        <p class="mt-4 font-mono text-xs tracking-widest text-fog-600" dir="ltr">@wyckoffnawaf</p>
-      </div>
     </div>
   </section>
 
@@ -610,16 +216,16 @@
       <span class="h-2 w-2 rounded-full bg-brass-400"></span>
       <span class="font-mono text-sm tracking-[0.25em] text-fog-100">WYCKOFF<span class="text-brass-400">NAWAF</span></span>
     </div>
-    <p class="font-mono text-xs tracking-widest text-fog-600">منهجية وايكوف · قراءة الحجم · سلوك الأموال الذكية</p>
+    <p class="font-mono text-xs tracking-widest text-fog-600">WyckoffNawaf · 2026</p>
   </div>
 </footer>
 
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 <script>
-  // Robust Reveal Animation
   function initReveal() {
     const reveals = document.querySelectorAll(".reveal");
-    const options = { threshold: 0.1, rootMargin: "0px" };
-    
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -627,26 +233,15 @@
           observer.unobserve(entry.target);
         }
       });
-    }, options);
-
-    reveals.forEach((el) => {
-      if (el.getBoundingClientRect().top < window.innerHeight) {
-        el.classList.add("in-view");
-      } else {
-        observer.observe(el);
-      }
-    });
+    }, { threshold: 0.1 });
+    reveals.forEach((el) => observer.observe(el));
   }
-  
   window.addEventListener('DOMContentLoaded', initReveal);
 </script>
 
 <script type="module">
-  // Firebase Integration
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import {
-    getFirestore, collection, getDocs, query, orderBy, limit,
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyB7mn5gg8LDOwnYsqmxd2UwdiDWNRPuoAQ",
@@ -665,8 +260,7 @@
   const STAR_EMPTY = '#2A313C';
   const STAR_PATH = "M12 2l2.9 6.1 6.7.9-4.8 4.7 1.1 6.7L12 17.3 5.9 20.4l1.1-6.7L2.2 9l6.7-.9L12 2z";
 
-  function starsHTML(rating, size) {
-    size = size || 18;
+  function starsHTML(rating, size = 18) {
     let html = "";
     for (let i = 1; i <= 5; i++) {
       const color = i <= Math.round(rating) ? STAR_FILLED : STAR_EMPTY;
@@ -683,20 +277,16 @@
 
   async function loadReviews() {
     const loadingEl = document.getElementById("reviews-loading");
-    const emptyEl = document.getElementById("reviews-empty");
     const summaryEl = document.getElementById("reviews-summary");
     const gridEl = document.getElementById("reviews-grid");
 
     try {
-      const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"), limit(30));
+      const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"), limit(50));
       const snap = await getDocs(q);
       
       loadingEl.style.display = 'none';
 
-      if (snap.empty) {
-        emptyEl.classList.remove("hidden");
-        return;
-      }
+      if (snap.empty) return;
 
       const docs = snap.docs.map((d) => d.data());
       const ratings = docs.map((d) => Number(d.rating) || 0);
@@ -706,25 +296,35 @@
       document.getElementById("reviews-count").textContent = docs.length;
       document.getElementById("reviews-stars").innerHTML = starsHTML(avg, 22);
       
-      summaryEl.classList.remove("hidden");
       summaryEl.style.display = 'flex';
 
-      gridEl.innerHTML = docs
-        .slice(0, 9)
-        .map(
-          (d, i) => `
-        <div class="reveal-text d${Math.min(i + 1, 8)} feature-card text-right" style="opacity:1; transform:none;">
-          <div class="mb-3 flex items-center gap-1">${starsHTML(d.rating || 0)}</div>
-          <p class="mb-4 text-sm leading-relaxed text-fog-200 sm:text-base">${escapeHTML(d.text)}</p>
-          <p class="font-mono text-xs tracking-widest text-fog-600">${escapeHTML(d.name) || "مشترك موثق"}</p>
-        </div>`
-        )
-        .join("");
+      gridEl.innerHTML = docs.map((d) => `
+        <div class="swiper-slide h-auto">
+          <div class="feature-card text-right flex flex-col">
+            <div class="mb-3 flex items-center gap-1">${starsHTML(d.rating || 0)}</div>
+            <p class="mb-6 text-sm leading-relaxed text-fog-200 sm:text-base flex-grow">${escapeHTML(d.text)}</p>
+            <p class="font-mono text-xs tracking-widest text-brass-500 mt-auto border-t border-brass-500/10 pt-4">${escapeHTML(d.name) || "مشترك موثق"}</p>
+          </div>
+        </div>
+      `).join("");
+
+      // Initialize Swiper after content is loaded
+      new Swiper(".reviews-swiper", {
+        slidesPerView: 1,
+        spaceBetween: 20,
+        loop: docs.length > 3,
+        autoplay: { delay: 4000, disableOnInteraction: false },
+        pagination: { el: ".swiper-pagination", clickable: true },
+        navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+        breakpoints: {
+          640: { slidesPerView: 2 },
+          1024: { slidesPerView: 3 }
+        }
+      });
+
     } catch (err) {
       console.error("Reviews load error:", err);
       loadingEl.style.display = 'none';
-      emptyEl.classList.remove("hidden");
-      emptyEl.textContent = "حدث خطأ أثناء تحميل التقييمات. يرجى المحاولة لاحقاً.";
     }
   }
 
