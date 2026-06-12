@@ -1,3 +1,55 @@
+
+
+ابدأ التجربة المجانية
+
+مشاركة
+باقي نقطه مهمه بالنسبة لكتابة الرأي : لا اريد اي واحد يكتب الا اذا اعطيته الرقم السري للدخول 
+N2030 
+Lite
+فهمت تماماً، سأقوم الآن بتحديث صفحة كتابة الرأي لإضافة نظام حماية يطلب "رمز التحقق" (N2030) قبل السماح بإرسال التقييم، لضمان أن المشتركين المعتمدين فقط هم من يمكنهم المشاركة.
+Lite
+تم تحديث صفحة "كتابة رأي المشترك" بنجاح لتشمل حماية بالرمز السري.
+التحديثات الجديدة:
+حقل رمز التحقق: أضفت حقلاً جديداً في بداية النموذج يطلب إدخال الرمز السري.
+التحقق من الرمز: لن يتم إرسال أي بيانات إلى قاعدة البيانات إلا إذا كان الرمز المدخل هو N2030.
+رسائل تنبيه: في حال إدخال رمز خاطئ، تظهر رسالة تنبيه للمستخدم تطلب منه التأكد من الرمز.
+تصميم متناسق: تم إبراز حقل الرمز السري بلون يتناسب مع تصميم الموقع لضمان سهولة رؤيته.
+يمكنك الآن رفع هذا الملف المحدث. سيتمكن فقط الأشخاص الذين يمتلكون الرمز من إضافة تقييماتهم إلى موقعك. هل هناك أي شيء آخر تود إضافته؟
+review.html
+رمز · 9.18 KB
+عرض جميع الملفات في هذه المهمة
+تم إكمال المهمة
+كيف كانت هذه النتيجة؟
+اقتراحات للمتابعة
+review.html
+الاختلاف
+الأصلي
+المعدل
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WyckoffNawaf | شارك رأيك</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+
+كمبيوتر Manus
+Manus يستخدم المحرر
+تقدم المهمة
+3 / 3
+فحص الكود الكامل لقسم SUBSCRIBER REVIEWS
+تشخيص المشكلة وإصلاحها في ملف HTML
+تسليم الملف المصحح للمستخدم
+
+
+
+أجهزة الكمبيوتر السحابية
+جديد
+
+Manus is an AI Agent and can make mistakes. Please double-check before use.
+
+review.html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -66,7 +118,7 @@
       <span class="h-2 w-2 rounded-full bg-brass-400"></span>
       <span class="font-mono text-sm tracking-[0.25em] text-fog-100">WYCKOFF<span class="text-brass-400">NAWAF</span></span>
     </a>
-    <a href="top9.html" class="text-sm text-fog-400 hover:text-brass-400 transition-colors">العودة للرئيسية</a>
+    <a href="index.html" class="text-sm text-fog-400 hover:text-brass-400 transition-colors">العودة للرئيسية</a>
   </div>
 </header>
 
@@ -74,10 +126,18 @@
   <div class="glass-panel w-full max-w-xl rounded-2xl p-8 sm:p-12">
     <div class="text-center mb-10">
       <h1 class="font-display text-2xl font-bold text-fog-100 mb-3">شارك تجربتك مع الاستراتيجية</h1>
-      <p class="text-fog-400 text-sm">رأيك يساعدنا على التطوير ويساعد المتداولين الآخرين.</p>
+      <p class="text-fog-400 text-sm">هذا القسم مخصص للمشتركين فقط، يرجى إدخال رمز التحقق.</p>
     </div>
 
     <form id="review-form" class="space-y-6">
+      <!-- Access Code -->
+      <div>
+        <label class="block text-xs font-mono tracking-widest text-brass-400 uppercase mb-2">رمز التحقق (الخاص بالمشتركين)</label>
+        <input type="text" id="access-code" class="input-field border-brass-500/40" placeholder="أدخل الرمز السري هنا" required />
+      </div>
+
+      <div class="h-px w-full bg-brass-500/10 my-4"></div>
+
       <!-- Name -->
       <div>
         <label class="block text-xs font-mono tracking-widest text-brass-400 uppercase mb-2">الاسم (أو اللقب)</label>
@@ -132,6 +192,8 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  const CORRECT_CODE = "N2030";
+
   // Star Rating Logic
   const stars = document.querySelectorAll('.star-btn');
   const ratingInput = document.getElementById('rating-value');
@@ -171,9 +233,17 @@
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    const accessCode = document.getElementById('access-code').value.trim();
     const name = document.getElementById('reviewer-name').value;
     const rating = parseInt(ratingInput.value);
     const text = document.getElementById('review-text').value;
+
+    // Password Validation
+    if (accessCode !== CORRECT_CODE) {
+      showStatus("رمز التحقق غير صحيح. يرجى التأكد من الرمز والمحاولة مرة أخرى.", "error");
+      document.getElementById('access-code').focus();
+      return;
+    }
 
     if (rating === 0) {
       showStatus("يرجى اختيار التقييم بالنجوم أولاً.", "error");
@@ -212,6 +282,7 @@
     statusMsg.textContent = msg;
     statusMsg.classList.remove('hidden', 'text-green-400', 'text-red-400');
     statusMsg.classList.add(type === 'success' ? 'text-green-400' : 'text-red-400');
+    statusMsg.style.display = 'block';
   }
 </script>
 </body>
