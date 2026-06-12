@@ -322,6 +322,44 @@
     </div>
   </section>
 
+  <!-- ============ SUBSCRIBER REVIEWS ============ -->
+  <section id="reviews" class="relative w-full bg-ink-950 py-24 sm:py-32">
+    <div class="reveal mx-auto max-w-6xl px-6 text-center">
+      <span class="reveal-text ledger-label mb-6 inline-block">آراء المشتركين</span>
+      <h2 class="reveal-text d1 font-display text-3xl font-bold leading-[1.4] text-fog-100 sm:text-4xl md:text-[2.5rem]">
+        ماذا يقول <span class="text-brass-400">المشتركون؟</span>
+      </h2>
+      <div class="reveal-text d2 mx-auto my-8 h-px w-32 brass-rule"></div>
+
+      <!-- summary -->
+      <div id="reviews-summary" class="reveal-text d2 mx-auto mb-12 hidden flex flex-col items-center gap-2">
+        <div class="flex items-baseline gap-3">
+          <span id="reviews-avg" class="font-display text-4xl font-black text-brass-400">0.0</span>
+          <span id="reviews-stars" class="flex items-center gap-1"></span>
+        </div>
+        <p class="font-mono text-xs tracking-widest text-fog-600">
+          بناءً على <span id="reviews-count">0</span> تقييم من مشتركين موثقين
+        </p>
+      </div>
+
+      <!-- loading -->
+      <p id="reviews-loading" class="reveal-text d2 text-sm text-fog-600">جاري تحميل التقييمات...</p>
+
+      <!-- empty -->
+      <p id="reviews-empty" class="reveal-text d2 hidden text-sm leading-loose text-fog-400">
+        لا توجد تقييمات منشورة حتى الآن — كن أول من يشارك رأيه.
+      </p>
+
+      <!-- cards -->
+      <div id="reviews-grid" class="grid grid-cols-1 gap-5 text-right sm:grid-cols-2 lg:grid-cols-3"></div>
+
+      <p class="reveal-text d3 mt-10 text-xs text-fog-600">
+        هل أنت مشترك ولديك رمز التقييم؟
+        <a href="review.html" class="text-brass-400 underline-offset-4 hover:underline">شارك رأيك من هنا</a>
+      </p>
+    </div>
+  </section>
+
   <!-- ============ WHY ============ -->
   <section id="why" class="relative w-full bg-ink-900 py-24 sm:py-32">
     <div class="reveal mx-auto max-w-4xl px-6 text-center">
@@ -619,6 +657,91 @@
     });
   }, { threshold: 0.2, rootMargin: "-80px" });
   reveals.forEach((el) => observer.observe(el));
+</script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+  import {
+    getFirestore, collection, getDocs, query, orderBy, limit,
+  } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB7mn5gg8LDOwnYsqmxd2UwdiDWNRPuoAQ",
+    authDomain: "top10-a6e0e.firebaseapp.com",
+    projectId: "top10-a6e0e",
+    storageBucket: "top10-a6e0e.firebasestorage.app",
+    messagingSenderId: "985038639156",
+    appId: "1:985038639156:web:af5c4031f50ddfc85b3a61",
+    measurementId: "G-LXG3X6WXEE",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const STAR_FILLED = '#D4B98A';
+  const STAR_EMPTY = '#2A313C';
+  const STAR_PATH = "M12 2l2.9 6.1 6.7.9-4.8 4.7 1.1 6.7L12 17.3 5.9 20.4l1.1-6.7L2.2 9l6.7-.9L12 2z";
+
+  function starsHTML(rating, size) {
+    size = size || 18;
+    let html = "";
+    for (let i = 1; i <= 5; i++) {
+      const color = i <= Math.round(rating) ? STAR_FILLED : STAR_EMPTY;
+      html += `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}"><path d="${STAR_PATH}"/></svg>`;
+    }
+    return html;
+  }
+
+  function escapeHTML(str) {
+    const div = document.createElement("div");
+    div.textContent = str == null ? "" : String(str);
+    return div.innerHTML;
+  }
+
+  async function loadReviews() {
+    const loadingEl = document.getElementById("reviews-loading");
+    const emptyEl = document.getElementById("reviews-empty");
+    const summaryEl = document.getElementById("reviews-summary");
+    const gridEl = document.getElementById("reviews-grid");
+
+    try {
+      const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"), limit(30));
+      const snap = await getDocs(q);
+      const docs = snap.docs.map((d) => d.data());
+      loadingEl.classList.add("hidden");
+
+      if (docs.length === 0) {
+        emptyEl.classList.remove("hidden");
+        return;
+      }
+
+      const ratings = docs.map((d) => Number(d.rating) || 0);
+      const avg = ratings.reduce((s, r) => s + r, 0) / ratings.length;
+
+      document.getElementById("reviews-avg").textContent = avg.toFixed(1);
+      document.getElementById("reviews-count").textContent = docs.length;
+      document.getElementById("reviews-stars").innerHTML = starsHTML(avg, 22);
+      summaryEl.classList.remove("hidden");
+      summaryEl.classList.add("flex");
+
+      gridEl.innerHTML = docs
+        .slice(0, 9)
+        .map(
+          (d, i) => `
+        <div class="reveal-text d${Math.min(i + 1, 8)} feature-card text-right">
+          <div class="mb-3 flex items-center gap-1">${starsHTML(d.rating || 0)}</div>
+          <p class="mb-4 text-sm leading-relaxed text-fog-200 sm:text-base">${escapeHTML(d.text)}</p>
+          <p class="font-mono text-xs tracking-widest text-fog-600">${escapeHTML(d.name) || "مشترك موثق"}</p>
+        </div>`
+        )
+        .join("");
+    } catch (err) {
+      console.error("reviews load error", err);
+      loadingEl.classList.add("hidden");
+      emptyEl.classList.remove("hidden");
+    }
+  }
+
+  loadReviews();
 </script>
 </body>
 </html>
