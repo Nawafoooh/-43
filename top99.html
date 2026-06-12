@@ -1,0 +1,219 @@
+review.html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WyckoffNawaf | شارك رأيك</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@500;700;900&family=Tajawal:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: { 950: "#06070A", 900: "#0B0E13", 800: "#11151C", 700: "#1A2029", 600: "#242B36" },
+          brass: { 300: "#EAD9B6", 400: "#D4B98A", 500: "#C2A06B", 600: "#9C7F4F" },
+          fog: { 100: "#E7EAEF", 200: "#C7CDD6", 400: "#8B93A1", 600: "#5A6372", 800: "#2A313C" },
+        },
+        fontFamily: {
+          display: ["'Noto Kufi Arabic'", "sans-serif"],
+          body: ["'Tajawal'", "sans-serif"],
+          mono: ["'IBM Plex Mono'", "ui-monospace", "monospace"],
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  html, body { background-color: #06070a; color: #e7eaef; }
+  .glass-panel {
+    background: linear-gradient(155deg, rgba(26, 32, 41, 0.55) 0%, rgba(17, 21, 28, 0.35) 100%);
+    border: 1px solid rgba(212, 185, 138, 0.12);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    border-radius: 0.375rem; padding: 1rem 2rem;
+    font-family: "Noto Kufi Arabic", sans-serif; font-weight: 700;
+    color: #06070A;
+    background: linear-gradient(135deg, #eadab6 0%, #c2a06b 55%, #9c7f4f 100%);
+    transition: all 0.3s;
+  }
+  .btn-primary:hover:not(:disabled) { box-shadow: 0 0 32px rgba(194, 160, 107, 0.35); transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  
+  .input-field {
+    width: 100%; background: rgba(6, 7, 10, 0.5); border: 1px solid rgba(212, 185, 138, 0.2);
+    border-radius: 0.5rem; padding: 0.75rem 1rem; color: #e7eaef; outline: none; transition: border-color 0.3s;
+  }
+  .input-field:focus { border-color: #c2a06b; }
+  
+  .star-btn { color: #2A313C; transition: color 0.2s; cursor: pointer; }
+  .star-btn.active { color: #D4B98A; }
+</style>
+</head>
+
+<body class="bg-ink-950 font-body text-fog-100 antialiased min-h-screen flex flex-col">
+
+<header class="py-6 border-bottom border-fog-800/30">
+  <div class="mx-auto max-w-6xl px-6 flex justify-between items-center">
+    <a href="index.html" class="flex items-center gap-2">
+      <span class="h-2 w-2 rounded-full bg-brass-400"></span>
+      <span class="font-mono text-sm tracking-[0.25em] text-fog-100">WYCKOFF<span class="text-brass-400">NAWAF</span></span>
+    </a>
+    <a href="index.html" class="text-sm text-fog-400 hover:text-brass-400 transition-colors">العودة للرئيسية</a>
+  </div>
+</header>
+
+<main class="flex-1 flex items-center justify-center p-6">
+  <div class="glass-panel w-full max-w-xl rounded-2xl p-8 sm:p-12">
+    <div class="text-center mb-10">
+      <h1 class="font-display text-2xl font-bold text-fog-100 mb-3">شارك تجربتك مع الاستراتيجية</h1>
+      <p class="text-fog-400 text-sm">رأيك يساعدنا على التطوير ويساعد المتداولين الآخرين.</p>
+    </div>
+
+    <form id="review-form" class="space-y-6">
+      <!-- Name -->
+      <div>
+        <label class="block text-xs font-mono tracking-widest text-brass-400 uppercase mb-2">الاسم (أو اللقب)</label>
+        <input type="text" id="reviewer-name" class="input-field" placeholder="مثال: أحمد محمد" required />
+      </div>
+
+      <!-- Rating -->
+      <div>
+        <label class="block text-xs font-mono tracking-widest text-brass-400 uppercase mb-2">التقييم</label>
+        <div id="star-rating" class="flex gap-2 text-3xl">
+          <button type="button" class="star-btn" data-value="1">★</button>
+          <button type="button" class="star-btn" data-value="2">★</button>
+          <button type="button" class="star-btn" data-value="3">★</button>
+          <button type="button" class="star-btn" data-value="4">★</button>
+          <button type="button" class="star-btn" data-value="5">★</button>
+        </div>
+        <input type="hidden" id="rating-value" value="0" required />
+      </div>
+
+      <!-- Review Text -->
+      <div>
+        <label class="block text-xs font-mono tracking-widest text-brass-400 uppercase mb-2">رأيك في الاستراتيجية</label>
+        <textarea id="review-text" rows="4" class="input-field resize-none" placeholder="اكتب رأيك هنا بكل صراحة..." required></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" id="submit-btn" class="btn-primary w-full mt-4">إرسال التقييم</button>
+      
+      <p id="status-msg" class="text-center text-sm mt-4 hidden"></p>
+    </form>
+  </div>
+</main>
+
+<footer class="py-8 text-center border-t border-fog-800/30">
+  <p class="font-mono text-[10px] tracking-widest text-fog-600 uppercase">WyckoffNawaf · مجتمع الأموال الذكية</p>
+</footer>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB7mn5gg8LDOwnYsqmxd2UwdiDWNRPuoAQ",
+    authDomain: "top10-a6e0e.firebaseapp.com",
+    projectId: "top10-a6e0e",
+    storageBucket: "top10-a6e0e.firebasestorage.app",
+    messagingSenderId: "985038639156",
+    appId: "1:985038639156:web:af5c4031f50ddfc85b3a61",
+    measurementId: "G-LXG3X6WXEE",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Star Rating Logic
+  const stars = document.querySelectorAll('.star-btn');
+  const ratingInput = document.getElementById('rating-value');
+
+  stars.forEach(star => {
+    star.addEventListener('click', () => {
+      const val = parseInt(star.getAttribute('data-value'));
+      ratingInput.value = val;
+      updateStars(val);
+    });
+    
+    star.addEventListener('mouseover', () => {
+      updateStars(parseInt(star.getAttribute('data-value')));
+    });
+  });
+
+  document.getElementById('star-rating').addEventListener('mouseleave', () => {
+    updateStars(parseInt(ratingInput.value));
+  });
+
+  function updateStars(val) {
+    stars.forEach(s => {
+      const sVal = parseInt(s.getAttribute('data-value'));
+      if (sVal <= val) {
+        s.classList.add('active');
+      } else {
+        s.classList.remove('active');
+      }
+    });
+  }
+
+  // Form Submission
+  const form = document.getElementById('review-form');
+  const statusMsg = document.getElementById('status-msg');
+  const submitBtn = document.getElementById('submit-btn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const name = document.getElementById('reviewer-name').value;
+    const rating = parseInt(ratingInput.value);
+    const text = document.getElementById('review-text').value;
+
+    if (rating === 0) {
+      showStatus("يرجى اختيار التقييم بالنجوم أولاً.", "error");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "جاري الإرسال...";
+
+    try {
+      await addDoc(collection(db, "reviews"), {
+        name: name,
+        rating: rating,
+        text: text,
+        createdAt: serverTimestamp()
+      });
+
+      showStatus("شكراً لك! تم إرسال تقييمك بنجاح وسيظهر في الموقع قريباً.", "success");
+      form.reset();
+      updateStars(0);
+      ratingInput.value = 0;
+      
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 3000);
+
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      showStatus("حدث خطأ أثناء الإرسال. يرجى المحاولة لاحقاً.", "error");
+      submitBtn.disabled = false;
+      submitBtn.textContent = "إرسال التقييم";
+    }
+  });
+
+  function showStatus(msg, type) {
+    statusMsg.textContent = msg;
+    statusMsg.classList.remove('hidden', 'text-green-400', 'text-red-400');
+    statusMsg.classList.add(type === 'success' ? 'text-green-400' : 'text-red-400');
+  }
+</script>
+</body>
+</html>
