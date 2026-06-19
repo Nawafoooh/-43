@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام المسوقين الاحترافي | WyckoffNawaf</title>
+<title>نظام المسوقين المبسط | WyckoffNawaf</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2 family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#ffffff;
@@ -18,10 +18,6 @@
   --green-soft:#e6f6ee;
   --blue:#2962ff;
   --blue-soft:#eaf0ff;
-  --amber:#e8a33d;
-  --amber-soft:#fff7ea;
-  --red:#df382c;
-  --red-soft:#fbebeb;
   --radius:18px;
   --radius-sm:10px;
   --shadow:0 10px 30px -12px rgba(11,13,16,.12);
@@ -29,319 +25,169 @@
 }
 *{box-sizing:border-box;}
 body{
-  margin:0;background:var(--bg);color:var(--ink);
-  font-family:'Cairo','Tajawal',sans-serif;line-height:1.65;
-  -webkit-font-smoothing:antialiased;
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:'Cairo','Tajawal',sans-serif; line-height:1.65;
 }
-.wrap{max-width:1140px;margin:0 auto;padding:20px;}
-header{border-bottom:1px solid var(--line);padding:15px 0;background:#fff;}
-.nav-tabs{display:flex;gap:10px;margin-bottom:30px;border-bottom:2px solid var(--line-soft);padding-bottom:10px;}
-.tab-btn{
-  background:none;border:none;padding:10px 20px;font-family:inherit;
-  font-weight:700;font-size:15px;cursor:pointer;color:var(--ink-soft);
-  border-radius:var(--radius-sm);transition:all 0.2s;
-}
-.tab-btn.active{background:var(--blue-soft);color:var(--blue);}
+.wrap{max-width:800px; margin:0 auto; padding:40px 20px;}
+.header-title { text-align:center; margin-bottom: 40px; }
+.header-title h1 { font-size: 32px; font-weight: 900; margin: 0; }
+.header-title p { color: var(--ink-soft); font-size: 16px; margin-top: 5px; }
 
-/* App Views */
-.view-section{display:none;}
-.view-section.active{display:block;}
+/* البوابات */
+.gate-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+@media(max-width: 650px) { .gate-container { grid-template-columns: 1fr; } }
 
-/* Forms */
-.form-card{
-  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
-  padding:35px;max-width:550px;margin:40px auto;box-shadow:var(--shadow);
+.gate-card {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 30px; box-shadow: var(--shadow-sm); cursor: pointer; text-align: center;
+  transition: transform 0.2s, border-color 0.2s;
 }
-.form-title{font-size:22px;font-weight:800;text-align:center;margin-bottom:25px;}
-.input-group{margin-bottom:18px;text-align:right;}
-.input-group label{display:block;font-weight:700;font-size:14px;margin-bottom:6px;color:var(--ink);}
-input, select, textarea{
-  width:100%;padding:12px 16px;border:1px solid var(--line);border-radius:var(--radius-sm);
-  font-family:inherit;font-size:15px;background:var(--panel);transition:border 0.2s;
-}
-input:focus, select:focus{outline:none;border-color:var(--blue);}
+.gate-card:hover { transform: translateY(-4px); border-color: var(--blue); box-shadow: var(--shadow); }
+.gate-card.active { border: 2px solid var(--blue); background: var(--panel); }
+.gate-icon { font-size: 40px; margin-bottom: 10px; }
+.gate-title { font-size: 18px; font-weight: 800; color: var(--ink); }
 
-/* Buttons */
-.btn-block{
-  width:100%;border:none;cursor:pointer;background:var(--blue);color:#fff;
-  padding:15px;border-radius:var(--radius-sm);font-family:inherit;font-weight:800;
-  font-size:16px;transition:background 0.2s;
-}
-.btn-block:hover{background:#1f4fe0;}
-.btn-sec{
-  background:var(--panel);border:1px solid var(--line);color:var(--ink);
-  padding:8px 14px;border-radius:var(--radius-sm);font-family:inherit;font-weight:700;
-  cursor:pointer;font-size:13px;
-}
-.btn-sec:hover{background:var(--line-soft);}
+/* الأقسام المخفية والظاهرة */
+.section-panel { display: none; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow); }
+.section-panel.show { display: block; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Dashboard Stats Grid */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:20px;margin-bottom:30px;}
-.stat-card{
-  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-  padding:22px;box-shadow:var(--shadow-sm);position:relative;
+.form-group { margin-bottom: 20px; text-align: right; }
+.form-group label { display: block; font-weight: 800; font-size: 14px; margin-bottom: 6px; }
+input, select {
+  width: 100%; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  font-family: inherit; font-size: 15px; background: var(--panel);
 }
-.stat-label{font-size:14px;color:var(--ink-soft);font-weight:700;}
-.stat-val{font-size:28px;font-weight:900;margin-top:5px;color:var(--ink);}
-.stat-val span{font-size:14px;color:var(--ink-soft);font-weight:600;}
+input:focus, select:focus { outline: none; border-color: var(--blue); }
 
-/* Code Box */
-.code-box{
-  display:flex;align-items:center;justify-content:space-between;
-  background:var(--blue-soft);border:1px dashed var(--blue);
-  padding:14px 20px;border-radius:var(--radius-sm);margin:20px 0;
+.btn-submit {
+  width: 100%; border: none; cursor: pointer; background: var(--ink); color: #fff;
+  padding: 16px; border-radius: var(--radius-sm); font-family: inherit; font-weight: 800;
+  font-size: 16px; transition: background 0.2s;
 }
-.code-text{font-size:20px;font-weight:900;color:var(--blue);letter-spacing:1px;}
+.btn-submit:hover { background: #222; }
+.btn-blue { background: var(--blue); }
+.btn-blue:hover { background: #1f4fe0; }
 
-/* Tables */
-.table-container{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow-x:auto;margin-top:20px;}
-table{width:100%;border-collapse:collapse;text-align:right;}
-th{background:var(--panel);padding:16px;font-weight:800;font-size:14px;border-bottom:1px solid var(--line);}
-td{padding:16px;font-size:14.5px;border-bottom:1px solid var(--line-soft);vertical-align:middle;}
-.badge{
-  padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;display:inline-block;
+/* عرض الكود */
+.code-result-box {
+  background: var(--green-soft); border: 2px dashed var(--green); padding: 20px;
+  border-radius: var(--radius-sm); margin-top: 25px; text-align: center; display: none;
 }
-.badge.pending{background:var(--amber-soft);color:var(--amber);}
-.badge.approved{background:var(--green-soft);color:var(--green);}
-.badge.cancelled{background:var(--red-soft);color:var(--red);}
+.code-result-box.show { display: block; }
+.code-num { font-size: 26px; font-weight: 900; color: var(--green); letter-spacing: 1px; display: block; margin: 10px 0; }
 
-/* Split Layout for Admin */
-.admin-layout { display: grid; grid-template-columns: 1fr; gap: 30px; }
-@media(min-width: 900px) { .admin-layout { grid-template-columns: 2fr 1fr; } }
-.admin-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 25px; margin-bottom: 25px; }
+/* الجداول */
+.table-container { overflow-x: auto; margin-top: 25px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+table { width: 100%; border-collapse: collapse; text-align: right; font-size: 14.5px; }
+th { background: var(--panel); padding: 12px 16px; font-weight: 800; border-bottom: 1px solid var(--line); }
+td { padding: 14px 16px; border-bottom: 1px solid var(--line-soft); }
 
+footer { text-align: center; margin-top: 60px; color: var(--ink-soft); font-size: 14px; }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="wrap" style="display:flex; justify-content:space-between; align-items:center; padding: 0 20px;">
-    <div style="font-weight:900; font-size:20px;">نظام الإحالات <span style="color:var(--blue);">WyckoffNawaf</span></div>
-    <div id="userInfo" style="font-weight:700; font-size:14px; color:var(--ink-soft);"></div>
-  </div>
-</header>
-
 <div class="wrap">
-  <div class="nav-tabs">
-    <button class="tab-btn active" onclick="switchView('registerView', this)">تسجيل مسوق</button>
-    <button class="tab-btn" onclick="switchView('loginView', this)">دخول المسوقين</button>
-    <button class="tab-btn" onclick="switchView('dashboardView', this)">لوحة التحكم</button>
-    <button class="tab-btn" onclick="switchView('adminView', this)">لوحة الإدارة</button>
-    <button class="tab-btn" onclick="switchView('publicView', this)">الصفحة العامة</button>
+  <div class="header-title">
+    <h1>نظام المسوقين | WYCKOFFNAWAF</h1>
+    <p>بساطة وسهولة في توليد الأكواد وإدارة الإحالات المشتركة</p>
   </div>
 
-  <div id="registerView" class="view-section active">
-    <div class="form-card">
-      <div class="form-title">انضم كمسوق معتمد 🚀</div>
-      <form id="regForm">
-        <div class="input-group">
-          <label>الاسم الكامل</label>
-          <input type="text" id="regName" required placeholder="أدخل اسمك الثلاثي">
-        </div>
-        <div class="input-group">
-          <label>رقم الجوال</label>
-          <input type="tel" id="regPhone" required placeholder="05xxxxxxxx">
-        </div>
-        <div class="input-group">
-          <label>البريد الإلكتروني</label>
-          <input type="email" id="regEmail" required placeholder="name@example.com">
-        </div>
-        <div class="input-group">
-          <label>اسم المستخدم</label>
-          <input type="text" id="regUser" required placeholder="باللغة الإنجليزية">
-        </div>
-        <div class="input-group">
-          <label>كلمة المرور</label>
-          <input type="password" id="regPass" required placeholder="••••••••">
-        </div>
-        <button type="submit" class="btn-block">إنشاء حساب المسوق وتوليد الكود</button>
-      </form>
+  <!-- خيارات البوابات الأساسية -->
+  <div class="gate-container">
+    <div class="gate-card" id="btnGateAff" onclick="toggleGate('affiliate')">
+      <div class="gate-icon">🚀</div>
+      <div class="gate-title">بوابة المسوقين الجدد</div>
+      <p style="margin: 5px 0 0; font-size: 13px; color: var(--ink-soft);">سجل اسمك واحصل على كودك التسويقي فوراً</p>
+    </div>
+    <div class="gate-card" id="btnGateAdmin" onclick="toggleGate('admin')">
+      <div class="gate-icon">👑</div>
+      <div class="gate-title">بوابة الإدارة (نواف)</div>
+      <p style="margin: 5px 0 0; font-size: 13px; color: var(--ink-soft);">تسجيل وتوثيق إحالات العملاء الجدد</p>
     </div>
   </div>
 
-  <div id="loginView" class="view-section">
-    <div class="form-card">
-      <div class="form-title">تسجيل دخول المسوقين</div>
-      <form id="loginForm">
-        <div class="input-group">
-          <label>اسم المستخدم</label>
-          <input type="text" id="logUser" required>
-        </div>
-        <div class="input-group">
-          <label>كلمة المرور</label>
-          <input type="password" id="logPass" required>
-        </div>
-        <button type="submit" class="btn-block">دخول اللوحة</button>
-      </form>
+  <!-- 1. لوحة المسوق (توليد الكود) -->
+  <div id="panelAffiliate" class="section-panel">
+    <h3 style="margin-top:0; font-weight:900; text-align:center;">توليد كود تسويقي جديد</h3>
+    <form id="affForm">
+      <div class="form-group">
+        <label>الاسم الثلاثي للمسوق</label>
+        <input type="text" id="affName" placeholder="مثال: محمد عبد الله الحربي" required>
+      </div>
+      <button type="submit" class="btn-submit btn-blue">إنشاء كود تسويقي خاص بي</button>
+    </form>
+
+    <div id="codeResult" class="code-result-box">
+      <p style="margin:0; font-weight:700;">أهلاً بك معنا! هذا هو الكود التسويقي الخاص بك:</p>
+      <span class="code-num" id="generatedCode">NW-XXXX</span>
+      <p style="margin:0; font-size:13px; color:var(--ink-soft);">قم بنسخ الكود وإرفاقه مع إعلاناتك. اطلب من المشتركين ذكره عند تفعيل الكورس أو المؤشر لحفظ حقك الفني.</p>
     </div>
   </div>
 
-  <div id="dashboardView" class="view-section">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-      <h2 style="margin:0; font-weight:900;">مرحباً، <span id="dashAffName">...</span> 👋</h2>
-      <div style="font-size:14px; color:var(--ink-soft); font-weight:700;">تاريخ الانضمام: <span id="dashJoinDate">-</span></div>
+  <!-- 2. لوحة الإدارة (نواف) - حماية مسبقة بكلمة مرور -->
+  <div id="panelAdminAuth" class="section-panel">
+    <h3 style="margin-top:0; font-weight:900; text-align:center;">تسجيل دخول الإدارة</h3>
+    <div class="form-group">
+      <label>اسم المستخدم</label>
+      <input type="text" id="adminUser" placeholder="Nawaf">
+    </div>
+    <div class="form-group">
+      <label>الرقم السري</label>
+      <input type="password" id="adminPass" placeholder="••••••••">
+    </div>
+    <button class="btn-submit" onclick="checkAdminAuth()">دخول اللوحة</button>
+  </div>
+
+  <!-- 3. لوحة تحكم الإدارة الفعلية بعد نجاح الدخول -->
+  <div id="panelAdminDashboard" class="section-panel">
+    <h3 style="margin-top:0; font-weight:900; color:var(--blue);">لوحة توثيق الإحالات والمشتركين الجدد 🤝</h3>
+    <p style="font-size:14px; color:var(--ink-soft); margin-bottom:25px;">قم بإدخال اسم المشترك الجديد الذي تواصل معك، ثم حدد اسم المسوق أو كوده ليتم ربطه فوراً في النظام.</p>
+    
+    <div style="background: var(--panel); padding: 20px; border-radius: var(--radius-sm); border: 1px solid var(--line); margin-bottom: 30px;">
+      <h4 style="margin-top:0; font-weight:800;">تسجيل مشترك جديد</h4>
+      <div class="form-group">
+        <label>اسم العميل المشترك الجديد</label>
+        <input type="text" id="custName" placeholder="مثال: خالد العتيبي">
+      </div>
+      <div class="form-group">
+        <label>المسوق المسؤول (الكود)</label>
+        <select id="custAffSelect">
+          <option value="">جاري تحميل قائمة المسوقين الأكفاء...</option>
+        </select>
+      </div>
+      <button class="btn-submit btn-blue" onclick="adminAddReferral()">إضافة وحفظ الإحالة في السجل</button>
     </div>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">إجمالي الأرباح</div>
-        <div class="stat-val" id="statTotal">٠ <span>ريال</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">الرصيد المتبقي (المنشط)</div>
-        <div class="stat-val" id="statBalance" style="color:var(--green);">٠ <span>ريال</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">الرصيد المسحوب</div>
-        <div class="stat-val" id="statWithdrawn">٠ <span>ريال</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">الإحالات المعتمدة</div>
-        <div class="stat-val" id="statCount">٠</div>
-      </div>
-    </div>
-
-    <div class="admin-card" style="max-width:600px; margin-bottom:30px;">
-      <div class="stat-label" style="margin-bottom:5px;">الكود التسويقي الخاص بك</div>
-      <div class="code-box">
-        <span class="code-text" id="dashCode">NAWAF-XXXX</span>
-        <button class="btn-sec" onclick="copyDashCode()">نسخ الكود</button>
-      </div>
-      <p style="font-size:13px; color:var(--ink-soft); margin:0;">شارك هذا الكود مع عملائك. عند إدخاله أثناء تفعيل الاشتراك، ستحصل مباشرة على عمولتك عند الاعتماد الفني.</p>
-    </div>
-
-    <h3 style="font-weight:900; margin-top:40px;">سجل الإحالات والعمولات</h3>
+    <h4 style="font-weight:900; margin-bottom:10px;">سجل المشتركين والإحالات الكلي</h4>
     <div class="table-container">
       <table>
         <thead>
           <tr>
-            <th>اسم المشترك</th>
-            <th>تاريخ الإضافة</th>
-            <th>قيمة العمولة</th>
-            <th>الحالة</th>
+            <th>اسم المشترك الجديد</th>
+            <th>عن طريق (المسوق)</th>
+            <th>الكود المستخدم</th>
+            <th>تاريخ التوثيق</th>
           </tr>
         </thead>
-        <tbody id="dashReferralsTable">
-          <tr><td colspan="4" style="text-align:center; color:var(--ink-soft);">لا توجد إحالات مسجلة بعد</td></tr>
+        <tbody id="adminRefsTable">
+          <tr><td colspan="4" style="text-align:center; color:var(--ink-soft);">لا توجد إحالات مسجلة حتى الآن</td></tr>
         </tbody>
       </table>
     </div>
-
-    <h3 style="font-weight:900; margin-top:40px;">طلبات استخدام الرصيد</h3>
-    <div style="display:flex; gap:15px; margin-top:15px;">
-      <button class="btn-sec" style="background:var(--blue); color:#fff; border:none; padding:12px 20px;" onclick="requestPayout('تجديد اشتراك داخلي')">طلب تجديد اشتراك بالمنصة</button>
-      <button class="btn-sec" style="padding:12px 20px;" onclick="requestPayout('تحويل بنكي / Binance')">طلب سحب نقدي للحساب</button>
-    </div>
   </div>
 
-  <div id="adminView" class="view-section">
-    <h2 style="font-weight:900; margin-bottom:25px;">لوحة الإدارة والمراجعة اليدوية 👑</h2>
-    
-    <div class="admin-layout">
-      <div>
-        <div class="admin-card">
-          <h3 style="margin-top:0; font-weight:800;">إدارة الإحالات المعلقة والموافقة عليها</h3>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>المسوق</th>
-                  <th>اسم المشترك</th>
-                  <th>العمولة المتوقعة</th>
-                  <th>الحالة</th>
-                  <th>الإجراءات</th>
-                </tr>
-              </thead>
-              <tbody id="adminRefsTable">
-                </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="admin-card">
-          <h3 style="margin-top:0; font-weight:800;">البحث والتحكم بالمسوقين</h3>
-          <input type="text" id="adminSearchAff" placeholder="ابحث باسم المسوق أو الكود الفني..." style="margin-bottom:15px;">
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>المسوق</th>
-                  <th>الكود</th>
-                  <th>الرصيد المتاح</th>
-                  <th>إجمالي الأرباح</th>
-                  <th>تعديل مالي</th>
-                </tr>
-              </thead>
-              <tbody id="adminAffsTable">
-                </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <div class="admin-card">
-          <h3 style="margin-top:0; font-weight:800;">إضافة إحالة يدوية</h3>
-          <div class="input-group">
-            <label>اختر المسوق</label>
-            <select id="admRefAffSelect"><option value="">جاري تحميل المسوقين...</option></select>
-          </div>
-          <div class="input-group">
-            <label>اسم العميل المشترك الجديد</label>
-            <input type="text" id="admRefCustName" placeholder="مثال: خالد العتيبي">
-          </div>
-          <div class="input-group">
-            <label>قيمة العمولة الافتراضية (ريال)</label>
-            <input type="number" id="admRefAmount" value="20">
-          </div>
-          <button class="btn-block" onclick="adminAddReferralManual()">تسجيل واعتماد فوري</button>
-        </div>
-
-        <div class="admin-card">
-          <h3 style="margin-top:0; font-weight:800;">إعدادات النظام الافتراضية</h3>
-          <div class="input-group">
-            <label>الحد الأدنى للسحب (ريال)</label>
-            <input type="number" id="sysMinWithdraw" value="100">
-          </div>
-          <div class="input-group">
-            <label>قيمة العمولة الافتراضية لكل عملية</label>
-            <input type="number" id="sysDefaultComm" value="20">
-          </div>
-          <button class="btn-block" style="background:var(--ink);" onclick="alert('تم حفظ الإعدادات الافتراضية في النظام')">تحديث الإعدادات</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="publicView" class="view-section">
-    <div class="form-card" style="text-align:center;">
-      <div style="font-size:50px; margin-bottom:10px;">🎯</div>
-      <h2 style="margin:0 0 5px; font-weight:900;" id="pubName">توصية من مسوق معتمد</h2>
-      <p style="color:var(--ink-soft); font-size:14px; margin-bottom:20px;">عضو موثوق في مجتمع WyckoffNawaf</p>
-      
-      <div style="background:var(--panel); border:1px solid var(--line); padding:15px; border-radius:var(--radius-sm); margin-bottom:20px;">
-        <p style="margin:0; font-size:15px; font-weight:600; color:var(--ink);" id="pubBio">أهلاً بك! أدعوك للانضمام إلى أقوى مؤشر واستراتيجية فنية لقنص الفرص في الأسواق.</p>
-      </div>
-
-      <div class="stat-label">استخدم الكود التسويقي الفني التالي عند تفعيل الاشتراك لتوثيق التسجيل:</div>
-      <div class="code-box">
-        <span class="code-text" id="pubCode">NAWAF-SAMPLE</span>
-        <button class="btn-sec" onclick="copyPubCode()">نسخ الكود</button>
-      </div>
-      <p style="font-size:13px; color:var(--ink-soft); font-weight:700;">💡 انسخ الكود وأرسله مباشرة للدعم عبر التيليجرام عند تأكيد التحويل.</p>
-    </div>
-  </div>
 </div>
 
 <footer>
-  <div style="font-weight:700; color:var(--ink); margin-bottom:4px;">استراتيجية Nawaf الاحترافية</div>
-  <div>نظام المسوقين Lite - مراجعة واعتماد يدوي آمن</div>
+  <div>© جميع الحقوق محفوظة لمنصة WYCKOFFNAWAF</div>
 </footer>
 
 <script type="module">
-  // إعدادات Firebase من مشروعك الحالي المرفق
+  // نفس إعدادات Firebase الخاصة بمشروعك الحالي المرفق بملف vote.html
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, updateDoc, doc, where, increment } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCdqr9x5kC6rQaSdq7oOei-pWEKgVjJKL0",
@@ -355,275 +201,130 @@ td{padding:16px;font-size:14.5px;border-bottom:1px solid var(--line-soft);vertic
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // حالة النظام المؤقتة (Client State)
-  let currentLoggedAffiliate = null;
+  // التبديل البصري العادي بين بوابتي المسوق والمسؤول
+  window.toggleGate = function(gateType) {
+    document.getElementById('btnGateAff').classList.remove('active');
+    document.getElementById('btnGateAdmin').classList.remove('active');
+    document.getElementById('panelAffiliate').classList.remove('show');
+    document.getElementById('panelAdminAuth').classList.remove('show');
+    document.getElementById('panelAdminDashboard').classList.remove('show');
 
-  // دالة التنقل بين الواجهات والتطبيقات
-  window.switchView = function(viewId, btnEl) {
-    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-    document.getElementById(viewId).classList.add('active');
-    if(btnEl) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      btnEl.classList.add('active');
+    if(gateType === 'affiliate') {
+      document.getElementById('btnGateAff').classList.add('active');
+      document.getElementById('panelAffiliate').classList.add('show');
+    } else if(gateType === 'admin') {
+      document.getElementById('btnGateAdmin').classList.add('active');
+      document.getElementById('panelAdminAuth').classList.add('show');
     }
-    // تحديثات ديناميكية عند فتح الواجهات
-    if(viewId === 'adminView') { loadAdminData(); }
-    if(viewId === 'publicView') { loadPublicViewData(); }
   }
 
-  // 1. معالجة وإنشاء حساب مسوق جديد
-  document.getElementById('regForm').addEventListener('submit', async (e) => {
+  // 1. توليد الكود للمسوق (محمد مثلاً) وحفظه
+  document.getElementById('affForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = document.getElementById('regName').value.trim();
-    const phone = document.getElementById('regPhone').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
-    const username = document.getElementById('regUser').value.trim().toLowerCase();
-    const pass = document.getElementById('regPass').value;
-
-    // توليد كود تسويقي فريد ذكي معتمد على الاسم العشوائي أو الرموز
-    const generatedCode = 'NW-' + Math.floor(1000 + Math.random() * 9000);
+    const fullName = document.getElementById('affName').value.trim();
+    
+    // سحب أول اسم لاستخدامه في تكوين كود جذاب وسهل الحفظ ومميز
+    const firstNameEng = fullName.split(' ')[0];
+    const cleanPrefix = /^[A-Za-z]+$/.test(firstNameEng) ? firstNameEng.toUpperCase() : 'NW';
+    const randomNum = Math.floor(100 + Math.random() * 900);
+    const finalCode = `${cleanPrefix}-${randomNum}`;
 
     try {
-      const docRef = await addDoc(collection(db, "affiliates"), {
-        name, phone, email, username, pass,
-        affiliateCode: generatedCode,
-        balance: 0, totalEarnings: 0, withdrawn: 0, approvedReferrals: 0,
-        joinDate: new Date().toLocaleDateString('ar-SA'),
-        bio: "متداول ومسوق معتمد في استراتيجية WyckoffNawaf"
+      // حفظ المسوق الجديد في قاعدة البيانات مباشرة لقراءته عند المسؤول
+      await addDoc(collection(db, "simple_affiliates"), {
+        name: fullName,
+        code: finalCode,
+        timestamp: new Date().toLocaleDateString('ar-SA')
       });
-      
-      alert(`تم التسجيل بنجاح! كودك التسويقي الحصري هو: ${generatedCode}`);
-      document.getElementById('regForm').reset();
-      // الدخول المباشر إلى اللوحة بعد التسجيل
-      loginUser(username, pass);
-    } catch (err) {
+
+      document.getElementById('generatedCode').textContent = finalCode;
+      document.getElementById('codeResult').classList.add('show');
+      document.getElementById('affName').value = '';
+    } catch(err) {
       console.error(err);
-      alert('حدث خطأ أثناء معالجة البيانات، يرجى المحاولة لاحقاً.');
+      alert('حدث خطأ فني أثناء إنشاء الكود، يرجى المحاولة لاحقاً.');
     }
   });
 
-  // 2. تسجيل دخول المسوق
-  document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const u = document.getElementById('logUser').value.trim().toLowerCase();
-    const p = document.getElementById('logPass').value;
-    loginUser(u, p);
-  });
+  // 2. التحقق من بوابة حماية الإدارة بالأرقام المطلوبة
+  window.checkAdminAuth = function() {
+    const user = document.getElementById('adminUser').value.trim();
+    const pass = document.getElementById('adminPass').value;
 
-  async function loginUser(username, pass) {
-    const qAff = query(collection(db, "affiliates"), where("username", "==", username), where("pass", "==", pass));
-    const snap = await getDocs(qAff);
-    if(snap.empty) {
-      alert('اسم المستخدم أو كلمة المرور غير صحيحة، أو الحساب غير موجود.');
-      return;
+    if(user === 'Nawaf' && pass === 'Nawaf2030') {
+      document.getElementById('panelAdminAuth').classList.remove('show');
+      document.getElementById('panelAdminDashboard').classList.add('show');
+      // بدء جلب قائمة المسوقين وجدول الإحالات الفوري
+      loadAdminPanelComponents();
+    } else {
+      alert('بيانات الدخول غير صحيحة، يرجى التحقق من اسم المستخدم أو الرقم السري للمنصة.');
     }
-    const affDoc = snap.docs[0];
-    currentLoggedAffiliate = { id: affDoc.id, ...affDoc.data() };
-    
-    // تفعيل لوحة التحكم وعرض البيانات
-    document.getElementById('userInfo').textContent = `المسوق: ${currentLoggedAffiliate.name}`;
-    setupDashboardRealtime(currentLoggedAffiliate.id);
-    switchView('dashboardView');
   }
 
-  // 3. مراقبة وتحديث لوحة تحكم المسوق بشكل حي (Realtime)
-  function setupDashboardRealtime(affId) {
-    // تحديث بيانات المسوق الأساسية والمالية
-    onSnapshot(doc(db, "affiliates", affId), (docSnap) => {
-      if(!docSnap.exists()) return;
-      const data = docSnap.data();
-      document.getElementById('dashAffName').textContent = data.name;
-      document.getElementById('dashJoinDate').textContent = data.joinDate;
-      document.getElementById('dashCode').textContent = data.affiliateCode;
-      document.getElementById('statTotal').innerHTML = `${data.totalEarnings} <span>ريال</span>`;
-      document.getElementById('statBalance').innerHTML = `${data.balance} <span>ريال</span>`;
-      document.getElementById('statWithdrawn').innerHTML = `${data.withdrawn} <span>ريال</span>`;
-      document.getElementById('statCount').textContent = data.approvedReferrals;
-      
-      // حفظ البيانات محلياً في الذاكرة المؤقتة للتنقل
-      currentLoggedAffiliate = { id: docSnap.id, ...data };
-    });
-
-    // تحديث جدول الإحالات والعمولات الخاصة به بشكل حي
-    const qRefs = query(collection(db, "referrals"), where("affiliateId", "==", affId));
-    onSnapshot(qRefs, (snapshot) => {
-      const tbody = document.getElementById('dashReferralsTable');
-      tbody.innerHTML = '';
-      if(snapshot.empty) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--ink-soft);">لا توجد إحالات مسجلة بعد</td></tr>`;
-        return;
-      }
-      snapshot.forEach(d => {
-        const r = d.data();
-        let statusBadge = `<span class="badge pending">معلق للمراجعة</span>`;
-        if(r.status === 'approved') statusBadge = `<span class="badge approved">معتمد ونشط</span>`;
-        if(r.status === 'cancelled') statusBadge = `<span class="badge cancelled">ملغي</span>`;
-        
-        tbody.innerHTML += `
-          <tr>
-            <td><b>${r.clientName}</b></td>
-            <td>${r.dateAdded || '-'}</td>
-            <td>${r.commissionAmount} ريال</td>
-            <td>${statusBadge}</td>
-          </tr>
-        `;
-      });
-    });
-  }
-
-  // 4. لوحة التحكم الإدارية (للمدير) لتوثيق ومراجعة العمليات يدوياً
-  async function loadAdminData() {
-    // تحميل المسوقين داخل قائمة الخيارات المنسدلة للإضافة اليدوية
-    const affSnap = await getDocs(collection(db, "affiliates"));
-    const select = document.getElementById('admRefAffSelect');
-    const affTbody = document.getElementById('adminAffsTable');
-    select.innerHTML = '';
-    affTbody.innerHTML = '';
+  // 3. إدارة مكونات لوحة تحكم المسؤول (نواف)
+  async function loadAdminPanelComponents() {
+    // جلب المسوقين المسجلين لتضمينهم بداخل القائمة المنسدلة (الـ Select Box)
+    const affsSnap = await getDocs(collection(db, "simple_affiliates"));
+    const selectEl = document.getElementById('custAffSelect');
+    selectEl.innerHTML = '<option value="">-- اختر المسوق الذي أرسل العميل --</option>';
     
-    affSnap.forEach(d => {
-      const aff = d.data();
-      select.innerHTML += `<option value="${d.id}">${aff.name} (${aff.affiliateCode})</option>`;
-      
-      // تعبئة جدول البحث والتحكم بالمسوقين
-      affTbody.innerHTML += `
-        <tr>
-          <td><b>${aff.name}</b></td>
-          <td><code>${aff.affiliateCode}</code></td>
-          <td style="color:var(--green); font-weight:700;">${aff.balance} ريال</td>
-          <td>${aff.totalEarnings} ريال</td>
-          <td><button class="btn-sec" onclick="adminAdjustBalance('${d.id}')">تعديل مالي</button></td>
-        </tr>
-      `;
+    affsSnap.forEach(doc => {
+      const aff = doc.data();
+      selectEl.innerHTML += `<option value="${doc.id}" data-code="${aff.code}" data-name="${aff.name}">${aff.name} (${aff.code})</option>`;
     });
 
-    // تحميل ومراقبة كافة الإحالات لمراجعتها واعتمادها
-    const qAllRefs = query(collection(db, "referrals"));
-    onSnapshot(qAllRefs, (snapshot) => {
+    // جلب وتحديث جدول الإحالات والمشتركين والذين تم ربطهم مسبقاً بشكل مباشر وحي
+    onSnapshot(collection(db, "simple_referrals"), (snapshot) => {
       const tbody = document.getElementById('adminRefsTable');
       tbody.innerHTML = '';
-      snapshot.forEach(d => {
-        const r = d.data();
-        let actions = '';
-        if(r.status === 'pending') {
-          actions = `
-            <button class="btn-sec" style="background:var(--green-soft); color:var(--green); border:none;" onclick="adminApproveReferral('${d.id}', '${r.affiliateId}', ${r.commissionAmount})">اعتماد وعقد</button>
-            <button class="btn-sec" style="background:var(--red-soft); color:var(--red); border:none;" onclick="adminCancelReferral('${d.id}')">إلغاء</button>
-          `;
-        } else {
-          actions = `<span style="font-size:12px; color:var(--ink-soft);">تمت المراجعة والاتخاذ</span>`;
-        }
-
-        let statusBadge = `<span class="badge pending">معلق</span>`;
-        if(r.status === 'approved') statusBadge = `<span class="badge approved">معتمد</span>`;
-        if(r.status === 'cancelled') statusBadge = `<span class="badge cancelled">ملغي</span>`;
-
+      if(snapshot.empty) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--ink-soft);">لا توجد إحالات مسجلة حتى الآن</td></tr>`;
+        return;
+      }
+      snapshot.forEach(doc => {
+        const ref = doc.data();
         tbody.innerHTML += `
           <tr>
-            <td>${r.affiliateName || 'مسوق'}</td>
-            <td><b>${r.clientName}</b></td>
-            <td>${r.commissionAmount} ريال</td>
-            <td>${statusBadge}</td>
-            <td><div style="display:flex; gap:5px;">${actions}</div></td>
+            <td><b>${ref.customerName}</b></td>
+            <td>${ref.affiliateName}</td>
+            <td><code>${ref.affiliateCode}</code></td>
+            <td>${ref.dateAdded}</td>
           </tr>
         `;
       });
     });
   }
 
-  // إضافة إحالة يدوية من قبل الإدارة
-  window.adminAddReferralManual = async function() {
-    const affId = document.getElementById('admRefAffSelect').value;
-    const clientName = document.getElementById('admRefCustName').value.trim();
-    const amt = parseFloat(document.getElementById('admRefAmount').value) || 20;
+  // دالة إضافة وتوثيق المشترك الجديد تحت حساب المسوق
+  window.adminAddReferral = async function() {
+    const customerName = document.getElementById('custName').value.trim();
+    const selectEl = document.getElementById('custAffSelect');
+    const selectedOption = selectEl.options[selectEl.selectedIndex];
 
-    if(!affId || !clientName) { alert('يرجى اختيار المسوق وإدخال اسم العميل المشترك'); return; }
-
-    const affDoc = await getDocs(query(collection(db, "affiliates")));
-    let affName = "مسوق";
-    affDoc.forEach(x => { if(x.id === affId) affName = x.data().name; });
-
-    await addDoc(collection(db, "referrals"), {
-      affiliateId: affId,
-      affiliateName: affName,
-      clientName: clientName,
-      commissionAmount: amt,
-      status: 'pending', // مراجعة يدوية افتراضية لتأكيد سلامة الدورة المادية
-      dateAdded: new Date().toLocaleDateString('ar-SA')
-    });
-
-    alert('تمت إضافة الإحالة بنجاح كحالة معلقة، يمكنك اعتمادها الآن من الجدول لتحديث الأرصدة.');
-    document.getElementById('admRefCustName').value = '';
-  }
-
-  // اعتماد الإحالة يدوياً وإضافة الرصيد للمسوق
-  window.adminApproveReferral = async function(refId, affId, amount) {
-    if(!confirm('هل أنت متأكد من اعتماد هذه الإحالة وإضافة الرصيد للمسوق؟')) return;
-    
-    // 1. تحديث حالة الإحالة
-    await updateDoc(doc(db, "referrals", refId), { status: 'approved' });
-    
-    // 2. ترحيل وتحديث رصيد المسوق مباشرة
-    await updateDoc(doc(db, "affiliates", affId), {
-      balance: increment(amount),
-      totalEarnings: increment(amount),
-      approvedReferrals: increment(1)
-    });
-
-    alert('تم ترحيل واعتماد العمولة وإضافتها لرصيد المسوق بنجاح.');
-    loadAdminData();
-  }
-
-  window.adminCancelReferral = async function(refId) {
-    if(!confirm('هل تريد إلغاء هذه الإحالة؟')) return;
-    await updateDoc(doc(db, "referrals", refId), { status: 'cancelled' });
-    alert('تم إلغاء الإحالة بنجاح.');
-    loadAdminData();
-  }
-
-  window.adminAdjustBalance = async function(affId) {
-    const amt = prompt('أدخل القيمة المراد إضافتها أو خصمها (استخدم سالب للخصم):');
-    if(!amt) return;
-    const parseAmt = parseFloat(amt);
-    await updateDoc(doc(db, "affiliates", affId), {
-      balance: increment(parseAmt)
-    });
-    alert('تم تعديل الرصيد بنجاح.');
-    loadAdminData();
-  }
-
-  // 5. طلب سحب واستخدام الرصيد من قبل المسوق
-  window.requestPayout = function(type) {
-    const minWithdraw = parseFloat(document.getElementById('sysMinWithdraw').value) || 100;
-    if(!currentLoggedAffiliate) { alert('الرجاء تسجيل الدخول أولاً'); return; }
-    
-    if(currentLoggedAffiliate.balance < minWithdraw) {
-      alert(`عذراً، الرصيد المتبقي لديك أقل من الحد الأدنى للسحب وهو ${minWithdraw} ريال.`);
+    if(!customerName || !selectEl.value) {
+      alert('من فضلك اكتب اسم العميل المشترك الجديد واختر المسوق المسؤول من القائمة لتأكيد الربط.');
       return;
     }
 
-    const details = prompt(`لقد طلبت [${type}]. يرجى كتابة البيانات الفنية (مثل رقم الآيبان أو حساب تيلجرام للمتابعة):`);
-    if(!details) return;
+    const affiliateName = selectedOption.getAttribute('data-name');
+    const affiliateCode = selectedOption.getAttribute('data-code');
 
-    alert('تم إرسال طلب السحب بنجاح إلى الإدارة. سيتم الاتصال بك لتأكيد التحويل ومراجعته يدوياً.');
-  }
+    try {
+      // رفع بيانات العميل وربطه بالمسوق في قاعدة البيانات
+      await addDoc(collection(db, "simple_referrals"), {
+        customerName: customerName,
+        affiliateName: affiliateName,
+        affiliateCode: affiliateCode,
+        dateAdded: new Date().toLocaleDateString('ar-SA')
+      });
 
-  // تحميل الصفحة العامة للمسوق ديناميكياً
-  function loadPublicViewData() {
-    if(currentLoggedAffiliate) {
-      document.getElementById('pubName').textContent = currentLoggedAffiliate.name;
-      document.getElementById('pubBio').textContent = currentLoggedAffiliate.bio;
-      document.getElementById('pubCode').textContent = currentLoggedAffiliate.affiliateCode;
+      alert(`تم بنجاح! تم تسجيل الإحالة للعميل (${customerName}) تحت حساب المسوق (${affiliateName}). يمكنك الآن التواصل معه وشكره.`);
+      document.getElementById('custName').value = '';
+      selectEl.value = '';
+    } catch(err) {
+      console.error(err);
+      alert('حدث خطأ أثناء حفظ المشترك الجديد في السجل.');
     }
-  }
-
-  // دوال النسخ إلى الحافظة لراحة المستخدمين
-  window.copyDashCode = function() {
-    navigator.clipboard.writeText(document.getElementById('dashCode').textContent);
-    alert('تم نسخ الكود التسويقي بنجاح!');
-  }
-  window.copyPubCode = function() {
-    navigator.clipboard.writeText(document.getElementById('pubCode').textContent);
-    alert('تم نسخ كود التوصية المعتمد!');
   }
 </script>
 
