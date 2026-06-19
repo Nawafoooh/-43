@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -311,7 +312,7 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
 
 <div class="redirect-overlay" id="redirectOverlay">
   <h2>شكراً لك من القلب! ❤️</h2>
-  <p>تم استلام مشاركتك بنجاح. سيتم توجيهك الآن...</p>
+  <p>تم استلام مشاركتك بنجاح.</p>
   <button class="back-btn" onclick="location.reload()">العودة للصفحة</button>
 </div>
 
@@ -535,7 +536,6 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
     endTime: Date.now() + (2*24*60*60*1000)
   };
 
-  // Sync with Firestore
   const statsDocRef = doc(db, "vote_stats", "global");
 
   // Real-time listener for stats
@@ -550,8 +550,10 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
         opt1: 0, opt2: 0, suggestions: 0,
         trust: { yes: 0, maybe: 0, no: 0 },
         endTime: Date.now() + (2*24*60*60*1000)
-      });
+      }, { merge: true });
     }
+  }, (error) => {
+    console.error("Firestore Snapshot Error:", error);
   });
 
   // Real-time listener for comments
@@ -576,6 +578,7 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
 
   /* ===== Stats render ===== */
   function animateNumber(el, to){
+    if(!el) return;
     let from = parseInt(el.textContent) || 0;
     if(from === to) return;
     const dur = 600, start = performance.now();
@@ -588,11 +591,11 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
   }
 
   function renderStats(){
-    const total = globalData.opt1 + globalData.opt2;
+    const total = (globalData.opt1 || 0) + (globalData.opt2 || 0);
     animateNumber(document.getElementById('statTotal'), total);
-    animateNumber(document.getElementById('statOpt1'), globalData.opt1);
-    animateNumber(document.getElementById('statOpt2'), globalData.opt2);
-    animateNumber(document.getElementById('statSuggest'), globalData.suggestions);
+    animateNumber(document.getElementById('statOpt1'), globalData.opt1 || 0);
+    animateNumber(document.getElementById('statOpt2'), globalData.opt2 || 0);
+    animateNumber(document.getElementById('statSuggest'), globalData.suggestions || 0);
 
     const p1 = total ? Math.round((globalData.opt1/total)*100) : 0;
     const p2 = total ? 100-p1 : 0;
@@ -623,27 +626,34 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
     launchConfetti();
     const overlay = document.getElementById('redirectOverlay');
     overlay.classList.add('show');
-    setTimeout(() => {
-      // يمكنك تغيير هذا الرابط إلى الصفحة الرئيسية لموقعك
-      // window.location.href = "https://nawafoooh.github.io/-43/"; 
-    }, 4000);
   }
 
   voteButtons.forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
+    btn.addEventListener('click', async (e)=>{
+      e.preventDefault();
       if(localState.voted) return;
       const choice = btn.dataset.vote;
       
-      // Update Firestore
-      await updateDoc(statsDocRef, {
-        [choice]: increment(1)
-      });
+      try {
+        btn.disabled = true;
+        btn.textContent = 'جاري الحفظ...';
+        
+        // Update Firestore
+        await setDoc(statsDocRef, {
+          [choice]: increment(1)
+        }, { merge: true });
 
-      localState.voted = true;
-      localState.votedChoice = choice;
-      saveLocal();
-      applyVotedUI();
-      showThankYouAndRedirect();
+        localState.voted = true;
+        localState.votedChoice = choice;
+        saveLocal();
+        applyVotedUI();
+        showThankYouAndRedirect();
+      } catch (err) {
+        console.error("Voting Error:", err);
+        btn.disabled = false;
+        btn.textContent = 'حاول مرة أخرى';
+        alert("حدث خطأ أثناء التصويت، يرجى المحاولة لاحقاً.");
+      }
     });
   });
   applyVotedUI();
@@ -651,74 +661,102 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
   /* suggestion box */
   const suggestToggle = document.getElementById('suggestToggle');
   const suggestBox = document.getElementById('suggestBox');
-  suggestToggle.addEventListener('click', ()=>{
-    suggestBox.classList.toggle('open');
-  });
-
-  document.getElementById('suggestSend').addEventListener('click', async ()=>{
-    const val = document.getElementById('suggestText').value.trim();
-    if(!val) return;
-
-    // Update Firestore
-    await updateDoc(statsDocRef, {
-      suggestions: increment(1)
+  if(suggestToggle) {
+    suggestToggle.addEventListener('click', ()=>{
+      suggestBox.classList.toggle('open');
     });
-    
-    // Add to a special collection for suggestions if needed, or just increment
-    await addDoc(collection(db, "suggestions"), {
-      text: val,
-      timestamp: serverTimestamp()
-    });
+  }
 
-    if(!localState.voted){ 
-      localState.voted = true; 
-      localState.votedChoice = 'suggest'; 
-      saveLocal();
-    }
-    
-    suggestBox.classList.remove('open');
-    document.getElementById('suggestText').value='';
-    showThankYouAndRedirect();
-  });
+  const suggestSendBtn = document.getElementById('suggestSend');
+  if(suggestSendBtn) {
+    suggestSendBtn.addEventListener('click', async ()=>{
+      const val = document.getElementById('suggestText').value.trim();
+      if(!val) return;
+
+      try {
+        suggestSendBtn.disabled = true;
+        suggestSendBtn.textContent = 'جاري الإرسال...';
+
+        await setDoc(statsDocRef, {
+          suggestions: increment(1)
+        }, { merge: true });
+        
+        await addDoc(collection(db, "suggestions"), {
+          text: val,
+          timestamp: serverTimestamp()
+        });
+
+        if(!localState.voted){ 
+          localState.voted = true; 
+          localState.votedChoice = 'suggest'; 
+          saveLocal();
+        }
+        
+        suggestBox.classList.remove('open');
+        document.getElementById('suggestText').value='';
+        showThankYouAndRedirect();
+      } catch (err) {
+        console.error("Suggestion Error:", err);
+        suggestSendBtn.disabled = false;
+        suggestSendBtn.textContent = 'إرسال الاقتراح';
+      }
+    });
+  }
 
   /* ===== Countdown ===== */
   function tickCountdown(){
-    const remain = globalData.endTime - Date.now();
+    const endTime = globalData.endTime || (Date.now() + 172800000);
+    const remain = endTime - Date.now();
     if(remain <= 0){
-      document.getElementById('cdGrid').style.display='none';
-      document.getElementById('closedMsg').style.display='block';
+      const grid = document.getElementById('cdGrid');
+      const msg = document.getElementById('closedMsg');
+      if(grid) grid.style.display='none';
+      if(msg) msg.style.display='block';
       return;
     }
     const d = Math.floor(remain/86400000);
     const h = Math.floor((remain%86400000)/3600000);
     const m = Math.floor((remain%3600000)/60000);
     const s = Math.floor((remain%60000)/1000);
-    document.getElementById('cdDays').textContent = String(d).padStart(2,'0');
-    document.getElementById('cdHours').textContent = String(h).padStart(2,'0');
-    document.getElementById('cdMins').textContent = String(m).padStart(2,'0');
-    document.getElementById('cdSecs').textContent = String(s).padStart(2,'0');
+    
+    const daysEl = document.getElementById('cdDays');
+    const hoursEl = document.getElementById('cdHours');
+    const minsEl = document.getElementById('cdMins');
+    const secsEl = document.getElementById('cdSecs');
+    
+    if(daysEl) daysEl.textContent = String(d).padStart(2,'0');
+    if(hoursEl) hoursEl.textContent = String(h).padStart(2,'0');
+    if(minsEl) minsEl.textContent = String(m).padStart(2,'0');
+    if(secsEl) secsEl.textContent = String(s).padStart(2,'0');
   }
   setInterval(tickCountdown, 1000);
 
   /* ===== Contact ===== */
-  document.getElementById('copyHandle').addEventListener('click', ()=>{
-    navigator.clipboard.writeText('@wyckoffnawaf').then(()=>{
-      const b = document.getElementById('copyHandle');
-      const old = b.textContent;
-      b.textContent = 'تم النسخ ✓';
-      setTimeout(()=>b.textContent = old, 1500);
+  const copyBtn = document.getElementById('copyHandle');
+  if(copyBtn) {
+    copyBtn.addEventListener('click', ()=>{
+      navigator.clipboard.writeText('@wyckoffnawaf').then(()=>{
+        const old = copyBtn.textContent;
+        copyBtn.textContent = 'تم النسخ ✓';
+        setTimeout(()=>copyBtn.textContent = old, 1500);
+      });
     });
-  });
-  document.getElementById('openTg').addEventListener('click', ()=>{
-    window.open('https://t.me/wyckoffnawaf','_blank');
-  });
+  }
+  
+  const openTgBtn = document.getElementById('openTg');
+  if(openTgBtn) {
+    openTgBtn.addEventListener('click', ()=>{
+      window.open('https://t.me/wyckoffnawaf','_blank');
+    });
+  }
 
   /* ===== Trust survey ===== */
   const trustButtons = document.querySelectorAll('.survey-btn');
   function renderTrust(){
-    const t = globalData.trust;
+    const t = globalData.trust || {yes:0, maybe:0, no:0};
     const total = (t.yes || 0) + (t.maybe || 0) + (t.no || 0);
-    document.getElementById('trustCount').textContent = total + ' مشارك حتى الآن';
+    const countEl = document.getElementById('trustCount');
+    if(countEl) countEl.textContent = total + ' مشارك حتى الآن';
     if(localState.trustVoted){
       trustButtons.forEach(b=>{
         b.disabled = true;
@@ -732,43 +770,58 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
       if(localState.trustVoted) return;
       const choice = b.dataset.trust;
       
-      await updateDoc(statsDocRef, {
-        [`trust.${choice}`]: increment(1)
-      });
+      try {
+        await setDoc(statsDocRef, {
+          trust: { [choice]: increment(1) }
+        }, { merge: true });
 
-      localState.trustVoted = choice;
-      saveLocal();
-      renderTrust();
+        localState.trustVoted = choice;
+        saveLocal();
+        renderTrust();
+      } catch (err) {
+        console.error("Trust Survey Error:", err);
+      }
     });
   });
 
   /* ===== Comments ===== */
   function renderComments(comments){
     const list = document.getElementById('commentsList');
+    if(!list) return;
     list.innerHTML = '';
     comments.forEach(c=>{
       const div = document.createElement('div');
       div.className = 'comment-item';
-      div.innerHTML = `<b>${c.name}</b>${c.text}`;
+      div.innerHTML = `<b>${c.name || 'مشارك'}</b>${c.text || ''}`;
       list.appendChild(div);
     });
   }
 
-  document.getElementById('commentSend').addEventListener('click', async ()=>{
-    const text = document.getElementById('commentText').value.trim();
-    if(!text) return;
-    const name = document.getElementById('commentName').value.trim() || 'مشارك';
-    
-    await addDoc(collection(db, "comments"), {
-      name: name,
-      text: text,
-      timestamp: serverTimestamp()
-    });
+  const commentSendBtn = document.getElementById('commentSend');
+  if(commentSendBtn) {
+    commentSendBtn.addEventListener('click', async ()=>{
+      const text = document.getElementById('commentText').value.trim();
+      if(!text) return;
+      const name = document.getElementById('commentName').value.trim() || 'مشارك';
+      
+      try {
+        commentSendBtn.disabled = true;
+        await addDoc(collection(db, "comments"), {
+          name: name,
+          text: text,
+          timestamp: serverTimestamp()
+        });
 
-    document.getElementById('commentText').value='';
-    document.getElementById('commentName').value='';
-    launchConfetti();
-  });
+        document.getElementById('commentText').value='';
+        document.getElementById('commentName').value='';
+        commentSendBtn.disabled = false;
+        launchConfetti();
+      } catch (err) {
+        console.error("Comment Error:", err);
+        commentSendBtn.disabled = false;
+      }
+    });
+  }
 
   /* ===== Confetti ===== */
   function launchConfetti(){
