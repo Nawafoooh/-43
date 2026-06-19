@@ -86,7 +86,23 @@ section{padding:46px 0;}
   font-weight:800;font-size:20px;margin-bottom:16px;
 }
 .opt-card h3{font-size:20px;margin:0 0 10px;font-weight:800;}
-.opt-card p{color:var(--ink-soft);font-size:15px;margin:0 0 22px;min-height:62px;}
+.opt-card p{color:var(--ink-soft);font-size:15px;margin:0 0 18px;min-height:auto;}
+.price-tag{
+  display:flex;align-items:baseline;gap:8px;margin-bottom:18px;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:12px 16px;
+}
+.price-num{font-size:21px;font-weight:900;color:var(--ink);}
+.price-period{font-size:13px;color:var(--ink-soft);font-weight:600;}
+.perk-list{
+  list-style:none;margin:0 0 18px;padding:0;display:flex;flex-direction:column;gap:8px;
+}
+.perk-list li{
+  font-size:14px;color:#3a3f45;padding-right:22px;position:relative;
+}
+.perk-list li::before{
+  content:"✓";position:absolute;right:0;top:0;color:var(--green);font-weight:900;
+}
 .vote-btn{
   width:100%;border:none;cursor:pointer;
   background:var(--ink);color:#fff;
@@ -97,6 +113,23 @@ section{padding:46px 0;}
 .vote-btn:hover{background:#222;transform:scale(1.015);}
 .vote-btn.voted{background:var(--green);}
 .opt-card.third{grid-column:1/-1;}
+
+.compare-strip{
+  display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:26px;
+}
+@media(max-width:680px){.compare-strip{grid-template-columns:1fr;}.compare-divider{margin:0 auto;}}
+.compare-col p{margin:10px 0 0;font-size:14.5px;color:#3a3f45;}
+.compare-tag{
+  display:inline-block;font-size:12.5px;font-weight:800;padding:5px 12px;border-radius:999px;
+}
+.tag-one{background:#eef0f2;color:#444;}
+.tag-two{background:var(--blue-soft);color:var(--blue);}
+.compare-divider{
+  width:38px;height:38px;border-radius:50%;background:var(--ink);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;
+}
 .suggest-box{display:none;margin-top:14px;}
 .suggest-box.open{display:block;}
 textarea, input[type=text]{
@@ -165,6 +198,15 @@ textarea:focus, input:focus{outline:2px solid var(--blue);outline-offset:1px;bor
   font-weight:600;color:#7a5717;font-size:15.5px;
 }
 
+.note-card{
+  display:flex;gap:16px;align-items:flex-start;
+  background:#fdf6ec;border:1px solid #f0ddb8;
+  border-radius:var(--radius);padding:24px 26px;
+}
+.note-card .note-icon{font-size:26px;line-height:1;}
+.note-card h4{margin:0 0 8px;font-size:16px;font-weight:800;color:#5c4413;}
+.note-card p{margin:0;font-size:14.5px;color:#5c5246;line-height:1.8;}
+
 /* CONTACT */
 .contact-card{
   text-align:center;background:var(--panel);border:1px solid var(--line);
@@ -226,17 +268,59 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
 </section>
 
 <section class="wrap reveal">
+  <div class="note-card">
+    <span class="note-icon">💡</span>
+    <div>
+      <h4>ملاحظة مهمة حول طبيعة الاستراتيجية</h4>
+      <p>
+        الاستراتيجية عبارة عن مؤشر واحد على منصة TradingView، إلى جانب استراتيجية دخول مدروسة —
+        وليست مؤشراً تظهر عليه إشارات بيع وشراء جاهزة بشكل تلقائي.
+        من واقع خبرتنا الكبيرة في مجال المؤشرات، يجب أن تكون لديك نظرة بسيطة على الشارت لاتخاذ القرار النهائي.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap reveal">
+  <div class="compare-strip">
+    <div class="compare-col">
+      <span class="compare-tag tag-one">الخيار الأول</span>
+      <p>تحصل على الاستراتيجية وتنتهي علاقتنا بعد التسليم — القرار والتنفيذ تكون مسؤوليتك بالكامل.</p>
+    </div>
+    <div class="compare-divider">VS</div>
+    <div class="compare-col">
+      <span class="compare-tag tag-two">الخيار الثاني</span>
+      <p>تنضم لمجتمع الاستراتيجية، ونستمر معك شهرياً: متابعة، رفع شارتات للأسهم والعملات تحت المراقبة، ومرافقة حتى لحظة الدخول بصفقة بيع أو شراء.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap reveal">
   <div class="options-grid">
     <div class="opt-card">
       <div class="opt-num">①</div>
       <h3>شراء الاستراتيجية مرة واحدة</h3>
-      <p>الحصول على الاستراتيجية مقابل مبلغ رمزي ويكون دورنا قد انتهى بعد التسليم.</p>
+      <p>الحصول على الاستراتيجية مقابل مبلغ رمزي لمدة ستة أشهر، ويكون دورنا قد انتهى بعد التسليم.</p>
+      <div class="price-tag">
+        <span class="price-num">٣٠٠ ريال</span>
+        <span class="price-period">لمدة ٦ أشهر</span>
+      </div>
       <button class="vote-btn" data-vote="opt1">صوّت لهذا الخيار</button>
     </div>
     <div class="opt-card">
       <div class="opt-num">②</div>
       <h3>اشتراك شهري مع قروب متابعة</h3>
       <p>اشتراك شهري بسيط يشمل متابعة مستمرة للأسهم والعملات المناسبة للبيع والشراء والتنبيهات المستمرة.</p>
+      <ul class="perk-list">
+        <li>انضمام مباشر لمجتمع الاستراتيجية</li>
+        <li>متابعة مستمرة من فريقنا، وليس مرة واحدة فقط</li>
+        <li>رفع شارتات لأسهم وعملات قيد المراقبة لحظة بلحظة</li>
+        <li>تنبيه عند اقتراب نقطة دخول بصفقة بيع أو شراء</li>
+      </ul>
+      <div class="price-tag">
+        <span class="price-num">١٠٠ ريال</span>
+        <span class="price-period">شهرياً</span>
+      </div>
       <button class="vote-btn" data-vote="opt2">صوّت لهذا الخيار</button>
     </div>
     <div class="opt-card third">
