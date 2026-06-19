@@ -19,6 +19,7 @@
   --blue:#2962ff;
   --blue-soft:#eaf0ff;
   --amber:#e8a33d;
+  --amber-soft:#fff7ea;
   --radius:18px;
   --radius-sm:10px;
   --shadow:0 10px 30px -12px rgba(11,13,16,.12);
@@ -207,16 +208,66 @@ input, textarea {
 .disclaimer-card h4{margin:0 0 8px;font-size:15px;font-weight:800;color:#33373c;}
 .disclaimer-card p{margin:0;font-size:13.5px;color:#5b6168;line-height:1.8;}
 
+/* هندسة أزرار ونوافذ نظام التسويق بالعمولة الجديد */
+.aff-floating-btn {
+  position: fixed; bottom: 25px; left: 25px; background: var(--blue); color: #fff;
+  border: none; border-radius: 50px; padding: 12px 22px; font-family: inherit;
+  font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 8px 24px rgba(41,98,255,0.3);
+  z-index: 9999; display: flex; align-items: center; gap: 8px; transition: transform 0.2s;
+}
+.aff-floating-btn:hover { transform: scale(1.05); }
+
+.aff-popup-overlay {
+  position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(11,13,16,0.5);
+  backdrop-filter: blur(4px); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.aff-popup-overlay.show { display: flex; }
+.aff-popup-card {
+  background: #fff; border-radius: var(--radius); max-width: 500px; width: 100%;
+  padding: 30px; box-shadow: var(--shadow); position: relative; animation: popupAnim 0.3s ease;
+  text-align: center; border: 1px solid var(--line);
+}
+@keyframes popupAnim { from { opacity:0; transform: scale(0.95); } to { opacity:1; transform: scale(1); } }
+.aff-popup-close {
+  position: absolute; top: 15px; right: 15px; background: var(--line-soft); border: none;
+  width: 30px; height: 30px; border-radius: 50%; font-weight: 800; cursor: pointer;
+}
+.promo-box-popup {
+  background: var(--amber-soft); border: 1px solid #f3e0b8; border-radius: var(--radius-sm);
+  padding: 15px; margin: 15px 0; font-size: 14px; color: #7a5717; font-weight: 700;
+}
+
 footer{
   background:var(--line-soft);text-align:center;padding:36px 20px;color:var(--ink-soft);font-size:14px;
 }
 footer .line1{font-weight:700;color:var(--ink);margin-bottom:4px;}
 
 h2.section-title{font-size:26px;font-weight:900;text-align:center;margin:0 0 32px;}
-
 </style>
 </head>
 <body>
+
+<!-- زر عائم سفلي ثابت للوصول لبرنامج التسويق في أي وقت -->
+<button class="aff-floating-btn" onclick="openAffPopup()">
+  <span>💎</span> برنامج الشركاء والمسوقين
+</button>
+
+<!-- النافذة المنبثقة الذكية للمسوقين -->
+<div class="aff-popup-overlay" id="affPopup">
+  <div class="aff-popup-card">
+    <button class="aff-popup-close" onclick="closeAffPopup()">✕</button>
+    <div style="font-size: 40px; margin-bottom: 10px;">🚀</div>
+    <h3 style="margin: 0 0 8px; font-weight: 900; font-size: 22px;">انضم كشريك معنا واكسب نقاطاً وأرباحاً!</h3>
+    <p style="margin: 0; font-size: 15px; color: var(--ink-soft);">شارك المعرفة الفنية الخاصة باستراتيجيتنا، واقنص أرباحاً دورية بلا حدود.</p>
+    
+    <div class="promo-box-popup">
+      🎁 20 نقطة فورية عن كل مشترك من طرفك! يمكنك تسييلها نقدياً أو تمديد اشتراكك مجاناً.
+    </div>
+
+    <!-- رابط الانتقال المباشر لصفحة التسجيل وتوليد الكود -->
+    <button class="btn-fill" style="width: 100%; margin-top: 10px;" onclick="window.location.href='affiliate.html'">ابدأ جني النقاط الآن</button>
+  </div>
+</div>
 
 <section class="hero wrap reveal">
   <h1>استراتيجية Nawaf الاحترافية</h1>
@@ -382,6 +433,30 @@ h2.section-title{font-size:26px;font-weight:900;text-align:center;margin:0 0 32p
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  /* منطق النافذة المنبثقة الذكية للمسوقين */
+  window.openAffPopup = function() {
+    document.getElementById('affPopup').classList.add('show');
+  }
+  window.closeAffPopup = function() {
+    document.getElementById('affPopup').classList.remove('show');
+  }
+
+  // تظهر النافذة تلقائياً بعد مرور 3 ثوانٍ من دخول الزائر لأول مرة
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      // للتأكد من عدم مضايقته إذا أغلقها مسبقاً في نفس الجلسة
+      if(!sessionStorage.getItem('dismissedAffPopup')) {
+        openAffPopup();
+      }
+    }, 3000);
+  });
+
+  // حفظ تفضيل الإغلاق المؤقت لمنع الإزعاج المتكرر
+  window.closeAffPopup = function() {
+    document.getElementById('affPopup').classList.remove('show');
+    sessionStorage.setItem('dismissedAffPopup', 'true');
+  }
+
   // Slider Logic
   let currentIdx = 0;
   const track = document.getElementById('commentsList');
@@ -390,7 +465,7 @@ h2.section-title{font-size:26px;font-weight:900;text-align:center;margin:0 0 32p
     const cardWidth = track.querySelector('.review-card')?.offsetWidth || 0;
     const gap = 20;
     const move = currentIdx * (cardWidth + gap);
-    track.style.transform = `translateX(${move}px)`; // Direction RTL
+    track.style.transform = `translateX(${move}px)`; 
   }
 
   document.getElementById('nextBtn').addEventListener('click', () => {
@@ -431,12 +506,10 @@ h2.section-title{font-size:26px;font-weight:900;text-align:center;margin:0 0 32p
   const commentForm = document.getElementById('commentForm');
 
   checkPassBtn.addEventListener('click', () => {
-    // Check if user already submitted
     if(localStorage.getItem('hasSubmittedReview')) {
       alert('لقد قمت بمشاركة رأيك مسبقاً. شكراً لك على دعمك!');
       return;
     }
-
     if(passCodeInput.value === 'n2030') {
       authBox.style.display = 'none';
       commentForm.classList.add('active');
@@ -468,14 +541,11 @@ h2.section-title{font-size:26px;font-weight:900;text-align:center;margin:0 0 32p
       });
 
       alert('شكراً لك! تم نشر رأيك بنجاح.');
-      
-      // Save to localStorage to prevent multiple submissions
       localStorage.setItem('hasSubmittedReview', 'true');
-
       document.getElementById('commentName').value = '';
       document.getElementById('commentText').value = '';
       commentForm.classList.remove('active');
-      authBox.style.display = 'none'; // Keep it hidden after submission
+      authBox.style.display = 'none';
       commentSendBtn.disabled = false;
       commentSendBtn.textContent = 'نشر التعليق';
     } catch (e) {
