@@ -1,3 +1,28 @@
+
+
+ابدأ التجربة المجانية
+
+مشاركة
+رائع انت مبدع 
+الان لا اريد المشترك يصوت اكثر من مره 
+Lite
+شكراً جزيلاً لك على كلماتك الطيبة! يسعدني جداً أن العمل نال إعجابك.
+لمنع تكرار الآراء من نفس الشخص، سأقوم بإضافة منطق برمجى يستخدم "التخزين المحلي" (LocalStorage) في متصفح المستخدم. بمجرد أن يقوم المشترك بنشر رأيه بنجاح، سيقوم المتصفح بحفظ علامة تمنعه من إرسال رأي آخر من نفس الجهاز، وستظهر له رسالة شكر تخبره بأنه قد شارك رأيه مسبقاً.
+جاري تحديث الكود لإضافة هذه الحماية...
+
+Lite
+تم تحديث الصفحة بنجاح لإضافة خاصية "منع تكرار الآراء".
+كيف يعمل النظام الجديد:
+التحقق الفوري: عند محاولة المشترك إدخال الرقم السري، يقوم الكود أولاً بالتحقق مما إذا كان هذا الجهاز قد قام بنشر رأي سابقاً.
+رسالة تنبيه: إذا وجد الكود أن المشترك قد أرسل رأيه بالفعل، ستظهر له رسالة: "لقد قمت بمشاركة رأيك مسبقاً. شكراً لك على دعمك!" ولن يتم فتح استمارة التعليق.
+الحفظ الذكي: بمجرد أن يضغط المشترك على "نشر التعليق" ويتم الحفظ في Firebase، يتم تخزين علامة في متصفحه (LocalStorage) تمنعه من الإرسال مرة أخرى.
+هذه الخطوة تضمن أن تكون الآراء متنوعة وحقيقية وتمثل أكبر عدد ممكن من المشتركين المختلفين. هل أنت جاهز لاعتماد هذه النسخة النهائية؟
+vote_updated.html
+رمز · 21.10 KB
+عرض جميع الملفات في هذه المهمة
+تم إكمال المهمة
+كيف كانت هذه النتيجة؟
+اقتراحات للمتابعة
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -447,6 +472,12 @@ h2.section-title{font-size:26px;font-weight:900;text-align:center;margin:0 0 32p
   const commentForm = document.getElementById('commentForm');
 
   checkPassBtn.addEventListener('click', () => {
+    // Check if user already submitted
+    if(localStorage.getItem('hasSubmittedReview')) {
+      alert('لقد قمت بمشاركة رأيك مسبقاً. شكراً لك على دعمك!');
+      return;
+    }
+
     if(passCodeInput.value === 'n2030') {
       authBox.style.display = 'none';
       commentForm.classList.add('active');
@@ -478,11 +509,14 @@ h2.section-title{font-size:26px;font-weight:900;text-align:center;margin:0 0 32p
       });
 
       alert('شكراً لك! تم نشر رأيك بنجاح.');
+      
+      // Save to localStorage to prevent multiple submissions
+      localStorage.setItem('hasSubmittedReview', 'true');
+
       document.getElementById('commentName').value = '';
       document.getElementById('commentText').value = '';
       commentForm.classList.remove('active');
-      authBox.style.display = 'block';
-      passCodeInput.value = '';
+      authBox.style.display = 'none'; // Keep it hidden after submission
       commentSendBtn.disabled = false;
       commentSendBtn.textContent = 'نشر التعليق';
     } catch (e) {
