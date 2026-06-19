@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تصويت المجتمع | WyckoffNawaf</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff;
+  --ink:#0b0d10;
+  --ink-soft:#5b6168;
+  --line:#e7e9ec;
+  --line-soft:#f1f2f4;
+  --panel:#fafbfc;
+  --green:#0f9d58;
+  --green-soft:#e6f6ee;
+  --blue:#2962ff;
+  --blue-soft:#eaf0ff;
+  --amber:#e8a33d;
+  --radius:18px;
+  --radius-sm:10px;
+  --shadow:0 10px 30px -12px rgba(11,13,16,.12);
+  --shadow-sm:0 4px 14px -6px rgba(11,13,16,.10);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Cairo','Tajawal',sans-serif;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:920px;margin:0 auto;padding:0 20px;}
+section{padding:46px 0;}
+
+/* fade-in */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.show{opacity:1;transform:translateY(0);}
+
+/* HERO */
+.hero{padding:64px 0 28px;text-align:center;}
+.hero h1{
+  font-size:clamp(32px,5vw,46px);
+  font-weight:900;
+  margin:0 0 10px;
+  letter-spacing:-.5px;
+}
+.hero p.sub{
+  color:var(--ink-soft);
+  font-size:18px;
+  margin:0 auto 30px;
+  max-width:560px;
+}
+.story-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:28px 30px;
+  text-align:right;
+  font-size:16.5px;
+  color:#262a2e;
+  box-shadow:var(--shadow-sm);
+}
+
+/* OPTIONS */
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:720px){.options-grid{grid-template-columns:1fr;}}
+.opt-card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:30px 26px;
+  position:relative;
+  box-shadow:var(--shadow-sm);
+  transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.opt-card:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:#dfe2e6;}
+.opt-num{
+  width:48px;height:48px;border-radius:50%;
+  background:var(--blue-soft);color:var(--blue);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:20px;margin-bottom:16px;
+}
+.opt-card h3{font-size:20px;margin:0 0 10px;font-weight:800;}
+.opt-card p{color:var(--ink-soft);font-size:15px;margin:0 0 22px;min-height:62px;}
+.vote-btn{
+  width:100%;border:none;cursor:pointer;
+  background:var(--ink);color:#fff;
+  padding:13px 18px;border-radius:var(--radius-sm);
+  font-family:inherit;font-weight:700;font-size:15px;
+  transition:background .2s ease, transform .15s ease;
+}
+.vote-btn:hover{background:#222;transform:scale(1.015);}
+.vote-btn.voted{background:var(--green);}
+.opt-card.third{grid-column:1/-1;}
+.suggest-box{display:none;margin-top:14px;}
+.suggest-box.open{display:block;}
+textarea, input[type=text]{
+  width:100%;border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:12px 14px;font-family:inherit;font-size:15px;resize:vertical;
+  background:#fafbfc;
+}
+textarea:focus, input:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:transparent;}
+.send-btn{
+  margin-top:10px;border:none;cursor:pointer;background:var(--blue);color:#fff;
+  padding:10px 20px;border-radius:var(--radius-sm);font-family:inherit;font-weight:700;
+}
+
+.thanks{
+  display:none;
+  background:var(--green-soft);border:1px solid #c7ecd9;color:#0a6b3c;
+  border-radius:var(--radius);padding:18px 24px;text-align:center;
+  font-weight:700;font-size:16px;margin-top:20px;
+}
+.thanks.show{display:block;}
+
+/* DASHBOARD */
+.dash-title{font-size:22px;font-weight:800;margin-bottom:18px;text-align:center;}
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+@media(max-width:720px){.dash-grid{grid-template-columns:1fr 1fr;}}
+.stat-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px 16px;text-align:center;
+}
+.stat-num{font-size:30px;font-weight:900;color:var(--ink);}
+.stat-label{font-size:13px;color:var(--ink-soft);margin-top:6px;}
+
+/* PROGRESS */
+.bars{margin-top:30px;display:flex;flex-direction:column;gap:18px;}
+.bar-row{}
+.bar-head{display:flex;justify-content:space-between;font-weight:700;font-size:14.5px;margin-bottom:8px;}
+.bar-track{height:14px;background:var(--line-soft);border-radius:10px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:10px;width:0%;transition:width 1s cubic-bezier(.2,.8,.2,1);}
+.bar-fill.opt1{background:linear-gradient(90deg,var(--green),#16c172);}
+.bar-fill.opt2{background:linear-gradient(90deg,var(--blue),#5b8aff);}
+
+/* COUNTDOWN */
+.countdown-card{
+  background:var(--ink);color:#fff;border-radius:var(--radius);
+  padding:34px 28px;text-align:center;
+}
+.countdown-card h3{margin:0 0 18px;font-size:18px;font-weight:700;color:#cfd3d8;}
+.cd-grid{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;}
+.cd-box{background:#1c1f24;border-radius:var(--radius-sm);padding:14px 18px;min-width:74px;}
+.cd-num{font-size:26px;font-weight:900;}
+.cd-label{font-size:12px;color:#9aa0a7;margin-top:4px;}
+.closed-msg{font-size:20px;font-weight:800;color:#ff6b6b;}
+
+/* TRANSPARENCY / SPECIAL */
+.info-card{
+  display:flex;gap:16px;align-items:flex-start;
+  background:var(--blue-soft);border:1px solid #d5e1ff;
+  border-radius:var(--radius);padding:24px;
+}
+.info-card .icon{font-size:30px;}
+.info-card p{margin:0;font-weight:600;color:#1c3a8f;font-size:15.5px;}
+
+.special-card{
+  background:#fff7ea;border:1px solid #f3e0b8;
+  border-radius:var(--radius);padding:24px;
+  font-weight:600;color:#7a5717;font-size:15.5px;
+}
+
+/* CONTACT */
+.contact-card{
+  text-align:center;background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--radius);padding:36px 24px;
+}
+.tg-icon{font-size:54px;display:block;margin-bottom:10px;}
+.handle{font-size:20px;font-weight:800;color:var(--blue);margin:8px 0 20px;}
+.contact-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-outline, .btn-fill{
+  border-radius:var(--radius-sm);padding:11px 20px;font-weight:700;font-family:inherit;
+  cursor:pointer;font-size:14.5px;border:1px solid var(--line);
+}
+.btn-outline{background:#fff;color:var(--ink);}
+.btn-outline:hover{background:var(--line-soft);}
+.btn-fill{background:var(--blue);color:#fff;border:none;}
+.btn-fill:hover{background:#1f4fe0;}
+
+/* TRUST SURVEY */
+.survey-options{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:18px;}
+.survey-btn{
+  border:1px solid var(--line);background:#fff;border-radius:999px;
+  padding:11px 22px;font-family:inherit;font-weight:700;cursor:pointer;font-size:14.5px;
+  transition:all .2s ease;
+}
+.survey-btn:hover{border-color:var(--ink);}
+.survey-btn.picked{background:var(--ink);color:#fff;border-color:var(--ink);}
+.survey-count{text-align:center;color:var(--ink-soft);font-size:13.5px;margin-top:14px;}
+
+/* COMMENTS */
+.comment-form{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+.comments-list{display:flex;flex-direction:column;gap:12px;}
+.comment-item{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:14px 16px;font-size:14.5px;
+}
+.comment-item b{display:block;font-size:13px;color:var(--ink-soft);margin-bottom:4px;}
+
+footer{
+  background:var(--line-soft);text-align:center;padding:36px 20px;color:var(--ink-soft);font-size:14px;
+}
+footer .line1{font-weight:700;color:var(--ink);margin-bottom:4px;}
+
+h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24px;}
+
+/* confetti */
+.confetti-piece{position:fixed;top:-10px;width:8px;height:14px;opacity:.9;z-index:9999;pointer-events:none;border-radius:2px;}
+</style>
+</head>
+<body>
+
+<section class="hero wrap reveal">
+  <h1>تصويت المجتمع</h1>
+  <p class="sub">ساهم برأيك في تحديد أفضل طريقة لإطلاق الاستراتيجية.</p>
+  <div class="story-card">
+    بعد سنوات من التطوير والتجربة والتعديلات، وبفضل الله ثم الخبرة في التحليل الفني، تم الوصول إلى استراتيجية تداول قوية وفعالة أثبتت نتائج مميزة على مختلف الأسواق والفريمات الزمنية.
+    <br><br>
+    الآن نرغب بمعرفة رأيكم قبل الإطلاق الرسمي.
+  </div>
+</section>
+
+<section class="wrap reveal">
+  <div class="options-grid">
+    <div class="opt-card">
+      <div class="opt-num">①</div>
+      <h3>شراء الاستراتيجية مرة واحدة</h3>
+      <p>الحصول على الاستراتيجية مقابل مبلغ رمزي ويكون دورنا قد انتهى بعد التسليم.</p>
+      <button class="vote-btn" data-vote="opt1">صوّت لهذا الخيار</button>
+    </div>
+    <div class="opt-card">
+      <div class="opt-num">②</div>
+      <h3>اشتراك شهري مع قروب متابعة</h3>
+      <p>اشتراك شهري بسيط يشمل متابعة مستمرة للأسهم والعملات المناسبة للبيع والشراء والتنبيهات المستمرة.</p>
+      <button class="vote-btn" data-vote="opt2">صوّت لهذا الخيار</button>
+    </div>
+    <div class="opt-card third">
+      <div class="opt-num">③</div>
+      <h3>لدي اقتراح آخر</h3>
+      <p>شاركنا فكرتك الخاصة حول أفضل طريقة للإطلاق.</p>
+      <button class="vote-btn" id="suggestToggle">اكتب اقتراحك</button>
+      <div class="suggest-box" id="suggestBox">
+        <textarea id="suggestText" rows="3" placeholder="اكتب اقتراحك هنا..."></textarea>
+        <button class="send-btn" id="suggestSend">إرسال الاقتراح</button>
+      </div>
+    </div>
+  </div>
+  <div class="thanks" id="thanksMsg">شكراً لمشاركتك في التصويت 🎉</div>
+</section>
+
+<section class="wrap reveal">
+  <h2 class="section-title">لوحة الإحصائيات</h2>
+  <div class="dash-grid">
+    <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-label">إجمالي المصوتين</div></div>
+    <div class="stat-card"><div class="stat-num" id="statOpt1">0</div><div class="stat-label">أصوات الخيار الأول</div></div>
+    <div class="stat-card"><div class="stat-num" id="statOpt2">0</div><div class="stat-label">أصوات الخيار الثاني</div></div>
+    <div class="stat-card"><div class="stat-num" id="statSuggest">0</div><div class="stat-label">أصحاب الاقتراحات</div></div>
+  </div>
+
+  <div class="bars">
+    <div class="bar-row">
+      <div class="bar-head"><span>شراء مرة واحدة</span><span id="pct1">0%</span></div>
+      <div class="bar-track"><div class="bar-fill opt1" id="fill1"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-head"><span>اشتراك شهري</span><span id="pct2">0%</span></div>
+      <div class="bar-track"><div class="bar-fill opt2" id="fill2"></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap reveal">
+  <div class="countdown-card">
+    <h3>ينتهي التصويت خلال</h3>
+    <div class="cd-grid" id="cdGrid">
+      <div class="cd-box"><div class="cd-num" id="cdDays">--</div><div class="cd-label">يوم</div></div>
+      <div class="cd-box"><div class="cd-num" id="cdHours">--</div><div class="cd-label">ساعة</div></div>
+      <div class="cd-box"><div class="cd-num" id="cdMins">--</div><div class="cd-label">دقيقة</div></div>
+      <div class="cd-box"><div class="cd-num" id="cdSecs">--</div><div class="cd-label">ثانية</div></div>
+    </div>
+    <div class="closed-msg" id="closedMsg" style="display:none;">تم إغلاق التصويت.</div>
+  </div>
+</section>
+
+<section class="wrap reveal">
+  <div class="info-card">
+    <span class="icon">🛡️</span>
+    <p>المبلغ سيعاد لك بالكامل بدون أي نقاش إذا لم تستفد من الاستراتيجية.</p>
+  </div>
+</section>
+
+<section class="wrap reveal">
+  <div class="special-card">
+    ✦ المشتركون معنا في قروب نجوم وايكوف ستكون لهم آلية خاصة ومزايا حصرية في الاشتراك.
+  </div>
+</section>
+
+<section class="wrap reveal">
+  <h2 class="section-title">للتواصل</h2>
+  <div class="contact-card">
+    <span class="tg-icon">✈️</span>
+    <div class="handle">@wyckoffnawaf</div>
+    <div class="contact-actions">
+      <button class="btn-outline" id="copyHandle">نسخ اسم المستخدم</button>
+      <button class="btn-fill" id="openTg">فتح تيليجرام</button>
+    </div>
+  </div>
+</section>
+
+<section class="wrap reveal">
+  <h2 class="section-title">إذا أثبتت الاستراتيجية نتائجها، هل ترى أنها تستحق المتابعة الشهرية؟</h2>
+  <div class="survey-options">
+    <button class="survey-btn" data-trust="yes">⭐ نعم بالتأكيد</button>
+    <button class="survey-btn" data-trust="maybe">⭐ ربما</button>
+    <button class="survey-btn" data-trust="no">⭐ لا</button>
+  </div>
+  <div class="survey-count" id="trustCount">0 مشارك حتى الآن</div>
+</section>
+
+<section class="wrap reveal">
+  <h2 class="section-title">آراء وتعليقات</h2>
+  <div class="comment-form">
+    <input type="text" id="commentName" placeholder="اسمك (اختياري)">
+    <textarea id="commentText" rows="3" placeholder="اكتب تعليقك أو ملاحظتك..."></textarea>
+    <button class="send-btn" id="commentSend" style="align-self:flex-start;">إرسال التعليق</button>
+  </div>
+  <div class="comments-list" id="commentsList"></div>
+</section>
+
+<footer>
+  <div class="line1">شكراً لكل من شارك في التصويت.</div>
+  <div>رأيكم هو أساس تطوير المشروع.</div>
+  <div style="margin-top:10px;">© جميع الحقوق محفوظة</div>
+</footer>
+
+<script>
+/* ===== Storage helpers ===== */
+const STORE_KEY = 'wyckoff_vote_data_v1';
+function loadData(){
+  let d = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+  if(!d){
+    d = {
+      opt1:0, opt2:0, suggestions:0,
+      voted:false, votedChoice:null,
+      trust:{yes:0,maybe:0,no:0}, trustVoted:false,
+      comments:[],
+      endTime: Date.now() + (2*24*60*60*1000)
+    };
+    localStorage.setItem(STORE_KEY, JSON.stringify(d));
+  }
+  return d;
+}
+function saveData(d){ localStorage.setItem(STORE_KEY, JSON.stringify(d)); }
+let data = loadData();
+
+/* ===== Reveal on scroll ===== */
+const reveals = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); } });
+},{threshold:.12});
+reveals.forEach(r=>io.observe(r));
+
+/* ===== Stats render ===== */
+function animateNumber(el, to){
+  let from = parseInt(el.textContent) || 0;
+  if(from === to) return;
+  const dur = 600, start = performance.now();
+  function step(t){
+    const p = Math.min((t-start)/dur,1);
+    el.textContent = Math.round(from + (to-from)*p);
+    if(p<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function renderStats(){
+  const total = data.opt1 + data.opt2;
+  animateNumber(document.getElementById('statTotal'), total);
+  animateNumber(document.getElementById('statOpt1'), data.opt1);
+  animateNumber(document.getElementById('statOpt2'), data.opt2);
+  animateNumber(document.getElementById('statSuggest'), data.suggestions);
+
+  const p1 = total ? Math.round((data.opt1/total)*100) : 0;
+  const p2 = total ? 100-p1 : 0;
+  document.getElementById('fill1').style.width = p1+'%';
+  document.getElementById('fill2').style.width = p2+'%';
+  document.getElementById('pct1').textContent = p1+'%';
+  document.getElementById('pct2').textContent = p2+'%';
+}
+
+/* ===== Voting ===== */
+const voteButtons = document.querySelectorAll('.vote-btn[data-vote]');
+function applyVotedUI(){
+  if(data.voted){
+    voteButtons.forEach(b=>{
+      b.disabled = true;
+      if(b.dataset.vote === data.votedChoice){
+        b.classList.add('voted');
+        b.textContent = 'تم التصويت ✓';
+      } else {
+        b.style.opacity = .5;
+      }
+    });
+    document.getElementById('thanksMsg').classList.add('show');
+  }
+}
+voteButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    if(data.voted) return;
+    const choice = btn.dataset.vote;
+    data[choice]++;
+    data.voted = true;
+    data.votedChoice = choice;
+    saveData(data);
+    applyVotedUI();
+    renderStats();
+    launchConfetti();
+  });
+});
+applyVotedUI();
+
+/* suggestion box */
+const suggestToggle = document.getElementById('suggestToggle');
+const suggestBox = document.getElementById('suggestBox');
+suggestToggle.addEventListener('click', ()=>{
+  suggestBox.classList.toggle('open');
+});
+document.getElementById('suggestSend').addEventListener('click', ()=>{
+  const val = document.getElementById('suggestText').value.trim();
+  if(!val) return;
+  data.suggestions++;
+  if(!data.voted){ data.voted = true; data.votedChoice = 'suggest'; }
+  saveData(data);
+  renderStats();
+  document.getElementById('thanksMsg').classList.add('show');
+  suggestBox.classList.remove('open');
+  document.getElementById('suggestText').value='';
+  launchConfetti();
+});
+
+/* ===== Countdown ===== */
+function tickCountdown(){
+  const remain = data.endTime - Date.now();
+  if(remain <= 0){
+    document.getElementById('cdGrid').style.display='none';
+    document.getElementById('closedMsg').style.display='block';
+    return;
+  }
+  const d = Math.floor(remain/86400000);
+  const h = Math.floor((remain%86400000)/3600000);
+  const m = Math.floor((remain%3600000)/60000);
+  const s = Math.floor((remain%60000)/1000);
+  document.getElementById('cdDays').textContent = String(d).padStart(2,'0');
+  document.getElementById('cdHours').textContent = String(h).padStart(2,'0');
+  document.getElementById('cdMins').textContent = String(m).padStart(2,'0');
+  document.getElementById('cdSecs').textContent = String(s).padStart(2,'0');
+}
+tickCountdown();
+setInterval(tickCountdown, 1000);
+
+/* ===== Contact ===== */
+document.getElementById('copyHandle').addEventListener('click', ()=>{
+  navigator.clipboard.writeText('@wyckoffnawaf').then(()=>{
+    const b = document.getElementById('copyHandle');
+    const old = b.textContent;
+    b.textContent = 'تم النسخ ✓';
+    setTimeout(()=>b.textContent = old, 1500);
+  });
+});
+document.getElementById('openTg').addEventListener('click', ()=>{
+  window.open('https://t.me/wyckoffnawaf','_blank');
+});
+
+/* ===== Trust survey ===== */
+const trustButtons = document.querySelectorAll('.survey-btn');
+function renderTrust(){
+  const total = data.trust.yes + data.trust.maybe + data.trust.no;
+  document.getElementById('trustCount').textContent = total + ' مشارك حتى الآن';
+  if(data.trustVoted){
+    trustButtons.forEach(b=>{
+      b.disabled = true;
+      if(b.dataset.trust === data.trustVoted) b.classList.add('picked');
+    });
+  }
+}
+trustButtons.forEach(b=>{
+  b.addEventListener('click', ()=>{
+    if(data.trustVoted) return;
+    data.trust[b.dataset.trust]++;
+    data.trustVoted = b.dataset.trust;
+    saveData(data);
+    renderTrust();
+  });
+});
+renderTrust();
+
+/* ===== Comments ===== */
+function renderComments(){
+  const list = document.getElementById('commentsList');
+  list.innerHTML = '';
+  data.comments.slice().reverse().forEach(c=>{
+    const div = document.createElement('div');
+    div.className = 'comment-item';
+    div.innerHTML = `<b>${c.name}</b>${c.text}`;
+    list.appendChild(div);
+  });
+}
+document.getElementById('commentSend').addEventListener('click', ()=>{
+  const text = document.getElementById('commentText').value.trim();
+  if(!text) return;
+  const name = document.getElementById('commentName').value.trim() || 'مشارك';
+  data.comments.push({name, text});
+  saveData(data);
+  renderComments();
+  document.getElementById('commentText').value='';
+  document.getElementById('commentName').value='';
+});
+renderComments();
+
+/* ===== Confetti ===== */
+function launchConfetti(){
+  const colors = ['#0f9d58','#2962ff','#e8a33d','#0b0d10'];
+  for(let i=0;i<36;i++){
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random()*100+'vw';
+    piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+    piece.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(piece);
+    const duration = 1800 + Math.random()*1200;
+    const drift = (Math.random()-0.5)*150;
+    piece.animate([
+      { transform:`translate(0,0) rotate(0deg)`, opacity:1 },
+      { transform:`translate(${drift}px, 100vh) rotate(${360+Math.random()*360}deg)`, opacity:0 }
+    ], { duration, easing:'cubic-bezier(.2,.6,.4,1)' }).onfinish = ()=>piece.remove();
+  }
+}
+
+renderStats();
+</script>
+</body>
+</html>
