@@ -216,6 +216,23 @@ textarea:focus, input:focus{outline:2px solid var(--blue);outline-offset:1px;bor
 .disclaimer-card h4{margin:0 0 8px;font-size:15px;font-weight:800;color:#33373c;}
 .disclaimer-card p{margin:0;font-size:13.5px;color:#5b6168;line-height:1.8;}
 
+.mastery-card{
+  display:flex;align-items:center;gap:18px;
+  background:linear-gradient(135deg,#eaf0ff,#f3f7ff);
+  border:1px solid #d5e1ff;border-radius:var(--radius);
+  padding:24px 28px;
+}
+.mastery-icon{
+  width:58px;height:58px;flex:none;border-radius:50%;
+  background:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:28px;box-shadow:var(--shadow-sm);
+}
+.mastery-text{display:flex;flex-direction:column;gap:4px;}
+.mastery-eyebrow{font-size:12.5px;font-weight:700;color:var(--blue);}
+.mastery-value{font-size:19px;font-weight:900;color:var(--ink);}
+.mastery-text p{margin:4px 0 0;font-size:13.5px;color:var(--ink-soft);}
+@media(max-width:480px){.mastery-card{flex-direction:column;text-align:center;}}
+
 /* CONTACT */
 .contact-card{
   text-align:center;background:var(--panel);border:1px solid var(--line);
@@ -300,6 +317,17 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
     <div class="compare-col">
       <span class="compare-tag tag-two">الخيار الثاني</span>
       <p>تنضم لمجتمع الاستراتيجية، ونستمر معك شهرياً: متابعة، رفع شارتات للأسهم والعملات تحت المراقبة، وشرح فني مستمر يساعدك على قراءة الشارت بنفسك.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap reveal">
+  <div class="mastery-card">
+    <span class="mastery-icon">⏱️</span>
+    <div class="mastery-text">
+      <span class="mastery-eyebrow">فترة إتقان الاستراتيجية</span>
+      <span class="mastery-value">من ساعة إلى ٣ ساعات فقط</span>
+      <p>وقت بسيط كافٍ لفهم الفكرة والتطبيق العملي عليها بثقة.</p>
     </div>
   </div>
 </section>
