@@ -279,9 +279,41 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
 
 /* confetti */
 .confetti-piece{position:fixed;top:-10px;width:8px;height:14px;opacity:.9;z-index:9999;pointer-events:none;border-radius:2px;}
+
+/* Overlay for redirection */
+.redirect-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(255,255,255,0.95);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  text-align: center;
+}
+.redirect-overlay.show { display: flex; }
+.redirect-overlay h2 { color: var(--green); font-size: 28px; margin-bottom: 10px; }
+.redirect-overlay p { color: var(--ink-soft); font-size: 18px; }
+.back-btn {
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
 </style>
 </head>
 <body>
+
+<div class="redirect-overlay" id="redirectOverlay">
+  <h2>شكراً لك من القلب! ❤️</h2>
+  <p>تم استلام مشاركتك بنجاح. سيتم توجيهك الآن...</p>
+  <button class="back-btn" onclick="location.reload()">العودة للصفحة</button>
+</div>
 
 <section class="hero wrap reveal">
   <h1>تصويت المجتمع</h1>
@@ -473,210 +505,289 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
   <div style="margin-top:10px;">© جميع الحقوق محفوظة</div>
 </footer>
 
-<script>
-/* ===== Storage helpers ===== */
-const STORE_KEY = 'wyckoff_vote_data_v1';
-function loadData(){
-  let d = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
-  if(!d){
-    d = {
-      opt1:0, opt2:0, suggestions:0,
-      voted:false, votedChoice:null,
-      trust:{yes:0,maybe:0,no:0}, trustVoted:false,
-      comments:[],
-      endTime: Date.now() + (2*24*60*60*1000)
-    };
-    localStorage.setItem(STORE_KEY, JSON.stringify(d));
+<!-- Firebase SDKs -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCdqr9x5kC6rQaSdq7oOei-pWEKgVjJKL0",
+    authDomain: "wyckoff-a6303.firebaseapp.com",
+    projectId: "wyckoff-a6303",
+    storageBucket: "wyckoff-a6303.firebasestorage.app",
+    messagingSenderId: "347571286958",
+    appId: "1:347571286958:web:7b9ff7fbd9a8f1feef8e3f",
+    measurementId: "G-WDJC7VDYX5"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const analytics = getAnalytics(app);
+
+  /* ===== Data Management ===== */
+  const STORE_KEY = 'wyckoff_vote_local_v1';
+  let localState = JSON.parse(localStorage.getItem(STORE_KEY) || '{"voted":false, "votedChoice":null, "trustVoted":false}');
+  
+  let globalData = {
+    opt1: 0, opt2: 0, suggestions: 0,
+    trust: { yes: 0, maybe: 0, no: 0 },
+    endTime: Date.now() + (2*24*60*60*1000)
+  };
+
+  // Sync with Firestore
+  const statsDocRef = doc(db, "vote_stats", "global");
+
+  // Real-time listener for stats
+  onSnapshot(statsDocRef, (docSnap) => {
+    if (docSnap.exists()) {
+      globalData = { ...globalData, ...docSnap.data() };
+      renderStats();
+      renderTrust();
+    } else {
+      // Initialize if doesn't exist
+      setDoc(statsDocRef, {
+        opt1: 0, opt2: 0, suggestions: 0,
+        trust: { yes: 0, maybe: 0, no: 0 },
+        endTime: Date.now() + (2*24*60*60*1000)
+      });
+    }
+  });
+
+  // Real-time listener for comments
+  const commentsCol = collection(db, "comments");
+  const q = query(commentsCol, orderBy("timestamp", "desc"), limit(20));
+  onSnapshot(q, (snapshot) => {
+    const comments = [];
+    snapshot.forEach(doc => comments.push(doc.data()));
+    renderComments(comments);
+  });
+
+  function saveLocal() {
+    localStorage.setItem(STORE_KEY, JSON.stringify(localState));
   }
-  return d;
-}
-function saveData(d){ localStorage.setItem(STORE_KEY, JSON.stringify(d)); }
-let data = loadData();
 
-/* ===== Reveal on scroll ===== */
-const reveals = document.querySelectorAll('.reveal');
-const io = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); } });
-},{threshold:.12});
-reveals.forEach(r=>io.observe(r));
+  /* ===== Reveal on scroll ===== */
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); } });
+  },{threshold:.12});
+  reveals.forEach(r=>io.observe(r));
 
-/* ===== Stats render ===== */
-function animateNumber(el, to){
-  let from = parseInt(el.textContent) || 0;
-  if(from === to) return;
-  const dur = 600, start = performance.now();
-  function step(t){
-    const p = Math.min((t-start)/dur,1);
-    el.textContent = Math.round(from + (to-from)*p);
-    if(p<1) requestAnimationFrame(step);
+  /* ===== Stats render ===== */
+  function animateNumber(el, to){
+    let from = parseInt(el.textContent) || 0;
+    if(from === to) return;
+    const dur = 600, start = performance.now();
+    function step(t){
+      const p = Math.min((t-start)/dur,1);
+      el.textContent = Math.round(from + (to-from)*p);
+      if(p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
   }
-  requestAnimationFrame(step);
-}
 
-function renderStats(){
-  const total = data.opt1 + data.opt2;
-  animateNumber(document.getElementById('statTotal'), total);
-  animateNumber(document.getElementById('statOpt1'), data.opt1);
-  animateNumber(document.getElementById('statOpt2'), data.opt2);
-  animateNumber(document.getElementById('statSuggest'), data.suggestions);
+  function renderStats(){
+    const total = globalData.opt1 + globalData.opt2;
+    animateNumber(document.getElementById('statTotal'), total);
+    animateNumber(document.getElementById('statOpt1'), globalData.opt1);
+    animateNumber(document.getElementById('statOpt2'), globalData.opt2);
+    animateNumber(document.getElementById('statSuggest'), globalData.suggestions);
 
-  const p1 = total ? Math.round((data.opt1/total)*100) : 0;
-  const p2 = total ? 100-p1 : 0;
-  document.getElementById('fill1').style.width = p1+'%';
-  document.getElementById('fill2').style.width = p2+'%';
-  document.getElementById('pct1').textContent = p1+'%';
-  document.getElementById('pct2').textContent = p2+'%';
-}
+    const p1 = total ? Math.round((globalData.opt1/total)*100) : 0;
+    const p2 = total ? 100-p1 : 0;
+    document.getElementById('fill1').style.width = p1+'%';
+    document.getElementById('fill2').style.width = p2+'%';
+    document.getElementById('pct1').textContent = p1+'%';
+    document.getElementById('pct2').textContent = p2+'%';
+  }
 
-/* ===== Voting ===== */
-const voteButtons = document.querySelectorAll('.vote-btn[data-vote]');
-function applyVotedUI(){
-  if(data.voted){
-    voteButtons.forEach(b=>{
-      b.disabled = true;
-      if(b.dataset.vote === data.votedChoice){
-        b.classList.add('voted');
-        b.textContent = 'تم التصويت ✓';
-      } else {
-        b.style.opacity = .5;
-      }
+  /* ===== Voting ===== */
+  const voteButtons = document.querySelectorAll('.vote-btn[data-vote]');
+  function applyVotedUI(){
+    if(localState.voted){
+      voteButtons.forEach(b=>{
+        b.disabled = true;
+        if(b.dataset.vote === localState.votedChoice){
+          b.classList.add('voted');
+          b.textContent = 'تم التصويت ✓';
+        } else {
+          b.style.opacity = .5;
+        }
+      });
+      document.getElementById('thanksMsg').classList.add('show');
+    }
+  }
+
+  function showThankYouAndRedirect() {
+    launchConfetti();
+    const overlay = document.getElementById('redirectOverlay');
+    overlay.classList.add('show');
+    setTimeout(() => {
+      // يمكنك تغيير هذا الرابط إلى الصفحة الرئيسية لموقعك
+      // window.location.href = "https://nawafoooh.github.io/-43/"; 
+    }, 4000);
+  }
+
+  voteButtons.forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      if(localState.voted) return;
+      const choice = btn.dataset.vote;
+      
+      // Update Firestore
+      await updateDoc(statsDocRef, {
+        [choice]: increment(1)
+      });
+
+      localState.voted = true;
+      localState.votedChoice = choice;
+      saveLocal();
+      applyVotedUI();
+      showThankYouAndRedirect();
     });
-    document.getElementById('thanksMsg').classList.add('show');
+  });
+  applyVotedUI();
+
+  /* suggestion box */
+  const suggestToggle = document.getElementById('suggestToggle');
+  const suggestBox = document.getElementById('suggestBox');
+  suggestToggle.addEventListener('click', ()=>{
+    suggestBox.classList.toggle('open');
+  });
+
+  document.getElementById('suggestSend').addEventListener('click', async ()=>{
+    const val = document.getElementById('suggestText').value.trim();
+    if(!val) return;
+
+    // Update Firestore
+    await updateDoc(statsDocRef, {
+      suggestions: increment(1)
+    });
+    
+    // Add to a special collection for suggestions if needed, or just increment
+    await addDoc(collection(db, "suggestions"), {
+      text: val,
+      timestamp: serverTimestamp()
+    });
+
+    if(!localState.voted){ 
+      localState.voted = true; 
+      localState.votedChoice = 'suggest'; 
+      saveLocal();
+    }
+    
+    suggestBox.classList.remove('open');
+    document.getElementById('suggestText').value='';
+    showThankYouAndRedirect();
+  });
+
+  /* ===== Countdown ===== */
+  function tickCountdown(){
+    const remain = globalData.endTime - Date.now();
+    if(remain <= 0){
+      document.getElementById('cdGrid').style.display='none';
+      document.getElementById('closedMsg').style.display='block';
+      return;
+    }
+    const d = Math.floor(remain/86400000);
+    const h = Math.floor((remain%86400000)/3600000);
+    const m = Math.floor((remain%3600000)/60000);
+    const s = Math.floor((remain%60000)/1000);
+    document.getElementById('cdDays').textContent = String(d).padStart(2,'0');
+    document.getElementById('cdHours').textContent = String(h).padStart(2,'0');
+    document.getElementById('cdMins').textContent = String(m).padStart(2,'0');
+    document.getElementById('cdSecs').textContent = String(s).padStart(2,'0');
   }
-}
-voteButtons.forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    if(data.voted) return;
-    const choice = btn.dataset.vote;
-    data[choice]++;
-    data.voted = true;
-    data.votedChoice = choice;
-    saveData(data);
-    applyVotedUI();
-    renderStats();
+  setInterval(tickCountdown, 1000);
+
+  /* ===== Contact ===== */
+  document.getElementById('copyHandle').addEventListener('click', ()=>{
+    navigator.clipboard.writeText('@wyckoffnawaf').then(()=>{
+      const b = document.getElementById('copyHandle');
+      const old = b.textContent;
+      b.textContent = 'تم النسخ ✓';
+      setTimeout(()=>b.textContent = old, 1500);
+    });
+  });
+  document.getElementById('openTg').addEventListener('click', ()=>{
+    window.open('https://t.me/wyckoffnawaf','_blank');
+  });
+
+  /* ===== Trust survey ===== */
+  const trustButtons = document.querySelectorAll('.survey-btn');
+  function renderTrust(){
+    const t = globalData.trust;
+    const total = (t.yes || 0) + (t.maybe || 0) + (t.no || 0);
+    document.getElementById('trustCount').textContent = total + ' مشارك حتى الآن';
+    if(localState.trustVoted){
+      trustButtons.forEach(b=>{
+        b.disabled = true;
+        if(b.dataset.trust === localState.trustVoted) b.classList.add('picked');
+      });
+    }
+  }
+
+  trustButtons.forEach(b=>{
+    b.addEventListener('click', async ()=>{
+      if(localState.trustVoted) return;
+      const choice = b.dataset.trust;
+      
+      await updateDoc(statsDocRef, {
+        [`trust.${choice}`]: increment(1)
+      });
+
+      localState.trustVoted = choice;
+      saveLocal();
+      renderTrust();
+    });
+  });
+
+  /* ===== Comments ===== */
+  function renderComments(comments){
+    const list = document.getElementById('commentsList');
+    list.innerHTML = '';
+    comments.forEach(c=>{
+      const div = document.createElement('div');
+      div.className = 'comment-item';
+      div.innerHTML = `<b>${c.name}</b>${c.text}`;
+      list.appendChild(div);
+    });
+  }
+
+  document.getElementById('commentSend').addEventListener('click', async ()=>{
+    const text = document.getElementById('commentText').value.trim();
+    if(!text) return;
+    const name = document.getElementById('commentName').value.trim() || 'مشارك';
+    
+    await addDoc(collection(db, "comments"), {
+      name: name,
+      text: text,
+      timestamp: serverTimestamp()
+    });
+
+    document.getElementById('commentText').value='';
+    document.getElementById('commentName').value='';
     launchConfetti();
   });
-});
-applyVotedUI();
 
-/* suggestion box */
-const suggestToggle = document.getElementById('suggestToggle');
-const suggestBox = document.getElementById('suggestBox');
-suggestToggle.addEventListener('click', ()=>{
-  suggestBox.classList.toggle('open');
-});
-document.getElementById('suggestSend').addEventListener('click', ()=>{
-  const val = document.getElementById('suggestText').value.trim();
-  if(!val) return;
-  data.suggestions++;
-  if(!data.voted){ data.voted = true; data.votedChoice = 'suggest'; }
-  saveData(data);
-  renderStats();
-  document.getElementById('thanksMsg').classList.add('show');
-  suggestBox.classList.remove('open');
-  document.getElementById('suggestText').value='';
-  launchConfetti();
-});
-
-/* ===== Countdown ===== */
-function tickCountdown(){
-  const remain = data.endTime - Date.now();
-  if(remain <= 0){
-    document.getElementById('cdGrid').style.display='none';
-    document.getElementById('closedMsg').style.display='block';
-    return;
+  /* ===== Confetti ===== */
+  function launchConfetti(){
+    const colors = ['#0f9d58','#2962ff','#e8a33d','#0b0d10'];
+    for(let i=0;i<36;i++){
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random()*100+'vw';
+      piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+      piece.style.transform = `rotate(${Math.random()*360}deg)`;
+      document.body.appendChild(piece);
+      const duration = 1800 + Math.random()*1200;
+      const drift = (Math.random()-0.5)*150;
+      piece.animate([
+        { transform:`translate(0,0) rotate(0deg)`, opacity:1 },
+        { transform:`translate(${drift}px, 100vh) rotate(${360+Math.random()*360}deg)`, opacity:0 }
+      ], { duration, easing:'cubic-bezier(.2,.6,.4,1)' }).onfinish = ()=>piece.remove();
+    }
   }
-  const d = Math.floor(remain/86400000);
-  const h = Math.floor((remain%86400000)/3600000);
-  const m = Math.floor((remain%3600000)/60000);
-  const s = Math.floor((remain%60000)/1000);
-  document.getElementById('cdDays').textContent = String(d).padStart(2,'0');
-  document.getElementById('cdHours').textContent = String(h).padStart(2,'0');
-  document.getElementById('cdMins').textContent = String(m).padStart(2,'0');
-  document.getElementById('cdSecs').textContent = String(s).padStart(2,'0');
-}
-tickCountdown();
-setInterval(tickCountdown, 1000);
-
-/* ===== Contact ===== */
-document.getElementById('copyHandle').addEventListener('click', ()=>{
-  navigator.clipboard.writeText('@wyckoffnawaf').then(()=>{
-    const b = document.getElementById('copyHandle');
-    const old = b.textContent;
-    b.textContent = 'تم النسخ ✓';
-    setTimeout(()=>b.textContent = old, 1500);
-  });
-});
-document.getElementById('openTg').addEventListener('click', ()=>{
-  window.open('https://t.me/wyckoffnawaf','_blank');
-});
-
-/* ===== Trust survey ===== */
-const trustButtons = document.querySelectorAll('.survey-btn');
-function renderTrust(){
-  const total = data.trust.yes + data.trust.maybe + data.trust.no;
-  document.getElementById('trustCount').textContent = total + ' مشارك حتى الآن';
-  if(data.trustVoted){
-    trustButtons.forEach(b=>{
-      b.disabled = true;
-      if(b.dataset.trust === data.trustVoted) b.classList.add('picked');
-    });
-  }
-}
-trustButtons.forEach(b=>{
-  b.addEventListener('click', ()=>{
-    if(data.trustVoted) return;
-    data.trust[b.dataset.trust]++;
-    data.trustVoted = b.dataset.trust;
-    saveData(data);
-    renderTrust();
-  });
-});
-renderTrust();
-
-/* ===== Comments ===== */
-function renderComments(){
-  const list = document.getElementById('commentsList');
-  list.innerHTML = '';
-  data.comments.slice().reverse().forEach(c=>{
-    const div = document.createElement('div');
-    div.className = 'comment-item';
-    div.innerHTML = `<b>${c.name}</b>${c.text}`;
-    list.appendChild(div);
-  });
-}
-document.getElementById('commentSend').addEventListener('click', ()=>{
-  const text = document.getElementById('commentText').value.trim();
-  if(!text) return;
-  const name = document.getElementById('commentName').value.trim() || 'مشارك';
-  data.comments.push({name, text});
-  saveData(data);
-  renderComments();
-  document.getElementById('commentText').value='';
-  document.getElementById('commentName').value='';
-});
-renderComments();
-
-/* ===== Confetti ===== */
-function launchConfetti(){
-  const colors = ['#0f9d58','#2962ff','#e8a33d','#0b0d10'];
-  for(let i=0;i<36;i++){
-    const piece = document.createElement('div');
-    piece.className = 'confetti-piece';
-    piece.style.left = Math.random()*100+'vw';
-    piece.style.background = colors[Math.floor(Math.random()*colors.length)];
-    piece.style.transform = `rotate(${Math.random()*360}deg)`;
-    document.body.appendChild(piece);
-    const duration = 1800 + Math.random()*1200;
-    const drift = (Math.random()-0.5)*150;
-    piece.animate([
-      { transform:`translate(0,0) rotate(0deg)`, opacity:1 },
-      { transform:`translate(${drift}px, 100vh) rotate(${360+Math.random()*360}deg)`, opacity:0 }
-    ], { duration, easing:'cubic-bezier(.2,.6,.4,1)' }).onfinish = ()=>piece.remove();
-  }
-}
-
-renderStats();
 </script>
 </body>
 </html>
