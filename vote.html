@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -114,6 +113,16 @@ section{padding:46px 0;}
 .vote-btn:hover{background:#222;transform:scale(1.015);}
 .vote-btn.voted{background:var(--green);}
 .opt-card.third{grid-column:1/-1;}
+
+/* FAQ Section */
+.faq-grid{display:flex;flex-direction:column;gap:14px;}
+.faq-item{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:20px 24px;
+}
+.faq-q{font-weight:800;font-size:17px;color:var(--ink);margin-bottom:8px;display:flex;gap:10px;align-items:center;}
+.faq-q::before{content:"؟";background:var(--blue);color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.faq-a{font-size:15.5px;color:var(--ink-soft);margin:0;line-height:1.8;}
 
 .compare-strip{
   display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center;
@@ -384,7 +393,7 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
     <div class="opt-card">
       <div class="opt-num">①</div>
       <h3>شراء الاستراتيجية مرة واحدة</h3>
-      <p>الحصول على الاستراتيجية مقابل مبلغ رمزي لمدة ستة أشهر، ويكون دورنا قد انتهى بعد التسليم.</p>
+      <p>الحصول على الاستراتيجية والمؤشر الخاص، مع فيديو شرح كامل للإعدادات وكيفية القنص.</p>
       <div class="price-tag">
         <span class="price-num">٣٠٠ ريال</span>
         <span class="price-period">لمدة ٦ أشهر</span>
@@ -393,13 +402,13 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
     </div>
     <div class="opt-card">
       <div class="opt-num">②</div>
-      <h3>اشتراك شهري مع قروب متابعة</h3>
-      <p>اشتراك شهري بسيط يشمل متابعة مستمرة للأسهم والعملات، ومتابعة فنية مستمرة على الشارت.</p>
+      <h3>اشتراك شهري مع مجتمع المتابعة</h3>
+      <p>اشتراك شهري يضمن لك التواجد في بيئة تداول حية، نطبق فيها الاستراتيجية سوياً يومياً.</p>
       <ul class="perk-list">
-        <li>انضمام مباشر لمجتمع الاستراتيجية</li>
-        <li>متابعة مستمرة من فريقنا، وليس مرة واحدة فقط</li>
-        <li>رفع شارتات لأسهم وعملات قيد المراقبة لحظة بلحظة</li>
-        <li>شرح فني مستمر لقراءة الشارت دون إعطاء توصية مباشرة</li>
+        <li>انضمام مباشر لقروب النقاش والمتابعة</li>
+        <li>تحليل مستمر للفرص والأسهم تحت المراقبة</li>
+        <li>دعم فني وتطوير مستمر لمهاراتك في قراءة الشارت</li>
+        <li>شرح فني مباشر يساعدك على اتخاذ قرارك بثقة</li>
       </ul>
       <div class="price-tag">
         <span class="price-num">١٠٠ ريال</span>
@@ -419,6 +428,28 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
     </div>
   </div>
   <div class="thanks" id="thanksMsg">شكراً لمشاركتك في التصويت 🎉</div>
+</section>
+
+<section class="wrap reveal">
+  <h2 class="section-title">أسئلة قد تدور في ذهنك</h2>
+  <div class="faq-grid">
+    <div class="faq-item">
+      <div class="faq-q">ما الذي سأحصل عليه بالضبط بعد الاشتراك؟</div>
+      <p class="faq-a">ستحصل على وصول كامل لقناتنا الخاصة التي تحتوي على المؤشر الحصري لمنصة TradingView، بالإضافة إلى فيديوهات شرح دقيقة للطريقة والإعدادات من الألف إلى الياء.</p>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">لماذا لا يتم الإفصاح عن تفاصيل الاستراتيجية الآن؟</div>
+      <p class="faq-a">نحن نؤمن بحماية خصوصية استراتيجيتنا لضمان جودة النتائج لأعضاء المجتمع فقط. التفاصيل الكاملة هي "سر المهنة" الذي ستكتشفه بمجرد انضمامك إلينا.</p>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">هل أحتاج لخبرة كبيرة في التداول لاستخدامها؟</div>
+      <p class="faq-a">الاستراتيجية مصممة لتكون بسيطة وفعالة. فترة الإتقان تتراوح بين ساعة إلى ٣ ساعات فقط، وهي كافية جداً لتبدأ التطبيق العملي بثقة تامة.</p>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">ما الفرق الجوهري بين الخيارين؟</div>
+      <p class="faq-a">الخيار الأول هو امتلاك الأداة والمعرفة لتعمل وحدك. أما الخيار الثاني (الشهري) فهو الانضمام لمجتمع حي؛ حيث نكون معك يومياً في القروب، نحلل الفرص سوياً ونتبادل الآراء الفنية لحظة بلحظة.</p>
+    </div>
+  </div>
 </section>
 
 <section class="wrap reveal">
@@ -509,7 +540,7 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
 <!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics.js";
 
   const firebaseConfig = {
@@ -527,38 +558,36 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
   const analytics = getAnalytics(app);
 
   /* ===== Data Management ===== */
-  const STORE_KEY = 'wyckoff_vote_local_v1';
+  const STORE_KEY = 'wyckoff_vote_local_v2';
   let localState = JSON.parse(localStorage.getItem(STORE_KEY) || '{"voted":false, "votedChoice":null, "trustVoted":false}');
   
-  let globalData = {
-    opt1: 0, opt2: 0, suggestions: 0,
-    trust: { yes: 0, maybe: 0, no: 0 },
-    endTime: Date.now() + (2*24*60*60*1000)
-  };
+  let stats = { opt1: 0, opt2: 0, suggestions: 0, trust: { yes: 0, maybe: 0, no: 0 } };
 
-  const statsDocRef = doc(db, "vote_stats", "global");
-
-  // Real-time listener for stats
-  onSnapshot(statsDocRef, (docSnap) => {
-    if (docSnap.exists()) {
-      globalData = { ...globalData, ...docSnap.data() };
-      renderStats();
-      renderTrust();
-    } else {
-      // Initialize if doesn't exist
-      setDoc(statsDocRef, {
-        opt1: 0, opt2: 0, suggestions: 0,
-        trust: { yes: 0, maybe: 0, no: 0 },
-        endTime: Date.now() + (2*24*60*60*1000)
-      }, { merge: true });
-    }
-  }, (error) => {
-    console.error("Firestore Snapshot Error:", error);
+  onSnapshot(collection(db, "votes"), (snapshot) => {
+    let newStats = { opt1: 0, opt2: 0, suggestions: 0 };
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if(data.choice === 'opt1') newStats.opt1++;
+      if(data.choice === 'opt2') newStats.opt2++;
+      if(data.choice === 'suggest') newStats.suggestions++;
+    });
+    stats.opt1 = newStats.opt1;
+    stats.opt2 = newStats.opt2;
+    stats.suggestions = newStats.suggestions;
+    renderStats();
   });
 
-  // Real-time listener for comments
-  const commentsCol = collection(db, "comments");
-  const q = query(commentsCol, orderBy("timestamp", "desc"), limit(20));
+  onSnapshot(collection(db, "trust_survey"), (snapshot) => {
+    let newTrust = { yes: 0, maybe: 0, no: 0 };
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if(newTrust[data.choice] !== undefined) newTrust[data.choice]++;
+    });
+    stats.trust = newTrust;
+    renderTrust();
+  });
+
+  const q = query(collection(db, "comments"), orderBy("timestamp", "desc"), limit(20));
   onSnapshot(q, (snapshot) => {
     const comments = [];
     snapshot.forEach(doc => comments.push(doc.data()));
@@ -591,16 +620,18 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
   }
 
   function renderStats(){
-    const total = (globalData.opt1 || 0) + (globalData.opt2 || 0);
+    const total = stats.opt1 + stats.opt2;
     animateNumber(document.getElementById('statTotal'), total);
-    animateNumber(document.getElementById('statOpt1'), globalData.opt1 || 0);
-    animateNumber(document.getElementById('statOpt2'), globalData.opt2 || 0);
-    animateNumber(document.getElementById('statSuggest'), globalData.suggestions || 0);
+    animateNumber(document.getElementById('statOpt1'), stats.opt1);
+    animateNumber(document.getElementById('statOpt2'), stats.opt2);
+    animateNumber(document.getElementById('statSuggest'), stats.suggestions);
 
-    const p1 = total ? Math.round((globalData.opt1/total)*100) : 0;
+    const p1 = total ? Math.round((stats.opt1/total)*100) : 0;
     const p2 = total ? 100-p1 : 0;
-    document.getElementById('fill1').style.width = p1+'%';
-    document.getElementById('fill2').style.width = p2+'%';
+    const f1 = document.getElementById('fill1');
+    const f2 = document.getElementById('fill2');
+    if(f1) f1.style.width = p1+'%';
+    if(f2) f2.style.width = p2+'%';
     document.getElementById('pct1').textContent = p1+'%';
     document.getElementById('pct2').textContent = p2+'%';
   }
@@ -638,10 +669,10 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
         btn.disabled = true;
         btn.textContent = 'جاري الحفظ...';
         
-        // Update Firestore
-        await setDoc(statsDocRef, {
-          [choice]: increment(1)
-        }, { merge: true });
+        await addDoc(collection(db, "votes"), {
+          choice: choice,
+          timestamp: serverTimestamp()
+        });
 
         localState.voted = true;
         localState.votedChoice = choice;
@@ -652,7 +683,6 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
         console.error("Voting Error:", err);
         btn.disabled = false;
         btn.textContent = 'حاول مرة أخرى';
-        alert("حدث خطأ أثناء التصويت، يرجى المحاولة لاحقاً.");
       }
     });
   });
@@ -677,11 +707,8 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
         suggestSendBtn.disabled = true;
         suggestSendBtn.textContent = 'جاري الإرسال...';
 
-        await setDoc(statsDocRef, {
-          suggestions: increment(1)
-        }, { merge: true });
-        
-        await addDoc(collection(db, "suggestions"), {
+        await addDoc(collection(db, "votes"), {
+          choice: 'suggest',
           text: val,
           timestamp: serverTimestamp()
         });
@@ -705,7 +732,7 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
 
   /* ===== Countdown ===== */
   function tickCountdown(){
-    const endTime = globalData.endTime || (Date.now() + 172800000);
+    const endTime = Date.now() + 172800000;
     const remain = endTime - Date.now();
     if(remain <= 0){
       const grid = document.getElementById('cdGrid');
@@ -753,8 +780,8 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
   /* ===== Trust survey ===== */
   const trustButtons = document.querySelectorAll('.survey-btn');
   function renderTrust(){
-    const t = globalData.trust || {yes:0, maybe:0, no:0};
-    const total = (t.yes || 0) + (t.maybe || 0) + (t.no || 0);
+    const t = stats.trust;
+    const total = t.yes + t.maybe + t.no;
     const countEl = document.getElementById('trustCount');
     if(countEl) countEl.textContent = total + ' مشارك حتى الآن';
     if(localState.trustVoted){
@@ -771,9 +798,10 @@ h2.section-title{font-size:24px;font-weight:800;text-align:center;margin:0 0 24p
       const choice = b.dataset.trust;
       
       try {
-        await setDoc(statsDocRef, {
-          trust: { [choice]: increment(1) }
-        }, { merge: true });
+        await addDoc(collection(db, "trust_survey"), {
+          choice: choice,
+          timestamp: serverTimestamp()
+        });
 
         localState.trustVoted = choice;
         saveLocal();
