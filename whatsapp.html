@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مُقسّم حالات واتساب</title>
+    <title>مُقسّم حالات واتساب الحقيقي</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -25,36 +25,38 @@
             <i class="fa-brands fa-whatsapp text-wa-green text-2xl"></i>
             <h1 class="text-lg font-bold text-white">مُقسّم حالات واتساب</h1>
         </div>
-        <p class="text-xs text-gray-400 mt-2">قسّم فيديوهاتك إلى أجزاء 60 ثانية متسلسلة للهاتف</p>
+        <p class="text-xs text-gray-400 mt-2">تقطيع حقيقي للفيديو إلى أجزاء 60 ثانية متسلسلة</p>
     </header>
 
     <!-- Main Container -->
     <main class="w-full max-w-md space-y-4">
 
-        <!-- Direct Upload Button Area -->
+        <!-- Upload Button Area -->
         <div class="bg-wa-cardBg border-2 border-dashed border-gray-600 rounded-2xl p-6 text-center space-y-4">
             <div class="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center text-wa-green text-2xl border border-gray-700 mx-auto">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <i class="fa-solid fa-scissors"></i>
             </div>
             
             <div>
                 <p class="text-sm font-semibold text-gray-200">اختر فيديو من الاستوديو</p>
-                <p class="text-xs text-gray-400 mt-1">يتم التقطيع محلياً داخل هاتفك بسرعة فائقة</p>
+                <p class="text-xs text-gray-400 mt-1">يتم قص الفيديو وإنتاج مقاطع جديدة كلياً</p>
             </div>
 
-            <!-- Native File Input Button -->
             <label for="videoInput" class="block w-full bg-wa-green hover:bg-emerald-500 text-gray-950 font-bold py-3 px-4 rounded-xl cursor-pointer text-sm shadow-lg transition active:scale-95">
-                <i class="fa-solid fa-folder-open ml-1"></i> اختيار فيديو من الهاتف
+                <i class="fa-solid fa-folder-open ml-1"></i> اختيار فيديو وتقطيعه
             </label>
             <input type="file" id="videoInput" accept="video/*" class="hidden">
         </div>
 
         <!-- Processing Indicator -->
-        <div id="statusBox" class="hidden bg-wa-cardBg rounded-2xl p-4 border border-gray-700 text-center space-y-3">
-            <div class="inline-block animate-spin text-wa-green text-2xl">
+        <div id="statusBox" class="hidden bg-wa-cardBg rounded-2xl p-5 border border-gray-700 text-center space-y-3">
+            <div class="inline-block animate-spin text-wa-green text-3xl">
                 <i class="fa-solid fa-circle-notch"></i>
             </div>
-            <p id="statusText" class="text-xs text-gray-300 font-medium">جاري معالجة الفيديو...</p>
+            <p id="statusText" class="text-xs text-gray-300 font-medium">جاري معالجة وتقطيع الفيديو...</p>
+            <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
+                <div id="progressBar" class="bg-wa-green h-full w-0 transition-all duration-200"></div>
+            </div>
         </div>
 
         <!-- Output Segments -->
@@ -66,6 +68,7 @@
         const videoInput = document.getElementById('videoInput');
         const statusBox = document.getElementById('statusBox');
         const statusText = document.getElementById('statusText');
+        const progressBar = document.getElementById('progressBar');
         const outputList = document.getElementById('outputList');
 
         videoInput.addEventListener('change', async (e) => {
@@ -74,65 +77,114 @@
 
             statusBox.classList.remove('hidden');
             outputList.innerHTML = '';
-            statusText.textContent = 'جاري تحليل طول الفيديو وتقسيمه...';
+            progressBar.style.width = '0%';
+            statusText.textContent = 'تحميل الفيديو وقراءة الإطارات...';
 
             const video = document.createElement('video');
-            video.preload = 'metadata';
             video.src = URL.createObjectURL(file);
+            video.muted = true;
+            video.playsInline = true;
 
-            video.onloadedmetadata = function() {
-                window.URL.revokeObjectURL(video.src);
-                const duration = video.duration; // Total duration in seconds
-                const segmentDuration = 60; // 60 seconds per status
-                const totalSegments = Math.ceil(duration / segmentDuration);
+            await new Promise(resolve => video.onloadedmetadata = resolve);
 
-                statusBox.classList.add('hidden');
+            const duration = video.duration;
+            const segmentDuration = 60; // 60 ثانية لكل مقطع
+            const totalSegments = Math.ceil(duration / segmentDuration);
 
-                // Render Summary Banner
-                const summary = document.createElement('div');
-                summary.className = "bg-wa-cardBg border border-gray-700 rounded-2xl p-4 text-center space-y-1 shadow-md";
-                summary.innerHTML = `
-                    <p class="text-xs text-gray-400">تم تقطيع الفيديو بنجاح</p>
-                    <p class="text-base font-bold text-wa-green">عدد المقاطع: ${totalSegments} (كل مقطع 60 ثانية)</p>
-                    <p class="text-[11px] text-emerald-300 mt-1">ارفعها إلى حالة واتساب بالترتيب من 001 إلى المقطع الأخير.</p>
-                `;
-                outputList.appendChild(summary);
+            let createdSegments = [];
 
-                // Create Segments with Native Media Clip Access
-                for (let i = 0; i < totalSegments; i++) {
-                    const start = i * segmentDuration;
-                    const end = Math.min((i + 1) * segmentDuration, duration);
-                    const partNum = String(i + 1).padStart(3, '0');
+            for (let i = 0; i < totalSegments; i++) {
+                const startTime = i * segmentDuration;
+                const endTime = Math.min((i + 1) * segmentDuration, duration);
+                const currentSegmentLength = endTime - startTime;
 
-                    const card = document.createElement('div');
-                    card.className = "bg-wa-cardBg border border-gray-700 rounded-2xl p-4 flex items-center justify-between shadow-md";
-                    card.innerHTML = `
-                        <div class="flex items-center space-x-3 space-x-reverse">
-                            <span class="w-8 h-8 rounded-full bg-wa-green/20 text-wa-green flex items-center justify-center font-bold text-xs border border-wa-green/30">
-                                ${i + 1}
-                            </span>
-                            <div>
-                                <h3 class="text-sm font-semibold text-gray-100">Status_${partNum}.mp4</h3>
-                                <p class="text-xs text-gray-400">المدة: ${Math.round(end - start)} ثانية</p>
-                            </div>
-                        </div>
-                        <button onclick="downloadDirect('${URL.createObjectURL(file)}', 'Status_${partNum}.mp4')" class="bg-gray-800 hover:bg-gray-700 text-wa-green font-semibold py-2 px-3 rounded-xl border border-gray-600 text-xs flex items-center space-x-1 space-x-reverse">
-                            <i class="fa-solid fa-download"></i>
-                            <span>تحميل</span>
-                        </button>
-                    `;
-                    outputList.appendChild(card);
-                }
-            };
+                statusText.textContent = `جاري قص الجزء ${i + 1} من ${totalSegments}...`;
+                
+                // قص الفيديو عبر MediaRecorder
+                const segmentBlob = await sliceVideoSegment(video, startTime, currentSegmentLength);
+                const segmentUrl = URL.createObjectURL(segmentBlob);
+                const partNum = String(i + 1).padStart(3, '0');
+
+                createdSegments.push({
+                    name: `Status_${partNum}.mp4`,
+                    url: segmentUrl,
+                    duration: Math.round(currentSegmentLength),
+                    index: i + 1
+                });
+
+                const percent = Math.round(((i + 1) / totalSegments) * 100);
+                progressBar.style.width = `${percent}%`;
+            }
+
+            statusBox.classList.add('hidden');
+            renderResults(createdSegments);
         });
 
-        function downloadDirect(url, name) {
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = name;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+        // دالة القص الحقيقية للفيديو
+        function sliceVideoSegment(video, startTime, duration) {
+            return new Promise((resolve) => {
+                video.currentTime = startTime;
+
+                video.onseeked = () => {
+                    const stream = video.captureStream ? video.captureStream() : video.mozCaptureStream();
+                    const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/mp4' });
+                    const chunks = [];
+
+                    mediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) chunks.push(e.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: 'video/mp4' });
+                        resolve(blob);
+                    };
+
+                    mediaRecorder.start();
+                    video.play();
+
+                    setTimeout(() => {
+                        video.pause();
+                        mediaRecorder.stop();
+                    }, duration * 1000);
+                };
+            });
+        }
+
+        function renderResults(segments) {
+            outputList.innerHTML = '';
+
+            const summary = document.createElement('div');
+            summary.className = "bg-wa-cardBg border border-gray-700 rounded-2xl p-4 text-center space-y-1 shadow-md";
+            summary.innerHTML = `
+                <p class="text-xs text-gray-400">تم التقطيع بنجاح!</p>
+                <p class="text-base font-bold text-wa-green">إجمالي المقاطع: ${segments.length}</p>
+                <p class="text-[11px] text-emerald-300 mt-1">ارفع المقاطع بالترتيب من 001 إلى آخر جزء لضمان التسلسل.</p>
+            `;
+            outputList.appendChild(summary);
+
+            segments.forEach((seg) => {
+                const card = document.createElement('div');
+                card.className = "bg-wa-cardBg border border-gray-700 rounded-2xl p-4 flex flex-col space-y-3 shadow-md";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3 space-x-reverse">
+                            <span class="w-8 h-8 rounded-full bg-wa-green/20 text-wa-green flex items-center justify-center font-bold text-xs border border-wa-green/30">
+                                ${seg.index}
+                            </span>
+                            <div>
+                                <h3 class="text-sm font-semibold text-gray-100">${seg.name}</h3>
+                                <p class="text-xs text-gray-400">المدة: ${seg.duration} ثانية</p>
+                            </div>
+                        </div>
+                        <a href="${seg.url}" download="${seg.name}" class="bg-gray-800 hover:bg-gray-700 text-wa-green font-semibold py-2 px-3 rounded-xl border border-gray-600 text-xs flex items-center space-x-1 space-x-reverse">
+                            <i class="fa-solid fa-download"></i>
+                            <span>تحميل الجزء</span>
+                        </a>
+                    </div>
+                    <video src="${seg.url}" controls class="w-full rounded-lg max-h-40 bg-black"></video>
+                `;
+                outputList.appendChild(card);
+            });
         }
     </script>
 </body>
