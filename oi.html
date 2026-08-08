@@ -2,254 +2,903 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة الاهتمام المفتوح الاحترافية — Crypto OI Monitor Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Crypto Derivatives Intelligence Terminal — Price, OI & Funding</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<!-- Lightweight Charts by TradingView -->
-<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 <style>
 :root {
-  --bg-0: #080b12;
-  --bg-1: #0d111a;
-  --bg-2: #111827;
-  --border: #1e2735;
-  --text-1: #e7ebf1;
-  --text-2: #8b96a5;
-  --text-3: #5b6576;
-  --up: #22c55e;
-  --down: #ef4444;
+  --bg-0: #06080e;
+  --bg-1: #0b0f19;
+  --bg-2: #111726;
+  --bg-2-hover: #161f33;
+  --border: #1c2638;
+  --border-soft: #141c2b;
+  --text-1: #e6eefa;
+  --text-2: #8a98ad;
+  --text-3: #515e73;
+  --up: #10b981;
+  --up-dim: rgba(16, 185, 129, 0.15);
+  --down: #f43f5e;
+  --down-dim: rgba(244, 63, 94, 0.15);
   --blue: #3b82f6;
-  --blue-dim: rgba(59,130,246,0.15);
-  --sans: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  --blue-dim: rgba(59, 130, 246, 0.15);
+  --yellow: #f59e0b;
+  --yellow-dim: rgba(245, 158, 11, 0.15);
+  --purple: #8b5cf6;
+  --purple-dim: rgba(139, 92, 246, 0.15);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 20px -2px rgba(0,0,0,0.5);
+  --sans: "Segoe UI", Inter, system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+  --header-h: 60px;
+}
+
+[data-theme="light"] {
+  --bg-0: #f1f5f9;
+  --bg-1: #ffffff;
+  --bg-2: #f8fafc;
+  --bg-2-hover: #e2e8f0;
+  --border: #cbd5e1;
+  --border-soft: #e2e8f0;
+  --text-1: #0f172a;
+  --text-2: #475569;
+  --text-3: #94a3b8;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: var(--bg-0);
-  color: var(--text-1);
-  font-family: var(--sans);
-  direction: rtl;
-  min-height: 100vh;
-}
+html, body { background: var(--bg-0); color: var(--text-1); font-family: var(--sans); direction: rtl; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+button { font-family: inherit; }
 
-header {
-  height: 60px;
-  background: var(--bg-1);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.brand { display: flex; align-items: center; gap: 10px; }
-.brand-mark {
-  width: 36px; height: 36px; background: var(--blue);
-  border-radius: 8px; display: flex; align-items: center; justify-content: center;
-  font-weight: bold; color: #fff; box-shadow: 0 0 12px rgba(59,130,246,0.4);
-}
-.brand h1 { font-size: 16px; font-weight: 700; }
+#app { display: flex; flex-direction: column; min-height: 100vh; }
 
-.stats-bar {
-  display: flex; gap: 15px; font-size: 13px; color: var(--text-2);
+/* Global Header */
+header.top-bar {
+  height: var(--header-h); background: var(--bg-1); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+  position: sticky; top: 0; z-index: 100;
 }
-.status-tag { display: flex; align-items: center; gap: 6px; }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--up); box-shadow: 0 0 8px var(--up); }
-
-main { padding: 20px; }
-#grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 20px;
-}
-
-.card {
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-
-.card-head {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.symbol-info { display: flex; align-items: center; gap: 8px; }
-.symbol-name { font-size: 16px; font-weight: 700; }
-.badge {
-  font-size: 11px; padding: 2px 6px; border-radius: 4px;
-  background: var(--blue-dim); color: var(--blue); font-weight: 600;
-}
-
-.oi-metrics {
-  display: flex; gap: 12px; align-items: baseline;
-}
-.oi-val { font-size: 15px; font-weight: 700; font-family: monospace; }
-.oi-change { font-size: 12px; font-weight: 600; }
-.oi-change.up { color: var(--up); }
-.oi-change.down { color: var(--down); }
-
-.card-body {
-  height: 260px;
-  position: relative;
-  background: var(--bg-1);
-}
-
-.card-foot {
-  padding: 8px 16px;
-  font-size: 11px;
-  color: var(--text-3);
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-}
-
-.loading {
-  position: absolute; inset: 0; background: var(--bg-1);
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-icon {
+  width: 38px; height: 38px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--blue), #1d4ed8);
   display: flex; align-items: center; justify-content: center;
-  color: var(--text-2); font-size: 13px; z-index: 10;
+  font-weight: 900; font-size: 16px; color: #fff; box-shadow: 0 0 12px rgba(59,130,246,0.4);
 }
+.brand-title h1 { font-size: 15px; font-weight: 800; letter-spacing: -0.2px; }
+.brand-title p { font-size: 11px; color: var(--text-2); }
+
+/* Global Metrics */
+.global-metrics { display: flex; align-items: center; gap: 16px; font-size: 12px; }
+.gm-item { display: flex; flex-direction: column; gap: 2px; border-left: 1px solid var(--border-soft); padding-left: 16px; }
+.gm-item:last-child { border-left: none; }
+.gm-label { color: var(--text-3); font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.gm-val { font-weight: 700; font-family: var(--mono); color: var(--text-1); }
+
+/* Control & Filter Bar */
+.control-bar {
+  background: var(--bg-1); border-bottom: 1px solid var(--border);
+  padding: 10px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  position: sticky; top: var(--header-h); z-index: 90;
+}
+.search-box { position: relative; flex: 1 1 200px; max-width: 300px; }
+.search-box i { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-3); font-size: 12px; }
+.search-box input {
+  width: 100%; height: 34px; background: var(--bg-2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 0 32px 0 10px; color: var(--text-1); font-size: 12px; outline: none;
+}
+.search-box input:focus { border-color: var(--blue); }
+
+.seg-group { display: flex; background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 2px; gap: 2px; }
+.seg-btn {
+  background: transparent; border: none; color: var(--text-2); font-size: 11px; font-weight: 700;
+  padding: 5px 10px; border-radius: 6px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.seg-btn.active { background: var(--blue); color: #fff; }
+.seg-btn:hover:not(.active) { color: var(--text-1); background: var(--bg-2-hover); }
+
+select.ctrl-select {
+  height: 34px; background: var(--bg-2); border: 1px solid var(--border); color: var(--text-1);
+  border-radius: var(--radius-sm); padding: 0 10px; font-size: 12px; font-weight: 600; outline: none; cursor: pointer;
+}
+
+.btn-icon {
+  width: 34px; height: 34px; border-radius: var(--radius-sm); background: var(--bg-2); border: 1px solid var(--border);
+  color: var(--text-2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s;
+}
+.btn-icon:hover { color: var(--text-1); border-color: var(--text-3); background: var(--bg-2-hover); }
+
+/* Grid Layout */
+main.content { padding: 20px; flex: 1; }
+#grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 20px; }
+#grid.density-compact { grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 12px; }
+#grid.density-large { grid-template-columns: repeat(auto-fit, minmax(560px, 1fr)); gap: 24px; }
+#grid.view-large { grid-template-columns: 1fr; }
+
+/* Dashboard Card */
+.card {
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column;
+  position: relative; transition: border-color 0.2s, transform 0.2s;
+}
+.card:hover { border-color: var(--text-3); }
+
+/* Card Header */
+.card-head {
+  padding: 10px 14px; background: var(--bg-1); border-bottom: 1px solid var(--border-soft);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.symbol-block { display: flex; align-items: center; gap: 8px; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); }
+.status-dot.live { background: var(--up); box-shadow: 0 0 8px var(--up); }
+.status-dot.stale { background: var(--yellow); }
+.status-dot.error { background: var(--down); }
+.status-dot.loading { background: var(--blue); animation: pulse 1s infinite alternate; }
+@keyframes pulse { from { opacity: 0.3; } to { opacity: 1; } }
+
+.symbol-title { font-size: 15px; font-weight: 800; font-family: var(--mono); }
+.symbol-meta { font-size: 11px; color: var(--text-2); }
+.card-actions { display: flex; align-items: center; gap: 6px; }
+.action-btn { background: transparent; border: none; color: var(--text-3); font-size: 13px; cursor: pointer; padding: 4px; }
+.action-btn:hover { color: var(--text-1); }
+.action-btn.pinned { color: var(--yellow); }
+
+/* TradingView Price Container */
+.price-chart-wrap { height: 180px; position: relative; background: var(--bg-0); border-bottom: 1px solid var(--border-soft); }
+.density-compact .price-chart-wrap { height: 130px; }
+.density-large .price-chart-wrap { height: 260px; }
+
+/* Data Sections */
+.card-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 12px; }
+.data-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.metric-box {
+  background: var(--bg-1); border: 1px solid var(--border-soft); border-radius: var(--radius-sm);
+  padding: 8px 10px; display: flex; flex-direction: column; gap: 4px;
+}
+.metric-title { font-size: 10px; font-weight: 800; color: var(--text-3); text-transform: uppercase; display: flex; justify-content: space-between; }
+.metric-val { font-size: 15px; font-weight: 800; font-family: var(--mono); color: var(--text-1); }
+.metric-sub { font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+.up { color: var(--up); }
+.down { color: var(--down); }
+.neutral { color: var(--text-2); }
+
+/* OI Sparkline */
+.sparkline-container { height: 26px; width: 100%; margin-top: 2px; }
+.sparkline-container svg { width: 100%; height: 100%; overflow: visible; }
+
+/* Market State Badge */
+.market-state-box {
+  background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 10px; display: flex; flex-direction: column; gap: 6px; position: relative;
+}
+.ms-header { display: flex; justify-content: space-between; align-items: center; }
+.ms-title { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; }
+.ms-score { font-size: 11px; font-weight: 800; font-family: var(--mono); padding: 2px 6px; border-radius: 4px; }
+
+.badge-long-bu { background: var(--up-dim); color: var(--up); border: 1px solid var(--up); }
+.badge-short-bu { background: var(--down-dim); color: var(--down); border: 1px solid var(--down); }
+.badge-short-cov { background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue); }
+.badge-long-liq { background: var(--yellow-dim); color: var(--yellow); border: 1px solid var(--yellow); }
+.badge-neutral { background: var(--bg-2); color: var(--text-2); border: 1px solid var(--border); }
+
+/* Bars for Momentum & Pressure */
+.bar-wrap { display: flex; flex-direction: column; gap: 2px; }
+.bar-label { font-size: 10px; color: var(--text-2); font-weight: 600; display: flex; justify-content: space-between; }
+.bar-track { height: 5px; background: var(--bg-0); border-radius: 3px; overflow: hidden; }
+.bar-fill { height: 100%; width: 0%; transition: width 0.3s ease; border-radius: 3px; }
+
+/* Card Footer */
+.card-foot {
+  padding: 6px 14px; background: var(--bg-1); border-top: 1px solid var(--border-soft);
+  font-size: 10px; color: var(--text-3); display: flex; justify-content: space-between; align-items: center;
+}
+
+/* Scanner Drawer / Modal */
+.drawer {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+  display: none; z-index: 200; justify-content: center; align-items: center;
+}
+.drawer.open { display: flex; }
+.drawer-content {
+  background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius);
+  width: 90%; max-width: 800px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;
+}
+.drawer-head { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.drawer-body { padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+.scanner-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: right; }
+.scanner-table th, .scanner-table td { padding: 8px 12px; border-bottom: 1px solid var(--border-soft); }
+.scanner-table th { color: var(--text-3); font-weight: 700; }
 
 @media (max-width: 600px) {
+  .global-metrics { display: none; }
   #grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="brand">
-    <div class="brand-mark">OI</div>
-    <div>
-      <h1>مراقب الاهتمام المفتوح المباشر</h1>
+<div id="app">
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <div class="brand">
+      <div class="brand-icon">OI</div>
+      <div class="brand-title">
+        <h1>Crypto Derivatives Intelligence</h1>
+        <p>مراقب السيولة والاهتمام المفتوح المباشر</p>
+      </div>
+    </div>
+
+    <!-- Global Intelligence Summary -->
+    <div class="global-metrics">
+      <div class="gm-item">
+        <span class="gm-label">Markets</span>
+        <span class="gm-val" id="gm-total">--</span>
+      </div>
+      <div class="gm-item">
+        <span class="gm-label">Total OI</span>
+        <span class="gm-val" id="gm-oi">$--</span>
+      </div>
+      <div class="gm-item">
+        <span class="gm-label">OI Up / Down</span>
+        <span class="gm-val" id="gm-updown">-- / --</span>
+      </div>
+      <div class="gm-item">
+        <span class="gm-label">Avg Funding</span>
+        <span class="gm-val" id="gm-funding">--%</span>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:8px;">
+      <button class="btn-icon" id="btn-scanner" title="الماسح الذكي للفرص"><i class="fa-solid fa-bolt"></i></button>
+      <button class="btn-icon" id="btn-theme" title="تغيير المظهر"><i class="fa-solid fa-moon"></i></button>
+    </div>
+  </header>
+
+  <!-- Control & Filter Toolbar -->
+  <div class="control-bar">
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="search-input" placeholder="بحث عن عملة...">
+    </div>
+
+    <div class="seg-group" id="filter-seg">
+      <button class="seg-btn active" data-filter="all">الكل</button>
+      <button class="seg-btn" data-filter="pinned">المثبتة</button>
+      <button class="seg-btn" data-filter="long-bu">Long Build-up</button>
+      <button class="seg-btn" data-filter="short-bu">Short Build-up</button>
+      <button class="seg-btn" data-filter="oi-rising">OI ↑</button>
+      <button class="seg-btn" data-filter="strong-signal">إشارة قوية</button>
+    </div>
+
+    <select class="ctrl-select" id="sort-select">
+      <option value="priority">حسب الأهمية</option>
+      <option value="oi-accel">تسارع الـ OI (OI Accel)</option>
+      <option value="oi-change">نسبة تغير الـ OI</option>
+      <option value="funding">معدل التمويل (Funding)</option>
+      <option value="signal">إشارة السكور (Signal Score)</option>
+      <option value="alpha">أبجدي</option>
+    </select>
+
+    <div class="seg-group" id="density-seg">
+      <button class="seg-btn" data-density="compact"><i class="fa-solid fa-list"></i></button>
+      <button class="seg-btn active" data-density="normal"><i class="fa-solid fa-border-all"></i></button>
+      <button class="seg-btn" data-density="large"><i class="fa-solid fa-square"></i></button>
+    </div>
+
+    <button class="btn-icon" id="btn-refresh" title="تحديث البيانات الآن"><i class="fa-solid fa-rotate"></i></button>
+  </div>
+
+  <!-- Cards Grid -->
+  <main class="content">
+    <div id="grid"></div>
+  </main>
+</div>
+
+<!-- Scanner Drawer / Modal -->
+<div class="drawer" id="scanner-modal">
+  <div class="drawer-content">
+    <div class="drawer-head">
+      <h3><i class="fa-solid fa-bolt" style="color:var(--yellow)"></i> الماسح المتقدم للاكتشاف اللحظي (Market Scanner)</h3>
+      <button class="action-btn" id="close-scanner"><i class="fa-solid fa-xmark fa-lg"></i></button>
+    </div>
+    <div class="drawer-body">
+      <p style="font-size:12px; color:var(--text-2);">الماسح يرصد حالات الـ Squeeze أو الدخول المفاجئ للسيولة بناءً على حسابات التراكب بين السعر و OI و Funding:</p>
+      <table class="scanner-table">
+        <thead>
+          <tr>
+            <th>الرمز</th>
+            <th>الحالة (Market State)</th>
+            <th>السكور</th>
+            <th>تغير OI (24h)</th>
+            <th>التمويل</th>
+            <th>التقييم التشخيصي</th>
+          </tr>
+        </thead>
+        <tbody id="scanner-results">
+          <!-- Populated via JS -->
+        </tbody>
+      </table>
     </div>
   </div>
-  <div class="stats-bar">
-    <div class="status-tag"><span class="dot"></span> اتصال مباشر بـ Binance Futures API</div>
-  </div>
-</header>
+</div>
 
-<main>
-  <div id="grid"></div>
-</main>
+<!-- TradingView Library -->
+<script src="https://s3.tradingview.com/tv.js"></script>
 
 <script>
-// قائمة العملات المراد مراقبتها
-const SYMBOLS = [
-  { symbol: "BTCUSDT", name: "Bitcoin" },
-  { symbol: "ETHUSDT", name: "Ethereum" },
-  { symbol: "SOLUSDT", name: "Solana" },
-  { symbol: "BNBUSDT", name: "BNB" },
-  { symbol: "XRPUSDT", name: "XRP" },
-  { symbol: "DOGEUSDT", name: "Dogecoin" }
+/**
+ * ============================================================================
+ * CONFIGURATION & SYMBOLS LIST
+ * ============================================================================
+ */
+const SYMBOLS_CONFIG = [
+  { id: "btc", symbol: "BTCUSDT", name: "Bitcoin", tvSymbol: "BINANCE:BTCUSDT.P", priority: 1 },
+  { id: "eth", symbol: "ETHUSDT", name: "Ethereum", tvSymbol: "BINANCE:ETHUSDT.P", priority: 2 },
+  { id: "sol", symbol: "SOLUSDT", name: "Solana", tvSymbol: "BINANCE:SOLUSDT.P", priority: 3 },
+  { id: "bnb", symbol: "BNBUSDT", name: "BNB", tvSymbol: "BINANCE:BNBUSDT.P", priority: 4 },
+  { id: "xrp", symbol: "XRPUSDT", name: "XRP", tvSymbol: "BINANCE:XRPUSDT.P", priority: 5 },
+  { id: "doge", symbol: "DOGEUSDT", name: "Dogecoin", tvSymbol: "BINANCE:DOGEUSDT.P", priority: 6 },
+  { id: "ada", symbol: "ADAUSDT", name: "Cardano", tvSymbol: "BINANCE:ADAUSDT.P", priority: 7 },
+  { id: "avax", symbol: "AVAXUSDT", name: "Avalanche", tvSymbol: "BINANCE:AVAXUSDT.P", priority: 8 },
+  { id: "sui", symbol: "SUIUSDT", name: "Sui", tvSymbol: "BINANCE:SUIUSDT.P", priority: 9 },
+  { id: "link", symbol: "LINKUSDT", name: "Chainlink", tvSymbol: "BINANCE:LINKUSDT.P", priority: 10 }
 ];
 
-const grid = document.getElementById("grid");
+const WEIGHTS = {
+  oiMomentum: 25,
+  priceOiRelation: 20,
+  funding: 20,
+  volume: 15,
+  oiAcceleration: 10,
+  liquidations: 10
+};
 
-// تنسيق الأرقام الكبيرة (K, M, B)
-function formatNumber(num) {
-  if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
-  if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
-  if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
-  return num.toFixed(2);
+/**
+ * ============================================================================
+ * 1. DERIVATIVES DATA PROVIDER & ADAPTERS (DATA LAYER)
+ * ============================================================================
+ */
+class DerivativesDataProvider {
+  async getOpenInterest(symbol) { throw new Error("Not implemented"); }
+  async getOpenInterestHistory(symbol) { throw new Error("Not implemented"); }
+  async getFundingRate(symbol) { throw new Error("Not implemented"); }
+  async getTicker24h(symbol) { throw new Error("Not implemented"); }
 }
 
-// إنشاء الكروت للعملات
-function createCard(item) {
-  const card = document.createElement("div");
-  card.className = "card";
-  card.innerHTML = `
-    <div class="card-head">
-      <div class="symbol-info">
-        <span class="symbol-name">${item.symbol.replace('USDT', '')}</span>
-        <span class="badge">PERP</span>
-      </div>
-      <div class="oi-metrics">
-        <span class="oi-val" id="val-${item.symbol}">--</span>
-        <span class="oi-change" id="change-${item.symbol}">--</span>
-      </div>
-    </div>
-    <div class="card-body" id="chart-${item.symbol}">
-      <div class="loading" id="load-${item.symbol}"><i class="fa-solid fa-spinner fa-spin"></i> &nbsp; جلب بيانات الـ OI...</div>
-    </div>
-    <div class="card-foot">
-      <span>مؤشر OI (Open Interest) الحقيقي</span>
-      <span>الإطار: 5 دقائق</span>
-    </div>
-  `;
-  grid.appendChild(card);
-}
+class BinanceFuturesAdapter extends DerivativesDataProvider {
+  constructor(baseUrl = "https://fapi.binance.com") {
+    super();
+    this.baseUrl = baseUrl;
+  }
 
-// رسم ومزامنة الشارت باستخدام Lightweight Charts
-async function initChart(item) {
-  const container = document.getElementById(`chart-${item.symbol}`);
-  const loading = document.getElementById(`load-${item.symbol}`);
-  const valEl = document.getElementById(`val-${item.symbol}`);
-  const changeEl = document.getElementById(`change-${item.symbol}`);
-
-  try {
-    // 1. جلب تاريخ الـ Open Interest لآخر 30 نقطة (إطار 5m) من Binance
-    const res = await fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${item.symbol}&period=5m&limit=35`);
+  async getOpenInterest(symbol) {
+    const res = await fetch(`${this.baseUrl}/fapi/v1/openInterest?symbol=${symbol}`);
+    if (!res.ok) throw new Error(`Binance OI Error: ${res.status}`);
     const data = await res.json();
+    return {
+      symbol: data.symbol,
+      openInterest: parseFloat(data.openInterest),
+      time: data.time
+    };
+  }
 
-    if (!data || data.length === 0) throw new Error("No data");
-
-    loading.style.display = "none";
-
-    // 2. إعداد الرسم البياني
-    const chart = LightweightCharts.createChart(container, {
-      layout: { backgroundColor: '#0d111a', textColor: '#8b96a5' },
-      grid: {
-        vertLines: { color: '#161f2c' },
-        horzLines: { color: '#161f2c' }
-      },
-      timeScale: { timeVisible: true, secondsVisible: false },
-      rightPriceScale: { borderVisible: false },
-      crosshair: { mode: LightweightCharts.CrosshairMode.Normal }
-    });
-
-    const areaSeries = chart.addAreaSeries({
-      topColor: 'rgba(59, 130, 246, 0.4)',
-      bottomColor: 'rgba(59, 130, 246, 0.0)',
-      lineColor: '#3b82f6',
-      lineWidth: 2,
-    });
-
-    // 3. تجهيز البيانات للرسم
-    const chartData = data.map(d => ({
-      time: Math.floor(d.timestamp / 1000),
-      value: parseFloat(d.sumOpenInterestValue) // القيمة بالدولار
+  async getOpenInterestHistory(symbol, period = "1h", limit = 24) {
+    const res = await fetch(`${this.baseUrl}/futures/data/openInterestHist?symbol=${symbol}&period=${period}&limit=${limit}`);
+    if (!res.ok) throw new Error(`Binance OI Hist Error: ${res.status}`);
+    const data = await res.json();
+    return data.map(d => ({
+      timestamp: d.timestamp,
+      sumOpenInterest: parseFloat(d.sumOpenInterest),
+      sumOpenInterestValue: parseFloat(d.sumOpenInterestValue)
     }));
+  }
 
-    areaSeries.setData(chartData);
-    chart.timeScale().fitContent();
+  async getFundingRate(symbol) {
+    const res = await fetch(`${this.baseUrl}/fapi/v1/premiumIndex?symbol=${symbol}`);
+    if (!res.ok) throw new Error(`Binance Funding Error: ${res.status}`);
+    const data = await res.json();
+    return {
+      symbol: data.symbol,
+      lastFundingRate: parseFloat(data.lastFundingRate),
+      markPrice: parseFloat(data.markPrice),
+      time: data.time
+    };
+  }
 
-    // 4. تحديث الأرقام والنسب المئوية في الهيدر
-    const latest = chartData[chartData.length - 1].value;
-    const previous = chartData[0].value;
-    const diffPct = ((latest - previous) / previous) * 100;
-
-    valEl.textContent = '$' + formatNumber(latest);
-    changeEl.textContent = (diffPct >= 0 ? '+' : '') + diffPct.toFixed(2) + '%';
-    changeEl.className = 'oi-change ' + (diffPct >= 0 ? 'up' : 'down');
-
-  } catch (err) {
-    loading.innerHTML = `<span style="color:var(--down)">تعذر جلب البيانات</span>`;
+  async getTicker24h(symbol) {
+    const res = await fetch(`${this.baseUrl}/fapi/v1/ticker/24hr?symbol=${symbol}`);
+    if (!res.ok) throw new Error(`Binance Ticker Error: ${res.status}`);
+    const data = await res.json();
+    return {
+      priceChangePercent: parseFloat(data.priceChangePercent),
+      lastPrice: parseFloat(data.lastPrice),
+      volume: parseFloat(data.volume),
+      quoteVolume: parseFloat(data.quoteVolume)
+    };
   }
 }
 
-// التشغيل الرئيسي
-SYMBOLS.forEach(item => {
-  createCard(item);
-  initChart(item);
+/**
+ * ============================================================================
+ * 2. CACHE & RATE LIMITING MANAGERS
+ * ============================================================================
+ */
+class DataCacheManager {
+  constructor(ttlMs = 30000) {
+    this.cache = new Map();
+    this.ttl = ttlMs;
+  }
+
+  get(key) {
+    const item = this.cache.get(key);
+    if (!item) return null;
+    if (Date.now() - item.timestamp > this.ttl) {
+      this.cache.delete(key);
+      return null;
+    }
+    return item.data;
+  }
+
+  set(key, data) {
+    this.cache.set(key, { data, timestamp: Date.now() });
+  }
+}
+
+const apiProvider = new BinanceFuturesAdapter();
+const cacheManager = new DataCacheManager(30000); // 30 seconds cache
+
+/**
+ * ============================================================================
+ * 3. MARKET ENGINE & SIGNAL ENGINE (ALGORITHMS)
+ * ============================================================================
+ */
+class MarketIntelligenceEngine {
+  static validate(val) {
+    return Number.isFinite(val) && !Number.isNaN(val);
+  }
+
+  static calculateMetrics(ticker, currentOI, oiHistory, fundingData) {
+    if (!ticker || !currentOI || !oiHistory || !fundingData) return null;
+
+    const priceChange24h = ticker.priceChangePercent;
+    const latestOIVal = currentOI.openInterest * ticker.lastPrice; // Valuation in USD
+
+    // Calculate OI Changes over periods
+    const h1 = oiHistory[oiHistory.length - 2] || oiHistory[0];
+    const h4 = oiHistory[Math.max(0, oiHistory.length - 5)] || oiHistory[0];
+    const h24 = oiHistory[0];
+
+    const oiValNow = oiHistory[oiHistory.length - 1].sumOpenInterestValue;
+    const oiVal24h = h24.sumOpenInterestValue;
+    const oiVal1h = h1.sumOpenInterestValue;
+    const oiVal4h = h4.sumOpenInterestValue;
+
+    const oiChangePercent24h = ((oiValNow - oiVal24h) / oiVal24h) * 100;
+    const oiChangePercent1h = ((oiValNow - oiVal1h) / oiVal1h) * 100;
+    const oiChangePercent4h = ((oiValNow - oiVal4h) / oiVal4h) * 100;
+
+    // Acceleration: Delta of Delta (Last 3 periods)
+    const len = oiHistory.length;
+    const d1 = oiHistory[len - 1].sumOpenInterestValue - oiHistory[len - 2].sumOpenInterestValue;
+    const d2 = oiHistory[len - 2].sumOpenInterestValue - oiHistory[len - 3].sumOpenInterestValue;
+    const acceleration = d1 - d2;
+
+    // Market State Matrix Algorithm
+    let state = "NEUTRAL";
+    let stateDesc = "سوق متوازن / تجميع جانبي";
+
+    if (priceChange24h > 0 && oiChangePercent24h > 0) {
+      state = "LONG_BUILDUP";
+      stateDesc = "دخول سيولة شرائية جديدة (Long Build-up)";
+    } else if (priceChange24h < 0 && oiChangePercent24h > 0) {
+      state = "SHORT_BUILDUP";
+      stateDesc = "تراكم عقود شورت (Short Build-up)";
+    } else if (priceChange24h > 0 && oiChangePercent24h < 0) {
+      state = "SHORT_COVERING";
+      stateDesc = "إغلاق عقود شورت (Short Covering)";
+    } else if (priceChange24h < 0 && oiChangePercent24h < 0) {
+      state = "LONG_UNWIND";
+      stateDesc = "تصفية وإنهاء عقود لونج (Long Liquidation)";
+    }
+
+    // Signal Score Calculation (0 -> 100)
+    let score = 50; // Baseline
+
+    // OI Momentum Score Component
+    if (Math.abs(oiChangePercent24h) > 5) score += 15;
+    if (Math.abs(oiChangePercent1h) > 1.5) score += 10;
+
+    // Acceleration Score Component
+    if (acceleration > 0) score += 10;
+
+    // Funding Alignment Component
+    const funding = fundingData.lastFundingRate * 100;
+    if (state === "LONG_BUILDUP" && funding < 0.01) score += 15; // Healthy
+    if (state === "SHORT_BUILDUP" && funding < 0) score += 15; // Squeeze Potential
+
+    score = Math.min(100, Math.max(0, Math.round(score)));
+
+    let classification = "Weak";
+    if (score >= 85) classification = "Extreme";
+    else if (score >= 70) classification = "Strong";
+    else if (score >= 50) classification = "Moderate";
+    else if (score >= 30) classification = "Low";
+
+    return {
+      price: ticker.lastPrice,
+      priceChange24h,
+      oiValUSD: latestOIVal,
+      oiChangePercent24h,
+      oiChangePercent1h,
+      oiChangePercent4h,
+      acceleration,
+      fundingRate: funding,
+      state,
+      stateDesc,
+      score,
+      classification,
+      historySeries: oiHistory.map(d => d.sumOpenInterestValue)
+    };
+  }
+}
+
+/**
+ * ============================================================================
+ * 4. UI HELPER & MINI CHART RENDERER (SVG)
+ * ============================================================================
+ */
+function renderOIMiniChart(dataSeries) {
+  if (!dataSeries || dataSeries.length < 2) return '';
+  const min = Math.min(...dataSeries);
+  const max = Math.max(...dataSeries);
+  const range = (max - min) || 1;
+  const width = 120;
+  const height = 24;
+
+  const points = dataSeries.map((val, i) => {
+    const x = (i / (dataSeries.length - 1)) * width;
+    const y = height - ((val - min) / range) * height;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+
+  const isUp = dataSeries[dataSeries.length - 1] >= dataSeries[0];
+  const strokeColor = isUp ? '#10b981' : '#f43f5e';
+
+  return `
+    <svg viewBox="0 0 ${width} ${height}">
+      <polyline fill="none" stroke="${strokeColor}" stroke-width="2" points="${points}" />
+    </svg>
+  `;
+}
+
+function formatUSD(num) {
+  if (num >= 1e9) return '$' + (num / 1e9).toFixed(2) + 'B';
+  if (num >= 1e6) return '$' + (num / 1e6).toFixed(2) + 'M';
+  if (num >= 1e3) return '$' + (num / 1e3).toFixed(2) + 'K';
+  return '$' + num.toFixed(2);
+}
+
+/**
+ * ============================================================================
+ * 5. CARD & DASHBOARD DOM MANAGER
+ * ============================================================================
+ */
+class DashboardManager {
+  constructor() {
+    this.symbols = SYMBOLS_CONFIG;
+    this.pinned = new Set(JSON.parse(localStorage.getItem('oi_pinned') || '[]'));
+    this.grid = document.getElementById('grid');
+    this.tvWidgets = new Map();
+    this.metricsData = new Map();
+
+    this.currentFilter = 'all';
+    this.currentSort = 'priority';
+    this.searchTerm = '';
+
+    this.initUI();
+    this.renderCardsSkeleton();
+    this.startDataLoop();
+  }
+
+  initUI() {
+    // Theme Toggle
+    document.getElementById('btn-theme').addEventListener('click', () => {
+      const theme = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      document.body.setAttribute('data-theme', theme);
+    });
+
+    // Refresh Button
+    document.getElementById('btn-refresh').addEventListener('click', () => this.fetchDataAll(true));
+
+    // Filter Buttons
+    document.getElementById('filter-seg').addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON') {
+        document.querySelectorAll('#filter-seg .seg-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        this.currentFilter = e.target.dataset.filter;
+        this.applyFilterAndSort();
+      }
+    });
+
+    // Sort Dropdown
+    document.getElementById('sort-select').addEventListener('change', (e) => {
+      this.currentSort = e.target.value;
+      this.applyFilterAndSort();
+    });
+
+    // Search Input
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      this.searchTerm = e.target.value.toLowerCase().trim();
+      this.applyFilterAndSort();
+    });
+
+    // Scanner Modal
+    document.getElementById('btn-scanner').addEventListener('click', () => {
+      this.renderScannerResults();
+      document.getElementById('scanner-modal').classList.add('open');
+    });
+    document.getElementById('close-scanner').addEventListener('click', () => {
+      document.getElementById('scanner-modal').classList.remove('open');
+    });
+  }
+
+  renderCardsSkeleton() {
+    this.grid.innerHTML = '';
+    this.symbols.forEach(cfg => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.id = `card-${cfg.id}`;
+      card.innerHTML = `
+        <div class="card-head">
+          <div class="symbol-block">
+            <div class="status-dot loading" id="status-${cfg.id}"></div>
+            <div>
+              <span class="symbol-title">${cfg.name}</span>
+              <span class="symbol-meta">${cfg.symbol}</span>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="action-btn ${this.pinned.has(cfg.id) ? 'pinned' : ''}" onclick="dashboard.togglePin('${cfg.id}')">
+              <i class="fa-solid fa-thumbtack"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="price-chart-wrap" id="tv-wrap-${cfg.id}"></div>
+
+        <div class="card-body">
+          <div class="data-row">
+            <div class="metric-box">
+              <div class="metric-title">Open Interest <span id="oi-spark-${cfg.id}"></span></div>
+              <div class="metric-val" id="oi-val-${cfg.id}">$--</div>
+              <div class="metric-sub" id="oi-sub-${cfg.id}">--%</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-title">Funding Rate</div>
+              <div class="metric-val" id="funding-val-${cfg.id}">--%</div>
+              <div class="metric-sub" id="price-sub-${cfg.id}">Price: $--</div>
+            </div>
+          </div>
+
+          <div class="market-state-box" id="state-box-${cfg.id}">
+            <div class="ms-header">
+              <span class="ms-title" id="ms-title-${cfg.id}">تحليل الحالة: --</span>
+              <span class="ms-score" id="ms-score-${cfg.id}">Score: --</span>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar-label"><span>تسارع OI / الزخم</span><span id="accel-txt-${cfg.id}">--</span></div>
+              <div class="bar-track"><div class="bar-fill" id="accel-bar-${cfg.id}" style="background:var(--blue)"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-foot">
+          <span id="update-time-${cfg.id}">لم يتم التحديث</span>
+          <span>Binance Perpetual</span>
+        </div>
+      `;
+      this.grid.appendChild(card);
+      this.initTradingViewWidget(cfg);
+    });
+  }
+
+  initTradingViewWidget(cfg) {
+    if (this.tvWidgets.has(cfg.id)) return;
+    const widget = new TradingView.widget({
+      autosize: true,
+      symbol: cfg.tvSymbol,
+      interval: "15",
+      timezone: "Etc/UTC",
+      theme: "dark",
+      style: "1",
+      locale: "ar",
+      toolbar_bg: "#f1f3f6",
+      enable_publishing: false,
+      hide_top_toolbar: true,
+      hide_legend: true,
+      save_image: false,
+      container_id: `tv-wrap-${cfg.id}`
+    });
+    this.tvWidgets.set(cfg.id, widget);
+  }
+
+  async fetchDataForSymbol(cfg, force = false) {
+    const statusDot = document.getElementById(`status-${cfg.id}`);
+    try {
+      const cacheKey = `data_${cfg.symbol}`;
+      let data = cacheManager.get(cacheKey);
+
+      if (!data || force) {
+        statusDot.className = "status-dot loading";
+        const [ticker, currentOI, oiHistory, funding] = await Promise.all([
+          apiProvider.getTicker24h(cfg.symbol),
+          apiProvider.getOpenInterest(cfg.symbol),
+          apiProvider.getOpenInterestHistory(cfg.symbol),
+          apiProvider.getFundingRate(cfg.symbol)
+        ]);
+
+        data = MarketIntelligenceEngine.calculateMetrics(ticker, currentOI, oiHistory, funding);
+        cacheManager.set(cacheKey, data);
+      }
+
+      if (data) {
+        this.metricsData.set(cfg.id, data);
+        this.updateCardDOM(cfg.id, data);
+        statusDot.className = "status-dot live";
+      } else {
+        statusDot.className = "status-dot error";
+      }
+    } catch (err) {
+      console.error(`Error fetching ${cfg.symbol}:`, err);
+      statusDot.className = "status-dot error";
+    }
+  }
+
+  updateCardDOM(id, data) {
+    document.getElementById(`oi-val-${id}`).textContent = formatUSD(data.oiValUSD);
+    
+    const oiSub = document.getElementById(`oi-sub-${id}`);
+    const isUp = data.oiChangePercent24h >= 0;
+    oiSub.textContent = `${isUp ? '▲' : '▼'} ${data.oiChangePercent24h.toFixed(2)}% (24h)`;
+    oiSub.className = `metric-sub ${isUp ? 'up' : 'down'}`;
+
+    document.getElementById(`oi-spark-${id}`).innerHTML = renderOIMiniChart(data.historySeries);
+
+    const fundingEl = document.getElementById(`funding-val-${id}`);
+    fundingEl.textContent = (data.fundingRate >= 0 ? '+' : '') + data.fundingRate.toFixed(4) + '%';
+    fundingEl.className = `metric-val ${data.fundingRate > 0 ? 'up' : data.fundingRate < 0 ? 'down' : 'neutral'}`;
+
+    document.getElementById(`price-sub-${id}`).textContent = `Price: $${data.price.toFixed(2)} (${data.priceChange24h >= 0 ? '+' : ''}${data.priceChange24h.toFixed(2)}%)`;
+
+    // State & Score UI Update
+    const stateBox = document.getElementById(`state-box-${id}`);
+    const titleEl = document.getElementById(`ms-title-${id}`);
+    const scoreEl = document.getElementById(`ms-score-${id}`);
+
+    titleEl.textContent = data.stateDesc;
+    scoreEl.textContent = `Score: ${data.score}/100`;
+
+    stateBox.className = "market-state-box " + (
+      data.state === 'LONG_BUILDUP' ? 'badge-long-bu' :
+      data.state === 'SHORT_BUILDUP' ? 'badge-short-bu' :
+      data.state === 'SHORT_COVERING' ? 'badge-short-cov' :
+      data.state === 'LONG_UNWIND' ? 'badge-long-liq' : 'badge-neutral'
+    );
+
+    // Acceleration Bar
+    const accelBar = document.getElementById(`accel-bar-${id}`);
+    const accelTxt = document.getElementById(`accel-txt-${id}`);
+    const absAccel = Math.min(100, Math.abs(data.acceleration / 100000));
+    accelBar.style.width = `${absAccel}%`;
+    accelTxt.textContent = data.acceleration > 0 ? 'تسارع إيجابي ↑' : 'تباطؤ ↓';
+
+    document.getElementById(`update-time-${id}`).textContent = `تحديث: ${new Date().toLocaleTimeString('ar-EG')}`;
+
+    this.updateGlobalMetrics();
+  }
+
+  updateGlobalMetrics() {
+    let totalOI = 0;
+    let upCount = 0;
+    let downCount = 0;
+    let totalFunding = 0;
+    let count = 0;
+
+    this.metricsData.forEach(d => {
+      totalOI += d.oiValUSD;
+      if (d.oiChangePercent24h > 0) upCount++; else downCount++;
+      totalFunding += d.fundingRate;
+      count++;
+    });
+
+    if (count > 0) {
+      document.getElementById('gm-total').textContent = count;
+      document.getElementById('gm-oi').textContent = formatUSD(totalOI);
+      document.getElementById('gm-updown').textContent = `${upCount} ↑ / ${downCount} ↓`;
+      document.getElementById('gm-funding').textContent = (totalFunding / count).toFixed(4) + '%';
+    }
+  }
+
+  async fetchDataAll(force = false) {
+    for (const cfg of this.symbols) {
+      await this.fetchDataForSymbol(cfg, force);
+    }
+  }
+
+  startDataLoop() {
+    this.fetchDataAll();
+    setInterval(() => this.fetchDataAll(), 30000); // 30s Auto Refresh
+  }
+
+  togglePin(id) {
+    if (this.pinned.has(id)) this.pinned.delete(id);
+    else this.pinned.add(id);
+    localStorage.setItem('oi_pinned', JSON.stringify([...this.pinned]));
+    document.querySelector(`#card-${id} .action-btn`).classList.toggle('pinned');
+    this.applyFilterAndSort();
+  }
+
+  applyFilterAndSort() {
+    let visible = [...this.symbols];
+
+    // Filter
+    if (this.searchTerm) {
+      visible = visible.filter(s => s.name.toLowerCase().includes(this.searchTerm) || s.symbol.toLowerCase().includes(this.searchTerm));
+    }
+    if (this.currentFilter === 'pinned') {
+      visible = visible.filter(s => this.pinned.has(s.id));
+    } else if (this.currentFilter === 'long-bu') {
+      visible = visible.filter(s => this.metricsData.get(s.id)?.state === 'LONG_BUILDUP');
+    } else if (this.currentFilter === 'short-bu') {
+      visible = visible.filter(s => this.metricsData.get(s.id)?.state === 'SHORT_BUILDUP');
+    } else if (this.currentFilter === 'oi-rising') {
+      visible = visible.filter(s => (this.metricsData.get(s.id)?.oiChangePercent24h || 0) > 0);
+    } else if (this.currentFilter === 'strong-signal') {
+      visible = visible.filter(s => (this.metricsData.get(s.id)?.score || 0) >= 70);
+    }
+
+    // Sort
+    visible.sort((a, b) => {
+      const mA = this.metricsData.get(a.id);
+      const mB = this.metricsData.get(b.id);
+      if (this.currentSort === 'oi-accel') return (mB?.acceleration || 0) - (mA?.acceleration || 0);
+      if (this.currentSort === 'oi-change') return (mB?.oiChangePercent24h || 0) - (mA?.oiChangePercent24h || 0);
+      if (this.currentSort === 'funding') return (mB?.fundingRate || 0) - (mA?.fundingRate || 0);
+      if (this.currentSort === 'signal') return (mB?.score || 0) - (mA?.score || 0);
+      return a.priority - b.priority;
+    });
+
+    // Reorder DOM
+    visible.forEach(cfg => {
+      const el = document.getElementById(`card-${cfg.id}`);
+      if (el) this.grid.appendChild(el);
+    });
+  }
+
+  renderScannerResults() {
+    const tbody = document.getElementById('scanner-results');
+    tbody.innerHTML = '';
+    this.metricsData.forEach((d, id) => {
+      const cfg = this.symbols.find(s => s.id === id);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><b>${cfg.symbol}</b></td>
+        <td><span class="ms-score">${d.stateDesc}</span></td>
+        <td><b>${d.score}/100</b></td>
+        <td class="${d.oiChangePercent24h >= 0 ? 'up' : 'down'}">${d.oiChangePercent24h.toFixed(2)}%</td>
+        <td class="${d.fundingRate > 0 ? 'up' : 'down'}">${d.fundingRate.toFixed(4)}%</td>
+        <td>${d.score >= 70 ? '🔥 فرصة متابعة عالية' : 'مراقبة هادئة'}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+}
+
+// Global Initialization
+let dashboard;
+window.addEventListener('DOMContentLoaded', () => {
+  dashboard = new DashboardManager();
 });
 </script>
 </body>
