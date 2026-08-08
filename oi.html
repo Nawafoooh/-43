@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شارت TradingView موحد - السعر و OI</title>
+    <title>شارت موحد - تلوين شموع الـ OI حسب التغير</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         body {
@@ -67,10 +67,9 @@
     </div>
 
     <div class="chart-header">
-        <span>TradingView Unified Chart (Price + Open Interest Candlesticks)</span>
+        <span>Unified Chart (Price + Conditional Colored OI Candles)</span>
     </div>
 
-    <!-- نافذة الشارت الموحدة -->
     <div id="single-chart-container"></div>
 </div>
 
@@ -100,7 +99,6 @@
     function initChart() {
         const container = document.getElementById('single-chart-container');
         
-        // 1. إنشاء الشارت الموحد
         unifiedChart = LightweightCharts.createChart(container, {
             width: container.clientWidth,
             height: 600,
@@ -116,15 +114,11 @@
                 timeVisible: true,
                 secondsVisible: false,
             },
-            leftPriceScale: {
-                visible: true,
-            },
-            rightPriceScale: {
-                visible: true,
-            }
+            leftPriceScale: { visible: true },
+            rightPriceScale: { visible: true }
         });
 
-        // 2. إضافة سلسلة شموع السعر (تأخذ الجانب الأيمن وتتحكم بـ 70% من المساحة العلوية)
+        // شارت السعر العلوي
         priceSeries = unifiedChart.addCandlestickSeries({
             priceScaleId: 'right',
             upColor: '#089981', 
@@ -134,32 +128,20 @@
             wickDownColor: '#f23645'
         });
 
-        // 3. إضافة سلسلة شموع الـ OI كـ Overlay في الأسفل (تأخذ الجانب الأيسر وتُعزل في الـ 30% السفلية)
+        // شارت الـ OI السفلي (يدعم تلوين كل شمعة بشكل فردي حسب حالتها)
         oiSeries = unifiedChart.addCandlestickSeries({
             priceScaleId: 'left',
-            upColor: '#2962ff',       // صعود الـ OI
-            downColor: '#ff6d00',     // هبوط الـ OI
-            borderVisible: false, 
-            wickUpColor: '#2962ff', 
-            wickDownColor: '#ff6d00'
+            borderVisible: false,
         });
 
-        // تخصيص توزيع المساحة (70% للسعر في الأعلى و 30% للـ OI في الأسفل)
         unifiedChart.priceScale('right').applyOptions({
-            scaleMargins: {
-                top: 0.05,
-                bottom: 0.35, // ترك المساحة السفلية للـ OI
-            },
+            scaleMargins: { top: 0.05, bottom: 0.35 },
         });
 
         unifiedChart.priceScale('left').applyOptions({
-            scaleMargins: {
-                top: 0.70, // حصر الـ OI في الجزء السفلي
-                bottom: 0.02,
-            },
+            scaleMargins: { top: 0.70, bottom: 0.02 },
         });
 
-        // التجاوب مع حجم الشاشة
         window.addEventListener('resize', () => {
             unifiedChart.applyOptions({ width: container.clientWidth });
         });
@@ -170,11 +152,9 @@
         const interval = document.getElementById('interval').value;
 
         try {
-            // جلب السعر
             const klineRes = await fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=300`);
             const klineData = await klineRes.json();
 
-            // جلب الـ OI
             const oiRes = await fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${symbol}&period=${interval}&limit=500`);
             const oiData = await oiRes.json();
 
@@ -191,7 +171,6 @@
             klineData.forEach((d) => {
                 const candleTime = d[0] / 1000;
                 
-                // إضافة شموع السعر
                 priceCandles.push({
                     time: candleTime,
                     open: parseFloat(d[1]),
@@ -200,7 +179,6 @@
                     close: parseFloat(d[4])
                 });
 
-                // مطابقة الـ OI بنفس التوقيت تماماً
                 let currentOI = oiMap.get(candleTime);
                 if (currentOI === undefined) {
                     currentOI = lastKnownOI;
@@ -211,16 +189,43 @@
                 const oiOpen = oiCandles.length > 0 ? oiCandles[oiCandles.length - 1].close : currentOI;
                 const oiClose = currentOI;
 
+                // التحقق الشرطي لتغيير لون شمعة الـ OI بناءً على اتجاه تراكم/تفريغ السيولة
+                // إذا ارتفع الـ OI (صعود السيولة) تكون زرقاء، وإذا انخفض (أو هبطت الشمعة وارتفع OI) يتم تلوينها بالأسود المميز
+                let candleColor = '#2962ff'; // لون الافتراضي للصعود (أزرق)
+                let wickColor = '#2962ff';
+
+                if (oiClose < oiOpen) {
+                    // انخفاض الـ OI (تفريغ سيولة)
+                    candleColor = '#ff6d00'; 
+                    wickColor = '#ff6d00';
+                } else if (oiClose > oiOpen && oiClose < (oiOpen * 1.0005)) {
+                    // تذبذب طفيف
+                    candleColor = '#787b86';
+                    wickColor = '#787b86';
+                }
+
+                // شرطك الأساسي: إذا هبط السعر (أو حدث العكس) ترافق مع ارتفاع OI، نلونها بالأسود أو حسب رغبتك
+                const priceClosedLower = parseFloat(d[4]) < parseFloat(d[1]);
+                const oiIncreased = oiClose >= oiOpen;
+
+                if (priceClosedLower && oiIncreased) {
+                    // شمعة سعر هابطة + OI مرتفع (تراكم عقود بيعية/شورت قوية) -> تلوين الشمعة بالأسود الداكن المميز
+                    candleColor = '#000000';
+                    wickColor = '#333333';
+                }
+
                 oiCandles.push({
                     time: candleTime,
                     open: oiOpen,
                     high: Math.max(oiOpen, oiClose),
                     low: Math.min(oiOpen, oiClose),
-                    close: oiClose
+                    close: oiClose,
+                    color: candleColor,
+                    wickColor: wickColor,
+                    borderColor: candleColor
                 });
             });
 
-            // تعبئة الشارت الموحد بالبيانات
             priceSeries.setData(priceCandles);
             oiSeries.setData(oiCandles);
 
