@@ -1,1260 +1,256 @@
 <!DOCTYPE html>
-<html lang="ar" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Crypto OI Dashboard — Open Interest Market Monitor</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الاهتمام المفتوح الاحترافية — Crypto OI Monitor Pro</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<!-- TradingView Library -->
-<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+<!-- Lightweight Charts by TradingView -->
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 <style>
-/* ============================================================
-   TOKENS
-   ============================================================ */
-:root{
-  --bg-0:#080b12;
-  --bg-1:#0d111a;
-  --bg-2:#111827;
-  --bg-2-hover:#151d2e;
-  --border:#1e2735;
-  --border-soft:#161f2c;
-  --text-1:#e7ebf1;
-  --text-2:#8b96a5;
-  --text-3:#5b6576;
-  --up:#22c55e;
-  --up-dim:#16532f;
-  --down:#ef4444;
-  --down-dim:#5c1e1e;
-  --blue:#3b82f6;
-  --blue-dim:#16305c;
-  --yellow:#eab308;
-  --yellow-dim:#4a3c08;
-  --p1:#3b82f6;
-  --p2:#60a5fa;
-  --p3:#93b4e0;
-  --radius:10px;
-  --radius-sm:6px;
-  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.55);
-  --mono:ui-monospace,"SF Mono",Consolas,"Liberation Mono",monospace;
-  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
-  --header-h:64px;
-  --controls-h:56px;
-  --navbar-h:42px;
-}
-[data-theme="light"]{
-  --bg-0:#f3f5f8;
-  --bg-1:#ffffff;
-  --bg-2:#ffffff;
-  --bg-2-hover:#f2f4f8;
-  --border:#e2e6ec;
-  --border-soft:#eceff3;
-  --text-1:#0f1420;
-  --text-2:#5a6474;
-  --text-3:#8a93a3;
-  --shadow:0 1px 2px rgba(20,25,40,.06), 0 8px 20px -12px rgba(20,25,40,.15);
+:root {
+  --bg-0: #080b12;
+  --bg-1: #0d111a;
+  --bg-2: #111827;
+  --border: #1e2735;
+  --text-1: #e7ebf1;
+  --text-2: #8b96a5;
+  --text-3: #5b6576;
+  --up: #22c55e;
+  --down: #ef4444;
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,0.15);
+  --sans: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
 }
 
-*{box-sizing:border-box;}
-html,body{margin:0;padding:0;}
-body{
-  background:var(--bg-0);
-  color:var(--text-1);
-  font-family:var(--sans);
-  -webkit-font-smoothing:antialiased;
-  min-height:100vh;
-}
-::selection{background:var(--blue-dim);color:var(--text-1);}
-button{font-family:inherit;}
-a{color:inherit;}
-.tabular{font-variant-numeric:tabular-nums;font-family:var(--mono);}
-
-/* ============================================================
-   LAYOUT SHELL
-   ============================================================ */
-#app-shell{
-  display:flex;
-  flex-direction:column;
-  min-height:100vh;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg-0);
+  color: var(--text-1);
+  font-family: var(--sans);
+  direction: rtl;
+  min-height: 100vh;
 }
 
-/* ---------- HEADER ---------- */
-header.top{
-  height:var(--header-h);
-  flex:0 0 auto;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 20px;
-  background:linear-gradient(180deg,var(--bg-1),var(--bg-0));
-  border-bottom:1px solid var(--border);
-  position:sticky;
-  top:0;
-  z-index:50;
+header {
+  height: 60px;
+  background: var(--bg-1);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
-.brand{display:flex;align-items:center;gap:12px;}
-.brand-mark{
-  width:34px;height:34px;border-radius:8px;
-  background:linear-gradient(135deg,var(--blue),#1d4ed8);
-  display:flex;align-items:center;justify-content:center;
-  font-weight:700;font-size:14px;color:#fff;letter-spacing:-0.5px;
-  box-shadow:0 4px 14px -4px rgba(59,130,246,.55);
-  flex:0 0 auto;
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark {
+  width: 36px; height: 36px; background: var(--blue);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-weight: bold; color: #fff; box-shadow: 0 0 12px rgba(59,130,246,0.4);
 }
-.brand-text h1{
-  font-size:15px;font-weight:700;margin:0;letter-spacing:.2px;
-  line-height:1.15;
-}
-.brand-text p{
-  margin:1px 0 0;font-size:11.5px;color:var(--text-2);font-weight:500;
-  letter-spacing:.3px;
-}
-.header-right{display:flex;align-items:center;gap:8px;}
-.header-stat{
-  font-size:11.5px;color:var(--text-2);
-  display:flex;align-items:center;gap:6px;
-  padding:0 10px;border-right:1px solid var(--border-soft);
-  white-space:nowrap;
-}
-.header-stat:last-of-type{border-right:none;}
-.header-stat b{color:var(--text-1);font-weight:600;}
-.header-stat .dot{width:6px;height:6px;border-radius:50%;background:var(--up);box-shadow:0 0 0 3px var(--up-dim);}
-.icon-btn{
-  width:34px;height:34px;border-radius:var(--radius-sm);
-  background:var(--bg-2);border:1px solid var(--border);
-  color:var(--text-2);display:flex;align-items:center;justify-content:center;
-  cursor:pointer;transition:background .12s,color .12s,border-color .12s;
-  font-size:13px;
-}
-.icon-btn:hover{background:var(--bg-2-hover);color:var(--text-1);border-color:#2a3444;}
-.icon-btn.active{color:var(--blue);border-color:var(--blue);background:var(--blue-dim);}
+.brand h1 { font-size: 16px; font-weight: 700; }
 
-/* ---------- CONTROL BAR ---------- */
-.control-bar{
-  min-height:var(--controls-h);
-  flex:0 0 auto;
-  display:flex;align-items:center;gap:10px;
-  padding:9px 20px;
-  background:var(--bg-1);
-  border-bottom:1px solid var(--border);
-  flex-wrap:wrap;
-  position:sticky;top:var(--header-h);z-index:40;
+.stats-bar {
+  display: flex; gap: 15px; font-size: 13px; color: var(--text-2);
 }
-.search-wrap{
-  position:relative;flex:1 1 220px;min-width:180px;max-width:340px;
-}
-.search-wrap i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:12px;}
-.search-wrap input{
-  width:100%;height:34px;border-radius:var(--radius-sm);
-  background:var(--bg-2);border:1px solid var(--border);
-  color:var(--text-1);padding:0 32px 0 32px;font-size:13px;outline:none;
-  transition:border-color .12s;
-}
-.search-wrap input:focus{border-color:var(--blue);}
-.search-wrap kbd{
-  position:absolute;right:8px;top:50%;transform:translateY(-50%);
-  font-size:10px;color:var(--text-3);border:1px solid var(--border);
-  border-radius:4px;padding:1px 5px;background:var(--bg-1);
-}
-.seg{
-  display:flex;background:var(--bg-2);border:1px solid var(--border);
-  border-radius:var(--radius-sm);padding:2px;gap:2px;
-}
-.seg button{
-  border:none;background:transparent;color:var(--text-2);
-  font-size:12px;font-weight:600;padding:6px 10px;border-radius:5px;cursor:pointer;
-  white-space:nowrap;transition:background .12s,color .12s;
-}
-.seg button.active{background:var(--blue);color:#fff;}
-.seg button:not(.active):hover{color:var(--text-1);}
-select.plain{
-  height:34px;background:var(--bg-2);border:1px solid var(--border);
-  color:var(--text-1);border-radius:var(--radius-sm);font-size:12px;padding:0 8px;
-  outline:none;
-}
-.control-spacer{flex:1;}
-.pill-btn{
-  height:34px;display:flex;align-items:center;gap:6px;
-  background:var(--bg-2);border:1px solid var(--border);color:var(--text-2);
-  border-radius:var(--radius-sm);padding:0 12px;font-size:12px;font-weight:600;cursor:pointer;
-}
-.pill-btn:hover{color:var(--text-1);background:var(--bg-2-hover);}
-.pill-btn.on{color:var(--yellow);border-color:var(--yellow);background:var(--yellow-dim);}
+.status-tag { display: flex; align-items: center; gap: 6px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--up); box-shadow: 0 0 8px var(--up); }
 
-/* ---------- QUICK NAV ---------- */
-.quicknav{
-  height:var(--navbar-h);flex:0 0 auto;
-  display:flex;align-items:center;gap:6px;
-  padding:0 20px;overflow-x:auto;
-  background:var(--bg-0);border-bottom:1px solid var(--border-soft);
-  position:sticky;top:calc(var(--header-h) + var(--controls-h));z-index:30;
-  scrollbar-width:thin;
+main { padding: 20px; }
+#grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
 }
-.quicknav::-webkit-scrollbar{height:4px;}
-.quicknav::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
-.qn-item{
-  flex:0 0 auto;font-size:11.5px;font-weight:700;color:var(--text-2);
-  padding:4px 9px;border-radius:5px;cursor:pointer;letter-spacing:.3px;
-  border:1px solid transparent;
-}
-.qn-item:hover{color:var(--text-1);background:var(--bg-2);}
-.qn-item.pinned{color:var(--yellow);}
 
-/* ---------- MAIN / GRID ---------- */
-main{flex:1 1 auto;padding:18px 20px 60px;}
-#grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(420px,1fr));
-  gap:16px;
+.card {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
-#grid.density-compact{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;}
-#grid.density-large{grid-template-columns:repeat(auto-fit,minmax(560px,1fr));gap:20px;}
-#grid.view-large{grid-template-columns:1fr;}
 
-.empty-state{
-  text-align:center;padding:60px 20px;color:var(--text-2);
+.card-head {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.empty-state i{font-size:26px;color:var(--text-3);margin-bottom:10px;display:block;}
-.empty-state b{color:var(--text-1);}
+.symbol-info { display: flex; align-items: center; gap: 8px; }
+.symbol-name { font-size: 16px; font-weight: 700; }
+.badge {
+  font-size: 11px; padding: 2px 6px; border-radius: 4px;
+  background: var(--blue-dim); color: var(--blue); font-weight: 600;
+}
 
-/* ---------- CARD ---------- */
-.card{
-  background:var(--bg-2);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  overflow:hidden;
-  display:flex;flex-direction:column;
-  position:relative;
-  transition:border-color .15s, transform .1s;
+.oi-metrics {
+  display: flex; gap: 12px; align-items: baseline;
 }
-.card.dragging{opacity:.4;}
-.card.drag-over{border-color:var(--blue);}
-.card::before{
-  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
-  background:var(--p3);
-}
-.card[data-priority="1"]::before{background:var(--p1);box-shadow:0 0 12px 0 rgba(59,130,246,.6);}
-.card[data-priority="2"]::before{background:var(--p2);}
-.card.pinned{border-color:#4a3c08;}
+.oi-val { font-size: 15px; font-weight: 700; font-family: monospace; }
+.oi-change { font-size: 12px; font-weight: 600; }
+.oi-change.up { color: var(--up); }
+.oi-change.down { color: var(--down); }
 
-.card-head{
-  display:flex;align-items:flex-start;justify-content:space-between;
-  padding:12px 14px 10px 16px;border-bottom:1px solid var(--border-soft);
-  gap:8px;cursor:grab;
+.card-body {
+  height: 260px;
+  position: relative;
+  background: var(--bg-1);
 }
-.card-head:active{cursor:grabbing;}
-.card-title-block{display:flex;flex-direction:column;gap:1px;min-width:0;}
-.card-symbol-row{display:flex;align-items:center;gap:7px;}
-.card-symbol{font-size:15px;font-weight:700;letter-spacing:.2px;}
-.card-pair{font-size:12px;color:var(--text-3);font-weight:600;}
-.status-dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;}
-.status-dot.loaded{background:var(--up);box-shadow:0 0 0 3px var(--up-dim);}
-.status-dot.loading{background:var(--yellow);box-shadow:0 0 0 3px var(--yellow-dim);animation:pulse 1.2s infinite;}
-.status-dot.blocked{background:var(--down);box-shadow:0 0 0 3px var(--down-dim);}
-.status-dot.no-url{background:var(--text-3);box-shadow:0 0 0 3px var(--border-soft);}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
-.card-meta{font-size:11px;color:var(--text-2);margin-top:2px;}
-.card-actions{display:flex;align-items:center;gap:5px;flex:0 0 auto;}
-.card-actions button{
-  width:27px;height:27px;border-radius:6px;background:transparent;border:1px solid transparent;
-  color:var(--text-3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;
-  transition:background .12s,color .12s;
-}
-.card-actions button:hover{background:var(--bg-2-hover);color:var(--text-1);border-color:var(--border);}
-.card-actions button.star.active{color:var(--yellow);}
-.priority-badge{
-  font-size:10px;font-weight:800;color:var(--p1);background:var(--blue-dim);
-  border-radius:4px;padding:2px 6px;letter-spacing:.4px;white-space:nowrap;
-}
-.card-body{
-  flex:1 1 auto;min-height:340px;position:relative;background:var(--bg-1);
-}
-#grid.density-compact .card-body{min-height:280px;}
-#grid.density-large .card-body{min-height:460px;}
-.card-body .tv-container{width:100%;height:100%;min-height:340px;}
-#grid.density-compact .card-body .tv-container{min-height:280px;}
-#grid.density-large .card-body .tv-container{min-height:460px;}
 
-.card-foot{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:9px 14px;border-top:1px solid var(--border-soft);
-  font-size:11.5px;color:var(--text-2);
+.card-foot {
+  padding: 8px 16px;
+  font-size: 11px;
+  color: var(--text-3);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
 }
-.open-original-link{
-  display:flex;align-items:center;gap:5px;color:var(--blue);font-weight:700;text-decoration:none;font-size:12px;
-}
-.open-original-link:hover{text-decoration:underline;}
-.status-label{display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.4px;font-size:10.5px;font-weight:700;}
 
-/* ---------- FULLSCREEN MODAL ---------- */
-.modal-backdrop{
-  position:fixed;inset:0;background:rgba(3,5,10,.75);backdrop-filter:blur(2px);
-  display:none;align-items:center;justify-content:center;z-index:200;padding:24px;
+.loading {
+  position: absolute; inset: 0; background: var(--bg-1);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-2); font-size: 13px; z-index: 10;
 }
-.modal-backdrop.open{display:flex;}
-.modal{
-  width:min(1200px,100%);height:min(820px,90vh);
-  background:var(--bg-1);border:1px solid var(--border);border-radius:12px;
-  display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px -20px rgba(0,0,0,.7);
-}
-.modal-head{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 16px;border-bottom:1px solid var(--border);
-}
-.modal-head h3{margin:0;font-size:14px;}
-.modal-body{flex:1;position:relative;background:var(--bg-0);}
 
-/* ---------- SETTINGS DRAWER ---------- */
-.drawer-backdrop{
-  position:fixed;inset:0;background:rgba(3,5,10,.55);display:none;z-index:150;
+@media (max-width: 600px) {
+  #grid { grid-template-columns: 1fr; }
 }
-.drawer-backdrop.open{display:block;}
-.drawer{
-  position:fixed;top:0;right:0;bottom:0;width:360px;max-width:92vw;
-  background:var(--bg-1);border-left:1px solid var(--border);
-  transform:translateX(100%);transition:transform .22s ease;z-index:160;
-  display:flex;flex-direction:column;
-}
-.drawer.open{transform:translateX(0);}
-.drawer-head{
-  padding:16px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-}
-.drawer-head h3{margin:0;font-size:14px;}
-.drawer-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:22px;}
-.settings-group label.group-title{
-  display:block;font-size:11px;font-weight:800;color:var(--text-2);
-  text-transform:uppercase;letter-spacing:.5px;margin-bottom:9px;
-}
-.opt-row{display:flex;gap:6px;flex-wrap:wrap;}
-.opt-btn{
-  flex:1 1 auto;text-align:center;font-size:12px;font-weight:600;
-  padding:7px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg-2);
-  color:var(--text-2);cursor:pointer;
-}
-.opt-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
-.settings-btn{
-  width:100%;text-align:left;background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);
-  padding:9px 12px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;
-  display:flex;align-items:center;gap:8px;
-}
-.settings-btn:hover{background:var(--bg-2-hover);}
-.settings-btn.danger{color:var(--down);}
-.settings-btn.danger:hover{background:var(--down-dim);}
-.add-form{display:flex;flex-direction:column;gap:8px;}
-.add-form input{
-  height:32px;background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);
-  border-radius:6px;padding:0 10px;font-size:12.5px;outline:none;
-}
-.add-form input:focus{border-color:var(--blue);}
-.add-form label{font-size:10.5px;color:var(--text-2);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:-4px;}
-.chart-list{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;}
-.chart-list-row{
-  display:flex;align-items:center;justify-content:space-between;
-  background:var(--bg-2);border:1px solid var(--border-soft);border-radius:6px;padding:6px 9px;font-size:12px;
-}
-.chart-list-row span{font-weight:700;}
-.chart-list-row button{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:12px;}
-.chart-list-row button:hover{color:var(--down);}
-
-/* toast */
-#toast{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);
-  background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);
-  padding:10px 16px;border-radius:8px;font-size:12.5px;box-shadow:var(--shadow);
-  opacity:0;pointer-events:none;transition:opacity .18s, transform .18s;z-index:300;
-}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-/* ---------- RESPONSIVE ---------- */
-@media (max-width:720px){
-  header.top{padding:0 12px;}
-  .brand-text p{display:none;}
-  .header-stat{display:none;}
-  .header-stat.always-show{display:flex;padding:0;border:none;}
-  .control-bar{padding:8px 12px;}
-  .quicknav{padding:0 12px;}
-  main{padding:14px 12px 50px;}
-  #grid, #grid.density-compact, #grid.density-large{grid-template-columns:1fr;}
-  .card-body, .card-body .tv-container{min-height:300px;}
-  .drawer{width:100%;max-width:100%;}
-  .modal{height:100vh;border-radius:0;}
-}
-:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
 </style>
 </head>
 <body>
 
-<div id="app-shell">
-
-  <!-- ============ HEADER ============ -->
-  <header class="top">
-    <div class="brand">
-      <div class="brand-mark">OI</div>
-      <div class="brand-text">
-        <h1>Crypto OI Dashboard</h1>
-        <p>Open Interest Market Monitor</p>
-      </div>
+<header>
+  <div class="brand">
+    <div class="brand-mark">OI</div>
+    <div>
+      <h1>مراقب الاهتمام المفتوح المباشر</h1>
     </div>
-    <div class="header-right">
-      <div class="header-stat always-show" id="stat-count"><i class="fa-solid fa-table-cells" style="font-size:11px;"></i><b id="chart-count">0</b>&nbsp;Charts</div>
-      <div class="header-stat" id="stat-updated"><span class="dot"></span>Updated&nbsp;<b class="tabular" id="last-updated-time">--:--:--</b></div>
-      <button class="icon-btn" id="btn-refresh" title="Refresh all (R)"><i class="fa-solid fa-rotate-right"></i></button>
-      <button class="icon-btn" id="btn-fullscreen" title="Toggle app fullscreen"><i class="fa-solid fa-expand"></i></button>
-      <button class="icon-btn" id="btn-theme" title="Toggle theme"><i class="fa-solid fa-moon"></i></button>
-      <button class="icon-btn" id="btn-settings" title="Settings"><i class="fa-solid fa-sliders"></i></button>
-    </div>
-  </header>
-
-  <!-- ============ CONTROL BAR ============ -->
-  <div class="control-bar">
-    <div class="search-wrap">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" id="search-input" placeholder="Search BTC, ETH, SOL...">
-      <kbd>/</kbd>
-    </div>
-
-    <div class="seg" id="filter-seg">
-      <button data-filter="all" class="active">All</button>
-      <button data-filter="priority">Top Priority</button>
-      <button data-filter="pinned">Pinned</button>
-      <button data-filter="altcoins">Altcoins</button>
-    </div>
-
-    <select class="plain" id="sort-select" title="Sort">
-      <option value="priority">Sort: Priority</option>
-      <option value="alpha">Sort: Alphabetical</option>
-      <option value="manual">Sort: Manual Order</option>
-    </select>
-
-    <div class="seg" id="view-seg">
-      <button data-view="grid" class="active">Grid</button>
-      <button data-view="large">Large</button>
-      <button data-view="compact">Compact</button>
-    </div>
-
-    <div class="control-spacer"></div>
-
-    <button class="pill-btn" id="btn-focus" title="Focus mode: show P1–P3 only (1)">
-      <i class="fa-solid fa-bullseye"></i> Focus Mode
-    </button>
   </div>
-
-  <!-- ============ QUICK NAV ============ -->
-  <nav class="quicknav" id="quicknav"></nav>
-
-  <!-- ============ MAIN GRID ============ -->
-  <main>
-    <div id="grid" class="density-normal"></div>
-    <div class="empty-state" id="empty-state" style="display:none;">
-      <i class="fa-solid fa-magnifying-glass-minus"></i>
-      No charts match <b id="empty-query"></b>. Try clearing the search or filters.
-    </div>
-  </main>
-</div>
-
-<!-- ============ FULLSCREEN CHART MODAL ============ -->
-<div class="modal-backdrop" id="modal-backdrop">
-  <div class="modal">
-    <div class="modal-head">
-      <h3 id="modal-title">BTC / USDT PERP</h3>
-      <button class="icon-btn" id="modal-close"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="modal-body" id="modal-body"></div>
+  <div class="stats-bar">
+    <div class="status-tag"><span class="dot"></span> اتصال مباشر بـ Binance Futures API</div>
   </div>
-</div>
+</header>
 
-<!-- ============ SETTINGS DRAWER ============ -->
-<div class="drawer-backdrop" id="drawer-backdrop"></div>
-<aside class="drawer" id="drawer">
-  <div class="drawer-head">
-    <h3>Settings</h3>
-    <button class="icon-btn" id="drawer-close"><i class="fa-solid fa-xmark"></i></button>
-  </div>
-  <div class="drawer-body">
-
-    <div class="settings-group">
-      <label class="group-title">Appearance</label>
-      <div class="opt-row" id="opt-theme">
-        <button class="opt-btn active" data-val="dark">Dark</button>
-        <button class="opt-btn" data-val="light">Light</button>
-      </div>
-    </div>
-
-    <div class="settings-group">
-      <label class="group-title">Grid Density</label>
-      <div class="opt-row" id="opt-density">
-        <button class="opt-btn" data-val="compact">Compact</button>
-        <button class="opt-btn active" data-val="normal">Normal</button>
-        <button class="opt-btn" data-val="large">Large</button>
-      </div>
-    </div>
-
-    <div class="settings-group">
-      <label class="group-title">Auto Refresh</label>
-      <div class="opt-row" id="opt-autorefresh">
-        <button class="opt-btn active" data-val="0">Off</button>
-        <button class="opt-btn" data-val="60000">1m</button>
-        <button class="opt-btn" data-val="300000">5m</button>
-        <button class="opt-btn" data-val="900000">15m</button>
-        <button class="opt-btn" data-val="1800000">30m</button>
-      </div>
-    </div>
-
-    <div class="settings-group">
-      <label class="group-title">Add Chart</label>
-      <div class="add-form">
-        <label>Symbol</label>
-        <input id="add-symbol" placeholder="e.g. OP">
-        <label>Name</label>
-        <input id="add-name" placeholder="e.g. Optimism">
-        <label>Exchange / Pair (Futures)</label>
-        <input id="add-exchange" placeholder="e.g. BINANCE:OPUSDT.P">
-        <label>Priority (1 = highest)</label>
-        <input id="add-priority" type="number" min="1" value="5">
-        <button class="settings-btn" id="btn-add-chart" style="margin-top:4px;justify-content:center;background:var(--blue);border-color:var(--blue);color:#fff;">
-          <i class="fa-solid fa-plus"></i> Add Chart
-        </button>
-      </div>
-    </div>
-
-    <div class="settings-group">
-      <label class="group-title">Manage Charts</label>
-      <div class="chart-list" id="chart-manage-list"></div>
-    </div>
-
-    <div class="settings-group">
-      <label class="group-title">Data</label>
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <button class="settings-btn" id="btn-export"><i class="fa-solid fa-file-export"></i> Export configuration</button>
-        <button class="settings-btn" id="btn-import"><i class="fa-solid fa-file-import"></i> Import configuration</button>
-        <input type="file" id="import-file" accept="application/json" style="display:none;">
-        <button class="settings-btn danger" id="btn-reset"><i class="fa-solid fa-trash"></i> Reset dashboard</button>
-      </div>
-    </div>
-
-    <div class="settings-group">
-      <label class="group-title">Keyboard Shortcuts</label>
-      <div style="font-size:11.5px;color:var(--text-2);line-height:2;">
-        <div><kbd>R</kbd> Refresh &nbsp; <kbd>F</kbd> Fullscreen focused card &nbsp; <kbd>Esc</kbd> Close</div>
-        <div><kbd>/</kbd> Search &nbsp; <kbd>1</kbd> Focus mode &nbsp; <kbd>0</kbd> Show all</div>
-      </div>
-    </div>
-
-  </div>
-</aside>
-
-<div id="toast"></div>
+<main>
+  <div id="grid"></div>
+</main>
 
 <script>
-(function(){
-"use strict";
-
-/* ================================================================
-   1) CHART DATA SOURCE (TradingView Perpetual Futures Symbols)
-   ================================================================ */
-const DEFAULT_CHARTS = [
-  { id:"btc",  symbol:"BTC",  name:"Bitcoin",    exchange:"BINANCE", tvSymbol:"BINANCE:BTCUSDT.P", priority:1 },
-  { id:"eth",  symbol:"ETH",  name:"Ethereum",   exchange:"BINANCE", tvSymbol:"BINANCE:ETHUSDT.P", priority:2 },
-  { id:"sol",  symbol:"SOL",  name:"Solana",     exchange:"BINANCE", tvSymbol:"BINANCE:SOLUSDT.P", priority:3 },
-  { id:"bnb",  symbol:"BNB",  name:"BNB",        exchange:"BINANCE", tvSymbol:"BINANCE:BNBUSDT.P", priority:4 },
-  { id:"xrp",  symbol:"XRP",  name:"XRP",        exchange:"BINANCE", tvSymbol:"BINANCE:XRPUSDT.P", priority:5 },
-  { id:"doge", symbol:"DOGE", name:"Dogecoin",   exchange:"BINANCE", tvSymbol:"BINANCE:DOGEUSDT.P",priority:6 },
-  { id:"ada",  symbol:"ADA",  name:"Cardano",    exchange:"BINANCE", tvSymbol:"BINANCE:ADAUSDT.P", priority:7 },
-  { id:"avax", symbol:"AVAX", name:"Avalanche",  exchange:"BINANCE", tvSymbol:"BINANCE:AVAXUSDT.P",priority:8 },
-  { id:"link", symbol:"LINK", name:"Chainlink",  exchange:"BINANCE", tvSymbol:"BINANCE:LINKUSDT.P",priority:9 },
-  { id:"sui",  symbol:"SUI",  name:"Sui",        exchange:"BINANCE", tvSymbol:"BINANCE:SUIUSDT.P", priority:10 }
+// قائمة العملات المراد مراقبتها
+const SYMBOLS = [
+  { symbol: "BTCUSDT", name: "Bitcoin" },
+  { symbol: "ETHUSDT", name: "Ethereum" },
+  { symbol: "SOLUSDT", name: "Solana" },
+  { symbol: "BNBUSDT", name: "BNB" },
+  { symbol: "XRPUSDT", name: "XRP" },
+  { symbol: "DOGEUSDT", name: "Dogecoin" }
 ];
 
-/* ================================================================
-   2) STORAGE KEYS & SETTINGS
-   ================================================================ */
-const LS = {
-  charts:   "oi_dashboard_charts_v3",
-  pinned:   "oi_dashboard_pinned_v3",
-  order:    "oi_dashboard_order_v3",
-  settings: "oi_dashboard_settings_v3"
-};
-
-const DEFAULT_SETTINGS = {
-  theme:"dark", density:"normal", view:"grid", autoRefresh:0,
-  sort:"priority", filter:"all"
-};
-
-/* ================================================================
-   3) STATE
-   ================================================================ */
-let charts   = loadJSON(LS.charts, DEFAULT_CHARTS);
-let pinned   = loadJSON(LS.pinned, []);
-let order    = loadJSON(LS.order, charts.map(c=>c.id));
-let settings = Object.assign({}, DEFAULT_SETTINGS, loadJSON(LS.settings, {}));
-
-let searchTerm = "";
-let autoRefreshTimer = null;
-let focusMode = false;
-let lastFocusedCardId = null;
-let dragSrcId = null;
-
-function loadJSON(key, fallback){
-  try{
-    const raw = localStorage.getItem(key);
-    if(!raw) return JSON.parse(JSON.stringify(fallback));
-    return JSON.parse(raw);
-  }catch(e){ return JSON.parse(JSON.stringify(fallback)); }
-}
-function saveJSON(key, val){
-  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
-}
-function persistCharts(){ saveJSON(LS.charts, charts); }
-function persistPinned(){ saveJSON(LS.pinned, pinned); }
-function persistOrder(){ saveJSON(LS.order, order); }
-function persistSettings(){ saveJSON(LS.settings, settings); }
-
-function reconcileOrder(){
-  const ids = charts.map(c=>c.id);
-  order = order.filter(id => ids.includes(id));
-  ids.forEach(id => { if(!order.includes(id)) order.push(id); });
-  persistOrder();
-}
-reconcileOrder();
-
-/* ================================================================
-   4) DOM REFS & UTILS
-   ================================================================ */
 const grid = document.getElementById("grid");
-const emptyState = document.getElementById("empty-state");
-const emptyQuery = document.getElementById("empty-query");
-const chartCountEl = document.getElementById("chart-count");
-const lastUpdatedEl = document.getElementById("last-updated-time");
-const quicknav = document.getElementById("quicknav");
-const chartManageList = document.getElementById("chart-manage-list");
 
-function toast(msg){
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  clearTimeout(toast._t);
-  toast._t = setTimeout(()=>t.classList.remove("show"), 2200);
-}
-function fmtTime(d){ return d.toTimeString().slice(0,8); }
-function updateLastUpdated(){ lastUpdatedEl.textContent = fmtTime(new Date()); }
-function debounce(fn, ms){
-  let t;
-  return function(...args){ clearTimeout(t); t = setTimeout(()=>fn.apply(this,args), ms); };
-}
-function escapeHtml(str){
-  return String(str).replace(/[&<>"']/g, s => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s]));
-}
-function isAltcoin(c){ return !["btc","eth"].includes(c.id); }
-
-/* ================================================================
-   5) SORT & FILTER
-   ================================================================ */
-function getVisibleCharts(){
-  let list = charts.slice();
-  list.sort((a,b) => order.indexOf(a.id) - order.indexOf(b.id));
-
-  if(settings.sort === "priority"){
-    list.sort((a,b) => a.priority - b.priority);
-  } else if(settings.sort === "alpha"){
-    list.sort((a,b) => a.symbol.localeCompare(b.symbol));
-  }
-
-  list.sort((a,b) => (pinned.includes(b.id)?1:0) - (pinned.includes(a.id)?1:0));
-
-  if(settings.filter === "priority"){
-    list = list.filter(c => c.priority <= 3);
-  } else if(settings.filter === "pinned"){
-    list = list.filter(c => pinned.includes(c.id));
-  } else if(settings.filter === "altcoins"){
-    list = list.filter(isAltcoin);
-  }
-
-  if(searchTerm.trim()){
-    const q = searchTerm.trim().toLowerCase();
-    list = list.filter(c =>
-      c.symbol.toLowerCase().includes(q) ||
-      c.name.toLowerCase().includes(q) ||
-      c.exchange.toLowerCase().includes(q)
-    );
-  }
-
-  if(focusMode){
-    list = list.filter(c => c.priority <= 3);
-  }
-
-  return list;
+// تنسيق الأرقام الكبيرة (K, M, B)
+function formatNumber(num) {
+  if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+  if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+  if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+  return num.toFixed(2);
 }
 
-/* ================================================================
-   6) RENDER & TRADINGVIEW INTEGRATION (WITH OPEN INTEREST)
-   ================================================================ */
-function render(){
-  const visible = getVisibleCharts();
-
-  grid.className = "";
-  if(settings.view === "compact") grid.classList.add("density-compact");
-  else if(settings.density === "compact") grid.classList.add("density-compact");
-  if(settings.density === "large") grid.classList.add("density-large");
-  if(settings.view === "large") grid.classList.add("view-large");
-
-  grid.innerHTML = "";
-
-  if(visible.length === 0){
-    emptyState.style.display = "block";
-    emptyQuery.textContent = searchTerm ? '"' + searchTerm + '"' : "the current filters";
-  } else {
-    emptyState.style.display = "none";
-    visible.forEach(c => grid.appendChild(buildCard(c)));
-  }
-
-  chartCountEl.textContent = charts.length;
-  buildQuickNav();
-  buildManageList();
-  renderTradingViewWidgets(visible);
-}
-
-function buildCard(c) {
-  const card = document.createElement("article");
-  card.className = "card" + (pinned.includes(c.id) ? " pinned" : "");
-  card.dataset.id = c.id;
-  card.dataset.priority = c.priority;
-  card.draggable = true;
-
+// إنشاء الكروت للعملات
+function createCard(item) {
+  const card = document.createElement("div");
+  card.className = "card";
   card.innerHTML = `
     <div class="card-head">
-      <div class="card-title-block">
-        <div class="card-symbol-row">
-          <span class="status-dot loaded" id="dot-${c.id}"></span>
-          <span class="card-symbol">${escapeHtml(c.symbol)}</span>
-          <span class="card-pair">/ USDT PERP</span>
-          <span class="priority-badge">P${c.priority}</span>
-        </div>
-        <div class="card-meta">${escapeHtml(c.name)} • ${escapeHtml(c.exchange)}</div>
+      <div class="symbol-info">
+        <span class="symbol-name">${item.symbol.replace('USDT', '')}</span>
+        <span class="badge">PERP</span>
       </div>
-      <div class="card-actions">
-        <button class="star ${pinned.includes(c.id) ? "active" : ""}" title="Pin chart" data-act="pin">
-          <i class="fa-${pinned.includes(c.id) ? "solid" : "regular"} fa-star"></i>
-        </button>
-        <button title="Open modal view" data-act="expand">
-          <i class="fa-solid fa-expand"></i>
-        </button>
-        <button title="Reload chart" data-act="reload">
-          <i class="fa-solid fa-rotate-right"></i>
-        </button>
+      <div class="oi-metrics">
+        <span class="oi-val" id="val-${item.symbol}">--</span>
+        <span class="oi-change" id="change-${item.symbol}">--</span>
       </div>
     </div>
-    <div class="card-body" id="body-${c.id}">
-      <div id="tv-container-${c.id}" class="tv-container"></div>
+    <div class="card-body" id="chart-${item.symbol}">
+      <div class="loading" id="load-${item.symbol}"><i class="fa-solid fa-spinner fa-spin"></i> &nbsp; جلب بيانات الـ OI...</div>
     </div>
     <div class="card-foot">
-      <span class="status-label" id="lbl-${c.id}">
-        <i class="fa-solid fa-check" style="color:var(--up)"></i> <span>LIVE OI</span>
-      </span>
-      <a href="https://www.tradingview.com/symbols/${escapeHtml(c.tvSymbol || 'BINANCE:' + c.symbol + 'USDT.P')}" target="_blank" rel="noopener noreferrer" class="open-original-link">Open Original <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i></a>
+      <span>مؤشر OI (Open Interest) الحقيقي</span>
+      <span>الإطار: 5 دقائق</span>
     </div>
   `;
-
-  // Drag & drop
-  card.addEventListener("dragstart", (e) => {
-    dragSrcId = c.id;
-    card.classList.add("dragging");
-    e.dataTransfer.effectAllowed = "move";
-  });
-  card.addEventListener("dragend", () => {
-    card.classList.remove("dragging");
-    document.querySelectorAll(".card").forEach(el => el.classList.remove("drag-over"));
-  });
-  card.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    card.classList.add("drag-over");
-  });
-  card.addEventListener("dragleave", () => card.classList.remove("drag-over"));
-  card.addEventListener("drop", (e) => {
-    e.preventDefault();
-    card.classList.remove("drag-over");
-    if (dragSrcId && dragSrcId !== c.id) {
-      const fromIdx = order.indexOf(dragSrcId);
-      const toIdx = order.indexOf(c.id);
-      if (fromIdx !== -1 && toIdx !== -1) {
-        order.splice(fromIdx, 1);
-        order.splice(toIdx, 0, dragSrcId);
-        persistOrder();
-        settings.sort = "manual";
-        document.getElementById("sort-select").value = "manual";
-        persistSettings();
-        render();
-        toast("Updated manual order");
-      }
-    }
-  });
-
-  // Actions
-  card.querySelector('[data-act="pin"]').addEventListener("click", () => togglePin(c.id));
-  card.querySelector('[data-act="expand"]').addEventListener("click", () => openModal(c));
-  card.querySelector('[data-act="reload"]').addEventListener("click", () => loadSingleTVWidget(c));
-
-  card.addEventListener("click", (e) => {
-    if (!e.target.closest("button") && !e.target.closest("a")) {
-      lastFocusedCardId = c.id;
-    }
-  });
-
-  return card;
+  grid.appendChild(card);
 }
 
-function loadSingleTVWidget(c) {
-  const containerId = `tv-container-${c.id}`;
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  el.innerHTML = "";
-  
-  let targetSymbol = c.tvSymbol || `BINANCE:${c.symbol}USDT.P`;
-  if (!targetSymbol.includes(".P") && !targetSymbol.includes("PERP")) {
-    targetSymbol += ".P";
-  }
+// رسم ومزامنة الشارت باستخدام Lightweight Charts
+async function initChart(item) {
+  const container = document.getElementById(`chart-${item.symbol}`);
+  const loading = document.getElementById(`load-${item.symbol}`);
+  const valEl = document.getElementById(`val-${item.symbol}`);
+  const changeEl = document.getElementById(`change-${item.symbol}`);
 
-  if (typeof TradingView !== "undefined") {
-    new TradingView.widget({
-      "autosize": true,
-      "symbol": targetSymbol,
-      "interval": "60",
-      "timezone": "Etc/UTC",
-      "theme": settings.theme || "dark",
-      "style": "1",
-      "locale": "en",
-      "toolbar_bg": "#f1f3f6",
-      "enable_publishing": false,
-      "hide_top_toolbar": false,
-      "hide_legend": false,
-      "save_image": false,
-      "container_id": containerId,
-      "studies": [
-        "STD;Open_Interest" // تفعيل مؤشر الـ Open Interest رسمياً
-      ]
+  try {
+    // 1. جلب تاريخ الـ Open Interest لآخر 30 نقطة (إطار 5m) من Binance
+    const res = await fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${item.symbol}&period=5m&limit=35`);
+    const data = await res.json();
+
+    if (!data || data.length === 0) throw new Error("No data");
+
+    loading.style.display = "none";
+
+    // 2. إعداد الرسم البياني
+    const chart = LightweightCharts.createChart(container, {
+      layout: { backgroundColor: '#0d111a', textColor: '#8b96a5' },
+      grid: {
+        vertLines: { color: '#161f2c' },
+        horzLines: { color: '#161f2c' }
+      },
+      timeScale: { timeVisible: true, secondsVisible: false },
+      rightPriceScale: { borderVisible: false },
+      crosshair: { mode: LightweightCharts.CrosshairMode.Normal }
     });
-  }
-}
 
-function renderTradingViewWidgets(visible) {
-  setTimeout(() => {
-    visible.forEach(c => loadSingleTVWidget(c));
-  }, 50);
-}
-
-function buildQuickNav(){
-  quicknav.innerHTML = "";
-  const list = charts.slice().sort((a,b)=>a.priority-b.priority);
-  list.forEach(c => {
-    const el = document.createElement("div");
-    el.className = "qn-item" + (pinned.includes(c.id) ? " pinned" : "");
-    el.textContent = c.symbol;
-    el.title = c.name;
-    el.addEventListener("click", () => {
-      const card = document.querySelector('.card[data-id="'+c.id+'"]');
-      if(card){ card.scrollIntoView({behavior:"smooth", block:"center"}); flashCard(card); }
-      else toast(c.symbol + " is filtered out — clear filters to jump to it.");
+    const areaSeries = chart.addAreaSeries({
+      topColor: 'rgba(59, 130, 246, 0.4)',
+      bottomColor: 'rgba(59, 130, 246, 0.0)',
+      lineColor: '#3b82f6',
+      lineWidth: 2,
     });
-    quicknav.appendChild(el);
-  });
-}
 
-function flashCard(card){
-  card.style.transition = "box-shadow .2s";
-  card.style.boxShadow = "0 0 0 2px var(--blue)";
-  setTimeout(()=>{ card.style.boxShadow = ""; }, 900);
-}
+    // 3. تجهيز البيانات للرسم
+    const chartData = data.map(d => ({
+      time: Math.floor(d.timestamp / 1000),
+      value: parseFloat(d.sumOpenInterestValue) // القيمة بالدولار
+    }));
 
-function buildManageList(){
-  chartManageList.innerHTML = "";
-  charts.slice().sort((a,b)=>a.priority-b.priority).forEach(c => {
-    const row = document.createElement("div");
-    row.className = "chart-list-row";
-    row.innerHTML = `<span>${escapeHtml(c.symbol)} <span style="color:var(--text-3);font-weight:500;">— ${escapeHtml(c.name)}</span></span>`;
-    const btn = document.createElement("button");
-    btn.innerHTML = `<i class="fa-solid fa-trash"></i>`;
-    btn.title = "Delete chart";
-    btn.addEventListener("click", () => deleteChart(c.id));
-    row.appendChild(btn);
-    chartManageList.appendChild(row);
-  });
-}
+    areaSeries.setData(chartData);
+    chart.timeScale().fitContent();
 
-/* ================================================================
-   7) ACTIONS & SETTINGS
-   ================================================================ */
-function togglePin(id) {
-  if (pinned.includes(id)) {
-    pinned = pinned.filter(x => x !== id);
-    toast("Unpinned chart");
-  } else {
-    pinned.push(id);
-    toast("Pinned chart");
-  }
-  persistPinned();
-  render();
-}
+    // 4. تحديث الأرقام والنسب المئوية في الهيدر
+    const latest = chartData[chartData.length - 1].value;
+    const previous = chartData[0].value;
+    const diffPct = ((latest - previous) / previous) * 100;
 
-function addChart() {
-  const symbolEl = document.getElementById("add-symbol");
-  const nameEl = document.getElementById("add-name");
-  const exchangeEl = document.getElementById("add-exchange");
-  const priorityEl = document.getElementById("add-priority");
+    valEl.textContent = '$' + formatNumber(latest);
+    changeEl.textContent = (diffPct >= 0 ? '+' : '') + diffPct.toFixed(2) + '%';
+    changeEl.className = 'oi-change ' + (diffPct >= 0 ? 'up' : 'down');
 
-  const symbol = symbolEl.value.trim().toUpperCase();
-  const name = nameEl.value.trim() || symbol;
-  let tvSymbol = exchangeEl.value.trim() || `BINANCE:${symbol}USDT.P`;
-  if (!tvSymbol.includes(".P") && !tvSymbol.includes("PERP")) {
-    tvSymbol += ".P";
-  }
-  const priority = parseInt(priorityEl.value, 10) || 5;
-
-  if (!symbol) {
-    toast("Symbol is required");
-    return;
-  }
-
-  const id = symbol.toLowerCase().replace(/[^a-z0-9]/g, "");
-  if (charts.some(c => c.id === id)) {
-    toast("Chart symbol already exists!");
-    return;
-  }
-
-  const newChart = { id, symbol, name, exchange: tvSymbol.split(":")[0] || "BINANCE", tvSymbol, priority };
-  charts.push(newChart);
-  order.push(id);
-
-  persistCharts();
-  persistOrder();
-  render();
-
-  symbolEl.value = "";
-  nameEl.value = "";
-  exchangeEl.value = "";
-  priorityEl.value = "5";
-
-  toast(`Added ${symbol}`);
-}
-
-function deleteChart(id) {
-  charts = charts.filter(c => c.id !== id);
-  pinned = pinned.filter(p => p !== id);
-  order = order.filter(o => o !== id);
-
-  persistCharts();
-  persistPinned();
-  persistOrder();
-  render();
-
-  toast("Chart deleted");
-}
-
-/* ================================================================
-   8) MODAL VIEW (WITH OPEN INTEREST)
-   ================================================================ */
-const modalBackdrop = document.getElementById("modal-backdrop");
-const modalTitle = document.getElementById("modal-title");
-const modalBody = document.getElementById("modal-body");
-const modalClose = document.getElementById("modal-close");
-
-function openModal(c) {
-  modalTitle.textContent = `${c.symbol} / USDT PERP — ${c.name} (${c.exchange})`;
-  modalBody.innerHTML = `<div id="modal-tv-container" style="width:100%;height:100%;"></div>`;
-  modalBackdrop.classList.add("open");
-  
-  let targetSymbol = c.tvSymbol || `BINANCE:${c.symbol}USDT.P`;
-  if (!targetSymbol.includes(".P") && !targetSymbol.includes("PERP")) {
-    targetSymbol += ".P";
-  }
-
-  setTimeout(() => {
-    if (typeof TradingView !== "undefined") {
-      new TradingView.widget({
-        "autosize": true,
-        "symbol": targetSymbol,
-        "interval": "240",
-        "timezone": "Etc/UTC",
-        "theme": settings.theme || "dark",
-        "style": "1",
-        "locale": "en",
-        "container_id": "modal-tv-container",
-        "studies": [
-          "STD;Open_Interest"
-        ]
-      });
-    }
-  }, 100);
-}
-
-function closeModal() {
-  modalBackdrop.classList.remove("open");
-  modalBody.innerHTML = "";
-}
-
-modalClose.addEventListener("click", closeModal);
-modalBackdrop.addEventListener("click", (e) => {
-  if (e.target === modalBackdrop) closeModal();
-});
-
-/* ================================================================
-   9) DRAWER & CONTROLS
-   ================================================================ */
-const drawer = document.getElementById("drawer");
-const drawerBackdrop = document.getElementById("drawer-backdrop");
-const btnSettings = document.getElementById("btn-settings");
-const drawerClose = document.getElementById("drawer-close");
-
-function openDrawer() {
-  drawer.classList.add("open");
-  drawerBackdrop.classList.add("open");
-}
-function closeDrawer() {
-  drawer.classList.remove("open");
-  drawerBackdrop.classList.remove("open");
-}
-
-btnSettings.addEventListener("click", openDrawer);
-drawerClose.addEventListener("click", closeDrawer);
-drawerBackdrop.addEventListener("click", closeDrawer);
-
-/* Theme */
-function applyTheme(t) {
-  settings.theme = t;
-  document.documentElement.setAttribute("data-theme", t);
-  document.querySelectorAll("#opt-theme .opt-btn").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.val === t);
-  });
-  persistSettings();
-}
-
-document.querySelectorAll("#opt-theme .opt-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    applyTheme(btn.dataset.val);
-    render();
-  });
-});
-
-document.getElementById("btn-theme").addEventListener("click", () => {
-  applyTheme(settings.theme === "dark" ? "light" : "dark");
-  render();
-});
-
-/* Grid Density */
-function applyDensity(d) {
-  settings.density = d;
-  document.querySelectorAll("#opt-density .opt-btn").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.val === d);
-  });
-  persistSettings();
-  render();
-}
-
-document.querySelectorAll("#opt-density .opt-btn").forEach(btn => {
-  btn.addEventListener("click", () => applyDensity(btn.dataset.val));
-});
-
-/* Auto Refresh */
-function applyAutoRefresh(ms) {
-  settings.autoRefresh = parseInt(ms, 10);
-  document.querySelectorAll("#opt-autorefresh .opt-btn").forEach(btn => {
-    btn.classList.toggle("active", parseInt(btn.dataset.val, 10) === settings.autoRefresh);
-  });
-  persistSettings();
-
-  if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-  if (settings.autoRefresh > 0) {
-    autoRefreshTimer = setInterval(() => {
-      refreshAll();
-    }, settings.autoRefresh);
-    toast(`Auto-refresh set to ${settings.autoRefresh / 60000}m`);
+  } catch (err) {
+    loading.innerHTML = `<span style="color:var(--down)">تعذر جلب البيانات</span>`;
   }
 }
 
-document.querySelectorAll("#opt-autorefresh .opt-btn").forEach(btn => {
-  btn.addEventListener("click", () => applyAutoRefresh(btn.dataset.val));
+// التشغيل الرئيسي
+SYMBOLS.forEach(item => {
+  createCard(item);
+  initChart(item);
 });
-
-/* Filters Segment */
-document.querySelectorAll("#filter-seg button").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll("#filter-seg button").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    settings.filter = btn.dataset.filter;
-    persistSettings();
-    render();
-  });
-});
-
-/* View Segment */
-document.querySelectorAll("#view-seg button").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll("#view-seg button").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    settings.view = btn.dataset.view;
-    persistSettings();
-    render();
-  });
-});
-
-/* Sort Select */
-document.getElementById("sort-select").addEventListener("change", (e) => {
-  settings.sort = e.target.value;
-  persistSettings();
-  render();
-});
-
-/* Search */
-const searchInput = document.getElementById("search-input");
-searchInput.addEventListener("input", debounce((e) => {
-  searchTerm = e.target.value;
-  render();
-}, 200));
-
-/* Focus Mode */
-const btnFocus = document.getElementById("btn-focus");
-btnFocus.addEventListener("click", () => {
-  focusMode = !focusMode;
-  btnFocus.classList.toggle("on", focusMode);
-  render();
-  toast(focusMode ? "Focus Mode: Enabled (P1-P3)" : "Focus Mode: Disabled");
-});
-
-/* Add Chart Button */
-document.getElementById("btn-add-chart").addEventListener("click", addChart);
-
-/* Refresh All */
-function refreshAll() {
-  updateLastUpdated();
-  render();
-  toast("Refreshed all active charts");
-}
-document.getElementById("btn-refresh").addEventListener("click", refreshAll);
-
-/* Fullscreen App */
-document.getElementById("btn-fullscreen").addEventListener("click", () => {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen().catch(() => {});
-  } else {
-    document.exitFullscreen().catch(() => {});
-  }
-});
-
-/* Export / Import / Reset */
-document.getElementById("btn-export").addEventListener("click", () => {
-  const data = { charts, pinned, order, settings };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `oi_dashboard_backup_${new Date().toISOString().slice(0, 10)}.json`;
-  a.click();
-  toast("Configuration exported");
-});
-
-document.getElementById("btn-import").addEventListener("click", () => {
-  document.getElementById("import-file").click();
-});
-
-document.getElementById("import-file").addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (evt) => {
-    try {
-      const data = JSON.parse(evt.target.result);
-      if (data.charts) { charts = data.charts; persistCharts(); }
-      if (data.pinned) { pinned = data.pinned; persistPinned(); }
-      if (data.order) { order = data.order; persistOrder(); }
-      if (data.settings) { settings = Object.assign({}, DEFAULT_SETTINGS, data.settings); persistSettings(); }
-      reconcileOrder();
-      initUI();
-      render();
-      toast("Configuration imported successfully!");
-    } catch (err) {
-      toast("Invalid JSON configuration file");
-    }
-  };
-  reader.readAsText(file);
-});
-
-document.getElementById("btn-reset").addEventListener("click", () => {
-  if (confirm("Are you sure you want to reset all charts and settings to default?")) {
-    localStorage.removeItem(LS.charts);
-    localStorage.removeItem(LS.pinned);
-    localStorage.removeItem(LS.order);
-    localStorage.removeItem(LS.settings);
-    charts = JSON.parse(JSON.stringify(DEFAULT_CHARTS));
-    pinned = [];
-    order = charts.map(c => c.id);
-    settings = Object.assign({}, DEFAULT_SETTINGS);
-    initUI();
-    render();
-    toast("Dashboard reset to defaults");
-  }
-});
-
-/* Keyboard Shortcuts */
-window.addEventListener("keydown", (e) => {
-  if (["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
-
-  if (e.key === "/") {
-    e.preventDefault();
-    searchInput.focus();
-  } else if (e.key.toLowerCase() === "r") {
-    refreshAll();
-  } else if (e.key.toLowerCase() === "f") {
-    if (lastFocusedCardId) {
-      const c = charts.find(x => x.id === lastFocusedCardId);
-      if (c) openModal(c);
-    }
-  } else if (e.key === "1") {
-    focusMode = true;
-    btnFocus.classList.add("on");
-    render();
-  } else if (e.key === "0") {
-    focusMode = false;
-    btnFocus.classList.remove("on");
-    render();
-  } else if (e.key === "Escape") {
-    closeModal();
-    closeDrawer();
-  }
-});
-
-/* ================================================================
-   10) INIT
-   ================================================================ */
-function initUI() {
-  applyTheme(settings.theme || "dark");
-
-  document.querySelectorAll("#opt-density .opt-btn").forEach(b => {
-    b.classList.toggle("active", b.dataset.val === (settings.density || "normal"));
-  });
-
-  document.querySelectorAll("#opt-autorefresh .opt-btn").forEach(b => {
-    b.classList.toggle("active", parseInt(b.dataset.val, 10) === (settings.autoRefresh || 0));
-  });
-
-  document.querySelectorAll("#filter-seg button").forEach(b => {
-    b.classList.toggle("active", b.dataset.filter === (settings.filter || "all"));
-  });
-
-  document.querySelectorAll("#view-seg button").forEach(b => {
-    b.classList.toggle("active", b.dataset.view === (settings.view || "grid"));
-  });
-
-  document.getElementById("sort-select").value = settings.sort || "priority";
-
-  if (settings.autoRefresh > 0) {
-    applyAutoRefresh(settings.autoRefresh);
-  }
-}
-
-initUI();
-updateLastUpdated();
-render();
-
-})();
 </script>
 </body>
 </html>
