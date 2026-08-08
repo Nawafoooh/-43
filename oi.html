@@ -267,13 +267,13 @@ main{flex:1 1 auto;padding:18px 20px 60px;}
   border-radius:4px;padding:2px 6px;letter-spacing:.4px;white-space:nowrap;
 }
 .card-body{
-  flex:1 1 auto;min-height:280px;position:relative;background:var(--bg-1);
+  flex:1 1 auto;min-height:340px;position:relative;background:var(--bg-1);
 }
-#grid.density-compact .card-body{min-height:220px;}
-#grid.density-large .card-body{min-height:400px;}
-.card-body .tv-container{width:100%;height:100%;min-height:280px;}
-#grid.density-compact .card-body .tv-container{min-height:220px;}
-#grid.density-large .card-body .tv-container{min-height:400px;}
+#grid.density-compact .card-body{min-height:280px;}
+#grid.density-large .card-body{min-height:460px;}
+.card-body .tv-container{width:100%;height:100%;min-height:340px;}
+#grid.density-compact .card-body .tv-container{min-height:280px;}
+#grid.density-large .card-body .tv-container{min-height:460px;}
 
 .card-foot{
   display:flex;align-items:center;justify-content:space-between;
@@ -376,7 +376,7 @@ main{flex:1 1 auto;padding:18px 20px 60px;}
   .quicknav{padding:0 12px;}
   main{padding:14px 12px 50px;}
   #grid, #grid.density-compact, #grid.density-large{grid-template-columns:1fr;}
-  .card-body, .card-body .tv-container{min-height:240px;}
+  .card-body, .card-body .tv-container{min-height:300px;}
   .drawer{width:100%;max-width:100%;}
   .modal{height:100vh;border-radius:0;}
 }
@@ -457,7 +457,7 @@ main{flex:1 1 auto;padding:18px 20px 60px;}
 <div class="modal-backdrop" id="modal-backdrop">
   <div class="modal">
     <div class="modal-head">
-      <h3 id="modal-title">BTC / USDT</h3>
+      <h3 id="modal-title">BTC / USDT PERP</h3>
       <button class="icon-btn" id="modal-close"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body" id="modal-body"></div>
@@ -508,8 +508,8 @@ main{flex:1 1 auto;padding:18px 20px 60px;}
         <input id="add-symbol" placeholder="e.g. OP">
         <label>Name</label>
         <input id="add-name" placeholder="e.g. Optimism">
-        <label>Exchange / Pair</label>
-        <input id="add-exchange" placeholder="e.g. BINANCE:OPUSDT">
+        <label>Exchange / Pair (Futures)</label>
+        <input id="add-exchange" placeholder="e.g. BINANCE:OPUSDT.P">
         <label>Priority (1 = highest)</label>
         <input id="add-priority" type="number" min="1" value="5">
         <button class="settings-btn" id="btn-add-chart" style="margin-top:4px;justify-content:center;background:var(--blue);border-color:var(--blue);color:#fff;">
@@ -551,29 +551,29 @@ main{flex:1 1 auto;padding:18px 20px 60px;}
 "use strict";
 
 /* ================================================================
-   1) CHART DATA SOURCE (TradingView Symbols)
+   1) CHART DATA SOURCE (TradingView Perpetual Futures Symbols)
    ================================================================ */
 const DEFAULT_CHARTS = [
-  { id:"btc",  symbol:"BTC",  name:"Bitcoin",    exchange:"BINANCE", tvSymbol:"BINANCE:BTCUSDT", priority:1 },
-  { id:"eth",  symbol:"ETH",  name:"Ethereum",   exchange:"OKX",     tvSymbol:"OKX:ETHUSDT",     priority:2 },
-  { id:"sol",  symbol:"SOL",  name:"Solana",     exchange:"BINANCE", tvSymbol:"BINANCE:SOLUSDT", priority:3 },
-  { id:"bnb",  symbol:"BNB",  name:"BNB",        exchange:"OKX",     tvSymbol:"OKX:BNBUSDT",     priority:4 },
-  { id:"xrp",  symbol:"XRP",  name:"XRP",        exchange:"BINANCE", tvSymbol:"BINANCE:XRPUSDT", priority:5 },
-  { id:"doge", symbol:"DOGE", name:"Dogecoin",   exchange:"BINANCE", tvSymbol:"BINANCE:DOGEUSDT",priority:6 },
-  { id:"ada",  symbol:"ADA",  name:"Cardano",    exchange:"BINANCE", tvSymbol:"BINANCE:ADAUSDT", priority:7 },
-  { id:"avax", symbol:"AVAX", name:"Avalanche",  exchange:"BINANCE", tvSymbol:"BINANCE:AVAXUSDT",priority:8 },
-  { id:"link", symbol:"LINK", name:"Chainlink",  exchange:"BINANCE", tvSymbol:"BINANCE:LINKUSDT",priority:9 },
-  { id:"sui",  symbol:"SUI",  name:"Sui",        exchange:"BINANCE", tvSymbol:"BINANCE:SUIUSDT", priority:10 }
+  { id:"btc",  symbol:"BTC",  name:"Bitcoin",    exchange:"BINANCE", tvSymbol:"BINANCE:BTCUSDT.P", priority:1 },
+  { id:"eth",  symbol:"ETH",  name:"Ethereum",   exchange:"BINANCE", tvSymbol:"BINANCE:ETHUSDT.P", priority:2 },
+  { id:"sol",  symbol:"SOL",  name:"Solana",     exchange:"BINANCE", tvSymbol:"BINANCE:SOLUSDT.P", priority:3 },
+  { id:"bnb",  symbol:"BNB",  name:"BNB",        exchange:"BINANCE", tvSymbol:"BINANCE:BNBUSDT.P", priority:4 },
+  { id:"xrp",  symbol:"XRP",  name:"XRP",        exchange:"BINANCE", tvSymbol:"BINANCE:XRPUSDT.P", priority:5 },
+  { id:"doge", symbol:"DOGE", name:"Dogecoin",   exchange:"BINANCE", tvSymbol:"BINANCE:DOGEUSDT.P",priority:6 },
+  { id:"ada",  symbol:"ADA",  name:"Cardano",    exchange:"BINANCE", tvSymbol:"BINANCE:ADAUSDT.P", priority:7 },
+  { id:"avax", symbol:"AVAX", name:"Avalanche",  exchange:"BINANCE", tvSymbol:"BINANCE:AVAXUSDT.P",priority:8 },
+  { id:"link", symbol:"LINK", name:"Chainlink",  exchange:"BINANCE", tvSymbol:"BINANCE:LINKUSDT.P",priority:9 },
+  { id:"sui",  symbol:"SUI",  name:"Sui",        exchange:"BINANCE", tvSymbol:"BINANCE:SUIUSDT.P", priority:10 }
 ];
 
 /* ================================================================
    2) STORAGE KEYS & SETTINGS
    ================================================================ */
 const LS = {
-  charts:   "oi_dashboard_charts_v2",
-  pinned:   "oi_dashboard_pinned_v2",
-  order:    "oi_dashboard_order_v2",
-  settings: "oi_dashboard_settings_v2"
+  charts:   "oi_dashboard_charts_v3",
+  pinned:   "oi_dashboard_pinned_v3",
+  order:    "oi_dashboard_order_v3",
+  settings: "oi_dashboard_settings_v3"
 };
 
 const DEFAULT_SETTINGS = {
@@ -687,7 +687,7 @@ function getVisibleCharts(){
 }
 
 /* ================================================================
-   6) RENDER & TRADINGVIEW INTEGRATION
+   6) RENDER & TRADINGVIEW INTEGRATION (WITH OPEN INTEREST)
    ================================================================ */
 function render(){
   const visible = getVisibleCharts();
@@ -727,7 +727,7 @@ function buildCard(c) {
         <div class="card-symbol-row">
           <span class="status-dot loaded" id="dot-${c.id}"></span>
           <span class="card-symbol">${escapeHtml(c.symbol)}</span>
-          <span class="card-pair">/ USDT</span>
+          <span class="card-pair">/ USDT PERP</span>
           <span class="priority-badge">P${c.priority}</span>
         </div>
         <div class="card-meta">${escapeHtml(c.name)} • ${escapeHtml(c.exchange)}</div>
@@ -749,9 +749,9 @@ function buildCard(c) {
     </div>
     <div class="card-foot">
       <span class="status-label" id="lbl-${c.id}">
-        <i class="fa-solid fa-check" style="color:var(--up)"></i> <span>LIVE</span>
+        <i class="fa-solid fa-check" style="color:var(--up)"></i> <span>LIVE OI</span>
       </span>
-      <a href="https://www.tradingview.com/symbols/${escapeHtml(c.tvSymbol || 'BINANCE:' + c.symbol + 'USDT')}" target="_blank" rel="noopener noreferrer" class="open-original-link">Open Original <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i></a>
+      <a href="https://www.tradingview.com/symbols/${escapeHtml(c.tvSymbol || 'BINANCE:' + c.symbol + 'USDT.P')}" target="_blank" rel="noopener noreferrer" class="open-original-link">Open Original <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i></a>
     </div>
   `;
 
@@ -810,10 +810,15 @@ function loadSingleTVWidget(c) {
   if (!el) return;
   el.innerHTML = "";
   
+  let targetSymbol = c.tvSymbol || `BINANCE:${c.symbol}USDT.P`;
+  if (!targetSymbol.includes(".P") && !targetSymbol.includes("PERP")) {
+    targetSymbol += ".P";
+  }
+
   if (typeof TradingView !== "undefined") {
     new TradingView.widget({
       "autosize": true,
-      "symbol": c.tvSymbol || `BINANCE:${c.symbol}USDT`,
+      "symbol": targetSymbol,
       "interval": "60",
       "timezone": "Etc/UTC",
       "theme": settings.theme || "dark",
@@ -824,7 +829,10 @@ function loadSingleTVWidget(c) {
       "hide_top_toolbar": false,
       "hide_legend": false,
       "save_image": false,
-      "container_id": containerId
+      "container_id": containerId,
+      "studies": [
+        "STD;Open_Interest" // تفعيل مؤشر الـ Open Interest رسمياً
+      ]
     });
   }
 }
@@ -896,7 +904,10 @@ function addChart() {
 
   const symbol = symbolEl.value.trim().toUpperCase();
   const name = nameEl.value.trim() || symbol;
-  const tvSymbol = exchangeEl.value.trim() || `BINANCE:${symbol}USDT`;
+  let tvSymbol = exchangeEl.value.trim() || `BINANCE:${symbol}USDT.P`;
+  if (!tvSymbol.includes(".P") && !tvSymbol.includes("PERP")) {
+    tvSymbol += ".P";
+  }
   const priority = parseInt(priorityEl.value, 10) || 5;
 
   if (!symbol) {
@@ -940,7 +951,7 @@ function deleteChart(id) {
 }
 
 /* ================================================================
-   8) MODAL VIEW
+   8) MODAL VIEW (WITH OPEN INTEREST)
    ================================================================ */
 const modalBackdrop = document.getElementById("modal-backdrop");
 const modalTitle = document.getElementById("modal-title");
@@ -948,21 +959,29 @@ const modalBody = document.getElementById("modal-body");
 const modalClose = document.getElementById("modal-close");
 
 function openModal(c) {
-  modalTitle.textContent = `${c.symbol} / USDT — ${c.name} (${c.exchange})`;
+  modalTitle.textContent = `${c.symbol} / USDT PERP — ${c.name} (${c.exchange})`;
   modalBody.innerHTML = `<div id="modal-tv-container" style="width:100%;height:100%;"></div>`;
   modalBackdrop.classList.add("open");
   
+  let targetSymbol = c.tvSymbol || `BINANCE:${c.symbol}USDT.P`;
+  if (!targetSymbol.includes(".P") && !targetSymbol.includes("PERP")) {
+    targetSymbol += ".P";
+  }
+
   setTimeout(() => {
     if (typeof TradingView !== "undefined") {
       new TradingView.widget({
         "autosize": true,
-        "symbol": c.tvSymbol || `BINANCE:${c.symbol}USDT`,
-        "interval": "D",
+        "symbol": targetSymbol,
+        "interval": "240",
         "timezone": "Etc/UTC",
         "theme": settings.theme || "dark",
         "style": "1",
         "locale": "en",
-        "container_id": "modal-tv-container"
+        "container_id": "modal-tv-container",
+        "studies": [
+          "STD;Open_Interest"
+        ]
       });
     }
   }, 100);
@@ -1239,4 +1258,3 @@ render();
 </script>
 </body>
 </html>
-
