@@ -131,6 +131,7 @@ main.content { padding: 20px; flex: 1; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); }
 .status-dot.live { background: var(--up); box-shadow: 0 0 8px var(--up); }
 .status-dot.loading { background: var(--blue); animation: pulse 1s infinite alternate; }
+.status-dot.error { background: var(--down); }
 @keyframes pulse { from { opacity: 0.3; } to { opacity: 1; } }
 
 .symbol-title { font-size: 14px; font-weight: 800; font-family: var(--mono); }
@@ -156,23 +157,23 @@ main.content { padding: 20px; flex: 1; }
   background: var(--bg-1); border: 1px solid var(--border-soft); border-radius: var(--radius-sm);
   padding: 8px; display: flex; flex-direction: column; gap: 3px;
 }
-.metric-title { font-size: 10px; font-weight: 800; color: var(--text-3); text-transform: uppercase; display: flex; justify-content: space-between; }
+.metric-title { font-size: 10px; font-weight: 800; color: var(--text-3); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
 .metric-val { font-size: 14px; font-weight: 800; font-family: var(--mono); color: var(--text-1); }
 .metric-sub { font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
 .up { color: var(--up); }
 .down { color: var(--down); }
 .neutral { color: var(--text-2); }
 
-.sparkline-container { height: 22px; width: 100%; margin-top: 2px; }
+.sparkline-container { height: 16px; width: 45px; display: inline-block; }
 .sparkline-container svg { width: 100%; height: 100%; overflow: visible; }
 
-/* Whales Ratio Bar */
+/* Whales Ratio Bar - Direction Corrected for LTR inner display */
 .whale-ratio-wrap {
   display: flex; flex-direction: column; gap: 3px; background: var(--bg-1);
   padding: 6px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-soft);
 }
-.whale-labels { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; font-family: var(--mono); }
-.whale-bar-track { height: 6px; background: var(--down); border-radius: 3px; overflow: hidden; display: flex; }
+.whale-labels { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; font-family: var(--mono); direction: ltr; }
+.whale-bar-track { height: 6px; background: var(--down); border-radius: 3px; overflow: hidden; display: flex; direction: ltr; }
 .whale-bar-fill { height: 100%; background: var(--up); transition: width 0.3s ease; }
 
 /* Market State Badge */
@@ -183,12 +184,6 @@ main.content { padding: 20px; flex: 1; }
 .ms-header { display: flex; justify-content: space-between; align-items: center; }
 .ms-title { font-size: 11px; font-weight: 800; }
 .ms-score { font-size: 10px; font-weight: 800; font-family: var(--mono); padding: 2px 5px; border-radius: 4px; }
-
-.badge-long-bu { background: var(--up-dim); color: var(--up); border: 1px solid var(--up); }
-.badge-short-bu { background: var(--down-dim); color: var(--down); border: 1px solid var(--down); }
-.badge-short-cov { background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue); }
-.badge-long-liq { background: var(--yellow-dim); color: var(--yellow); border: 1px solid var(--yellow); }
-.badge-neutral { background: var(--bg-2); color: var(--text-2); border: 1px solid var(--border); }
 
 .card-foot {
   padding: 6px 12px; background: var(--bg-1); border-top: 1px solid var(--border-soft);
@@ -332,9 +327,6 @@ main.content { padding: 20px; flex: 1; }
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <script>
-/**
- * 50+ MAJOR CRYPTO DERIVATIVES MARKETS LIST
- */
 const SYMBOLS_CONFIG = [
   { id: "btc", symbol: "BTCUSDT", name: "Bitcoin", tvSymbol: "BINANCE:BTCUSDT.P", priority: 1 },
   { id: "eth", symbol: "ETHUSDT", name: "Ethereum", tvSymbol: "BINANCE:ETHUSDT.P", priority: 2 },
@@ -402,11 +394,11 @@ function renderOIMiniChart(dataSeries) {
   const range = (max - min) || 1;
   const points = dataSeries.map((val, i) => {
     const x = (i / (dataSeries.length - 1)) * 100;
-    const y = 20 - ((val - min) / range) * 20;
+    const y = 16 - ((val - min) / range) * 16;
     return `${x.toFixed(1)},${y.toFixed(1)}`;
   }).join(' ');
   const isUp = dataSeries[dataSeries.length - 1] >= dataSeries[0];
-  return `<svg viewBox="0 0 100 20"><polyline fill="none" stroke="${isUp ? '#10b981' : '#f43f5e'}" stroke-width="2" points="${points}" /></svg>`;
+  return `<span class="sparkline-container"><svg viewBox="0 0 100 16"><polyline fill="none" stroke="${isUp ? '#10b981' : '#f43f5e'}" stroke-width="2" points="${points}" /></svg></span>`;
 }
 
 class DashboardManager {
@@ -420,7 +412,7 @@ class DashboardManager {
     this.currentFilter = 'all';
     this.currentSort = 'priority';
     this.searchTerm = '';
-    this.currentTimeframe = '4h'; // Default Timeframe: 4H
+    this.currentTimeframe = '4h';
 
     this.initIntersectionObserver();
     this.initUI();
@@ -450,7 +442,6 @@ class DashboardManager {
 
     document.getElementById('btn-refresh').addEventListener('click', () => this.fetchDataAll());
 
-    // Timeframe Selector Change Listener
     document.getElementById('timeframe-select').addEventListener('change', (e) => {
       this.currentTimeframe = e.target.value;
       this.updateTVWidgetsTimeframe(this.currentTimeframe);
@@ -476,6 +467,16 @@ class DashboardManager {
       this.applyFilterAndSort();
     });
 
+    document.getElementById('density-seg').addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (btn) {
+        document.querySelectorAll('#density-seg .seg-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const density = btn.dataset.density;
+        this.grid.className = density === 'normal' ? '' : `density-${density}`;
+      }
+    });
+
     document.getElementById('btn-scanner').addEventListener('click', () => {
       this.renderScannerResults();
       document.getElementById('scanner-modal').classList.add('open');
@@ -483,6 +484,15 @@ class DashboardManager {
     document.getElementById('close-scanner').addEventListener('click', () => {
       document.getElementById('scanner-modal').classList.remove('open');
     });
+  }
+
+  togglePin(id) {
+    if (this.pinned.has(id)) this.pinned.delete(id);
+    else this.pinned.add(id);
+    localStorage.setItem('oi_pinned', JSON.stringify([...this.pinned]));
+    const btn = document.querySelector(`#card-${id} .action-btn`);
+    if (btn) btn.classList.toggle('pinned', this.pinned.has(id));
+    this.applyFilterAndSort();
   }
 
   renderCardsSkeleton() {
@@ -523,7 +533,6 @@ class DashboardManager {
             </div>
           </div>
 
-          <!-- Top Traders / Whales Ratio -->
           <div class="whale-ratio-wrap">
             <div class="whale-labels">
               <span>🐋 الحيتان (Long): <b id="whale-long-${cfg.id}">--%</b></span>
@@ -561,6 +570,7 @@ class DashboardManager {
 
   initTradingViewWidget(cfg) {
     const wrap = document.getElementById(`tv-wrap-${cfg.id}`);
+    if (!wrap) return;
     wrap.innerHTML = '';
     const widget = new TradingView.widget({
       autosize: true,
@@ -584,6 +594,11 @@ class DashboardManager {
       const cfg = this.symbols.find(s => s.id === id);
       if (cfg) this.initTradingViewWidget(cfg);
     });
+  }
+
+  startDataLoop() {
+    this.fetchDataAll();
+    setInterval(() => this.fetchDataAll(), 30000);
   }
 
   async fetchDataAll() {
@@ -632,7 +647,6 @@ class DashboardManager {
       const oiChangePercent = ((latestOIVal - prevOIVal) / prevOIVal) * 100;
       const fundingRate = parseFloat(funding.lastFundingRate) * 100;
 
-      // Whale Position Data
       let whaleLongRatio = 50;
       let whaleShortRatio = 50;
       if (whaleData && whaleData.length > 0) {
@@ -640,7 +654,6 @@ class DashboardManager {
         whaleShortRatio = parseFloat(whaleData[0].shortAccount) * 100;
       }
 
-      // Determine Market State
       let state = "NEUTRAL";
       let stateDesc = "متوازن / تجميع جانبي";
       if (priceChange > 0 && oiChangePercent > 0) { state = "LONG_BUILDUP"; stateDesc = "Long Build-up (دخول سيولة)"; }
@@ -648,22 +661,20 @@ class DashboardManager {
       else if (priceChange > 0 && oiChangePercent < 0) { state = "SHORT_COVERING"; stateDesc = "Short Covering (تغطية بيع)"; }
       else if (priceChange < 0 && oiChangePercent < 0) { state = "LONG_UNWIND"; stateDesc = "Long Unwind (تصفية شرائية)"; }
 
-      // Enhanced Conviction Score Engine (OI + Funding + Whale Ratio)
       let score = 50;
       if (Math.abs(oiChangePercent) > 4) score += 15;
       
-      // Whale Conviction Adjustment
       if (state === "LONG_BUILDUP") {
         if (whaleLongRatio >= 55) {
-          score += 25; // High Conviction Bullish (Whales Buying)
+          score += 25;
           stateDesc += " 🔥 (دعم حيتان قوي)";
         } else if (whaleLongRatio < 45) {
-          score -= 15; // Warning: Fakeout/Retail Trap
+          score -= 15;
           stateDesc += " ⚠️ (مصيدة صعود احتمالية)";
         }
       } else if (state === "SHORT_BUILDUP") {
         if (whaleShortRatio >= 55) {
-          score += 25; // High Conviction Bearish (Whales Shorting)
+          score += 25;
           stateDesc += " 🩸 (ضغط ضخم من الحيتان)";
         }
       }
@@ -679,130 +690,176 @@ class DashboardManager {
 
       this.metricsData.set(cfg.id, data);
       this.updateCardDOM(cfg.id, data);
+      this.updateGlobalSummary();
     } catch (e) {
-      document.getElementById(`status-${cfg.id}`).className = "status-dot error";
+      const statusEl = document.getElementById(`status-${cfg.id}`);
+      if (statusEl) statusEl.className = "status-dot error";
     }
   }
 
   updateCardDOM(id, data) {
-    document.getElementById(`status-${id}`).className = "status-dot live";
-    document.getElementById(`oi-val-${id}`).textContent = formatUSD(data.oiValUSD);
+    const statusDot = document.getElementById(`status-${id}`);
+    if (statusDot) statusDot.className = "status-dot live";
+
+    const oiVal = document.getElementById(`oi-val-${id}`);
+    if (oiVal) oiVal.textContent = formatUSD(data.oiValUSD);
 
     const oiSub = document.getElementById(`oi-sub-${id}`);
-    const isUp = data.oiChangePercent >= 0;
-    const tfLabel = data.tf.toUpperCase();
-    oiSub.textContent = `${isUp ? '▲' : '▼'} ${data.oiChangePercent.toFixed(2)}% (${tfLabel})`;
-    oiSub.className = `metric-sub ${isUp ? 'up' : 'down'}`;
+    if (oiSub) {
+      const isUp = data.oiChangePercent >= 0;
+      const tfLabel = data.tf.toUpperCase();
+      oiSub.textContent = `${isUp ? '▲' : '▼'} ${data.oiChangePercent.toFixed(2)}% (${tfLabel})`;
+      oiSub.className = `metric-sub ${isUp ? 'up' : 'down'}`;
+    }
 
-    document.getElementById(`oi-spark-${id}`).innerHTML = renderOIMiniChart(data.historySeries);
+    const sparkEl = document.getElementById(`oi-spark-${id}`);
+    if (sparkEl) sparkEl.innerHTML = renderOIMiniChart(data.historySeries);
 
     const fundingEl = document.getElementById(`funding-val-${id}`);
-    fundingEl.textContent = (data.fundingRate >= 0 ? '+' : '') + data.fundingRate.toFixed(4) + '%';
-    fundingEl.className = `metric-val ${data.fundingRate > 0 ? 'up' : data.fundingRate < 0 ? 'down' : 'neutral'}`;
+    if (fundingEl) {
+      fundingEl.textContent = (data.fundingRate >= 0 ? '+' : '') + data.fundingRate.toFixed(4) + '%';
+      fundingEl.className = `metric-val ${data.fundingRate > 0 ? 'up' : data.fundingRate < 0 ? 'down' : 'neutral'}`;
+    }
 
-    document.getElementById(`price-sub-${id}`).textContent = `Price: $${data.price.toFixed(2)} (${data.priceChange >= 0 ? '+' : ''}${data.priceChange.toFixed(2)}%)`;
+    const priceSub = document.getElementById(`price-sub-${id}`);
+    if (priceSub) {
+      priceSub.textContent = `Price: $${data.price.toFixed(2)} (${data.priceChange >= 0 ? '+' : ''}${data.priceChange.toFixed(2)}%)`;
+    }
 
-    // Whales Ratio UI Update
-    document.getElementById(`whale-long-${id}`).textContent = `${data.whaleLongRatio.toFixed(1)}%`;
-    document.getElementById(`whale-short-${id}`).textContent = `${data.whaleShortRatio.toFixed(1)}%`;
-    document.getElementById(`whale-bar-${id}`).style.width = `${data.whaleLongRatio}%`;
+    const whaleLong = document.getElementById(`whale-long-${id}`);
+    const whaleShort = document.getElementById(`whale-short-${id}`);
+    const whaleBar = document.getElementById(`whale-bar-${id}`);
 
+    if (whaleLong) whaleLong.textContent = `${data.whaleLongRatio.toFixed(1)}%`;
+    if (whaleShort) whaleShort.textContent = `${data.whaleShortRatio.toFixed(1)}%`;
+    if (whaleBar) whaleBar.style.width = `${data.whaleLongRatio}%`;
+
+    const msTitle = document.getElementById(`ms-title-${id}`);
+    const msScore = document.getElementById(`ms-score-${id}`);
     const stateBox = document.getElementById(`state-box-${id}`);
-    document.getElementById(`ms-title-${id}`).textContent = data.stateDesc;
-    document.getElementById(`ms-score-${id}`).textContent = `Score: ${data.score}/100`;
 
-    stateBox.className = "market-state-box " + (
-      data.state === 'LONG_BUILDUP' ? 'badge-long-bu' :
-      data.state === 'SHORT_BUILDUP' ? 'badge-short-bu' :
-      data.state === 'SHORT_COVERING' ? 'badge-short-cov' :
-      data.state === 'LONG_UNWIND' ? 'badge-long-liq' : 'badge-neutral'
-    );
+    if (msTitle) msTitle.textContent = data.stateDesc;
+    if (msScore) msScore.textContent = `${data.score}/100`;
 
-    document.getElementById(`update-time-${id}`).textContent = `فريم [${tfLabel}] — ${new Date().toLocaleTimeString('ar-EG')}`;
+    if (stateBox) {
+      let badgeClass = "badge-neutral";
+      if (data.state === "LONG_BUILDUP") badgeClass = "badge-long-bu";
+      else if (data.state === "SHORT_BUILDUP") badgeClass = "badge-short-bu";
+      else if (data.state === "SHORT_COVERING") badgeClass = "badge-short-cov";
+      else if (data.state === "LONG_UNWIND") badgeClass = "badge-long-liq";
+      
+      msScore.className = `ms-score ${badgeClass}`;
+    }
 
-    this.updateGlobalMetrics();
+    const updateTime = document.getElementById(`update-time-${id}`);
+    if (updateTime) {
+      const now = new Date();
+      updateTime.textContent = `فريم [${data.tf.toUpperCase()}] — ${now.toLocaleTimeString('ar-SA')}`;
+    }
   }
 
-  updateGlobalMetrics() {
-    let totalOI = 0, upCount = 0, downCount = 0, totalFunding = 0, count = 0;
-    this.metricsData.forEach(d => {
+  updateGlobalSummary() {
+    let totalOI = 0;
+    let upCount = 0;
+    let downCount = 0;
+    let fundingSum = 0;
+    let count = 0;
+
+    this.metricsData.forEach((d) => {
       totalOI += d.oiValUSD;
-      if (d.oiChangePercent > 0) upCount++; else downCount++;
-      totalFunding += d.fundingRate;
+      if (d.oiChangePercent > 0) upCount++;
+      else downCount++;
+      fundingSum += d.fundingRate;
       count++;
     });
 
-    if (count > 0) {
-      document.getElementById('gm-total').textContent = `${count} / ${this.symbols.length}`;
-      document.getElementById('gm-oi').textContent = formatUSD(totalOI);
-      document.getElementById('gm-updown').textContent = `${upCount} ↑ / ${downCount} ↓`;
-      document.getElementById('gm-funding').textContent = (totalFunding / count).toFixed(4) + '%';
-    }
-  }
+    if (count === 0) return;
 
-  startDataLoop() {
-    this.fetchDataAll();
-    setInterval(() => this.fetchDataAll(), 30000);
-  }
-
-  togglePin(id) {
-    if (this.pinned.has(id)) this.pinned.delete(id);
-    else this.pinned.add(id);
-    localStorage.setItem('oi_pinned', JSON.stringify([...this.pinned]));
-    document.querySelector(`#card-${id} .action-btn`).classList.toggle('pinned');
-    this.applyFilterAndSort();
+    document.getElementById('gm-total').textContent = `${count} / ${this.symbols.length}`;
+    document.getElementById('gm-oi').textContent = formatUSD(totalOI);
+    document.getElementById('gm-updown').textContent = `↑ ${upCount} / ↓ ${downCount}`;
+    
+    const avgFunding = (fundingSum / count).toFixed(4);
+    const gmFunding = document.getElementById('gm-funding');
+    gmFunding.textContent = `${avgFunding}%`;
+    gmFunding.className = `gm-val ${avgFunding > 0 ? 'up' : avgFunding < 0 ? 'down' : ''}`;
   }
 
   applyFilterAndSort() {
-    let visible = [...this.symbols];
+    let filtered = this.symbols.filter(cfg => {
+      const data = this.metricsData.get(cfg.id);
+      
+      if (this.searchTerm && !cfg.name.toLowerCase().includes(this.searchTerm) && !cfg.symbol.toLowerCase().includes(this.searchTerm)) {
+        return false;
+      }
 
-    if (this.searchTerm) {
-      visible = visible.filter(s => s.name.toLowerCase().includes(this.searchTerm) || s.symbol.toLowerCase().includes(this.searchTerm));
-    }
-    if (this.currentFilter === 'pinned') {
-      visible = visible.filter(s => this.pinned.has(s.id));
-    } else if (this.currentFilter === 'whales-long') {
-      visible = visible.filter(s => (this.metricsData.get(s.id)?.whaleLongRatio || 0) >= 55);
-    } else if (this.currentFilter === 'long-bu') {
-      visible = visible.filter(s => this.metricsData.get(s.id)?.state === 'LONG_BUILDUP');
-    } else if (this.currentFilter === 'short-bu') {
-      visible = visible.filter(s => this.metricsData.get(s.id)?.state === 'SHORT_BUILDUP');
-    } else if (this.currentFilter === 'oi-rising') {
-      visible = visible.filter(s => (this.metricsData.get(s.id)?.oiChangePercent || 0) > 0);
-    } else if (this.currentFilter === 'strong-signal') {
-      visible = visible.filter(s => (this.metricsData.get(s.id)?.score || 0) >= 70);
-    }
+      if (this.currentFilter === 'pinned') return this.pinned.has(cfg.id);
+      if (!data) return true;
 
-    visible.sort((a, b) => {
-      const mA = this.metricsData.get(a.id);
-      const mB = this.metricsData.get(b.id);
-      if (this.currentSort === 'whales') return (mB?.whaleLongRatio || 0) - (mA?.whaleLongRatio || 0);
-      if (this.currentSort === 'oi-change') return (mB?.oiChangePercent || 0) - (mA?.oiChangePercent || 0);
-      if (this.currentSort === 'funding') return (mB?.fundingRate || 0) - (mA?.fundingRate || 0);
-      if (this.currentSort === 'signal') return (mB?.score || 0) - (mA?.score || 0);
+      if (this.currentFilter === 'whales-long') return data.whaleLongRatio >= 55;
+      if (this.currentFilter === 'long-bu') return data.state === 'LONG_BUILDUP';
+      if (this.currentFilter === 'short-bu') return data.state === 'SHORT_BUILDUP';
+      if (this.currentFilter === 'oi-rising') return data.oiChangePercent > 0;
+      if (this.currentFilter === 'strong-signal') return data.score >= 75;
+
+      return true;
+    });
+
+    filtered.sort((a, b) => {
+      const dataA = this.metricsData.get(a.id);
+      const dataB = this.metricsData.get(b.id);
+
+      if (this.pinned.has(a.id) && !this.pinned.has(b.id)) return -1;
+      if (!this.pinned.has(a.id) && this.pinned.has(b.id)) return 1;
+
+      if (this.currentSort === 'whales') {
+        return (dataB?.whaleLongRatio || 0) - (dataA?.whaleLongRatio || 0);
+      }
+      if (this.currentSort === 'oi-change') {
+        return (dataB?.oiChangePercent || 0) - (dataA?.oiChangePercent || 0);
+      }
+      if (this.currentSort === 'funding') {
+        return (dataB?.fundingRate || 0) - (dataA?.fundingRate || 0);
+      }
+      if (this.currentSort === 'signal') {
+        return (dataB?.score || 0) - (dataA?.score || 0);
+      }
+      if (this.currentSort === 'alpha') {
+        return a.name.localeCompare(b.name);
+      }
       return a.priority - b.priority;
     });
 
-    visible.forEach(cfg => {
-      const el = document.getElementById(`card-${cfg.id}`);
-      if (el) this.grid.appendChild(el);
+    this.symbols.forEach(cfg => {
+      const card = document.getElementById(`card-${cfg.id}`);
+      if (card) {
+        card.style.display = filtered.includes(cfg) ? 'flex' : 'none';
+      }
     });
   }
 
   renderScannerResults() {
     const tbody = document.getElementById('scanner-results');
     tbody.innerHTML = '';
-    this.metricsData.forEach((d, id) => {
-      const cfg = this.symbols.find(s => s.id === id);
+
+    const list = [...this.symbols].map(s => ({
+      config: s,
+      data: this.metricsData.get(s.id)
+    })).filter(item => item.data);
+
+    list.sort((a, b) => b.data.score - a.data.score);
+
+    list.forEach(item => {
+      const d = item.data;
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><b>${cfg.symbol}</b></td>
+        <td><b>${item.config.symbol}</b></td>
+        <td><span class="ms-score ${d.score >= 75 ? 'badge-long-bu' : 'badge-neutral'}">${d.score}/100</span></td>
+        <td style="direction:ltr; text-align:right;">L: <b>${d.whaleLongRatio.toFixed(1)}%</b> / S: ${d.whaleShortRatio.toFixed(1)}%</td>
+        <td><b>${d.score}</b></td>
+        <td class="${d.oiChangePercent >= 0 ? 'up' : 'down'}">${d.oiChangePercent >= 0 ? '+' : ''}${d.oiChangePercent.toFixed(2)}%</td>
+        <td class="${d.fundingRate > 0 ? 'up' : d.fundingRate < 0 ? 'down' : ''}">${(d.fundingRate >= 0 ? '+' : '') + d.fundingRate.toFixed(4)}%</td>
         <td>${d.stateDesc}</td>
-        <td><b class="${d.whaleLongRatio >= 55 ? 'up' : 'down'}">${d.whaleLongRatio.toFixed(1)}% Long</b></td>
-        <td><b>${d.score}/100</b></td>
-        <td class="${d.oiChangePercent >= 0 ? 'up' : 'down'}">${d.oiChangePercent.toFixed(2)}% (${d.tf.toUpperCase()})</td>
-        <td class="${d.fundingRate > 0 ? 'up' : 'down'}">${d.fundingRate.toFixed(4)}%</td>
-        <td>${d.score >= 75 ? '🔥 فرصة حيتان مؤكدة' : d.score >= 60 ? 'متابعة' : 'ضعيف'}</td>
       `;
       tbody.appendChild(tr);
     });
@@ -810,7 +867,7 @@ class DashboardManager {
 }
 
 let dashboard;
-window.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   dashboard = new DashboardManager();
 });
 </script>
