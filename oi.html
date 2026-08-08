@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Crypto Derivatives Intelligence Terminal — Precision Audit</title>
+<title>Crypto Derivatives Intelligence Terminal — Precision Engine</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
 :root {
@@ -211,7 +211,7 @@ main.content { padding: 20px; flex: 1; }
       <div class="brand-icon">OI</div>
       <div class="brand-title">
         <h1>Crypto Derivatives Terminal</h1>
-        <p>Full Market Intelligence — Precision Real-Time Engine</p>
+        <p>Full Market Intelligence — Stable Interactive Charts</p>
       </div>
     </div>
 
@@ -289,7 +289,6 @@ main.content { padding: 20px; flex: 1; }
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <script>
-// Expanded Top 30 High-Volume Derivative Markets
 const SYMBOLS_CONFIG = [
   { id: "btc", symbol: "BTCUSDT", name: "Bitcoin", tvSymbol: "BINANCE:BTCUSDT.P", priority: 1 },
   { id: "eth", symbol: "ETHUSDT", name: "Ethereum", tvSymbol: "BINANCE:ETHUSDT.P", priority: 2 },
@@ -370,7 +369,7 @@ class DashboardManager {
         if (entry.isIntersecting) {
           const cardId = entry.target.id.replace('card-', '');
           const cfg = this.symbols.find(s => s.id === cardId);
-          if (cfg && !this.tvWidgets.has(cfg.id)) {
+          if (cfg) {
             this.initTradingViewWidget(cfg);
           }
         }
@@ -458,7 +457,6 @@ class DashboardManager {
             </div>
           </div>
 
-          <!-- Multi Timeframe OI Matrix -->
           <table class="mtf-table">
             <thead>
               <tr>
@@ -478,7 +476,6 @@ class DashboardManager {
             </tbody>
           </table>
 
-          <!-- Top Traders Account Ratio Bar -->
           <div class="whale-ratio-wrap">
             <div class="whale-labels">
               <span>Top Long Accounts: <b id="whale-long-${cfg.id}">--%</b></span>
@@ -489,7 +486,6 @@ class DashboardManager {
             </div>
           </div>
 
-          <!-- Strict Analytical Conclusion -->
           <div class="analysis-box">
             <div class="state-row">
               <span class="state-badge" id="state-badge-${cfg.id}">CALCULATING...</span>
@@ -517,10 +513,13 @@ class DashboardManager {
     return '240';
   }
 
+  // ✨ الإضافة الجوهرية: ضمان بناء الشارت مرة واحدة فقط دون تكرار
   initTradingViewWidget(cfg) {
+    if (this.tvWidgets.has(cfg.id)) return;
+
     const wrap = document.getElementById(`tv-wrap-${cfg.id}`);
     if (!wrap) return;
-    wrap.innerHTML = '';
+
     const widget = new TradingView.widget({
       autosize: true,
       symbol: cfg.tvSymbol,
@@ -535,19 +534,22 @@ class DashboardManager {
       save_image: false,
       container_id: `tv-wrap-${cfg.id}`
     });
+
     this.tvWidgets.set(cfg.id, widget);
   }
 
+  // إعادة بناء الشارتات فقط عندما يغير المستخدم الفريم الزمني صراحةً
   updateTVWidgetsTimeframe(tf) {
-    this.tvWidgets.forEach((widget, id) => {
-      const cfg = this.symbols.find(s => s.id === id);
-      if (cfg) this.initTradingViewWidget(cfg);
+    this.tvWidgets.clear();
+    this.symbols.forEach(cfg => {
+      const wrap = document.getElementById(`tv-wrap-${cfg.id}`);
+      if (wrap) wrap.innerHTML = '';
+      this.initTradingViewWidget(cfg);
     });
   }
 
   async fetchDataAll() {
     try {
-      // 1. Bulk Fetch Tickers and Fundings to preserve Rate Limit
       const [tickersRes, fundingsRes] = await Promise.all([
         fetch('https://fapi.binance.com/fapi/v1/ticker/24hr'),
         fetch('https://fapi.binance.com/fapi/v1/premiumIndex')
@@ -559,7 +561,6 @@ class DashboardManager {
       const tickerMap = new Map(tickers.map(t => [t.symbol, t]));
       const fundingMap = new Map(fundings.map(f => [f.symbol, f]));
 
-      // 2. Fetch specific symbol data sequentially with slight batching
       for (const cfg of this.symbols) {
         const ticker = tickerMap.get(cfg.symbol);
         const funding = fundingMap.get(cfg.symbol);
@@ -571,6 +572,7 @@ class DashboardManager {
 
       this.updateGlobalMetrics();
       this.applyFilterAndSort();
+      // تم فصل تفاعل الشارت تماماً عن حلقة التحديث الدوري للحفاظ على استقراره
     } catch (err) {
       console.error("Batch fetch error:", err);
     }
@@ -580,7 +582,6 @@ class DashboardManager {
     try {
       const tf = this.currentTimeframe;
 
-      // Single Query for Multi-TF OI & Specific Top Traders for EXACT symbol
       const [oiPrimaryHist, klines, topTraderAccs] = await Promise.all([
         fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${cfg.symbol}&period=${tf}&limit=12`).then(r => r.json()),
         fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${cfg.symbol}&interval=${tf}&limit=2`).then(r => r.json()),
@@ -589,7 +590,6 @@ class DashboardManager {
 
       if (!oiPrimaryHist || oiPrimaryHist.length < 2 || !klines || klines.length < 2) return;
 
-      // Price Calculations BASED ON CURRENT CANDLE (NOT JUST 24H GLOBAL)
       const currentPrice = parseFloat(klines[1][4]);
       const prevPrice = parseFloat(klines[0][4]);
       const tfPriceChangePercent = ((currentPrice - prevPrice) / prevPrice) * 100;
@@ -597,21 +597,17 @@ class DashboardManager {
 
       const fundingRate = parseFloat(funding.lastFundingRate) * 100;
 
-      // Primary OI Calculations
       const curOIVal = parseFloat(oiPrimaryHist[oiPrimaryHist.length - 1].sumOpenInterestValue);
       const prevOIVal = parseFloat(oiPrimaryHist[oiPrimaryHist.length - 2].sumOpenInterestValue);
       const primaryOIChange = ((curOIVal - prevOIVal) / prevOIVal) * 100;
 
-      // Series history for sparklines
       const series = oiPrimaryHist.map(d => parseFloat(d.sumOpenInterestValue));
 
-      // Multi Timeframe Approximations
       const oi15m = primaryOIChange * 0.25;
       const oi1h = primaryOIChange * 0.6;
       const oi4h = primaryOIChange;
-      const oi24h = parseFloat(ticker.priceChangePercent) * 0.5; // proxy for 24h
+      const oi24h = parseFloat(ticker.priceChangePercent) * 0.5;
 
-      // Top Trader Ratio for THIS specific symbol
       let topLongRatio = 50.0;
       let topShortRatio = 50.0;
       if (topTraderAccs && topTraderAccs.length > 0) {
@@ -619,8 +615,6 @@ class DashboardManager {
         topShortRatio = parseFloat(topTraderAccs[0].shortAccount) * 100;
       }
 
-      // STRICT FACT-BASED DIVERGENCE ENGINE
-      // Price Change direction MUST match the Selected Timeframe Candle
       let marketState = "NEUTRAL";
       let tradeSetup = "Consolidation / Range";
 
@@ -638,7 +632,6 @@ class DashboardManager {
         tradeSetup = "Long Liquidation / Deleveraging";
       }
 
-      // EXPLAINABLE CONFIDENCE SCORE ENGINE
       let score = 50;
       if (Math.abs(primaryOIChange) > 1.5) score += 20;
       if (Math.abs(tfPriceChangePercent) > 1.0) score += 15;
@@ -698,7 +691,6 @@ class DashboardManager {
       priceSub.textContent = `Price: $${data.price.toFixed(2)} (${data.priceChange >= 0 ? '+' : ''}${data.priceChange.toFixed(2)}%)`;
     }
 
-    // Multi-TF Table Updates
     const setCell = (cellId, val) => {
       const el = document.getElementById(cellId);
       if (el) {
@@ -711,7 +703,6 @@ class DashboardManager {
     setCell(`oi-4h-${id}`, data.oi4h);
     setCell(`oi-24h-${id}`, data.oi24h);
 
-    // Top Trader Accounts Real Dynamic Update
     const longBar = document.getElementById(`whale-bar-${id}`);
     if (longBar) longBar.style.width = `${data.topLongRatio}%`;
 
@@ -721,7 +712,6 @@ class DashboardManager {
     const shortTxt = document.getElementById(`whale-short-${id}`);
     if (shortTxt) shortTxt.textContent = `${data.topShortRatio.toFixed(1)}%`;
 
-    // Analytics Box
     const badgeEl = document.getElementById(`state-badge-${id}`);
     if (badgeEl) {
       badgeEl.textContent = data.marketState;
