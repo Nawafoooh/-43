@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>لوحة تحكم عقود الكريبتو — مراقب السيولة والاهتمام المفتوح</title>
+<title>Crypto OI Dashboard — Open Interest Market Monitor</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- TradingView Library -->
+<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 <style>
 /* ============================================================
-   TOKENS & THEME
+   TOKENS
    ============================================================ */
 :root{
   --bg-0:#080b12;
@@ -30,11 +32,11 @@
   --p1:#3b82f6;
   --p2:#60a5fa;
   --p3:#93b4e0;
-  --radius:12px;
-  --radius-sm:8px;
+  --radius:10px;
+  --radius-sm:6px;
   --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.55);
   --mono:ui-monospace,"SF Mono",Consolas,"Liberation Mono",monospace;
-  --sans:"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
   --header-h:64px;
   --controls-h:56px;
   --navbar-h:42px;
@@ -53,7 +55,7 @@
 }
 
 *{box-sizing:border-box;}
-html,body{margin:0;padding:0;direction:rtl;}
+html,body{margin:0;padding:0;}
 body{
   background:var(--bg-0);
   color:var(--text-1);
@@ -63,7 +65,7 @@ body{
 }
 ::selection{background:var(--blue-dim);color:var(--text-1);}
 button{font-family:inherit;}
-a{text-decoration:none;color:inherit;}
+a{color:inherit;}
 .tabular{font-variant-numeric:tabular-nums;font-family:var(--mono);}
 
 /* ============================================================
@@ -75,6 +77,7 @@ a{text-decoration:none;color:inherit;}
   min-height:100vh;
 }
 
+/* ---------- HEADER ---------- */
 header.top{
   height:var(--header-h);
   flex:0 0 auto;
@@ -90,35 +93,37 @@ header.top{
 }
 .brand{display:flex;align-items:center;gap:12px;}
 .brand-mark{
-  width:38px;height:38px;border-radius:10px;
+  width:34px;height:34px;border-radius:8px;
   background:linear-gradient(135deg,var(--blue),#1d4ed8);
   display:flex;align-items:center;justify-content:center;
-  font-weight:700;font-size:16px;color:#fff;
+  font-weight:700;font-size:14px;color:#fff;letter-spacing:-0.5px;
   box-shadow:0 4px 14px -4px rgba(59,130,246,.55);
+  flex:0 0 auto;
 }
 .brand-text h1{
-  font-size:16px;font-weight:700;margin:0;line-height:1.15;
+  font-size:15px;font-weight:700;margin:0;letter-spacing:.2px;
+  line-height:1.15;
 }
 .brand-text p{
-  margin:2px 0 0;font-size:11px;color:var(--text-2);font-weight:500;
+  margin:1px 0 0;font-size:11.5px;color:var(--text-2);font-weight:500;
+  letter-spacing:.3px;
 }
-.header-right{display:flex;align-items:center;gap:12px;}
+.header-right{display:flex;align-items:center;gap:8px;}
 .header-stat{
-  font-size:12px;color:var(--text-2);
+  font-size:11.5px;color:var(--text-2);
   display:flex;align-items:center;gap:6px;
-  padding:0 12px;border-left:1px solid var(--border-soft);
+  padding:0 10px;border-right:1px solid var(--border-soft);
   white-space:nowrap;
 }
-.header-stat:last-of-type{border-left:none;}
+.header-stat:last-of-type{border-right:none;}
 .header-stat b{color:var(--text-1);font-weight:600;}
-.header-stat .dot{width:8px;height:8px;border-radius:50%;background:var(--up);box-shadow:0 0 0 3px var(--up-dim);}
-
+.header-stat .dot{width:6px;height:6px;border-radius:50%;background:var(--up);box-shadow:0 0 0 3px var(--up-dim);}
 .icon-btn{
-  width:36px;height:36px;border-radius:var(--radius-sm);
+  width:34px;height:34px;border-radius:var(--radius-sm);
   background:var(--bg-2);border:1px solid var(--border);
   color:var(--text-2);display:flex;align-items:center;justify-content:center;
-  cursor:pointer;transition:all .15s;
-  font-size:14px;
+  cursor:pointer;transition:background .12s,color .12s,border-color .12s;
+  font-size:13px;
 }
 .icon-btn:hover{background:var(--bg-2-hover);color:var(--text-1);border-color:#2a3444;}
 .icon-btn.active{color:var(--blue);border-color:var(--blue);background:var(--blue-dim);}
@@ -127,51 +132,50 @@ header.top{
 .control-bar{
   min-height:var(--controls-h);
   flex:0 0 auto;
-  display:flex;align-items:center;gap:12px;
-  padding:10px 20px;
+  display:flex;align-items:center;gap:10px;
+  padding:9px 20px;
   background:var(--bg-1);
   border-bottom:1px solid var(--border);
   flex-wrap:wrap;
   position:sticky;top:var(--header-h);z-index:40;
 }
 .search-wrap{
-  position:relative;flex:1 1 240px;min-width:200px;max-width:360px;
+  position:relative;flex:1 1 220px;min-width:180px;max-width:340px;
 }
-.search-wrap i{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:13px;}
+.search-wrap i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:12px;}
 .search-wrap input{
-  width:100%;height:36px;border-radius:var(--radius-sm);
+  width:100%;height:34px;border-radius:var(--radius-sm);
   background:var(--bg-2);border:1px solid var(--border);
-  color:var(--text-1);padding:0 36px 0 12px;font-size:13px;outline:none;
-  transition:border-color .15s;
+  color:var(--text-1);padding:0 32px 0 32px;font-size:13px;outline:none;
+  transition:border-color .12s;
 }
 .search-wrap input:focus{border-color:var(--blue);}
 .search-wrap kbd{
-  position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
   font-size:10px;color:var(--text-3);border:1px solid var(--border);
   border-radius:4px;padding:1px 5px;background:var(--bg-1);
 }
 .seg{
   display:flex;background:var(--bg-2);border:1px solid var(--border);
-  border-radius:var(--radius-sm);padding:3px;gap:3px;
+  border-radius:var(--radius-sm);padding:2px;gap:2px;
 }
 .seg button{
   border:none;background:transparent;color:var(--text-2);
-  font-size:12px;font-weight:600;padding:6px 12px;border-radius:6px;cursor:pointer;
-  white-space:nowrap;transition:all .15s;
+  font-size:12px;font-weight:600;padding:6px 10px;border-radius:5px;cursor:pointer;
+  white-space:nowrap;transition:background .12s,color .12s;
 }
 .seg button.active{background:var(--blue);color:#fff;}
-.seg button:not(.active):hover{color:var(--text-1);background:var(--bg-2-hover);}
-
+.seg button:not(.active):hover{color:var(--text-1);}
 select.plain{
-  height:36px;background:var(--bg-2);border:1px solid var(--border);
-  color:var(--text-1);border-radius:var(--radius-sm);font-size:12px;padding:0 10px;
-  outline:none;cursor:pointer;
+  height:34px;background:var(--bg-2);border:1px solid var(--border);
+  color:var(--text-1);border-radius:var(--radius-sm);font-size:12px;padding:0 8px;
+  outline:none;
 }
-
+.control-spacer{flex:1;}
 .pill-btn{
-  height:36px;display:flex;align-items:center;gap:8px;
+  height:34px;display:flex;align-items:center;gap:6px;
   background:var(--bg-2);border:1px solid var(--border);color:var(--text-2);
-  border-radius:var(--radius-sm);padding:0 14px;font-size:12px;font-weight:600;cursor:pointer;
+  border-radius:var(--radius-sm);padding:0 12px;font-size:12px;font-weight:600;cursor:pointer;
 }
 .pill-btn:hover{color:var(--text-1);background:var(--bg-2-hover);}
 .pill-btn.on{color:var(--yellow);border-color:var(--yellow);background:var(--yellow-dim);}
@@ -179,36 +183,38 @@ select.plain{
 /* ---------- QUICK NAV ---------- */
 .quicknav{
   height:var(--navbar-h);flex:0 0 auto;
-  display:flex;align-items:center;gap:8px;
+  display:flex;align-items:center;gap:6px;
   padding:0 20px;overflow-x:auto;
   background:var(--bg-0);border-bottom:1px solid var(--border-soft);
   position:sticky;top:calc(var(--header-h) + var(--controls-h));z-index:30;
+  scrollbar-width:thin;
 }
 .quicknav::-webkit-scrollbar{height:4px;}
 .quicknav::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 .qn-item{
-  flex:0 0 auto;font-size:12px;font-weight:700;color:var(--text-2);
-  padding:4px 10px;border-radius:6px;cursor:pointer;
-  border:1px solid transparent;transition:all .15s;
+  flex:0 0 auto;font-size:11.5px;font-weight:700;color:var(--text-2);
+  padding:4px 9px;border-radius:5px;cursor:pointer;letter-spacing:.3px;
+  border:1px solid transparent;
 }
 .qn-item:hover{color:var(--text-1);background:var(--bg-2);}
-.qn-item.pinned{color:var(--yellow);background:var(--yellow-dim);border-color:var(--yellow-dim);}
+.qn-item.pinned{color:var(--yellow);}
 
 /* ---------- MAIN / GRID ---------- */
-main{flex:1 1 auto;padding:20px 20px 60px;}
+main{flex:1 1 auto;padding:18px 20px 60px;}
 #grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(420px,1fr));
-  gap:20px;
+  gap:16px;
 }
-#grid.density-compact{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;}
-#grid.density-large{grid-template-columns:repeat(auto-fit,minmax(580px,1fr));gap:24px;}
+#grid.density-compact{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;}
+#grid.density-large{grid-template-columns:repeat(auto-fit,minmax(560px,1fr));gap:20px;}
 #grid.view-large{grid-template-columns:1fr;}
 
 .empty-state{
-  text-align:center;padding:80px 20px;color:var(--text-2);grid-column:1/-1;
+  text-align:center;padding:60px 20px;color:var(--text-2);
 }
-.empty-state i{font-size:32px;color:var(--text-3);margin-bottom:15px;display:block;}
+.empty-state i{font-size:26px;color:var(--text-3);margin-bottom:10px;display:block;}
+.empty-state b{color:var(--text-1);}
 
 /* ---------- CARD ---------- */
 .card{
@@ -219,312 +225,322 @@ main{flex:1 1 auto;padding:20px 20px 60px;}
   overflow:hidden;
   display:flex;flex-direction:column;
   position:relative;
-  transition:transform .2s, border-color .2s;
+  transition:border-color .15s, transform .1s;
 }
-.card:hover{border-color:var(--text-3);}
-.card.pinned{border-color:var(--yellow-dim);box-shadow:0 0 15px rgba(234,179,8,0.05);}
+.card.dragging{opacity:.4;}
+.card.drag-over{border-color:var(--blue);}
 .card::before{
-  content:"";position:absolute;right:0;top:0;bottom:0;width:4px;
-  background:var(--p3);z-index:10;
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--p3);
 }
 .card[data-priority="1"]::before{background:var(--p1);box-shadow:0 0 12px 0 rgba(59,130,246,.6);}
 .card[data-priority="2"]::before{background:var(--p2);}
+.card.pinned{border-color:#4a3c08;}
 
 .card-head{
   display:flex;align-items:flex-start;justify-content:space-between;
-  padding:14px 16px 12px;border-bottom:1px solid var(--border-soft);
-  gap:10px;cursor:grab;
+  padding:12px 14px 10px 16px;border-bottom:1px solid var(--border-soft);
+  gap:8px;cursor:grab;
 }
 .card-head:active{cursor:grabbing;}
-.card-title-block{display:flex;flex-direction:column;gap:2px;min-width:0;}
-.card-symbol-row{display:flex;align-items:center;gap:8px;}
-.card-symbol{font-size:16px;font-weight:700;letter-spacing:.2px;}
+.card-title-block{display:flex;flex-direction:column;gap:1px;min-width:0;}
+.card-symbol-row{display:flex;align-items:center;gap:7px;}
+.card-symbol{font-size:15px;font-weight:700;letter-spacing:.2px;}
 .card-pair{font-size:12px;color:var(--text-3);font-weight:600;}
-.status-dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+.status-dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;}
 .status-dot.loaded{background:var(--up);box-shadow:0 0 0 3px var(--up-dim);}
 .status-dot.loading{background:var(--yellow);box-shadow:0 0 0 3px var(--yellow-dim);animation:pulse 1.2s infinite;}
 .status-dot.blocked{background:var(--down);box-shadow:0 0 0 3px var(--down-dim);}
 .status-dot.no-url{background:var(--text-3);box-shadow:0 0 0 3px var(--border-soft);}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
 .card-meta{font-size:11px;color:var(--text-2);margin-top:2px;}
-.card-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto;}
+.card-actions{display:flex;align-items:center;gap:5px;flex:0 0 auto;}
 .card-actions button{
-  width:30px;height:30px;border-radius:8px;background:transparent;border:1px solid transparent;
-  color:var(--text-3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;
-  transition:all .15s;
+  width:27px;height:27px;border-radius:6px;background:transparent;border:1px solid transparent;
+  color:var(--text-3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;
+  transition:background .12s,color .12s;
 }
 .card-actions button:hover{background:var(--bg-2-hover);color:var(--text-1);border-color:var(--border);}
 .card-actions button.star.active{color:var(--yellow);}
 .priority-badge{
   font-size:10px;font-weight:800;color:var(--p1);background:var(--blue-dim);
-  border-radius:5px;padding:2px 7px;letter-spacing:.4px;
+  border-radius:4px;padding:2px 6px;letter-spacing:.4px;white-space:nowrap;
 }
-
 .card-body{
-  flex:1 1 auto;min-height:300px;position:relative;background:var(--bg-1);
+  flex:1 1 auto;min-height:280px;position:relative;background:var(--bg-1);
 }
 #grid.density-compact .card-body{min-height:220px;}
-#grid.density-large .card-body{min-height:420px;}
-.card-body iframe{width:100%;height:100%;border:none;display:block;position:absolute;inset:0;}
-
-.body-placeholder{
-  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:12px;padding:30px;text-align:center;color:var(--text-2);
-}
-.body-placeholder i{font-size:28px;color:var(--text-3);}
-.body-placeholder b{color:var(--text-1);font-size:14px;}
-.body-placeholder span{font-size:12px;line-height:1.6;max-width:300px;}
-.body-placeholder .open-btn{
-  margin-top:8px;display:inline-flex;align-items:center;gap:8px;
-  background:var(--blue);color:#fff;border:none;border-radius:8px;
-  padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s;
-}
-.body-placeholder .open-btn:hover{background:#2f6fe0;}
-
-.shimmer{
-  position:absolute;inset:0;
-  background:linear-gradient(90deg,var(--bg-1) 25%,var(--bg-2-hover) 37%,var(--bg-1) 63%);
-  background-size:400% 100%;animation:shimmer 1.4s ease infinite;
-}
-@keyframes shimmer{0%{background-position:100% 0;}100%{background-position:0 0;}}
+#grid.density-large .card-body{min-height:400px;}
+.card-body .tv-container{width:100%;height:100%;min-height:280px;}
+#grid.density-compact .card-body .tv-container{min-height:220px;}
+#grid.density-large .card-body .tv-container{min-height:400px;}
 
 .card-foot{
   display:flex;align-items:center;justify-content:space-between;
-  padding:10px 16px;border-top:1px solid var(--border-soft);
-  font-size:12px;color:var(--text-2);
+  padding:9px 14px;border-top:1px solid var(--border-soft);
+  font-size:11.5px;color:var(--text-2);
 }
 .open-original-link{
-  display:flex;align-items:center;gap:6px;color:var(--blue);font-weight:700;font-size:12px;
+  display:flex;align-items:center;gap:5px;color:var(--blue);font-weight:700;text-decoration:none;font-size:12px;
 }
 .open-original-link:hover{text-decoration:underline;}
-.status-label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;}
+.status-label{display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.4px;font-size:10.5px;font-weight:700;}
 
-/* ---------- MODAL & DRAWER ---------- */
+/* ---------- FULLSCREEN MODAL ---------- */
 .modal-backdrop{
-  position:fixed;inset:0;background:rgba(3,5,10,.85);backdrop-filter:blur(4px);
-  display:none;align-items:center;justify-content:center;z-index:200;padding:20px;
+  position:fixed;inset:0;background:rgba(3,5,10,.75);backdrop-filter:blur(2px);
+  display:none;align-items:center;justify-content:center;z-index:200;padding:24px;
 }
 .modal-backdrop.open{display:flex;}
 .modal{
-  width:min(1400px,100%);height:min(900px,90vh);
-  background:var(--bg-1);border:1px solid var(--border);border-radius:16px;
-  display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px -20px rgba(0,0,0,.8);
+  width:min(1200px,100%);height:min(820px,90vh);
+  background:var(--bg-1);border:1px solid var(--border);border-radius:12px;
+  display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px -20px rgba(0,0,0,.7);
 }
 .modal-head{
   display:flex;align-items:center;justify-content:space-between;
-  padding:14px 20px;border-bottom:1px solid var(--border);
+  padding:12px 16px;border-bottom:1px solid var(--border);
 }
+.modal-head h3{margin:0;font-size:14px;}
 .modal-body{flex:1;position:relative;background:var(--bg-0);}
-.modal-body iframe{width:100%;height:100%;border:none;}
 
+/* ---------- SETTINGS DRAWER ---------- */
 .drawer-backdrop{
-  position:fixed;inset:0;background:rgba(3,5,10,.6);display:none;z-index:150;
+  position:fixed;inset:0;background:rgba(3,5,10,.55);display:none;z-index:150;
 }
 .drawer-backdrop.open{display:block;}
 .drawer{
-  position:fixed;top:0;left:0;bottom:0;width:380px;max-width:92vw;
-  background:var(--bg-1);border-right:1px solid var(--border);
-  transform:translateX(-100%);transition:transform .3s cubic-bezier(0.4, 0, 0.2, 1);z-index:160;
+  position:fixed;top:0;right:0;bottom:0;width:360px;max-width:92vw;
+  background:var(--bg-1);border-left:1px solid var(--border);
+  transform:translateX(100%);transition:transform .22s ease;z-index:160;
   display:flex;flex-direction:column;
 }
 .drawer.open{transform:translateX(0);}
 .drawer-head{
-  padding:18px;border-bottom:1px solid var(--border);
+  padding:16px;border-bottom:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;
 }
-.drawer-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:24px;}
+.drawer-head h3{margin:0;font-size:14px;}
+.drawer-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:22px;}
 .settings-group label.group-title{
-  display:block;font-size:11px;font-weight:800;color:var(--text-3);
-  text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;
+  display:block;font-size:11px;font-weight:800;color:var(--text-2);
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:9px;
 }
-.opt-row{display:flex;gap:8px;flex-wrap:wrap;}
+.opt-row{display:flex;gap:6px;flex-wrap:wrap;}
 .opt-btn{
   flex:1 1 auto;text-align:center;font-size:12px;font-weight:600;
-  padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);
-  color:var(--text-2);cursor:pointer;transition:all .15s;
+  padding:7px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg-2);
+  color:var(--text-2);cursor:pointer;
 }
 .opt-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
-
 .settings-btn{
-  width:100%;text-align:right;background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);
-  padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;
-  display:flex;align-items:center;gap:10px;transition:all .15s;
+  width:100%;text-align:left;background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);
+  padding:9px 12px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;gap:8px;
 }
 .settings-btn:hover{background:var(--bg-2-hover);}
 .settings-btn.danger{color:var(--down);}
-.settings-btn.danger:hover{background:var(--down-dim);border-color:var(--down);}
-
-.add-form{display:flex;flex-direction:column;gap:10px;}
+.settings-btn.danger:hover{background:var(--down-dim);}
+.add-form{display:flex;flex-direction:column;gap:8px;}
 .add-form input{
-  height:36px;background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);
-  border-radius:8px;padding:0 12px;font-size:13px;outline:none;
+  height:32px;background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);
+  border-radius:6px;padding:0 10px;font-size:12.5px;outline:none;
 }
 .add-form input:focus{border-color:var(--blue);}
-.add-form label{font-size:11px;color:var(--text-2);font-weight:700;margin-bottom:-6px;}
-
-.chart-list{display:flex;flex-direction:column;gap:8px;max-height:250px;overflow-y:auto;padding-left:4px;}
+.add-form label{font-size:10.5px;color:var(--text-2);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:-4px;}
+.chart-list{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;}
 .chart-list-row{
   display:flex;align-items:center;justify-content:space-between;
-  background:var(--bg-2);border:1px solid var(--border-soft);border-radius:8px;padding:8px 12px;font-size:13px;
+  background:var(--bg-2);border:1px solid var(--border-soft);border-radius:6px;padding:6px 9px;font-size:12px;
 }
-.chart-list-row button{background:none;border:none;color:var(--text-3);cursor:pointer;padding:4px;}
+.chart-list-row span{font-weight:700;}
+.chart-list-row button{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:12px;}
 .chart-list-row button:hover{color:var(--down);}
 
+/* toast */
 #toast{
-  position:fixed;bottom:24px;right:50%;transform:translateX(50%) translateY(100px);
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);
   background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);
-  padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;
-  box-shadow:0 10px 30px rgba(0,0,0,.5);z-index:300;transition:transform .3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  padding:10px 16px;border-radius:8px;font-size:12.5px;box-shadow:var(--shadow);
+  opacity:0;pointer-events:none;transition:opacity .18s, transform .18s;z-index:300;
 }
-#toast.show{transform:translateX(50%) translateY(0);}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-@media (max-width:600px){
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:720px){
+  header.top{padding:0 12px;}
+  .brand-text p{display:none;}
   .header-stat{display:none;}
+  .header-stat.always-show{display:flex;padding:0;border:none;}
   .control-bar{padding:8px 12px;}
-  #grid{grid-template-columns:1fr;}
+  .quicknav{padding:0 12px;}
+  main{padding:14px 12px 50px;}
+  #grid, #grid.density-compact, #grid.density-large{grid-template-columns:1fr;}
+  .card-body, .card-body .tv-container{min-height:240px;}
+  .drawer{width:100%;max-width:100%;}
+  .modal{height:100vh;border-radius:0;}
 }
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
 </style>
 </head>
 <body>
 
 <div id="app-shell">
+
+  <!-- ============ HEADER ============ -->
   <header class="top">
     <div class="brand">
       <div class="brand-mark">OI</div>
       <div class="brand-text">
-        <h1>لوحة تحكم الكريبتو</h1>
-        <p>مراقب الاهتمام المفتوح (Open Interest)</p>
+        <h1>Crypto OI Dashboard</h1>
+        <p>Open Interest Market Monitor</p>
       </div>
     </div>
     <div class="header-right">
-      <div class="header-stat">
-        <div class="dot"></div>
-        <span>الحالة: <b>مباشر</b></span>
-      </div>
-      <div class="header-stat">
-        <span>تحديث: <b id="last-updated-time" class="tabular">--:--:--</b></span>
-      </div>
-      <button class="icon-btn" id="btn-theme" title="تبديل المظهر"><i class="fa-solid fa-moon"></i></button>
-      <button class="icon-btn" id="btn-settings" title="الإعدادات"><i class="fa-solid fa-gear"></i></button>
+      <div class="header-stat always-show" id="stat-count"><i class="fa-solid fa-table-cells" style="font-size:11px;"></i><b id="chart-count">0</b>&nbsp;Charts</div>
+      <div class="header-stat" id="stat-updated"><span class="dot"></span>Updated&nbsp;<b class="tabular" id="last-updated-time">--:--:--</b></div>
+      <button class="icon-btn" id="btn-refresh" title="Refresh all (R)"><i class="fa-solid fa-rotate-right"></i></button>
+      <button class="icon-btn" id="btn-fullscreen" title="Toggle app fullscreen"><i class="fa-solid fa-expand"></i></button>
+      <button class="icon-btn" id="btn-theme" title="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn" id="btn-settings" title="Settings"><i class="fa-solid fa-sliders"></i></button>
     </div>
   </header>
 
+  <!-- ============ CONTROL BAR ============ -->
   <div class="control-bar">
     <div class="search-wrap">
       <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" id="search-input" placeholder="بحث عن عملة...">
+      <input type="text" id="search-input" placeholder="Search BTC, ETH, SOL...">
       <kbd>/</kbd>
     </div>
 
     <div class="seg" id="filter-seg">
-      <button class="active" data-filter="all">الكل</button>
-      <button data-filter="priority">الأهم</button>
-      <button data-filter="pinned">المثبتة</button>
-      <button data-filter="altcoins">البديلة</button>
+      <button data-filter="all" class="active">All</button>
+      <button data-filter="priority">Top Priority</button>
+      <button data-filter="pinned">Pinned</button>
+      <button data-filter="altcoins">Altcoins</button>
     </div>
 
-    <select class="plain" id="sort-select">
-      <option value="priority">ترتيب حسب الأهمية</option>
-      <option value="alpha">ترتيب أبجدي</option>
-      <option value="manual">ترتيب يدوي</option>
+    <select class="plain" id="sort-select" title="Sort">
+      <option value="priority">Sort: Priority</option>
+      <option value="alpha">Sort: Alphabetical</option>
+      <option value="manual">Sort: Manual Order</option>
     </select>
 
     <div class="seg" id="view-seg">
-      <button class="active" data-view="grid"><i class="fa-solid fa-grip"></i></button>
-      <button data-view="large"><i class="fa-solid fa-square"></i></button>
+      <button data-view="grid" class="active">Grid</button>
+      <button data-view="large">Large</button>
+      <button data-view="compact">Compact</button>
     </div>
 
-    <button class="pill-btn" id="btn-focus" title="وضع التركيز">
-      <i class="fa-solid fa-bullseye"></i> التركيز
+    <div class="control-spacer"></div>
+
+    <button class="pill-btn" id="btn-focus" title="Focus mode: show P1–P3 only (1)">
+      <i class="fa-solid fa-bullseye"></i> Focus Mode
     </button>
-
-    <div style="flex:1"></div>
-
-    <button class="icon-btn" id="btn-refresh" title="تحديث الكل"><i class="fa-solid fa-rotate"></i></button>
-    <button class="icon-btn" id="btn-fullscreen" title="ملء الشاشة"><i class="fa-solid fa-expand"></i></button>
   </div>
 
+  <!-- ============ QUICK NAV ============ -->
   <nav class="quicknav" id="quicknav"></nav>
 
+  <!-- ============ MAIN GRID ============ -->
   <main>
-    <div id="grid"></div>
-    <div id="empty-state" class="empty-state" style="display:none;">
-      <i class="fa-solid fa-face-frown"></i>
-      <p>لم يتم العثور على نتائج لـ <b id="empty-query"></b></p>
+    <div id="grid" class="density-normal"></div>
+    <div class="empty-state" id="empty-state" style="display:none;">
+      <i class="fa-solid fa-magnifying-glass-minus"></i>
+      No charts match <b id="empty-query"></b>. Try clearing the search or filters.
     </div>
   </main>
 </div>
 
-<!-- Modal -->
+<!-- ============ FULLSCREEN CHART MODAL ============ -->
 <div class="modal-backdrop" id="modal-backdrop">
   <div class="modal">
     <div class="modal-head">
-      <h3 id="modal-title">الشارت</h3>
+      <h3 id="modal-title">BTC / USDT</h3>
       <button class="icon-btn" id="modal-close"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body" id="modal-body"></div>
   </div>
 </div>
 
-<!-- Drawer -->
+<!-- ============ SETTINGS DRAWER ============ -->
 <div class="drawer-backdrop" id="drawer-backdrop"></div>
 <aside class="drawer" id="drawer">
   <div class="drawer-head">
-    <h3>إعدادات لوحة التحكم</h3>
+    <h3>Settings</h3>
     <button class="icon-btn" id="drawer-close"><i class="fa-solid fa-xmark"></i></button>
   </div>
   <div class="drawer-body">
+
     <div class="settings-group">
-      <label class="group-title">المظهر</label>
+      <label class="group-title">Appearance</label>
       <div class="opt-row" id="opt-theme">
-        <button class="opt-btn" data-val="dark">داكن</button>
-        <button class="opt-btn" data-val="light">فاتح</button>
+        <button class="opt-btn active" data-val="dark">Dark</button>
+        <button class="opt-btn" data-val="light">Light</button>
       </div>
     </div>
 
     <div class="settings-group">
-      <label class="group-title">كثافة الشبكة</label>
+      <label class="group-title">Grid Density</label>
       <div class="opt-row" id="opt-density">
-        <button class="opt-btn" data-val="compact">مدمج</button>
-        <button class="opt-btn active" data-val="normal">عادي</button>
-        <button class="opt-btn" data-val="large">كبير</button>
+        <button class="opt-btn" data-val="compact">Compact</button>
+        <button class="opt-btn active" data-val="normal">Normal</button>
+        <button class="opt-btn" data-val="large">Large</button>
       </div>
     </div>
 
     <div class="settings-group">
-      <label class="group-title">إضافة شارت جديد</label>
+      <label class="group-title">Auto Refresh</label>
+      <div class="opt-row" id="opt-autorefresh">
+        <button class="opt-btn active" data-val="0">Off</button>
+        <button class="opt-btn" data-val="60000">1m</button>
+        <button class="opt-btn" data-val="300000">5m</button>
+        <button class="opt-btn" data-val="900000">15m</button>
+        <button class="opt-btn" data-val="1800000">30m</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <label class="group-title">Add Chart</label>
       <div class="add-form">
-        <label>الرمز (مثل BTC)</label>
-        <input id="add-symbol" placeholder="BTC">
-        <label>الاسم (مثل Bitcoin)</label>
-        <input id="add-name" placeholder="Bitcoin">
-        <label>المنصة (مثل Binance)</label>
-        <input id="add-exchange" placeholder="Binance">
-        <label>رابط الشارت (Coinalyze)</label>
-        <input id="add-url" placeholder="https://coinalyze.net/...">
-        <label>الأولوية (1 = الأعلى)</label>
+        <label>Symbol</label>
+        <input id="add-symbol" placeholder="e.g. OP">
+        <label>Name</label>
+        <input id="add-name" placeholder="e.g. Optimism">
+        <label>Exchange / Pair</label>
+        <input id="add-exchange" placeholder="e.g. BINANCE:OPUSDT">
+        <label>Priority (1 = highest)</label>
         <input id="add-priority" type="number" min="1" value="5">
-        <button class="settings-btn" id="btn-add-chart" style="margin-top:8px;justify-content:center;background:var(--blue);border-color:var(--blue);color:#fff;">
-          <i class="fa-solid fa-plus"></i> إضافة عملة
+        <button class="settings-btn" id="btn-add-chart" style="margin-top:4px;justify-content:center;background:var(--blue);border-color:var(--blue);color:#fff;">
+          <i class="fa-solid fa-plus"></i> Add Chart
         </button>
       </div>
     </div>
 
     <div class="settings-group">
-      <label class="group-title">إدارة العملات</label>
+      <label class="group-title">Manage Charts</label>
       <div class="chart-list" id="chart-manage-list"></div>
     </div>
 
     <div class="settings-group">
-      <label class="group-title">البيانات</label>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <button class="settings-btn" id="btn-export"><i class="fa-solid fa-file-export"></i> تصدير الإعدادات</button>
-        <button class="settings-btn" id="btn-import"><i class="fa-solid fa-file-import"></i> استيراد الإعدادات</button>
+      <label class="group-title">Data</label>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="settings-btn" id="btn-export"><i class="fa-solid fa-file-export"></i> Export configuration</button>
+        <button class="settings-btn" id="btn-import"><i class="fa-solid fa-file-import"></i> Import configuration</button>
         <input type="file" id="import-file" accept="application/json" style="display:none;">
-        <button class="settings-btn danger" id="btn-reset"><i class="fa-solid fa-trash"></i> إعادة ضبط المصنع</button>
+        <button class="settings-btn danger" id="btn-reset"><i class="fa-solid fa-trash"></i> Reset dashboard</button>
       </div>
     </div>
+
+    <div class="settings-group">
+      <label class="group-title">Keyboard Shortcuts</label>
+      <div style="font-size:11.5px;color:var(--text-2);line-height:2;">
+        <div><kbd>R</kbd> Refresh &nbsp; <kbd>F</kbd> Fullscreen focused card &nbsp; <kbd>Esc</kbd> Close</div>
+        <div><kbd>/</kbd> Search &nbsp; <kbd>1</kbd> Focus mode &nbsp; <kbd>0</kbd> Show all</div>
+      </div>
+    </div>
+
   </div>
 </aside>
 
@@ -534,24 +550,30 @@ main{flex:1 1 auto;padding:20px 20px 60px;}
 (function(){
 "use strict";
 
+/* ================================================================
+   1) CHART DATA SOURCE (TradingView Symbols)
+   ================================================================ */
 const DEFAULT_CHARTS = [
-  { id:"btc",  symbol:"BTC",  name:"Bitcoin",    exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/bitcoin/usdt/binance/open-interest-chart/btcusdt_perp_oi/", priority:1 },
-  { id:"eth",  symbol:"ETH",  name:"Ethereum",   exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/ethereum/usdt/binance/open-interest-chart/ethusdt_perp_oi/", priority:2 },
-  { id:"sol",  symbol:"SOL",  name:"Solana",     exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/solana/usdt/binance/open-interest-chart/solusdt_perp_oi/", priority:3 },
-  { id:"bnb",  symbol:"BNB",  name:"BNB",        exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/binance-coin/usdt/binance/open-interest-chart/bnbusdt_perp_oi/", priority:4 },
-  { id:"xrp",  symbol:"XRP",  name:"XRP",        exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/xrp/usdt/binance/open-interest-chart/xrpusdt_perp_oi/", priority:5 },
-  { id:"doge", symbol:"DOGE", name:"Dogecoin",   exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/dogecoin/usdt/binance/open-interest-chart/dogeusdt_perp_oi/", priority:6 },
-  { id:"ada",  symbol:"ADA",  name:"Cardano",    exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/cardano/usdt/binance/open-interest-chart/adausdt_perp_oi/", priority:7 },
-  { id:"avax", symbol:"AVAX", name:"Avalanche",  exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/avalanche/usdt/binance/open-interest-chart/avaxusdt_perp_oi/", priority:8 },
-  { id:"link", symbol:"LINK", name:"Chainlink",  exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/chainlink/usdt/binance/open-interest-chart/linkusdt_perp_oi/", priority:9 },
-  { id:"sui",  symbol:"SUI",  name:"Sui",        exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/sui/usdt/binance/open-interest-chart/suiusdt_perp_oi/", priority:10 }
+  { id:"btc",  symbol:"BTC",  name:"Bitcoin",    exchange:"BINANCE", tvSymbol:"BINANCE:BTCUSDT", priority:1 },
+  { id:"eth",  symbol:"ETH",  name:"Ethereum",   exchange:"OKX",     tvSymbol:"OKX:ETHUSDT",     priority:2 },
+  { id:"sol",  symbol:"SOL",  name:"Solana",     exchange:"BINANCE", tvSymbol:"BINANCE:SOLUSDT", priority:3 },
+  { id:"bnb",  symbol:"BNB",  name:"BNB",        exchange:"OKX",     tvSymbol:"OKX:BNBUSDT",     priority:4 },
+  { id:"xrp",  symbol:"XRP",  name:"XRP",        exchange:"BINANCE", tvSymbol:"BINANCE:XRPUSDT", priority:5 },
+  { id:"doge", symbol:"DOGE", name:"Dogecoin",   exchange:"BINANCE", tvSymbol:"BINANCE:DOGEUSDT",priority:6 },
+  { id:"ada",  symbol:"ADA",  name:"Cardano",    exchange:"BINANCE", tvSymbol:"BINANCE:ADAUSDT", priority:7 },
+  { id:"avax", symbol:"AVAX", name:"Avalanche",  exchange:"BINANCE", tvSymbol:"BINANCE:AVAXUSDT",priority:8 },
+  { id:"link", symbol:"LINK", name:"Chainlink",  exchange:"BINANCE", tvSymbol:"BINANCE:LINKUSDT",priority:9 },
+  { id:"sui",  symbol:"SUI",  name:"Sui",        exchange:"BINANCE", tvSymbol:"BINANCE:SUIUSDT", priority:10 }
 ];
 
+/* ================================================================
+   2) STORAGE KEYS & SETTINGS
+   ================================================================ */
 const LS = {
-  charts:   "oi_dashboard_charts_v1",
-  pinned:   "oi_dashboard_pinned_v1",
-  order:    "oi_dashboard_order_v1",
-  settings: "oi_dashboard_settings_v1"
+  charts:   "oi_dashboard_charts_v2",
+  pinned:   "oi_dashboard_pinned_v2",
+  order:    "oi_dashboard_order_v2",
+  settings: "oi_dashboard_settings_v2"
 };
 
 const DEFAULT_SETTINGS = {
@@ -559,6 +581,9 @@ const DEFAULT_SETTINGS = {
   sort:"priority", filter:"all"
 };
 
+/* ================================================================
+   3) STATE
+   ================================================================ */
 let charts   = loadJSON(LS.charts, DEFAULT_CHARTS);
 let pinned   = loadJSON(LS.pinned, []);
 let order    = loadJSON(LS.order, charts.map(c=>c.id));
@@ -578,7 +603,7 @@ function loadJSON(key, fallback){
   }catch(e){ return JSON.parse(JSON.stringify(fallback)); }
 }
 function saveJSON(key, val){
-  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){ }
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
 }
 function persistCharts(){ saveJSON(LS.charts, charts); }
 function persistPinned(){ saveJSON(LS.pinned, pinned); }
@@ -593,9 +618,13 @@ function reconcileOrder(){
 }
 reconcileOrder();
 
+/* ================================================================
+   4) DOM REFS & UTILS
+   ================================================================ */
 const grid = document.getElementById("grid");
 const emptyState = document.getElementById("empty-state");
 const emptyQuery = document.getElementById("empty-query");
+const chartCountEl = document.getElementById("chart-count");
 const lastUpdatedEl = document.getElementById("last-updated-time");
 const quicknav = document.getElementById("quicknav");
 const chartManageList = document.getElementById("chart-manage-list");
@@ -616,63 +645,217 @@ function debounce(fn, ms){
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g, s => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s]));
 }
+function isAltcoin(c){ return !["btc","eth"].includes(c.id); }
 
+/* ================================================================
+   5) SORT & FILTER
+   ================================================================ */
 function getVisibleCharts(){
   let list = charts.slice();
   list.sort((a,b) => order.indexOf(a.id) - order.indexOf(b.id));
-  if(settings.sort === "priority") list.sort((a,b) => a.priority - b.priority);
-  else if(settings.sort === "alpha") list.sort((a,b) => a.symbol.localeCompare(b.symbol));
+
+  if(settings.sort === "priority"){
+    list.sort((a,b) => a.priority - b.priority);
+  } else if(settings.sort === "alpha"){
+    list.sort((a,b) => a.symbol.localeCompare(b.symbol));
+  }
+
   list.sort((a,b) => (pinned.includes(b.id)?1:0) - (pinned.includes(a.id)?1:0));
 
-  if(settings.filter === "priority") list = list.filter(c => c.priority <= 3);
-  else if(settings.filter === "pinned") list = list.filter(c => pinned.includes(c.id));
-  else if(settings.filter === "altcoins") list = list.filter(c => !["btc","eth"].includes(c.id));
+  if(settings.filter === "priority"){
+    list = list.filter(c => c.priority <= 3);
+  } else if(settings.filter === "pinned"){
+    list = list.filter(c => pinned.includes(c.id));
+  } else if(settings.filter === "altcoins"){
+    list = list.filter(isAltcoin);
+  }
 
   if(searchTerm.trim()){
     const q = searchTerm.trim().toLowerCase();
-    list = list.filter(c => c.symbol.toLowerCase().includes(q) || c.name.toLowerCase().includes(q));
+    list = list.filter(c =>
+      c.symbol.toLowerCase().includes(q) ||
+      c.name.toLowerCase().includes(q) ||
+      c.exchange.toLowerCase().includes(q)
+    );
   }
-  if(focusMode) list = list.filter(c => c.priority <= 3);
+
+  if(focusMode){
+    list = list.filter(c => c.priority <= 3);
+  }
+
   return list;
 }
 
+/* ================================================================
+   6) RENDER & TRADINGVIEW INTEGRATION
+   ================================================================ */
 function render(){
   const visible = getVisibleCharts();
+
   grid.className = "";
-  if(settings.view === "large") grid.classList.add("view-large");
+  if(settings.view === "compact") grid.classList.add("density-compact");
   else if(settings.density === "compact") grid.classList.add("density-compact");
-  else if(settings.density === "large") grid.classList.add("density-large");
+  if(settings.density === "large") grid.classList.add("density-large");
+  if(settings.view === "large") grid.classList.add("view-large");
 
   grid.innerHTML = "";
+
   if(visible.length === 0){
     emptyState.style.display = "block";
-    emptyQuery.textContent = searchTerm || "الفلاتر الحالية";
+    emptyQuery.textContent = searchTerm ? '"' + searchTerm + '"' : "the current filters";
   } else {
     emptyState.style.display = "none";
     visible.forEach(c => grid.appendChild(buildCard(c)));
   }
+
+  chartCountEl.textContent = charts.length;
   buildQuickNav();
   buildManageList();
-  observeLazyCards();
+  renderTradingViewWidgets(visible);
+}
+
+function buildCard(c) {
+  const card = document.createElement("article");
+  card.className = "card" + (pinned.includes(c.id) ? " pinned" : "");
+  card.dataset.id = c.id;
+  card.dataset.priority = c.priority;
+  card.draggable = true;
+
+  card.innerHTML = `
+    <div class="card-head">
+      <div class="card-title-block">
+        <div class="card-symbol-row">
+          <span class="status-dot loaded" id="dot-${c.id}"></span>
+          <span class="card-symbol">${escapeHtml(c.symbol)}</span>
+          <span class="card-pair">/ USDT</span>
+          <span class="priority-badge">P${c.priority}</span>
+        </div>
+        <div class="card-meta">${escapeHtml(c.name)} • ${escapeHtml(c.exchange)}</div>
+      </div>
+      <div class="card-actions">
+        <button class="star ${pinned.includes(c.id) ? "active" : ""}" title="Pin chart" data-act="pin">
+          <i class="fa-${pinned.includes(c.id) ? "solid" : "regular"} fa-star"></i>
+        </button>
+        <button title="Open modal view" data-act="expand">
+          <i class="fa-solid fa-expand"></i>
+        </button>
+        <button title="Reload chart" data-act="reload">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+      </div>
+    </div>
+    <div class="card-body" id="body-${c.id}">
+      <div id="tv-container-${c.id}" class="tv-container"></div>
+    </div>
+    <div class="card-foot">
+      <span class="status-label" id="lbl-${c.id}">
+        <i class="fa-solid fa-check" style="color:var(--up)"></i> <span>LIVE</span>
+      </span>
+      <a href="https://www.tradingview.com/symbols/${escapeHtml(c.tvSymbol || 'BINANCE:' + c.symbol + 'USDT')}" target="_blank" rel="noopener noreferrer" class="open-original-link">Open Original <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i></a>
+    </div>
+  `;
+
+  // Drag & drop
+  card.addEventListener("dragstart", (e) => {
+    dragSrcId = c.id;
+    card.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+  });
+  card.addEventListener("dragend", () => {
+    card.classList.remove("dragging");
+    document.querySelectorAll(".card").forEach(el => el.classList.remove("drag-over"));
+  });
+  card.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    card.classList.add("drag-over");
+  });
+  card.addEventListener("dragleave", () => card.classList.remove("drag-over"));
+  card.addEventListener("drop", (e) => {
+    e.preventDefault();
+    card.classList.remove("drag-over");
+    if (dragSrcId && dragSrcId !== c.id) {
+      const fromIdx = order.indexOf(dragSrcId);
+      const toIdx = order.indexOf(c.id);
+      if (fromIdx !== -1 && toIdx !== -1) {
+        order.splice(fromIdx, 1);
+        order.splice(toIdx, 0, dragSrcId);
+        persistOrder();
+        settings.sort = "manual";
+        document.getElementById("sort-select").value = "manual";
+        persistSettings();
+        render();
+        toast("Updated manual order");
+      }
+    }
+  });
+
+  // Actions
+  card.querySelector('[data-act="pin"]').addEventListener("click", () => togglePin(c.id));
+  card.querySelector('[data-act="expand"]').addEventListener("click", () => openModal(c));
+  card.querySelector('[data-act="reload"]').addEventListener("click", () => loadSingleTVWidget(c));
+
+  card.addEventListener("click", (e) => {
+    if (!e.target.closest("button") && !e.target.closest("a")) {
+      lastFocusedCardId = c.id;
+    }
+  });
+
+  return card;
+}
+
+function loadSingleTVWidget(c) {
+  const containerId = `tv-container-${c.id}`;
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = "";
+  
+  if (typeof TradingView !== "undefined") {
+    new TradingView.widget({
+      "autosize": true,
+      "symbol": c.tvSymbol || `BINANCE:${c.symbol}USDT`,
+      "interval": "60",
+      "timezone": "Etc/UTC",
+      "theme": settings.theme || "dark",
+      "style": "1",
+      "locale": "en",
+      "toolbar_bg": "#f1f3f6",
+      "enable_publishing": false,
+      "hide_top_toolbar": false,
+      "hide_legend": false,
+      "save_image": false,
+      "container_id": containerId
+    });
+  }
+}
+
+function renderTradingViewWidgets(visible) {
+  setTimeout(() => {
+    visible.forEach(c => loadSingleTVWidget(c));
+  }, 50);
 }
 
 function buildQuickNav(){
   quicknav.innerHTML = "";
-  charts.slice().sort((a,b)=>a.priority-b.priority).forEach(c => {
+  const list = charts.slice().sort((a,b)=>a.priority-b.priority);
+  list.forEach(c => {
     const el = document.createElement("div");
     el.className = "qn-item" + (pinned.includes(c.id) ? " pinned" : "");
     el.textContent = c.symbol;
+    el.title = c.name;
     el.addEventListener("click", () => {
       const card = document.querySelector('.card[data-id="'+c.id+'"]');
       if(card){ card.scrollIntoView({behavior:"smooth", block:"center"}); flashCard(card); }
-      else toast("العملة مخفية بسبب الفلتر");
+      else toast(c.symbol + " is filtered out — clear filters to jump to it.");
     });
     quicknav.appendChild(el);
   });
 }
+
 function flashCard(card){
-  card.style.boxShadow = "0 0 0 3px var(--blue)";
-  setTimeout(()=>{ card.style.boxShadow = ""; }, 1000);
+  card.style.transition = "box-shadow .2s";
+  card.style.boxShadow = "0 0 0 2px var(--blue)";
+  setTimeout(()=>{ card.style.boxShadow = ""; }, 900);
 }
 
 function buildManageList(){
@@ -680,258 +863,377 @@ function buildManageList(){
   charts.slice().sort((a,b)=>a.priority-b.priority).forEach(c => {
     const row = document.createElement("div");
     row.className = "chart-list-row";
-    row.innerHTML = `<span>${escapeHtml(c.symbol)} <small style="color:var(--text-3)">— ${escapeHtml(c.name)}</small></span>`;
+    row.innerHTML = `<span>${escapeHtml(c.symbol)} <span style="color:var(--text-3);font-weight:500;">— ${escapeHtml(c.name)}</span></span>`;
     const btn = document.createElement("button");
-    btn.innerHTML = '<i class="fa-solid fa-trash"></i>';
-    btn.addEventListener("click", () => removeChart(c.id));
+    btn.innerHTML = `<i class="fa-solid fa-trash"></i>`;
+    btn.title = "Delete chart";
+    btn.addEventListener("click", () => deleteChart(c.id));
     row.appendChild(btn);
     chartManageList.appendChild(row);
   });
 }
 
-function buildCard(c){
-  const card = document.createElement("div");
-  card.className = "card" + (pinned.includes(c.id) ? " pinned" : "");
-  card.dataset.id = c.id;
-  card.dataset.priority = c.priority;
-  card.draggable = true;
-  const isPinned = pinned.includes(c.id);
-
-  card.innerHTML = `
-    <div class="card-head">
-      <div class="card-title-block">
-        <div class="card-symbol-row">
-          <span class="status-dot no-url" data-role="status-dot"></span>
-          <span class="card-symbol">${escapeHtml(c.symbol)} <span class="card-pair">/ USDT</span></span>
-        </div>
-        <div class="card-meta">${escapeHtml(c.name)} · ${escapeHtml(c.exchange)}</div>
-      </div>
-      <div class="card-actions">
-        <span class="priority-badge">P${c.priority}</span>
-        <button class="star${isPinned ? ' active':''}" data-role="pin"><i class="fa-solid fa-star"></i></button>
-        <button data-role="fullscreen"><i class="fa-solid fa-expand"></i></button>
-      </div>
-    </div>
-    <div class="card-body" data-role="body">
-      <div class="shimmer"></div>
-    </div>
-    <div class="card-foot">
-      <span class="status-label" data-role="status-label"><i class="fa-solid fa-circle-notch fa-spin"></i> انتظار</span>
-      <a href="${c.url || '#'}" target="_blank" rel="noopener noreferrer" class="open-original-link">
-        فتح الرابط <i class="fa-solid fa-arrow-up-right-from-square"></i>
-      </a>
-    </div>
-  `;
-
-  card.querySelector('[data-role="pin"]').addEventListener("click", (e) => { e.stopPropagation(); togglePin(c.id); });
-  card.querySelector('[data-role="fullscreen"]').addEventListener("click", (e) => { e.stopPropagation(); openFullscreen(c); });
-  card.addEventListener("dragstart", () => { dragSrcId = c.id; card.classList.add("dragging"); });
-  card.addEventListener("dragend", () => { card.classList.remove("dragging"); document.querySelectorAll(".card.drag-over").forEach(el=>el.classList.remove("drag-over")); });
-  card.addEventListener("dragover", (e) => { e.preventDefault(); card.classList.add("drag-over"); });
-  card.addEventListener("dragleave", () => card.classList.remove("drag-over"));
-  card.addEventListener("drop", (e) => {
-    e.preventDefault(); card.classList.remove("drag-over");
-    if(!dragSrcId || dragSrcId === c.id) return;
-    reorder(dragSrcId, c.id);
-  });
-  return card;
-}
-
-function reorder(srcId, targetId){
-  const from = order.indexOf(srcId), to = order.indexOf(targetId);
-  if(from === -1 || to === -1) return;
-  order.splice(from,1); order.splice(to,0,srcId);
-  persistOrder(); settings.sort = "manual"; persistSettings();
-  document.getElementById("sort-select").value = "manual";
+/* ================================================================
+   7) ACTIONS & SETTINGS
+   ================================================================ */
+function togglePin(id) {
+  if (pinned.includes(id)) {
+    pinned = pinned.filter(x => x !== id);
+    toast("Unpinned chart");
+  } else {
+    pinned.push(id);
+    toast("Pinned chart");
+  }
+  persistPinned();
   render();
 }
 
-let io = null;
-function observeLazyCards(){
-  if(io) io.disconnect();
-  io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting){
-        const card = entry.target;
-        const c = charts.find(x=>x.id===card.dataset.id);
-        if(c && !card.dataset.loadStarted){
-          card.dataset.loadStarted = "1";
-          loadCardChart(card, c);
-        }
-        io.unobserve(card);
-      }
-    });
-  }, { rootMargin:"200px" });
-  document.querySelectorAll(".card").forEach(card => io.observe(card));
-}
+function addChart() {
+  const symbolEl = document.getElementById("add-symbol");
+  const nameEl = document.getElementById("add-name");
+  const exchangeEl = document.getElementById("add-exchange");
+  const priorityEl = document.getElementById("add-priority");
 
-function setStatus(card, status){
-  const dot = card.querySelector('[data-role="status-dot"]');
-  const label = card.querySelector('[data-role="status-label"]');
-  dot.className = "status-dot " + status;
-  const map = {
-    "no-url":  ['<i class="fa-solid fa-link-slash"></i> لا يوجد رابط', 'var(--text-3)'],
-    "loading": ['<i class="fa-solid fa-circle-notch fa-spin"></i> جاري التحميل', 'var(--yellow)'],
-    "loaded":  ['<i class="fa-solid fa-circle-check"></i> تم التحميل', 'var(--up)'],
-    "blocked": ['<i class="fa-solid fa-ban"></i> محجوب', 'var(--down)']
-  };
-  const [html,color] = map[status] || map["no-url"];
-  label.innerHTML = html; label.style.color = color;
-}
+  const symbol = symbolEl.value.trim().toUpperCase();
+  const name = nameEl.value.trim() || symbol;
+  const tvSymbol = exchangeEl.value.trim() || `BINANCE:${symbol}USDT`;
+  const priority = parseInt(priorityEl.value, 10) || 5;
 
-function loadCardChart(card, c){
-  const body = card.querySelector('[data-role="body"]');
-  if(!c.url){
-    setStatus(card, "no-url");
-    body.innerHTML = `<div class="body-placeholder"><i class="fa-solid fa-link-slash"></i><b>الرابط غير متوفر</b><span>يرجى إضافة رابط Coinalyze للعملة ${c.symbol}</span></div>`;
+  if (!symbol) {
+    toast("Symbol is required");
     return;
   }
-  setStatus(card, "loading");
-  const iframe = document.createElement("iframe");
-  iframe.referrerPolicy = "strict-origin-when-cross-origin";
-  iframe.src = c.url;
-  iframe.style.opacity = "0";
-  iframe.style.transition = "opacity .5s";
 
-  let settled = false;
-  const timeout = setTimeout(() => { if(!settled){ settled=true; showBlocked(card, c); } }, 8000);
+  const id = symbol.toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (charts.some(c => c.id === id)) {
+    toast("Chart symbol already exists!");
+    return;
+  }
 
-  iframe.onload = () => {
-    if(settled) return; settled = true; clearTimeout(timeout);
-    iframe.style.opacity = "1"; setStatus(card, "loaded");
-  };
-  iframe.onerror = () => {
-    if(settled) return; settled = true; clearTimeout(timeout);
-    showBlocked(card, c);
-  };
-  body.innerHTML = ""; body.appendChild(iframe);
+  const newChart = { id, symbol, name, exchange: tvSymbol.split(":")[0] || "BINANCE", tvSymbol, priority };
+  charts.push(newChart);
+  order.push(id);
+
+  persistCharts();
+  persistOrder();
+  render();
+
+  symbolEl.value = "";
+  nameEl.value = "";
+  exchangeEl.value = "";
+  priorityEl.value = "5";
+
+  toast(`Added ${symbol}`);
 }
 
-function showBlocked(card, c){
-  const body = card.querySelector('[data-role="body"]');
-  setStatus(card, "blocked");
-  body.innerHTML = `
-    <div class="body-placeholder">
-      <i class="fa-solid fa-triangle-exclamation"></i>
-      <b>تعذر عرض الشارت هنا</b>
-      <span>موقع Coinalyze قد يمنع العرض داخل الإطارات لبعض المتصفحات.</span>
-      <button class="open-btn" onclick="window.open('${c.url}','_blank')">
-        فتح في نافذة جديدة <i class="fa-solid fa-arrow-up-right-from-square"></i>
-      </button>
-    </div>`;
+function deleteChart(id) {
+  charts = charts.filter(c => c.id !== id);
+  pinned = pinned.filter(p => p !== id);
+  order = order.filter(o => o !== id);
+
+  persistCharts();
+  persistPinned();
+  persistOrder();
+  render();
+
+  toast("Chart deleted");
 }
 
-function refreshAll(){
-  document.querySelectorAll(".card").forEach(card => {
-    const c = charts.find(x=>x.id===card.dataset.id);
-    if(c && c.url){ card.dataset.loadStarted = "1"; loadCardChart(card, c); }
-  });
-  updateLastUpdated(); toast("تم تحديث اللوحة");
-}
-
-function togglePin(id){
-  if(pinned.includes(id)) pinned = pinned.filter(x=>x!==id);
-  else pinned.push(id);
-  persistPinned(); render();
-}
-
+/* ================================================================
+   8) MODAL VIEW
+   ================================================================ */
 const modalBackdrop = document.getElementById("modal-backdrop");
-const modalBody = document.getElementById("modal-body");
 const modalTitle = document.getElementById("modal-title");
+const modalBody = document.getElementById("modal-body");
+const modalClose = document.getElementById("modal-close");
 
-function openFullscreen(c){
-  modalTitle.textContent = `${c.symbol} / USDT — ${c.name}`;
-  modalBody.innerHTML = c.url ? `<iframe src="${c.url}" referrerPolicy="strict-origin-when-cross-origin"></iframe>` : '<div class="body-placeholder">الرابط غير متوفر</div>';
+function openModal(c) {
+  modalTitle.textContent = `${c.symbol} / USDT — ${c.name} (${c.exchange})`;
+  modalBody.innerHTML = `<div id="modal-tv-container" style="width:100%;height:100%;"></div>`;
   modalBackdrop.classList.add("open");
+  
+  setTimeout(() => {
+    if (typeof TradingView !== "undefined") {
+      new TradingView.widget({
+        "autosize": true,
+        "symbol": c.tvSymbol || `BINANCE:${c.symbol}USDT`,
+        "interval": "D",
+        "timezone": "Etc/UTC",
+        "theme": settings.theme || "dark",
+        "style": "1",
+        "locale": "en",
+        "container_id": "modal-tv-container"
+      });
+    }
+  }, 100);
 }
-function closeFullscreen(){ modalBackdrop.classList.remove("open"); modalBody.innerHTML = ""; }
-document.getElementById("modal-close").addEventListener("click", closeFullscreen);
-modalBackdrop.addEventListener("click", (e) => { if(e.target === modalBackdrop) closeFullscreen(); });
 
+function closeModal() {
+  modalBackdrop.classList.remove("open");
+  modalBody.innerHTML = "";
+}
+
+modalClose.addEventListener("click", closeModal);
+modalBackdrop.addEventListener("click", (e) => {
+  if (e.target === modalBackdrop) closeModal();
+});
+
+/* ================================================================
+   9) DRAWER & CONTROLS
+   ================================================================ */
 const drawer = document.getElementById("drawer");
 const drawerBackdrop = document.getElementById("drawer-backdrop");
-document.getElementById("btn-settings").addEventListener("click", () => { drawer.classList.add("open"); drawerBackdrop.classList.add("open"); });
-document.getElementById("drawer-close").addEventListener("click", () => { drawer.classList.remove("open"); drawerBackdrop.classList.remove("open"); });
-drawerBackdrop.addEventListener("click", () => { drawer.classList.remove("open"); drawerBackdrop.classList.remove("open"); });
+const btnSettings = document.getElementById("btn-settings");
+const drawerClose = document.getElementById("drawer-close");
 
-function applyTheme(){
-  document.documentElement.setAttribute("data-theme", settings.theme);
-  document.getElementById("btn-theme").innerHTML = settings.theme === "dark" ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
-  document.querySelectorAll("#opt-theme .opt-btn").forEach(b => b.classList.toggle("active", b.dataset.val === settings.theme));
+function openDrawer() {
+  drawer.classList.add("open");
+  drawerBackdrop.classList.add("open");
 }
-document.getElementById("btn-theme").addEventListener("click", () => { settings.theme = settings.theme === "dark" ? "light" : "dark"; persistSettings(); applyTheme(); });
-document.querySelectorAll("#opt-theme .opt-btn").forEach(btn => btn.addEventListener("click", () => { settings.theme = btn.dataset.val; persistSettings(); applyTheme(); }));
+function closeDrawer() {
+  drawer.classList.remove("open");
+  drawerBackdrop.classList.remove("open");
+}
 
-document.querySelectorAll("#opt-density .opt-btn").forEach(btn => btn.addEventListener("click", () => {
-  settings.density = btn.dataset.val; persistSettings();
-  document.querySelectorAll("#opt-density .opt-btn").forEach(b=>b.classList.toggle("active", b===btn));
+btnSettings.addEventListener("click", openDrawer);
+drawerClose.addEventListener("click", closeDrawer);
+drawerBackdrop.addEventListener("click", closeDrawer);
+
+/* Theme */
+function applyTheme(t) {
+  settings.theme = t;
+  document.documentElement.setAttribute("data-theme", t);
+  document.querySelectorAll("#opt-theme .opt-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.val === t);
+  });
+  persistSettings();
+}
+
+document.querySelectorAll("#opt-theme .opt-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    applyTheme(btn.dataset.val);
+    render();
+  });
+});
+
+document.getElementById("btn-theme").addEventListener("click", () => {
+  applyTheme(settings.theme === "dark" ? "light" : "dark");
   render();
-}));
-
-document.getElementById("btn-add-chart").addEventListener("click", () => {
-  const symbol = document.getElementById("add-symbol").value.trim().toUpperCase();
-  const name = document.getElementById("add-name").value.trim();
-  const url = document.getElementById("add-url").value.trim();
-  const priority = Number(document.getElementById("add-priority").value) || 5;
-  if(!symbol || !name){ toast("الرمز والاسم مطلوبان"); return; }
-  const id = symbol.toLowerCase().replace(/[^a-z0-9]/g,"") + Date.now();
-  charts.push({ id, symbol, name, exchange:"Binance", type:"Open Interest", url, priority });
-  persistCharts(); reconcileOrder(); render(); toast("تمت الإضافة");
-  ["add-symbol","add-name","add-url"].forEach(id => document.getElementById(id).value = "");
 });
 
-function removeChart(id){
-  if(!confirm("هل أنت متأكد من حذف هذه العملة؟")) return;
-  charts = charts.filter(x=>x.id!==id); pinned = pinned.filter(x=>x!==id);
-  persistCharts(); persistPinned(); reconcileOrder(); render();
+/* Grid Density */
+function applyDensity(d) {
+  settings.density = d;
+  document.querySelectorAll("#opt-density .opt-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.val === d);
+  });
+  persistSettings();
+  render();
 }
 
-document.getElementById("btn-export").addEventListener("click", () => {
-  const blob = new Blob([JSON.stringify({ charts, pinned, order, settings })], {type:"application/json"});
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "config.json"; a.click();
+document.querySelectorAll("#opt-density .opt-btn").forEach(btn => {
+  btn.addEventListener("click", () => applyDensity(btn.dataset.val));
 });
 
-document.getElementById("btn-import").addEventListener("click", () => document.getElementById("import-file").click());
+/* Auto Refresh */
+function applyAutoRefresh(ms) {
+  settings.autoRefresh = parseInt(ms, 10);
+  document.querySelectorAll("#opt-autorefresh .opt-btn").forEach(btn => {
+    btn.classList.toggle("active", parseInt(btn.dataset.val, 10) === settings.autoRefresh);
+  });
+  persistSettings();
+
+  if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+  if (settings.autoRefresh > 0) {
+    autoRefreshTimer = setInterval(() => {
+      refreshAll();
+    }, settings.autoRefresh);
+    toast(`Auto-refresh set to ${settings.autoRefresh / 60000}m`);
+  }
+}
+
+document.querySelectorAll("#opt-autorefresh .opt-btn").forEach(btn => {
+  btn.addEventListener("click", () => applyAutoRefresh(btn.dataset.val));
+});
+
+/* Filters Segment */
+document.querySelectorAll("#filter-seg button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#filter-seg button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    settings.filter = btn.dataset.filter;
+    persistSettings();
+    render();
+  });
+});
+
+/* View Segment */
+document.querySelectorAll("#view-seg button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#view-seg button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    settings.view = btn.dataset.view;
+    persistSettings();
+    render();
+  });
+});
+
+/* Sort Select */
+document.getElementById("sort-select").addEventListener("change", (e) => {
+  settings.sort = e.target.value;
+  persistSettings();
+  render();
+});
+
+/* Search */
+const searchInput = document.getElementById("search-input");
+searchInput.addEventListener("input", debounce((e) => {
+  searchTerm = e.target.value;
+  render();
+}, 200));
+
+/* Focus Mode */
+const btnFocus = document.getElementById("btn-focus");
+btnFocus.addEventListener("click", () => {
+  focusMode = !focusMode;
+  btnFocus.classList.toggle("on", focusMode);
+  render();
+  toast(focusMode ? "Focus Mode: Enabled (P1-P3)" : "Focus Mode: Disabled");
+});
+
+/* Add Chart Button */
+document.getElementById("btn-add-chart").addEventListener("click", addChart);
+
+/* Refresh All */
+function refreshAll() {
+  updateLastUpdated();
+  render();
+  toast("Refreshed all active charts");
+}
+document.getElementById("btn-refresh").addEventListener("click", refreshAll);
+
+/* Fullscreen App */
+document.getElementById("btn-fullscreen").addEventListener("click", () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
+});
+
+/* Export / Import / Reset */
+document.getElementById("btn-export").addEventListener("click", () => {
+  const data = { charts, pinned, order, settings };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `oi_dashboard_backup_${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  toast("Configuration exported");
+});
+
+document.getElementById("btn-import").addEventListener("click", () => {
+  document.getElementById("import-file").click();
+});
+
 document.getElementById("import-file").addEventListener("change", (e) => {
-  const file = e.target.files[0]; if(!file) return;
+  const file = e.target.files[0];
+  if (!file) return;
   const reader = new FileReader();
-  reader.onload = () => {
+  reader.onload = (evt) => {
     try {
-      const d = JSON.parse(reader.result);
-      if(d.charts) charts = d.charts; if(d.pinned) pinned = d.pinned; if(d.order) order = d.order; if(d.settings) settings = d.settings;
-      persistCharts(); persistPinned(); persistOrder(); persistSettings(); render(); applyTheme(); toast("تم الاستيراد");
-    } catch(e) { toast("ملف غير صالح"); }
+      const data = JSON.parse(evt.target.result);
+      if (data.charts) { charts = data.charts; persistCharts(); }
+      if (data.pinned) { pinned = data.pinned; persistPinned(); }
+      if (data.order) { order = data.order; persistOrder(); }
+      if (data.settings) { settings = Object.assign({}, DEFAULT_SETTINGS, data.settings); persistSettings(); }
+      reconcileOrder();
+      initUI();
+      render();
+      toast("Configuration imported successfully!");
+    } catch (err) {
+      toast("Invalid JSON configuration file");
+    }
   };
   reader.readAsText(file);
 });
 
 document.getElementById("btn-reset").addEventListener("click", () => {
-  if(!confirm("إعادة الضبط ستحذف كل التعديلات، هل أنت متأكد؟")) return;
-  localStorage.clear(); location.reload();
+  if (confirm("Are you sure you want to reset all charts and settings to default?")) {
+    localStorage.removeItem(LS.charts);
+    localStorage.removeItem(LS.pinned);
+    localStorage.removeItem(LS.order);
+    localStorage.removeItem(LS.settings);
+    charts = JSON.parse(JSON.stringify(DEFAULT_CHARTS));
+    pinned = [];
+    order = charts.map(c => c.id);
+    settings = Object.assign({}, DEFAULT_SETTINGS);
+    initUI();
+    render();
+    toast("Dashboard reset to defaults");
+  }
 });
 
-document.getElementById("search-input").addEventListener("input", debounce((e) => { searchTerm = e.target.value; render(); }, 200));
-document.getElementById("filter-seg").addEventListener("click", (e) => {
-  const btn = e.target.closest("button"); if(!btn) return;
-  settings.filter = btn.dataset.filter; persistSettings();
-  document.querySelectorAll("#filter-seg button").forEach(b=>b.classList.toggle("active", b===btn));
-  render();
-});
-document.getElementById("sort-select").addEventListener("change", (e) => { settings.sort = e.target.value; persistSettings(); render(); });
-document.getElementById("view-seg").addEventListener("click", (e) => {
-  const btn = e.target.closest("button"); if(!btn) return;
-  settings.view = btn.dataset.view; persistSettings();
-  document.querySelectorAll("#view-seg button").forEach(b=>b.classList.toggle("active", b===btn));
-  render();
-});
-document.getElementById("btn-focus").addEventListener("click", () => { focusMode = !focusMode; document.getElementById("btn-focus").classList.toggle("on", focusMode); render(); });
-document.getElementById("btn-refresh").addEventListener("click", refreshAll);
-document.getElementById("btn-fullscreen").addEventListener("click", () => { if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); });
+/* Keyboard Shortcuts */
+window.addEventListener("keydown", (e) => {
+  if (["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
 
+  if (e.key === "/") {
+    e.preventDefault();
+    searchInput.focus();
+  } else if (e.key.toLowerCase() === "r") {
+    refreshAll();
+  } else if (e.key.toLowerCase() === "f") {
+    if (lastFocusedCardId) {
+      const c = charts.find(x => x.id === lastFocusedCardId);
+      if (c) openModal(c);
+    }
+  } else if (e.key === "1") {
+    focusMode = true;
+    btnFocus.classList.add("on");
+    render();
+  } else if (e.key === "0") {
+    focusMode = false;
+    btnFocus.classList.remove("on");
+    render();
+  } else if (e.key === "Escape") {
+    closeModal();
+    closeDrawer();
+  }
+});
+
+/* ================================================================
+   10) INIT
+   ================================================================ */
+function initUI() {
+  applyTheme(settings.theme || "dark");
+
+  document.querySelectorAll("#opt-density .opt-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.val === (settings.density || "normal"));
+  });
+
+  document.querySelectorAll("#opt-autorefresh .opt-btn").forEach(b => {
+    b.classList.toggle("active", parseInt(b.dataset.val, 10) === (settings.autoRefresh || 0));
+  });
+
+  document.querySelectorAll("#filter-seg button").forEach(b => {
+    b.classList.toggle("active", b.dataset.filter === (settings.filter || "all"));
+  });
+
+  document.querySelectorAll("#view-seg button").forEach(b => {
+    b.classList.toggle("active", b.dataset.view === (settings.view || "grid"));
+  });
+
+  document.getElementById("sort-select").value = settings.sort || "priority";
+
+  if (settings.autoRefresh > 0) {
+    applyAutoRefresh(settings.autoRefresh);
+  }
+}
+
+initUI();
 updateLastUpdated();
-applyTheme();
 render();
-setInterval(updateLastUpdated, 1000);
 
 })();
 </script>
