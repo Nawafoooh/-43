@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مطابقة شمعة السعر مع شمعة الـ OI</title>
+    <title>شارت TradingView موحد - السعر و OI</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         body {
@@ -38,12 +38,17 @@
         }
         .chart-header {
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
             font-size: 14px;
             color: #787b86;
+            display: flex;
+            justify-content: space-between;
         }
-        #price-container { height: 380px; }
-        #oi-container { height: 250px; margin-top: 10px; }
+        #single-chart-container { 
+            width: 100%; 
+            height: 600px; 
+            position: relative;
+        }
     </style>
 </head>
 <body>
@@ -61,13 +66,12 @@
         </select>
     </div>
 
-    <!-- شارت السعر -->
-    <div class="chart-header">حركة السعر (Price Candlesticks)</div>
-    <div id="price-container"></div>
+    <div class="chart-header">
+        <span>TradingView Unified Chart (Price + Open Interest Candlesticks)</span>
+    </div>
 
-    <!-- شارت الـ OI المطابق تماماً -->
-    <div class="chart-header">شموع الـ Open Interest (مطابقة زمنياً 1:1)</div>
-    <div id="oi-container"></div>
+    <!-- نافذة الشارت الموحدة -->
+    <div id="single-chart-container"></div>
 </div>
 
 <script>
@@ -79,8 +83,9 @@
         "SBDUSDT", "GMXUSDT", "DYDXUSDT", "FTMUSDT", "CRVUSDT", "LDOUSDT", "RUNEUSDT", "EGLDUSDT", "KASUSDT", "BLURUSDT"
     ];
 
-    let priceChart, oiChart;
-    let candlestickSeries, oiCandleSeries;
+    let unifiedChart;
+    let priceSeries;
+    let oiSeries;
 
     function populateSymbols() {
         const select = document.getElementById('symbol');
@@ -92,21 +97,46 @@
         });
     }
 
-    function initCharts() {
-        const chartOptions = {
-            layout: { backgroundColor: '#1e222d', textColor: '#d1d4dc' },
-            grid: { vertLines: { color: '#2B2B43' }, horzLines: { color: '#2B2B43' } },
-            timeScale: { timeVisible: true, secondsVisible: false },
-        };
-
-        priceChart = LightweightCharts.createChart(document.getElementById('price-container'), { ...chartOptions, height: 380 });
-        candlestickSeries = priceChart.addCandlestickSeries({
-            upColor: '#089981', downColor: '#f23645',
-            borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645'
+    function initChart() {
+        const container = document.getElementById('single-chart-container');
+        
+        // 1. إنشاء الشارت الموحد
+        unifiedChart = LightweightCharts.createChart(container, {
+            width: container.clientWidth,
+            height: 600,
+            layout: {
+                backgroundColor: '#1e222d',
+                textColor: '#d1d4dc',
+            },
+            grid: {
+                vertLines: { color: '#2B2B43' },
+                horzLines: { color: '#2B2B43' },
+            },
+            timeScale: {
+                timeVisible: true,
+                secondsVisible: false,
+            },
+            leftPriceScale: {
+                visible: true,
+            },
+            rightPriceScale: {
+                visible: true,
+            }
         });
 
-        oiChart = LightweightCharts.createChart(document.getElementById('oi-container'), { ...chartOptions, height: 250 });
-        oiCandleSeries = oiChart.addCandlestickSeries({
+        // 2. إضافة سلسلة شموع السعر (تأخذ الجانب الأيمن وتتحكم بـ 70% من المساحة العلوية)
+        priceSeries = unifiedChart.addCandlestickSeries({
+            priceScaleId: 'right',
+            upColor: '#089981', 
+            downColor: '#f23645',
+            borderVisible: false, 
+            wickUpColor: '#089981', 
+            wickDownColor: '#f23645'
+        });
+
+        // 3. إضافة سلسلة شموع الـ OI كـ Overlay في الأسفل (تأخذ الجانب الأيسر وتُعزل في الـ 30% السفلية)
+        oiSeries = unifiedChart.addCandlestickSeries({
+            priceScaleId: 'left',
             upColor: '#2962ff',       // صعود الـ OI
             downColor: '#ff6d00',     // هبوط الـ OI
             borderVisible: false, 
@@ -114,9 +144,25 @@
             wickDownColor: '#ff6d00'
         });
 
-        // ربط المحاور الزمنية بين الشارتين بإحكام
-        priceChart.timeScale().subscribeVisibleLogicalRangeChange(range => oiChart.timeScale().setVisibleLogicalRange(range));
-        oiChart.timeScale().subscribeVisibleLogicalRangeChange(range => priceChart.timeScale().setVisibleLogicalRange(range));
+        // تخصيص توزيع المساحة (70% للسعر في الأعلى و 30% للـ OI في الأسفل)
+        unifiedChart.priceScale('right').applyOptions({
+            scaleMargins: {
+                top: 0.05,
+                bottom: 0.35, // ترك المساحة السفلية للـ OI
+            },
+        });
+
+        unifiedChart.priceScale('left').applyOptions({
+            scaleMargins: {
+                top: 0.70, // حصر الـ OI في الجزء السفلي
+                bottom: 0.02,
+            },
+        });
+
+        // التجاوب مع حجم الشاشة
+        window.addEventListener('resize', () => {
+            unifiedChart.applyOptions({ width: container.clientWidth });
+        });
     }
 
     async function loadChartData() {
@@ -124,60 +170,49 @@
         const interval = document.getElementById('interval').value;
 
         try {
-            // 1. جلب بيانات السعر
+            // جلب السعر
             const klineRes = await fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=300`);
             const klineData = await klineRes.json();
 
-            // 2. جلب بيانات الـ OI
+            // جلب الـ OI
             const oiRes = await fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${symbol}&period=${interval}&limit=500`);
             const oiData = await oiRes.json();
 
-            // خريطة مفتاحها الوقت لتسريع البحث والمطابقة الدقيقة
             const oiMap = new Map();
             oiData.forEach(item => {
-                // تقريب الوقت بالثواني الموحدة
                 const timeKey = Math.floor(item.timestamp / 1000);
                 oiMap.set(timeKey, parseFloat(item.sumOpenInterestValue));
             });
 
             const priceCandles = [];
             const oiCandles = [];
-            
             let lastKnownOI = oiData.length > 0 ? parseFloat(oiData[0].sumOpenInterestValue) : 0;
 
-            // 3. مطابقة البيانات شمعة بشمعة بنفس التوقيت (1:1 Syncing)
             klineData.forEach((d) => {
                 const candleTime = d[0] / 1000;
                 
-                const openPrice = parseFloat(d[1]);
-                const highPrice = parseFloat(d[2]);
-                const lowPrice = parseFloat(d[3]);
-                const closePrice = parseFloat(d[4]);
-
+                // إضافة شموع السعر
                 priceCandles.push({
                     time: candleTime,
-                    open: openPrice,
-                    high: highPrice,
-                    low: lowPrice,
-                    close: closePrice
+                    open: parseFloat(d[1]),
+                    high: parseFloat(d[2]),
+                    low: parseFloat(d[3]),
+                    close: parseFloat(d[4])
                 });
 
-                // البحث عن قيمة الـ OI المطابقة لهذا الوقت بالضبط
+                // مطابقة الـ OI بنفس التوقيت تماماً
                 let currentOI = oiMap.get(candleTime);
-                
-                // إذا لم توجد قراءة في تلك اللحظة بالضبط، نأخذ أقرب قيمة سابقة للحفاظ على تسلسل الشموع
                 if (currentOI === undefined) {
                     currentOI = lastKnownOI;
                 } else {
                     lastKnownOI = currentOI;
                 }
 
-                // فتح الشمعة = قيمة الـ OI السابقة، إغلاق الشمعة = القيمة الحالية
                 const oiOpen = oiCandles.length > 0 ? oiCandles[oiCandles.length - 1].close : currentOI;
                 const oiClose = currentOI;
 
                 oiCandles.push({
-                    time: candleTime, // إعطاء نفس الوقت بالضبط فشمعة السعر وشمعة الـ OI تتطابقان
+                    time: candleTime,
                     open: oiOpen,
                     high: Math.max(oiOpen, oiClose),
                     low: Math.min(oiOpen, oiClose),
@@ -185,21 +220,20 @@
                 });
             });
 
-            // تحديث الشارتات بالبيانات المنسقة والمطابقة
-            candlestickSeries.setData(priceCandles);
-            oiCandleSeries.setData(oiCandles);
+            // تعبئة الشارت الموحد بالبيانات
+            priceSeries.setData(priceCandles);
+            oiSeries.setData(oiCandles);
 
-            priceChart.timeScale().fitContent();
-            oiChart.timeScale().fitContent();
+            unifiedChart.timeScale().fitContent();
 
         } catch (error) {
-            console.error("خطأ في جلب أو مزامنة البيانات:", error);
+            console.error("خطأ في تحميل البيانات:", error);
         }
     }
 
     window.onload = () => {
         populateSymbols();
-        initCharts();
+        initChart();
         loadChartData();
     };
 </script>
