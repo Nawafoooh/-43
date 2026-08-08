@@ -562,6 +562,21 @@ class DashboardManager {
     }
   }
 
+  // إضافة هذه الدالة داخل كلاس البيانات لجلب نسبة الحيتان (Top Traders Ratio)
+async getTopTradersRatio(symbol, period = "1h") {
+  const res = await fetch(`https://fapi.binance.com/futures/data/topLongShortPositionRatio?symbol=${symbol}&period=${period}&limit=1`);
+  if (!res.ok) throw new Error("Top Traders Ratio Fetch Error");
+  const data = await res.json();
+  if (data && data.length > 0) {
+    return {
+      longAccount: parseFloat(data[0].longAccount), // نسبة المراهنين على الصعود
+      shortAccount: parseFloat(data[0].shortAccount), // نسبة المراهنين على الهبوط
+      longShortRatio: parseFloat(data[0].longShortRatio) // النسبة بينهما
+    };
+  }
+  return null;
+}
+
   async fetchOIHistAndRender(cfg, ticker, funding) {
     try {
       const oiRes = await fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${cfg.symbol}&period=1h&limit=24`);
