@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Crypto Derivatives Intelligence Terminal — Whales & Multi-Timeframe Engine</title>
+<title>Crypto Derivatives Intelligence Terminal — Audit Version</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
 :root {
@@ -24,8 +24,6 @@
   --blue-dim: rgba(59, 130, 246, 0.15);
   --yellow: #f59e0b;
   --yellow-dim: rgba(245, 158, 11, 0.15);
-  --purple: #8b5cf6;
-  --purple-dim: rgba(139, 92, 246, 0.15);
   --radius: 12px;
   --radius-sm: 8px;
   --shadow: 0 4px 20px -2px rgba(0,0,0,0.5);
@@ -110,9 +108,9 @@ select.ctrl-select.tf-select { border-color: var(--blue); color: var(--blue); }
 
 /* Grid Layout */
 main.content { padding: 20px; flex: 1; }
-#grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 18px; }
-#grid.density-compact { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
-#grid.density-large { grid-template-columns: repeat(auto-fit, minmax(540px, 1fr)); gap: 24px; }
+#grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 18px; }
+#grid.density-compact { grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 12px; }
+#grid.density-large { grid-template-columns: repeat(auto-fit, minmax(560px, 1fr)); gap: 24px; }
 
 /* Dashboard Card */
 .card {
@@ -130,6 +128,7 @@ main.content { padding: 20px; flex: 1; }
 .symbol-block { display: flex; align-items: center; gap: 8px; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); }
 .status-dot.live { background: var(--up); box-shadow: 0 0 8px var(--up); }
+.status-dot.stale { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
 .status-dot.loading { background: var(--blue); animation: pulse 1s infinite alternate; }
 @keyframes pulse { from { opacity: 0.3; } to { opacity: 1; } }
 
@@ -166,7 +165,12 @@ main.content { padding: 20px; flex: 1; }
 .sparkline-container { height: 22px; width: 100%; margin-top: 2px; }
 .sparkline-container svg { width: 100%; height: 100%; overflow: visible; }
 
-/* Whales Ratio Bar */
+/* Multi Timeframe Table */
+.mtf-table { width: 100%; border-collapse: collapse; font-size: 11px; font-family: var(--mono); background: var(--bg-1); border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-soft); }
+.mtf-table th { background: var(--bg-0); color: var(--text-3); font-size: 9px; text-transform: uppercase; padding: 4px 6px; text-align: center; }
+.mtf-table td { padding: 5px 6px; text-align: center; border-top: 1px solid var(--border-soft); }
+
+/* Top Traders Ratio Bar */
 .whale-ratio-wrap {
   display: flex; flex-direction: column; gap: 3px; background: var(--bg-1);
   padding: 6px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-soft);
@@ -175,41 +179,45 @@ main.content { padding: 20px; flex: 1; }
 .whale-bar-track { height: 6px; background: var(--down); border-radius: 3px; overflow: hidden; display: flex; }
 .whale-bar-fill { height: 100%; background: var(--up); transition: width 0.3s ease; }
 
-/* Market State Badge */
-.market-state-box {
+/* Analytics Breakdown Container */
+.analysis-box {
   background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-sm);
-  padding: 8px 10px; display: flex; flex-direction: column; gap: 5px;
+  padding: 10px; display: flex; flex-direction: column; gap: 8px;
 }
-.ms-header { display: flex; justify-content: space-between; align-items: center; }
-.ms-title { font-size: 11px; font-weight: 800; }
-.ms-score { font-size: 10px; font-weight: 800; font-family: var(--mono); padding: 2px 5px; border-radius: 4px; }
+.state-row { display: flex; justify-content: space-between; align-items: center; }
+.state-badge { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; font-family: var(--mono); }
 
 .badge-long-bu { background: var(--up-dim); color: var(--up); border: 1px solid var(--up); }
 .badge-short-bu { background: var(--down-dim); color: var(--down); border: 1px solid var(--down); }
 .badge-short-cov { background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue); }
-.badge-long-liq { background: var(--yellow-dim); color: var(--yellow); border: 1px solid var(--yellow); }
-.badge-neutral { background: var(--bg-2); color: var(--text-2); border: 1px solid var(--border); }
+.badge-long-uw { background: var(--yellow-dim); color: var(--yellow); border: 1px solid var(--yellow); }
+
+.setup-title { font-size: 11px; font-weight: 700; color: var(--text-2); }
+.confidence-val { font-size: 12px; font-weight: 800; font-family: var(--mono); color: var(--blue); }
+
+/* Accordion WHY Section */
+details.why-accordion {
+  background: var(--bg-0); border: 1px solid var(--border-soft); border-radius: 6px; overflow: hidden; font-size: 11px;
+}
+details.why-accordion summary {
+  padding: 6px 10px; cursor: pointer; font-weight: 700; color: var(--text-2); user-select: none;
+  display: flex; justify-content: space-between; align-items: center; background: var(--bg-1);
+}
+details.why-accordion summary:hover { color: var(--text-1); }
+.why-content { padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--border-soft); }
+.why-list { list-style: none; display: flex; flex-direction: column; gap: 3px; color: var(--text-2); }
+.why-list li::before { content: "• "; color: var(--blue); font-weight: bold; }
+
+.score-breakdown-table { width: 100%; margin-top: 4px; font-family: var(--mono); font-size: 10px; border-collapse: collapse; }
+.score-breakdown-table td { padding: 2px 0; border-bottom: 1px dashed var(--border-soft); }
+.score-breakdown-table td:last-child { text-align: left; font-weight: bold; }
+.na-tag { color: var(--text-3); font-style: italic; }
 
 .card-foot {
   padding: 6px 12px; background: var(--bg-1); border-top: 1px solid var(--border-soft);
-  font-size: 10px; color: var(--text-3); display: flex; justify-content: space-between;
+  font-size: 10px; color: var(--text-3); display: flex; justify-content: space-between; align-items: center;
 }
-
-/* Scanner Drawer */
-.drawer {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-  display: none; z-index: 200; justify-content: center; align-items: center;
-}
-.drawer.open { display: flex; }
-.drawer-content {
-  background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius);
-  width: 90%; max-width: 900px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;
-}
-.drawer-head { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-.drawer-body { padding: 16px; overflow-y: auto; }
-.scanner-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: right; }
-.scanner-table th, .scanner-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-soft); }
-.scanner-table th { color: var(--text-3); font-weight: 700; }
+.freshness-badge { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; }
 
 @media (max-width: 600px) {
   .global-metrics { display: none; }
@@ -226,7 +234,7 @@ main.content { padding: 20px; flex: 1; }
       <div class="brand-icon">OI</div>
       <div class="brand-title">
         <h1>Crypto Derivatives Terminal</h1>
-        <p>مراقب 50+ عملة مباشرة + تحليل الحيتان والفريمات متعدد الاستراتيجيات</p>
+        <p>Audit Engine — Fact-Based Derivatives Analytics</p>
       </div>
     </div>
 
@@ -236,7 +244,7 @@ main.content { padding: 20px; flex: 1; }
         <span class="gm-val" id="gm-total">0</span>
       </div>
       <div class="gm-item">
-        <span class="gm-label">Total Market OI</span>
+        <span class="gm-label">TRACKED MARKET OI</span>
         <span class="gm-val" id="gm-oi">$--</span>
       </div>
       <div class="gm-item">
@@ -250,7 +258,6 @@ main.content { padding: 20px; flex: 1; }
     </div>
 
     <div style="display:flex; gap:8px;">
-      <button class="btn-icon" id="btn-scanner" title="الماسح الذكي"><i class="fa-solid fa-bolt"></i></button>
       <button class="btn-icon" id="btn-theme" title="تغيير المظهر"><i class="fa-solid fa-moon"></i></button>
     </div>
   </header>
@@ -259,32 +266,32 @@ main.content { padding: 20px; flex: 1; }
   <div class="control-bar">
     <div class="search-box">
       <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" id="search-input" placeholder="بحث من بين 50+ عملة...">
+      <input type="text" id="search-input" placeholder="بحث من بين العملات المتابعة...">
     </div>
 
-    <!-- Timeframe Picker -->
-    <select class="ctrl-select tf-select" id="timeframe-select" title="اختر الفريم الزمني لتحليل الـ OI والحيتان">
+    <!-- Primary Analysis Timeframe -->
+    <select class="ctrl-select tf-select" id="timeframe-select" title="اختر الفريم الزمني الرئيسي للتحليل">
+      <option value="15m">فريم 15 دقيقة (15m)</option>
       <option value="1h">فريم 1 ساعة (1H)</option>
-      <option value="4h" selected>فريم 4 ساعات (4H) — موصى به</option>
+      <option value="4h" selected>فريم 4 ساعات (4H)</option>
       <option value="1d">فريم يومي (1D)</option>
     </select>
 
     <div class="seg-group" id="filter-seg">
       <button class="seg-btn active" data-filter="all">الكل</button>
       <button class="seg-btn" data-filter="pinned">المثبتة</button>
-      <button class="seg-btn" data-filter="whales-long">🐋 حيتان (Whales Long)</button>
       <button class="seg-btn" data-filter="long-bu">Long Build-up</button>
       <button class="seg-btn" data-filter="short-bu">Short Build-up</button>
-      <button class="seg-btn" data-filter="oi-rising">OI ↑</button>
-      <button class="seg-btn" data-filter="strong-signal">إشارة قوية 🔥</button>
+      <button class="seg-btn" data-filter="short-cov">Short Covering</button>
+      <button class="seg-btn" data-filter="long-uw">Long Unwind</button>
+      <button class="seg-btn" data-filter="high-confidence">High Confidence (75+)</button>
     </div>
 
     <select class="ctrl-select" id="sort-select">
       <option value="priority">الترتيب الافتراضي</option>
-      <option value="whales">نسبة شراء الحيتان (Whales %)</option>
-      <option value="oi-change">نسبة تغير الـ OI</option>
+      <option value="oi-change">تغير الـ OI</option>
+      <option value="confidence">نسبة الثقة (Confidence)</option>
       <option value="funding">معدل التمويل (Funding)</option>
-      <option value="signal">سكور الإشارة (Score)</option>
       <option value="alpha">أبجدي</option>
     </select>
 
@@ -294,7 +301,7 @@ main.content { padding: 20px; flex: 1; }
       <button class="seg-btn" data-density="large"><i class="fa-solid fa-square"></i></button>
     </div>
 
-    <button class="btn-icon" id="btn-refresh" title="تحديث الكل"><i class="fa-solid fa-rotate"></i></button>
+    <button class="btn-icon" id="btn-refresh" title="تحديث البيانات"><i class="fa-solid fa-rotate"></i></button>
   </div>
 
   <!-- Cards Grid -->
@@ -303,38 +310,9 @@ main.content { padding: 20px; flex: 1; }
   </main>
 </div>
 
-<!-- Scanner Modal -->
-<div class="drawer" id="scanner-modal">
-  <div class="drawer-content">
-    <div class="drawer-head">
-      <h3><i class="fa-solid fa-bolt" style="color:var(--yellow)"></i> الماسح المتقدم وتتبع الحيتان (Market & Whale Scanner)</h3>
-      <button class="action-btn" id="close-scanner"><i class="fa-solid fa-xmark fa-lg"></i></button>
-    </div>
-    <div class="drawer-body">
-      <table class="scanner-table">
-        <thead>
-          <tr>
-            <th>الرمز</th>
-            <th>الحالة</th>
-            <th>تمركز الحيتان (Whales L/S)</th>
-            <th>Score</th>
-            <th>تغير OI للفريم</th>
-            <th>التمويل (Funding)</th>
-            <th>التشخيص</th>
-          </tr>
-        </thead>
-        <tbody id="scanner-results"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <script>
-/**
- * 50+ MAJOR CRYPTO DERIVATIVES MARKETS LIST
- */
 const SYMBOLS_CONFIG = [
   { id: "btc", symbol: "BTCUSDT", name: "Bitcoin", tvSymbol: "BINANCE:BTCUSDT.P", priority: 1 },
   { id: "eth", symbol: "ETHUSDT", name: "Ethereum", tvSymbol: "BINANCE:ETHUSDT.P", priority: 2 },
@@ -345,47 +323,7 @@ const SYMBOLS_CONFIG = [
   { id: "ada", symbol: "ADAUSDT", name: "Cardano", tvSymbol: "BINANCE:ADAUSDT.P", priority: 7 },
   { id: "avax", symbol: "AVAXUSDT", name: "Avalanche", tvSymbol: "BINANCE:AVAXUSDT.P", priority: 8 },
   { id: "sui", symbol: "SUIUSDT", name: "Sui", tvSymbol: "BINANCE:SUIUSDT.P", priority: 9 },
-  { id: "link", symbol: "LINKUSDT", name: "Chainlink", tvSymbol: "BINANCE:LINKUSDT.P", priority: 10 },
-  { id: "pepe", symbol: "1000PEPEUSDT", name: "Pepe", tvSymbol: "BINANCE:1000PEPEUSDT.P", priority: 11 },
-  { id: "near", symbol: "NEARUSDT", name: "Near Protocol", tvSymbol: "BINANCE:NEARUSDT.P", priority: 12 },
-  { id: "apt", symbol: "APTUSDT", name: "Aptos", tvSymbol: "BINANCE:APTUSDT.P", priority: 13 },
-  { id: "shib", symbol: "1000SHIBUSDT", name: "Shiba Inu", tvSymbol: "BINANCE:1000SHIBUSDT.P", priority: 14 },
-  { id: "wif", symbol: "WIFUSDT", name: "Dogwifhat", tvSymbol: "BINANCE:WIFUSDT.P", priority: 15 },
-  { id: "fet", symbol: "FETUSDT", name: "Fetch.ai", tvSymbol: "BINANCE:FETUSDT.P", priority: 16 },
-  { id: "inj", symbol: "INJUSDT", name: "Injective", tvSymbol: "BINANCE:INJUSDT.P", priority: 17 },
-  { id: "render", symbol: "RENDERUSDT", name: "Render", tvSymbol: "BINANCE:RENDERUSDT.P", priority: 18 },
-  { id: "arb", symbol: "ARBUSDT", name: "Arbitrum", tvSymbol: "BINANCE:ARBUSDT.P", priority: 19 },
-  { id: "op", symbol: "OPUSDT", name: "Optimism", tvSymbol: "BINANCE:OPUSDT.P", priority: 20 },
-  { id: "tao", symbol: "TAOUSDT", name: "Bittensor", tvSymbol: "BINANCE:TAOUSDT.P", priority: 21 },
-  { id: "sei", symbol: "SEIUSDT", name: "Sei", tvSymbol: "BINANCE:SEIUSDT.P", priority: 22 },
-  { id: "tia", symbol: "TIAUSDT", name: "Celestia", tvSymbol: "BINANCE:TIAUSDT.P", priority: 23 },
-  { id: "bonk", symbol: "1000BONKUSDT", name: "Bonk", tvSymbol: "BINANCE:1000BONKUSDT.P", priority: 24 },
-  { id: "floki", symbol: "1000FLOKIUSDT", name: "Floki", tvSymbol: "BINANCE:1000FLOKIUSDT.P", priority: 25 },
-  { id: "dot", symbol: "DOTUSDT", name: "Polkadot", tvSymbol: "BINANCE:DOTUSDT.P", priority: 26 },
-  { id: "ltc", symbol: "LTCUSDT", name: "Litecoin", tvSymbol: "BINANCE:LTCUSDT.P", priority: 27 },
-  { id: "trx", symbol: "TRXUSDT", name: "TRON", tvSymbol: "BINANCE:TRXUSDT.P", priority: 28 },
-  { id: "bch", symbol: "BCHUSDT", name: "Bitcoin Cash", tvSymbol: "BINANCE:BCHUSDT.P", priority: 29 },
-  { id: "ton", symbol: "TONUSDT", name: "Toncoin", tvSymbol: "BINANCE:TONUSDT.P", priority: 30 },
-  { id: "not", symbol: "NOTUSDT", name: "Notcoin", tvSymbol: "BINANCE:NOTUSDT.P", priority: 31 },
-  { id: "ordi", symbol: "ORDIUSDT", name: "ORDI", tvSymbol: "BINANCE:ORDIUSDT.P", priority: 32 },
-  { id: "sats", symbol: "1000SATSUSDT", name: "SATS", tvSymbol: "BINANCE:1000SATSUSDT.P", priority: 33 },
-  { id: "wld", symbol: "WLDUSDT", name: "Worldcoin", tvSymbol: "BINANCE:WLDUSDT.P", priority: 34 },
-  { id: "ena", symbol: "ENAUSDT", name: "Ethena", tvSymbol: "BINANCE:ENAUSDT.P", priority: 35 },
-  { id: "strk", symbol: "STRKUSDT", name: "Starknet", tvSymbol: "BINANCE:STRKUSDT.P", priority: 36 },
-  { id: "pyth", symbol: "PYTHUSDT", name: "Pyth Network", tvSymbol: "BINANCE:PYTHUSDT.P", priority: 37 },
-  { id: "jup", symbol: "JUPUSDT", name: "Jupiter", tvSymbol: "BINANCE:JUPUSDT.P", priority: 38 },
-  { id: "pendle", symbol: "PENDLEUSDT", name: "Pendle", tvSymbol: "BINANCE:PENDLEUSDT.P", priority: 39 },
-  { id: "ldo", symbol: "LDOUSDT", name: "Lido DAO", tvSymbol: "BINANCE:LDOUSDT.P", priority: 40 },
-  { id: "gala", symbol: "GALAUSDT", name: "Gala", tvSymbol: "BINANCE:GALAUSDT.P", priority: 41 },
-  { id: "atom", symbol: "ATOMUSDT", name: "Cosmos", tvSymbol: "BINANCE:ATOMUSDT.P", priority: 42 },
-  { id: "etc", symbol: "ETCUSDT", name: "Ethereum Classic", tvSymbol: "BINANCE:ETCUSDT.P", priority: 43 },
-  { id: "stx", symbol: "STXUSDT", name: "Stacks", tvSymbol: "BINANCE:STXUSDT.P", priority: 44 },
-  { id: "kas", symbol: "KASUSDT", name: "Kaspa", tvSymbol: "BINANCE:KASUSDT.P", priority: 45 },
-  { id: "xlm", symbol: "XLMUSDT", name: "Stellar", tvSymbol: "BINANCE:XLMUSDT.P", priority: 46 },
-  { id: "algo", symbol: "ALGOUSDT", name: "Algorand", tvSymbol: "BINANCE:ALGOUSDT.P", priority: 47 },
-  { id: "ftm", symbol: "FTMUSDT", name: "Fantom", tvSymbol: "BINANCE:FTMUSDT.P", priority: 48 },
-  { id: "icp", symbol: "ICPUSDT", name: "Internet Computer", tvSymbol: "BINANCE:ICPUSDT.P", priority: 49 },
-  { id: "crv", symbol: "CRVUSDT", name: "Curve", tvSymbol: "BINANCE:CRVUSDT.P", priority: 50 }
+  { id: "link", symbol: "LINKUSDT", name: "Chainlink", tvSymbol: "BINANCE:LINKUSDT.P", priority: 10 }
 ];
 
 function formatUSD(num) {
@@ -420,7 +358,7 @@ class DashboardManager {
     this.currentFilter = 'all';
     this.currentSort = 'priority';
     this.searchTerm = '';
-    this.currentTimeframe = '4h'; // Default Timeframe: 4H
+    this.currentTimeframe = '4h';
 
     this.initIntersectionObserver();
     this.initUI();
@@ -450,7 +388,6 @@ class DashboardManager {
 
     document.getElementById('btn-refresh').addEventListener('click', () => this.fetchDataAll());
 
-    // Timeframe Selector Change Listener
     document.getElementById('timeframe-select').addEventListener('change', (e) => {
       this.currentTimeframe = e.target.value;
       this.updateTVWidgetsTimeframe(this.currentTimeframe);
@@ -475,14 +412,6 @@ class DashboardManager {
       this.searchTerm = e.target.value.toLowerCase().trim();
       this.applyFilterAndSort();
     });
-
-    document.getElementById('btn-scanner').addEventListener('click', () => {
-      this.renderScannerResults();
-      document.getElementById('scanner-modal').classList.add('open');
-    });
-    document.getElementById('close-scanner').addEventListener('click', () => {
-      document.getElementById('scanner-modal').classList.remove('open');
-    });
   }
 
   renderCardsSkeleton() {
@@ -506,13 +435,13 @@ class DashboardManager {
         </div>
 
         <div class="price-chart-wrap" id="tv-wrap-${cfg.id}">
-          <div class="chart-placeholder">جاري تحميل شارت ${cfg.symbol}...</div>
+          <div class="chart-placeholder">جاري تحميل الشارت المباشر...</div>
         </div>
 
         <div class="card-body">
           <div class="data-row">
             <div class="metric-box">
-              <div class="metric-title">Open Interest <span id="oi-spark-${cfg.id}"></span></div>
+              <div class="metric-title">Open Interest (${this.currentTimeframe}) <span id="oi-spark-${cfg.id}"></span></div>
               <div class="metric-val" id="oi-val-${cfg.id}">$--</div>
               <div class="metric-sub" id="oi-sub-${cfg.id}">--%</div>
             </div>
@@ -523,10 +452,30 @@ class DashboardManager {
             </div>
           </div>
 
-          <!-- Top Traders / Whales Ratio -->
+          <!-- Multi Timeframe OI Matrix -->
+          <table class="mtf-table">
+            <thead>
+              <tr>
+                <th>15M</th>
+                <th>1H</th>
+                <th>4H</th>
+                <th>24H</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="oi-15m-${cfg.id}">--</td>
+                <td id="oi-1h-${cfg.id}">--</td>
+                <td id="oi-4h-${cfg.id}">--</td>
+                <td id="oi-24h-${cfg.id}">--</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Top Traders Account Ratio (Real Binance Data) -->
           <div class="whale-ratio-wrap">
             <div class="whale-labels">
-              <span>🐋 الحيتان (Long): <b id="whale-long-${cfg.id}">--%</b></span>
+              <span>Top Trader Accounts (Long): <b id="whale-long-${cfg.id}">--%</b></span>
               <span>(Short): <b id="whale-short-${cfg.id}">--%</b></span>
             </div>
             <div class="whale-bar-track">
@@ -534,17 +483,40 @@ class DashboardManager {
             </div>
           </div>
 
-          <div class="market-state-box" id="state-box-${cfg.id}">
-            <div class="ms-header">
-              <span class="ms-title" id="ms-title-${cfg.id}">الحالة: جاري التحليل...</span>
-              <span class="ms-score" id="ms-score-${cfg.id}">--/100</span>
+          <!-- Rigorous Analytics Box -->
+          <div class="analysis-box">
+            <div class="state-row">
+              <span class="state-badge" id="state-badge-${cfg.id}">--</span>
+              <span class="confidence-val" id="conf-val-${cfg.id}">Confidence: --/100</span>
             </div>
+            <div class="setup-title" id="setup-title-${cfg.id}">Setup: Analyzing Market Alignment...</div>
+
+            <!-- Expandable WHY Section -->
+            <details class="why-accordion">
+              <summary>
+                <span>لماذا هذه الحالة؟ (WHY THIS STATE?)</span>
+                <i class="fa-solid fa-chevron-down"></i>
+              </summary>
+              <div class="why-content">
+                <ul class="why-list" id="why-list-${cfg.id}"></ul>
+                
+                <table class="score-breakdown-table">
+                  <thead>
+                    <tr style="color:var(--text-3); font-size:9px;">
+                      <th>العامل (FACTOR)</th>
+                      <th style="text-align:left;">النقاط (POINTS)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="score-breakdown-${cfg.id}"></tbody>
+                </table>
+              </div>
+            </details>
           </div>
         </div>
 
         <div class="card-foot">
-          <span id="update-time-${cfg.id}">جاري تحديث البيانات...</span>
-          <span>Binance Futures</span>
+          <span class="freshness-badge" id="freshness-${cfg.id}">● FETCHING...</span>
+          <span>Binance Futures API</span>
         </div>
       `;
       this.grid.appendChild(card);
@@ -553,6 +525,7 @@ class DashboardManager {
   }
 
   getTVInterval(tf) {
+    if (tf === '15m') return '15';
     if (tf === '1h') return '60';
     if (tf === '4h') return '240';
     if (tf === '1d') return 'D';
@@ -604,7 +577,7 @@ class DashboardManager {
         const funding = fundingMap.get(cfg.symbol);
 
         if (ticker && funding) {
-          this.fetchOIAndWhalesAndRender(cfg, ticker, funding);
+          this.fetchComprehensiveDerivativesData(cfg, ticker, funding);
         }
       }
     } catch (err) {
@@ -612,86 +585,159 @@ class DashboardManager {
     }
   }
 
-  async fetchOIAndWhalesAndRender(cfg, ticker, funding) {
+  async fetchComprehensiveDerivativesData(cfg, ticker, funding) {
     try {
-      const tf = this.currentTimeframe;
-      const [oiRes, whaleRes] = await Promise.all([
-        fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${cfg.symbol}&period=${tf}&limit=24`),
-        fetch(`https://fapi.binance.com/futures/data/topLongShortPositionRatio?symbol=${cfg.symbol}&period=${tf}&limit=1`)
+      const primaryTF = this.currentTimeframe;
+
+      // Fetch Multi-Timeframe OI & Top Traders Data
+      const [oiHistPrimary, oi15m, oi1h, oi4h, oi24h, topTraderAccs] = await Promise.all([
+        fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${cfg.symbol}&period=${primaryTF}&limit=30`).then(r => r.json()),
+        fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${cfg.symbol}&period=15m&limit=2`).then(r => r.json()),
+        fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${cfg.symbol}&period=1h&limit=2`).then(r => r.json()),
+        fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${cfg.symbol}&period=4h&limit=2`).then(r => r.json()),
+        fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${cfg.symbol}&period=1d&limit=2`).then(r => r.json()),
+        fetch(`https://fapi.binance.com/futures/data/topLongShortAccountRatio?symbol=${cfg.symbol}&period=4h&limit=1`).then(r => r.json())
       ]);
 
-      const oiHist = await oiRes.json();
-      const whaleData = await whaleRes.json();
+      if (!oiHistPrimary || oiHistPrimary.length < 2) return;
 
-      if (!oiHist || oiHist.length === 0) return;
-
-      const priceChange = parseFloat(ticker.priceChangePercent);
       const price = parseFloat(ticker.lastPrice);
-      const latestOIVal = parseFloat(oiHist[oiHist.length - 1].sumOpenInterestValue);
-      const prevOIVal = parseFloat(oiHist[0].sumOpenInterestValue);
-      const oiChangePercent = ((latestOIVal - prevOIVal) / prevOIVal) * 100;
+      const priceChange = parseFloat(ticker.priceChangePercent);
       const fundingRate = parseFloat(funding.lastFundingRate) * 100;
 
-      // Whale Position Data
-      let whaleLongRatio = 50;
-      let whaleShortRatio = 50;
-      if (whaleData && whaleData.length > 0) {
-        whaleLongRatio = parseFloat(whaleData[0].longAccount) * 100;
-        whaleShortRatio = parseFloat(whaleData[0].shortAccount) * 100;
+      // Helper for OI Change calculation
+      const calcOIChange = (hist) => {
+        if (!hist || hist.length < 2) return 0;
+        const cur = parseFloat(hist[hist.length - 1].sumOpenInterestValue);
+        const prev = parseFloat(hist[0].sumOpenInterestValue);
+        return ((cur - prev) / prev) * 100;
+      };
+
+      const oiChange15m = calcOIChange(oi15m);
+      const oiChange1h = calcOIChange(oi1h);
+      const oiChange4h = calcOIChange(oi4h);
+      const oiChange24h = calcOIChange(oi24h);
+
+      const latestOIVal = parseFloat(oiHistPrimary[oiHistPrimary.length - 1].sumOpenInterestValue);
+      const oiChangePrimary = calcOIChange(oiHistPrimary);
+
+      // OI Momentum & Acceleration (Delta of Delta)
+      const series = oiHistPrimary.map(d => parseFloat(d.sumOpenInterestValue));
+      const deltaRecent = series[series.length - 1] - series[series.length - 2];
+      const deltaPrevious = series[series.length - 2] - series[series.length - 3] || 1;
+      const oiMomentum = ((deltaRecent - deltaPrevious) / Math.abs(deltaPrevious)) * 100;
+      const isAccelerating = deltaRecent > deltaPrevious && deltaRecent > 0;
+
+      // Top Traders Account Data
+      let topLongRatio = null;
+      let topShortRatio = null;
+      if (topTraderAccs && topTraderAccs.length > 0) {
+        topLongRatio = parseFloat(topTraderAccs[0].longAccount) * 100;
+        topShortRatio = parseFloat(topTraderAccs[0].shortAccount) * 100;
       }
 
-      // Determine Market State
-      let state = "NEUTRAL";
-      let stateDesc = "متوازن / تجميع جانبي";
-      if (priceChange > 0 && oiChangePercent > 0) { state = "LONG_BUILDUP"; stateDesc = "Long Build-up (دخول سيولة)"; }
-      else if (priceChange < 0 && oiChangePercent > 0) { state = "SHORT_BUILDUP"; stateDesc = "Short Build-up (تراكم بيع)"; }
-      else if (priceChange > 0 && oiChangePercent < 0) { state = "SHORT_COVERING"; stateDesc = "Short Covering (تغطية بيع)"; }
-      else if (priceChange < 0 && oiChangePercent < 0) { state = "LONG_UNWIND"; stateDesc = "Long Unwind (تصفية شرائية)"; }
+      // 1. DETERMINE MARKET STATE (Purely Objective Data Rules)
+      let marketState = "NEUTRAL";
+      if (priceChange >= 0 && oiChangePrimary > 0) marketState = "LONG BUILD-UP";
+      else if (priceChange < 0 && oiChangePrimary > 0) marketState = "SHORT BUILD-UP";
+      else if (priceChange >= 0 && oiChangePrimary <= 0) marketState = "SHORT COVERING";
+      else if (priceChange < 0 && oiChangePrimary <= 0) marketState = "LONG UNWIND";
 
-      // Enhanced Conviction Score Engine (OI + Funding + Whale Ratio)
-      let score = 50;
-      if (Math.abs(oiChangePercent) > 4) score += 15;
-      
-      // Whale Conviction Adjustment
-      if (state === "LONG_BUILDUP") {
-        if (whaleLongRatio >= 55) {
-          score += 25; // High Conviction Bullish (Whales Buying)
-          stateDesc += " 🔥 (دعم حيتان قوي)";
-        } else if (whaleLongRatio < 45) {
-          score -= 15; // Warning: Fakeout/Retail Trap
-          stateDesc += " ⚠️ (مصيدة صعود احتمالية)";
-        }
-      } else if (state === "SHORT_BUILDUP") {
-        if (whaleShortRatio >= 55) {
-          score += 25; // High Conviction Bearish (Whales Shorting)
-          stateDesc += " 🩸 (ضغط ضخم من الحيتان)";
-        }
+      // 2. TRADE SETUP HYPOTHESIS
+      let tradeSetup = "Range / Consolidation";
+      if (marketState === "LONG BUILD-UP") {
+        tradeSetup = isAccelerating ? "Breakout Trend Continuation" : "Gradual Accumulation";
+      } else if (marketState === "SHORT BUILD-UP") {
+        tradeSetup = isAccelerating ? "Aggressive Downward Expansion" : "Hedging / Resistance Pressure";
+      } else if (marketState === "SHORT COVERING") {
+        tradeSetup = "Squeeze / Short Liquidation Rally";
+      } else if (marketState === "LONG UNWIND") {
+        tradeSetup = "Long Liquidation / Deleveraging";
       }
 
-      if (fundingRate < 0.01 && state === "LONG_BUILDUP") score += 10;
-      score = Math.min(100, Math.max(10, Math.round(score)));
+      // 3. EXPLAINABLE CONFIDENCE SCORE ENGINE (Normalized Across Available Data Only)
+      let availableWeight = 0;
+      let earnedPoints = 0;
+
+      const breakdown = [];
+
+      // Factor 1: OI Momentum (Max 25)
+      const oiMomPoints = Math.min(25, Math.max(0, Math.round((Math.abs(oiChangePrimary) / 3) * 25)));
+      earnedPoints += oiMomPoints;
+      availableWeight += 25;
+      breakdown.push({ factor: "OI Momentum", score: `${oiMomPoints}/25` });
+
+      // Factor 2: Price/OI Relation Divergence (Max 25)
+      let relationPoints = 15;
+      if (marketState === "LONG BUILD-UP" || marketState === "SHORT BUILD-UP") relationPoints = 25; // Trend Expansion
+      else if (marketState === "SHORT COVERING" || marketState === "LONG UNWIND") relationPoints = 10; // Deleveraging
+      earnedPoints += relationPoints;
+      availableWeight += 25;
+      breakdown.push({ factor: "Price/OI Divergence Alignment", score: `${relationPoints}/25` });
+
+      // Factor 3: Funding Rate Crowdedness (Max 25)
+      let fundingPoints = 20;
+      if (Math.abs(fundingRate) > 0.05) fundingPoints = 8; // Crowded Trade Danger
+      earnedPoints += fundingPoints;
+      availableWeight += 25;
+      breakdown.push({ factor: "Funding Rate Balance", score: `${fundingPoints}/25` });
+
+      // Factor 4: Top Traders Positioning (Max 25 - Only if available)
+      if (topLongRatio !== null) {
+        let traderPoints = 12;
+        if ((marketState === "LONG BUILD-UP" && topLongRatio > 55) || (marketState === "SHORT BUILD-UP" && topShortRatio > 55)) {
+          traderPoints = 25;
+        }
+        earnedPoints += traderPoints;
+        availableWeight += 25;
+        breakdown.push({ factor: "Top Traders Account Alignment", score: `${traderPoints}/25` });
+      } else {
+        breakdown.push({ factor: "Top Traders Account Alignment", score: `<span class="na-tag">N/A</span>` });
+      }
+
+      // Unavailable Data Factors explicitly marked N/A
+      breakdown.push({ factor: "Liquidations Data", score: `<span class="na-tag">N/A</span>` });
+      breakdown.push({ factor: "Orderbook Cumulative Volume Delta (CVD)", score: `<span class="na-tag">N/A</span>` });
+      breakdown.push({ factor: "Taker Buy/Sell Volume Flow", score: `<span class="na-tag">N/A</span>` });
+
+      // Normalize Score to 100
+      const confidenceScore = Math.min(100, Math.round((earnedPoints / availableWeight) * 100));
+
+      // 4. WHY LIST GENERATION
+      const whyList = [];
+      whyList.push(`Price: ${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)}% | OI (${primaryTF}): ${oiChangePrimary >= 0 ? '+' : ''}${oiChangePrimary.toFixed(2)}%`);
+      whyList.push(`Funding: ${fundingRate >= 0 ? '+' : ''}${fundingRate.toFixed(4)}% (${Math.abs(fundingRate) > 0.03 ? 'Crowded' : 'Normal'})`);
+      whyList.push(isAccelerating ? `OI Momentum: Accelerating (+${oiMomentum.toFixed(1)}%)` : `OI Momentum: Decelerating`);
+      if (topLongRatio !== null) {
+        whyList.push(`Top Trader Accounts: ${topLongRatio.toFixed(1)}% Long / ${topShortRatio.toFixed(1)}% Short`);
+      }
 
       const data = {
-        price, priceChange, oiValUSD: latestOIVal, oiChangePercent,
-        fundingRate, whaleLongRatio, whaleShortRatio, state, stateDesc, score, tf,
-        historySeries: oiHist.map(d => parseFloat(d.sumOpenInterestValue))
+        price, priceChange, oiValUSD: latestOIVal, oiChangePrimary,
+        fundingRate, marketState, tradeSetup, confidenceScore,
+        oiChange15m, oiChange1h, oiChange4h, oiChange24h,
+        topLongRatio, topShortRatio,
+        historySeries: series, whyList, breakdown,
+        fetchTime: new Date()
       };
 
       this.metricsData.set(cfg.id, data);
       this.updateCardDOM(cfg.id, data);
     } catch (e) {
-      document.getElementById(`status-${cfg.id}`).className = "status-dot error";
+      console.error(`Error processing ${cfg.symbol}:`, e);
+      document.getElementById(`status-${cfg.id}`).className = "status-dot stale";
     }
   }
 
   updateCardDOM(id, data) {
-    document.getElementById(`status-${id}`).className = "status-dot live";
+    const statusDot = document.getElementById(`status-${id}`);
+    statusDot.className = "status-dot live";
+
     document.getElementById(`oi-val-${id}`).textContent = formatUSD(data.oiValUSD);
 
     const oiSub = document.getElementById(`oi-sub-${id}`);
-    const isUp = data.oiChangePercent >= 0;
-    const tfLabel = data.tf.toUpperCase();
-    oiSub.textContent = `${isUp ? '▲' : '▼'} ${data.oiChangePercent.toFixed(2)}% (${tfLabel})`;
+    const isUp = data.oiChangePrimary >= 0;
+    oiSub.textContent = `${isUp ? '▲' : '▼'} ${data.oiChangePrimary.toFixed(2)}%`;
     oiSub.className = `metric-sub ${isUp ? 'up' : 'down'}`;
 
     document.getElementById(`oi-spark-${id}`).innerHTML = renderOIMiniChart(data.historySeries);
@@ -702,32 +748,58 @@ class DashboardManager {
 
     document.getElementById(`price-sub-${id}`).textContent = `Price: $${data.price.toFixed(2)} (${data.priceChange >= 0 ? '+' : ''}${data.priceChange.toFixed(2)}%)`;
 
-    // Whales Ratio UI Update
-    document.getElementById(`whale-long-${id}`).textContent = `${data.whaleLongRatio.toFixed(1)}%`;
-    document.getElementById(`whale-short-${id}`).textContent = `${data.whaleShortRatio.toFixed(1)}%`;
-    document.getElementById(`whale-bar-${id}`).style.width = `${data.whaleLongRatio}%`;
+    // Multi Timeframe Table DOM
+    const setMTFCell = (elemId, val) => {
+      const el = document.getElementById(elemId);
+      el.textContent = (val >= 0 ? '+' : '') + val.toFixed(2) + '%';
+      el.className = val >= 0 ? 'up' : 'down';
+    };
+    setMTFCell(`oi-15m-${id}`, data.oiChange15m);
+    setMTFCell(`oi-1h-${id}`, data.oiChange1h);
+    setMTFCell(`oi-4h-${id}`, data.oiChange4h);
+    setMTFCell(`oi-24h-${id}`, data.oiChange24h);
 
-    const stateBox = document.getElementById(`state-box-${id}`);
-    document.getElementById(`ms-title-${id}`).textContent = data.stateDesc;
-    document.getElementById(`ms-score-${id}`).textContent = `Score: ${data.score}/100`;
+    // Top Traders Ratio Bar DOM
+    if (data.topLongRatio !== null) {
+      document.getElementById(`whale-long-${id}`).textContent = `${data.topLongRatio.toFixed(1)}%`;
+      document.getElementById(`whale-short-${id}`).textContent = `${data.topShortRatio.toFixed(1)}%`;
+      document.getElementById(`whale-bar-${id}`).style.width = `${data.topLongRatio}%`;
+    }
 
-    stateBox.className = "market-state-box " + (
-      data.state === 'LONG_BUILDUP' ? 'badge-long-bu' :
-      data.state === 'SHORT_BUILDUP' ? 'badge-short-bu' :
-      data.state === 'SHORT_COVERING' ? 'badge-short-cov' :
-      data.state === 'LONG_UNWIND' ? 'badge-long-liq' : 'badge-neutral'
+    // Market State & Confidence DOM
+    const badgeEl = document.getElementById(`state-badge-${id}`);
+    badgeEl.textContent = data.marketState;
+    badgeEl.className = "state-badge " + (
+      data.marketState === 'LONG BUILD-UP' ? 'badge-long-bu' :
+      data.marketState === 'SHORT BUILD-UP' ? 'badge-short-bu' :
+      data.marketState === 'SHORT COVERING' ? 'badge-short-cov' : 'badge-long-uw'
     );
 
-    document.getElementById(`update-time-${id}`).textContent = `فريم [${tfLabel}] — ${new Date().toLocaleTimeString('ar-EG')}`;
+    document.getElementById(`conf-val-${id}`).textContent = `Confidence: ${data.confidenceScore}/100`;
+    document.getElementById(`setup-title-${id}`).textContent = `Setup: ${data.tradeSetup}`;
 
-    this.updateGlobalMetrics();
+    // Accordion WHY Section DOM
+    const whyListEl = document.getElementById(`why-list-${id}`);
+    whyListEl.innerHTML = data.whyList.map(item => `<li>${item}</li>`).join('');
+
+    const breakdownTbody = document.getElementById(`score-breakdown-${id}`);
+    breakdownTbody.innerHTML = data.breakdown.map(b => `
+      <tr>
+        <td style="color:var(--text-2);">${b.factor}</td>
+        <td>${b.score}</td>
+      </tr>
+    `).join('');
+
+    // Freshness Counter
+    const freshEl = document.getElementById(`freshness-${id}`);
+    freshEl.innerHTML = `<span style="color:var(--up);">● LIVE</span> Updated just now`;
   }
 
   updateGlobalMetrics() {
     let totalOI = 0, upCount = 0, downCount = 0, totalFunding = 0, count = 0;
     this.metricsData.forEach(d => {
       totalOI += d.oiValUSD;
-      if (d.oiChangePercent > 0) upCount++; else downCount++;
+      if (d.oiChangePrimary > 0) upCount++; else downCount++;
       totalFunding += d.fundingRate;
       count++;
     });
@@ -742,7 +814,7 @@ class DashboardManager {
 
   startDataLoop() {
     this.fetchDataAll();
-    setInterval(() => this.fetchDataAll(), 30000);
+    setInterval(() => this.fetchDataAll(), 20000);
   }
 
   togglePin(id) {
@@ -761,50 +833,30 @@ class DashboardManager {
     }
     if (this.currentFilter === 'pinned') {
       visible = visible.filter(s => this.pinned.has(s.id));
-    } else if (this.currentFilter === 'whales-long') {
-      visible = visible.filter(s => (this.metricsData.get(s.id)?.whaleLongRatio || 0) >= 55);
     } else if (this.currentFilter === 'long-bu') {
-      visible = visible.filter(s => this.metricsData.get(s.id)?.state === 'LONG_BUILDUP');
+      visible = visible.filter(s => this.metricsData.get(s.id)?.marketState === 'LONG BUILD-UP');
     } else if (this.currentFilter === 'short-bu') {
-      visible = visible.filter(s => this.metricsData.get(s.id)?.state === 'SHORT_BUILDUP');
-    } else if (this.currentFilter === 'oi-rising') {
-      visible = visible.filter(s => (this.metricsData.get(s.id)?.oiChangePercent || 0) > 0);
-    } else if (this.currentFilter === 'strong-signal') {
-      visible = visible.filter(s => (this.metricsData.get(s.id)?.score || 0) >= 70);
+      visible = visible.filter(s => this.metricsData.get(s.id)?.marketState === 'SHORT BUILD-UP');
+    } else if (this.currentFilter === 'short-cov') {
+      visible = visible.filter(s => this.metricsData.get(s.id)?.marketState === 'SHORT COVERING');
+    } else if (this.currentFilter === 'long-uw') {
+      visible = visible.filter(s => this.metricsData.get(s.id)?.marketState === 'LONG UNWIND');
+    } else if (this.currentFilter === 'high-confidence') {
+      visible = visible.filter(s => (this.metricsData.get(s.id)?.confidenceScore || 0) >= 75);
     }
 
     visible.sort((a, b) => {
       const mA = this.metricsData.get(a.id);
       const mB = this.metricsData.get(b.id);
-      if (this.currentSort === 'whales') return (mB?.whaleLongRatio || 0) - (mA?.whaleLongRatio || 0);
-      if (this.currentSort === 'oi-change') return (mB?.oiChangePercent || 0) - (mA?.oiChangePercent || 0);
+      if (this.currentSort === 'confidence') return (mB?.confidenceScore || 0) - (mA?.confidenceScore || 0);
+      if (this.currentSort === 'oi-change') return (mB?.oiChangePrimary || 0) - (mA?.oiChangePrimary || 0);
       if (this.currentSort === 'funding') return (mB?.fundingRate || 0) - (mA?.fundingRate || 0);
-      if (this.currentSort === 'signal') return (mB?.score || 0) - (mA?.score || 0);
       return a.priority - b.priority;
     });
 
     visible.forEach(cfg => {
       const el = document.getElementById(`card-${cfg.id}`);
       if (el) this.grid.appendChild(el);
-    });
-  }
-
-  renderScannerResults() {
-    const tbody = document.getElementById('scanner-results');
-    tbody.innerHTML = '';
-    this.metricsData.forEach((d, id) => {
-      const cfg = this.symbols.find(s => s.id === id);
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><b>${cfg.symbol}</b></td>
-        <td>${d.stateDesc}</td>
-        <td><b class="${d.whaleLongRatio >= 55 ? 'up' : 'down'}">${d.whaleLongRatio.toFixed(1)}% Long</b></td>
-        <td><b>${d.score}/100</b></td>
-        <td class="${d.oiChangePercent >= 0 ? 'up' : 'down'}">${d.oiChangePercent.toFixed(2)}% (${d.tf.toUpperCase()})</td>
-        <td class="${d.fundingRate > 0 ? 'up' : 'down'}">${d.fundingRate.toFixed(4)}%</td>
-        <td>${d.score >= 75 ? '🔥 فرصة حيتان مؤكدة' : d.score >= 60 ? 'متابعة' : 'ضعيف'}</td>
-      `;
-      tbody.appendChild(tr);
     });
   }
 }
