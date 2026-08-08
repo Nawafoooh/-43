@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Crypto OI Dashboard — Open Interest Market Monitor</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --bg-0:#080b12;
+  --bg-1:#0d111a;
+  --bg-2:#111827;
+  --bg-2-hover:#151d2e;
+  --border:#1e2735;
+  --border-soft:#161f2c;
+  --text-1:#e7ebf1;
+  --text-2:#8b96a5;
+  --text-3:#5b6576;
+  --up:#22c55e;
+  --up-dim:#16532f;
+  --down:#ef4444;
+  --down-dim:#5c1e1e;
+  --blue:#3b82f6;
+  --blue-dim:#16305c;
+  --yellow:#eab308;
+  --yellow-dim:#4a3c08;
+  --p1:#3b82f6;
+  --p2:#60a5fa;
+  --p3:#93b4e0;
+  --radius:10px;
+  --radius-sm:6px;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.55);
+  --mono:ui-monospace,"SF Mono",Consolas,"Liberation Mono",monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  --header-h:64px;
+  --controls-h:56px;
+  --navbar-h:42px;
+}
+[data-theme="light"]{
+  --bg-0:#f3f5f8;
+  --bg-1:#ffffff;
+  --bg-2:#ffffff;
+  --bg-2-hover:#f2f4f8;
+  --border:#e2e6ec;
+  --border-soft:#eceff3;
+  --text-1:#0f1420;
+  --text-2:#5a6474;
+  --text-3:#8a93a3;
+  --shadow:0 1px 2px rgba(20,25,40,.06), 0 8px 20px -12px rgba(20,25,40,.15);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg-0);
+  color:var(--text-1);
+  font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+::selection{background:var(--blue-dim);color:var(--text-1);}
+button{font-family:inherit;}
+a{color:inherit;}
+.tabular{font-variant-numeric:tabular-nums;font-family:var(--mono);}
+
+/* ============================================================
+   LAYOUT SHELL
+   ============================================================ */
+#app-shell{
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+
+/* ---------- HEADER ---------- */
+header.top{
+  height:var(--header-h);
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 20px;
+  background:linear-gradient(180deg,var(--bg-1),var(--bg-0));
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-mark{
+  width:34px;height:34px;border-radius:8px;
+  background:linear-gradient(135deg,var(--blue),#1d4ed8);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:14px;color:#fff;letter-spacing:-0.5px;
+  box-shadow:0 4px 14px -4px rgba(59,130,246,.55);
+  flex:0 0 auto;
+}
+.brand-text h1{
+  font-size:15px;font-weight:700;margin:0;letter-spacing:.2px;
+  line-height:1.15;
+}
+.brand-text p{
+  margin:1px 0 0;font-size:11.5px;color:var(--text-2);font-weight:500;
+  letter-spacing:.3px;
+}
+.header-right{display:flex;align-items:center;gap:8px;}
+.header-stat{
+  font-size:11.5px;color:var(--text-2);
+  display:flex;align-items:center;gap:6px;
+  padding:0 10px;border-right:1px solid var(--border-soft);
+  white-space:nowrap;
+}
+.header-stat:last-of-type{border-right:none;}
+.header-stat b{color:var(--text-1);font-weight:600;}
+.header-stat .dot{width:6px;height:6px;border-radius:50%;background:var(--up);box-shadow:0 0 0 3px var(--up-dim);}
+.icon-btn{
+  width:34px;height:34px;border-radius:var(--radius-sm);
+  background:var(--bg-2);border:1px solid var(--border);
+  color:var(--text-2);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .12s,color .12s,border-color .12s;
+  font-size:13px;
+}
+.icon-btn:hover{background:var(--bg-2-hover);color:var(--text-1);border-color:#2a3444;}
+.icon-btn.active{color:var(--blue);border-color:var(--blue);background:var(--blue-dim);}
+
+/* ---------- CONTROL BAR ---------- */
+.control-bar{
+  min-height:var(--controls-h);
+  flex:0 0 auto;
+  display:flex;align-items:center;gap:10px;
+  padding:9px 20px;
+  background:var(--bg-1);
+  border-bottom:1px solid var(--border);
+  flex-wrap:wrap;
+  position:sticky;top:var(--header-h);z-index:40;
+}
+.search-wrap{
+  position:relative;flex:1 1 220px;min-width:180px;max-width:340px;
+}
+.search-wrap i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:12px;}
+.search-wrap input{
+  width:100%;height:34px;border-radius:var(--radius-sm);
+  background:var(--bg-2);border:1px solid var(--border);
+  color:var(--text-1);padding:0 32px 0 32px;font-size:13px;outline:none;
+  transition:border-color .12s;
+}
+.search-wrap input:focus{border-color:var(--blue);}
+.search-wrap kbd{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  font-size:10px;color:var(--text-3);border:1px solid var(--border);
+  border-radius:4px;padding:1px 5px;background:var(--bg-1);
+}
+.seg{
+  display:flex;background:var(--bg-2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:2px;gap:2px;
+}
+.seg button{
+  border:none;background:transparent;color:var(--text-2);
+  font-size:12px;font-weight:600;padding:6px 10px;border-radius:5px;cursor:pointer;
+  white-space:nowrap;transition:background .12s,color .12s;
+}
+.seg button.active{background:var(--blue);color:#fff;}
+.seg button:not(.active):hover{color:var(--text-1);}
+select.plain{
+  height:34px;background:var(--bg-2);border:1px solid var(--border);
+  color:var(--text-1);border-radius:var(--radius-sm);font-size:12px;padding:0 8px;
+  outline:none;
+}
+.control-spacer{flex:1;}
+.pill-btn{
+  height:34px;display:flex;align-items:center;gap:6px;
+  background:var(--bg-2);border:1px solid var(--border);color:var(--text-2);
+  border-radius:var(--radius-sm);padding:0 12px;font-size:12px;font-weight:600;cursor:pointer;
+}
+.pill-btn:hover{color:var(--text-1);background:var(--bg-2-hover);}
+.pill-btn.on{color:var(--yellow);border-color:var(--yellow);background:var(--yellow-dim);}
+
+/* ---------- QUICK NAV ---------- */
+.quicknav{
+  height:var(--navbar-h);flex:0 0 auto;
+  display:flex;align-items:center;gap:6px;
+  padding:0 20px;overflow-x:auto;
+  background:var(--bg-0);border-bottom:1px solid var(--border-soft);
+  position:sticky;top:calc(var(--header-h) + var(--controls-h));z-index:30;
+  scrollbar-width:thin;
+}
+.quicknav::-webkit-scrollbar{height:4px;}
+.quicknav::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.qn-item{
+  flex:0 0 auto;font-size:11.5px;font-weight:700;color:var(--text-2);
+  padding:4px 9px;border-radius:5px;cursor:pointer;letter-spacing:.3px;
+  border:1px solid transparent;
+}
+.qn-item:hover{color:var(--text-1);background:var(--bg-2);}
+.qn-item.pinned{color:var(--yellow);}
+
+/* ---------- MAIN / GRID ---------- */
+main{flex:1 1 auto;padding:18px 20px 60px;}
+#grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(420px,1fr));
+  gap:16px;
+}
+#grid.density-compact{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;}
+#grid.density-large{grid-template-columns:repeat(auto-fit,minmax(560px,1fr));gap:20px;}
+#grid.view-large{grid-template-columns:1fr;}
+
+.empty-state{
+  text-align:center;padding:60px 20px;color:var(--text-2);
+}
+.empty-state i{font-size:26px;color:var(--text-3);margin-bottom:10px;display:block;}
+.empty-state b{color:var(--text-1);}
+
+/* ---------- CARD ---------- */
+.card{
+  background:var(--bg-2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  position:relative;
+  transition:border-color .15s, transform .1s;
+}
+.card.dragging{opacity:.4;}
+.card.drag-over{border-color:var(--blue);}
+.card::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--p3);
+}
+.card[data-priority="1"]::before{background:var(--p1);box-shadow:0 0 12px 0 rgba(59,130,246,.6);}
+.card[data-priority="2"]::before{background:var(--p2);}
+.card.pinned{border-color:#4a3c08;}
+
+.card-head{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:12px 14px 10px 16px;border-bottom:1px solid var(--border-soft);
+  gap:8px;cursor:grab;
+}
+.card-head:active{cursor:grabbing;}
+.card-title-block{display:flex;flex-direction:column;gap:1px;min-width:0;}
+.card-symbol-row{display:flex;align-items:center;gap:7px;}
+.card-symbol{font-size:15px;font-weight:700;letter-spacing:.2px;}
+.card-pair{font-size:12px;color:var(--text-3);font-weight:600;}
+.status-dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;}
+.status-dot.loaded{background:var(--up);box-shadow:0 0 0 3px var(--up-dim);}
+.status-dot.loading{background:var(--yellow);box-shadow:0 0 0 3px var(--yellow-dim);animation:pulse 1.2s infinite;}
+.status-dot.blocked{background:var(--down);box-shadow:0 0 0 3px var(--down-dim);}
+.status-dot.no-url{background:var(--text-3);box-shadow:0 0 0 3px var(--border-soft);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+.card-meta{font-size:11px;color:var(--text-2);margin-top:2px;}
+.card-actions{display:flex;align-items:center;gap:5px;flex:0 0 auto;}
+.card-actions button{
+  width:27px;height:27px;border-radius:6px;background:transparent;border:1px solid transparent;
+  color:var(--text-3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;
+  transition:background .12s,color .12s;
+}
+.card-actions button:hover{background:var(--bg-2-hover);color:var(--text-1);border-color:var(--border);}
+.card-actions button.star.active{color:var(--yellow);}
+.priority-badge{
+  font-size:10px;font-weight:800;color:var(--p1);background:var(--blue-dim);
+  border-radius:4px;padding:2px 6px;letter-spacing:.4px;white-space:nowrap;
+}
+.card-body{
+  flex:1 1 auto;min-height:260px;position:relative;background:var(--bg-1);
+}
+#grid.density-compact .card-body{min-height:200px;}
+#grid.density-large .card-body{min-height:380px;}
+.card-body iframe{width:100%;height:100%;min-height:260px;border:none;display:block;position:absolute;inset:0;}
+#grid.density-compact .card-body iframe{min-height:200px;}
+#grid.density-large .card-body iframe{min-height:380px;}
+
+.body-placeholder{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;padding:20px;text-align:center;color:var(--text-2);
+}
+.body-placeholder i{font-size:22px;color:var(--text-3);}
+.body-placeholder b{color:var(--text-1);font-size:13px;}
+.body-placeholder span{font-size:11.5px;color:var(--text-2);max-width:280px;line-height:1.5;}
+.body-placeholder .open-btn{
+  margin-top:4px;display:inline-flex;align-items:center;gap:6px;
+  background:var(--blue);color:#fff;border:none;border-radius:6px;
+  padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;
+}
+.body-placeholder .open-btn:hover{background:#2f6fe0;}
+.shimmer{
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,var(--bg-1) 25%,var(--bg-2-hover) 37%,var(--bg-1) 63%);
+  background-size:400% 100%;animation:shimmer 1.4s ease infinite;
+}
+@keyframes shimmer{0%{background-position:100% 0;}100%{background-position:0 0;}}
+
+.card-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 14px;border-top:1px solid var(--border-soft);
+  font-size:11.5px;color:var(--text-2);
+}
+.open-original-link{
+  display:flex;align-items:center;gap:5px;color:var(--blue);font-weight:700;text-decoration:none;font-size:12px;
+}
+.open-original-link:hover{text-decoration:underline;}
+.status-label{display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.4px;font-size:10.5px;font-weight:700;}
+
+/* ---------- FULLSCREEN MODAL ---------- */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(3,5,10,.75);backdrop-filter:blur(2px);
+  display:none;align-items:center;justify-content:center;z-index:200;padding:24px;
+}
+.modal-backdrop.open{display:flex;}
+.modal{
+  width:min(1200px,100%);height:min(820px,90vh);
+  background:var(--bg-1);border:1px solid var(--border);border-radius:12px;
+  display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px -20px rgba(0,0,0,.7);
+}
+.modal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;border-bottom:1px solid var(--border);
+}
+.modal-head h3{margin:0;font-size:14px;}
+.modal-body{flex:1;position:relative;background:var(--bg-0);}
+.modal-body iframe{width:100%;height:100%;border:none;}
+
+/* ---------- SETTINGS DRAWER ---------- */
+.drawer-backdrop{
+  position:fixed;inset:0;background:rgba(3,5,10,.55);display:none;z-index:150;
+}
+.drawer-backdrop.open{display:block;}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;width:360px;max-width:92vw;
+  background:var(--bg-1);border-left:1px solid var(--border);
+  transform:translateX(100%);transition:transform .22s ease;z-index:160;
+  display:flex;flex-direction:column;
+}
+.drawer.open{transform:translateX(0);}
+.drawer-head{
+  padding:16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.drawer-head h3{margin:0;font-size:14px;}
+.drawer-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:22px;}
+.settings-group label.group-title{
+  display:block;font-size:11px;font-weight:800;color:var(--text-2);
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:9px;
+}
+.opt-row{display:flex;gap:6px;flex-wrap:wrap;}
+.opt-btn{
+  flex:1 1 auto;text-align:center;font-size:12px;font-weight:600;
+  padding:7px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg-2);
+  color:var(--text-2);cursor:pointer;
+}
+.opt-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+.settings-btn{
+  width:100%;text-align:left;background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);
+  padding:9px 12px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+}
+.settings-btn:hover{background:var(--bg-2-hover);}
+.settings-btn.danger{color:var(--down);}
+.settings-btn.danger:hover{background:var(--down-dim);}
+.add-form{display:flex;flex-direction:column;gap:8px;}
+.add-form input{
+  height:32px;background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);
+  border-radius:6px;padding:0 10px;font-size:12.5px;outline:none;
+}
+.add-form input:focus{border-color:var(--blue);}
+.add-form label{font-size:10.5px;color:var(--text-2);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:-4px;}
+.chart-list{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;}
+.chart-list-row{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg-2);border:1px solid var(--border-soft);border-radius:6px;padding:6px 9px;font-size:12px;
+}
+.chart-list-row span{font-weight:700;}
+.chart-list-row button{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:12px;}
+.chart-list-row button:hover{color:var(--down);}
+
+/* toast */
+#toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);
+  background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);
+  padding:10px 16px;border-radius:8px;font-size:12.5px;box-shadow:var(--shadow);
+  opacity:0;pointer-events:none;transition:opacity .18s, transform .18s;z-index:300;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* focus mode dim */
+.card.dimmed-out{display:none;}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:720px){
+  header.top{padding:0 12px;}
+  .brand-text p{display:none;}
+  .header-stat{display:none;}
+  .header-stat.always-show{display:flex;padding:0;border:none;}
+  .control-bar{padding:8px 12px;}
+  .quicknav{padding:0 12px;}
+  main{padding:14px 12px 50px;}
+  #grid, #grid.density-compact, #grid.density-large{grid-template-columns:1fr;}
+  .card-body, .card-body iframe{min-height:240px;}
+  .drawer{width:100%;max-width:100%;}
+  .modal{height:100vh;border-radius:0;}
+}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<div id="app-shell">
+
+  <!-- ============ HEADER ============ -->
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark">OI</div>
+      <div class="brand-text">
+        <h1>Crypto OI Dashboard</h1>
+        <p>Open Interest Market Monitor</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="header-stat always-show" id="stat-count"><i class="fa-solid fa-table-cells" style="font-size:11px;"></i><b id="chart-count">0</b>&nbsp;Charts</div>
+      <div class="header-stat" id="stat-updated"><span class="dot"></span>Updated&nbsp;<b class="tabular" id="last-updated-time">--:--:--</b></div>
+      <button class="icon-btn" id="btn-refresh" title="Refresh all (R)"><i class="fa-solid fa-rotate-right"></i></button>
+      <button class="icon-btn" id="btn-fullscreen" title="Toggle app fullscreen"><i class="fa-solid fa-expand"></i></button>
+      <button class="icon-btn" id="btn-theme" title="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn" id="btn-settings" title="Settings"><i class="fa-solid fa-sliders"></i></button>
+    </div>
+  </header>
+
+  <!-- ============ CONTROL BAR ============ -->
+  <div class="control-bar">
+    <div class="search-wrap">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="search-input" placeholder="Search BTC, ETH, SOL...">
+      <kbd>/</kbd>
+    </div>
+
+    <div class="seg" id="filter-seg">
+      <button data-filter="all" class="active">All</button>
+      <button data-filter="priority">Top Priority</button>
+      <button data-filter="pinned">Pinned</button>
+      <button data-filter="altcoins">Altcoins</button>
+    </div>
+
+    <select class="plain" id="sort-select" title="Sort">
+      <option value="priority">Sort: Priority</option>
+      <option value="alpha">Sort: Alphabetical</option>
+      <option value="manual">Sort: Manual Order</option>
+    </select>
+
+    <div class="seg" id="view-seg">
+      <button data-view="grid" class="active">Grid</button>
+      <button data-view="large">Large</button>
+      <button data-view="compact">Compact</button>
+    </div>
+
+    <div class="control-spacer"></div>
+
+    <button class="pill-btn" id="btn-focus" title="Focus mode: show P1–P3 only (1)">
+      <i class="fa-solid fa-bullseye"></i> Focus Mode
+    </button>
+  </div>
+
+  <!-- ============ QUICK NAV ============ -->
+  <nav class="quicknav" id="quicknav"></nav>
+
+  <!-- ============ MAIN GRID ============ -->
+  <main>
+    <div id="grid" class="density-normal"></div>
+    <div class="empty-state" id="empty-state" style="display:none;">
+      <i class="fa-solid fa-magnifying-glass-minus"></i>
+      No charts match <b id="empty-query"></b>. Try clearing the search or filters.
+    </div>
+  </main>
+</div>
+
+<!-- ============ FULLSCREEN CHART MODAL ============ -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modal-title">BTC / USDT</h3>
+      <button class="icon-btn" id="modal-close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ============ SETTINGS DRAWER ============ -->
+<div class="drawer-backdrop" id="drawer-backdrop"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3>Settings</h3>
+    <button class="icon-btn" id="drawer-close"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="drawer-body">
+
+    <div class="settings-group">
+      <label class="group-title">Appearance</label>
+      <div class="opt-row" id="opt-theme">
+        <button class="opt-btn active" data-val="dark">Dark</button>
+        <button class="opt-btn" data-val="light">Light</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <label class="group-title">Grid Density</label>
+      <div class="opt-row" id="opt-density">
+        <button class="opt-btn" data-val="compact">Compact</button>
+        <button class="opt-btn active" data-val="normal">Normal</button>
+        <button class="opt-btn" data-val="large">Large</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <label class="group-title">Auto Refresh</label>
+      <div class="opt-row" id="opt-autorefresh">
+        <button class="opt-btn active" data-val="0">Off</button>
+        <button class="opt-btn" data-val="60000">1m</button>
+        <button class="opt-btn" data-val="300000">5m</button>
+        <button class="opt-btn" data-val="900000">15m</button>
+        <button class="opt-btn" data-val="1800000">30m</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <label class="group-title">Add Chart</label>
+      <div class="add-form">
+        <label>Symbol</label>
+        <input id="add-symbol" placeholder="e.g. OP">
+        <label>Name</label>
+        <input id="add-name" placeholder="e.g. Optimism">
+        <label>Exchange</label>
+        <input id="add-exchange" placeholder="e.g. Binance">
+        <label>Chart URL</label>
+        <input id="add-url" placeholder="https://coinalyze.net/...">
+        <label>Priority (1 = highest)</label>
+        <input id="add-priority" type="number" min="1" value="5">
+        <button class="settings-btn" id="btn-add-chart" style="margin-top:4px;justify-content:center;background:var(--blue);border-color:var(--blue);color:#fff;">
+          <i class="fa-solid fa-plus"></i> Add Chart
+        </button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <label class="group-title">Manage Charts</label>
+      <div class="chart-list" id="chart-manage-list"></div>
+    </div>
+
+    <div class="settings-group">
+      <label class="group-title">Data</label>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="settings-btn" id="btn-export"><i class="fa-solid fa-file-export"></i> Export configuration</button>
+        <button class="settings-btn" id="btn-import"><i class="fa-solid fa-file-import"></i> Import configuration</button>
+        <input type="file" id="import-file" accept="application/json" style="display:none;">
+        <button class="settings-btn danger" id="btn-reset"><i class="fa-solid fa-trash"></i> Reset dashboard</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <label class="group-title">Keyboard Shortcuts</label>
+      <div style="font-size:11.5px;color:var(--text-2);line-height:2;">
+        <div><kbd>R</kbd> Refresh &nbsp; <kbd>F</kbd> Fullscreen focused card &nbsp; <kbd>Esc</kbd> Close</div>
+        <div><kbd>/</kbd> Search &nbsp; <kbd>1</kbd> Focus mode &nbsp; <kbd>0</kbd> Show all</div>
+      </div>
+    </div>
+
+  </div>
+</aside>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ================================================================
+   1) CHART DATA SOURCE
+   ---------------------------------------------------------------
+   👉 لإضافة عملة جديدة: أضف عنصر جديد داخل مصفوفة DEFAULT_CHARTS.
+   👉 To add a new coin: add a new object to DEFAULT_CHARTS below.
+      - id        : unique lowercase key, no spaces (e.g. "matic")
+      - symbol    : ticker shown on the card (e.g. "MATIC")
+      - name      : full name (e.g. "Polygon")
+      - exchange  : exchange label shown under the name
+      - type      : chart type label (usually "Open Interest")
+      - url       : full Coinalyze (or other) chart URL. Leave "" if
+                    you don't have one yet — the card will show a
+                    "No chart URL configured" state instead of a
+                    broken iframe.
+      - priority  : lower number = higher priority (1 = most important)
+   Only BTC ships with a real URL, as requested. Replace the empty
+   url fields below with real links whenever you have them — no
+   other code needs to change.
+   ================================================================ */
+const DEFAULT_CHARTS = [
+  { id:"btc",  symbol:"BTC",  name:"Bitcoin",    exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/bitcoin/usdt/binance/open-interest-chart/btcusdt_perp_oi/", priority:1 },
+  { id:"eth",  symbol:"ETH",  name:"Ethereum",   exchange:"Binance", type:"Open Interest", url:"", priority:2 },
+  { id:"sol",  symbol:"SOL",  name:"Solana",     exchange:"Binance", type:"Open Interest", url:"", priority:3 },
+  { id:"bnb",  symbol:"BNB",  name:"BNB",        exchange:"Binance", type:"Open Interest", url:"", priority:4 },
+  { id:"xrp",  symbol:"XRP",  name:"XRP",        exchange:"Binance", type:"Open Interest", url:"", priority:5 },
+  { id:"doge", symbol:"DOGE", name:"Dogecoin",   exchange:"Binance", type:"Open Interest", url:"", priority:6 },
+  { id:"ada",  symbol:"ADA",  name:"Cardano",    exchange:"Binance", type:"Open Interest", url:"", priority:7 },
+  { id:"avax", symbol:"AVAX", name:"Avalanche",  exchange:"Binance", type:"Open Interest", url:"", priority:8 },
+  { id:"link", symbol:"LINK", name:"Chainlink",  exchange:"Binance", type:"Open Interest", url:"", priority:9 },
+  { id:"sui",  symbol:"SUI",  name:"Sui",        exchange:"Binance", type:"Open Interest", url:"", priority:10 }
+  /* 👉 أضف عملات جديدة هنا — ADD MORE COINS HERE */
+];
+
+/* ================================================================
+   2) STORAGE KEYS
+   ================================================================ */
+const LS = {
+  charts:   "oi_dashboard_charts_v1",
+  pinned:   "oi_dashboard_pinned_v1",
+  order:    "oi_dashboard_order_v1",
+  settings: "oi_dashboard_settings_v1"
+};
+
+const DEFAULT_SETTINGS = {
+  theme:"dark", density:"normal", view:"grid", autoRefresh:0,
+  sort:"priority", filter:"all"
+};
+
+/* ================================================================
+   3) STATE
+   ================================================================ */
+let charts   = loadJSON(LS.charts, DEFAULT_CHARTS);
+let pinned   = loadJSON(LS.pinned, []);
+let order    = loadJSON(LS.order, charts.map(c=>c.id));
+let settings = Object.assign({}, DEFAULT_SETTINGS, loadJSON(LS.settings, {}));
+
+let searchTerm = "";
+let autoRefreshTimer = null;
+let focusMode = false;
+let lastFocusedCardId = null;
+let dragSrcId = null;
+
+function loadJSON(key, fallback){
+  try{
+    const raw = localStorage.getItem(key);
+    if(!raw) return JSON.parse(JSON.stringify(fallback));
+    return JSON.parse(raw);
+  }catch(e){ return JSON.parse(JSON.stringify(fallback)); }
+}
+function saveJSON(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){ /* storage full / blocked */ }
+}
+function persistCharts(){ saveJSON(LS.charts, charts); }
+function persistPinned(){ saveJSON(LS.pinned, pinned); }
+function persistOrder(){ saveJSON(LS.order, order); }
+function persistSettings(){ saveJSON(LS.settings, settings); }
+
+/* keep `order` in sync with the current chart id set */
+function reconcileOrder(){
+  const ids = charts.map(c=>c.id);
+  order = order.filter(id => ids.includes(id));
+  ids.forEach(id => { if(!order.includes(id)) order.push(id); });
+  persistOrder();
+}
+reconcileOrder();
+
+/* ================================================================
+   4) DOM REFS
+   ================================================================ */
+const grid = document.getElementById("grid");
+const emptyState = document.getElementById("empty-state");
+const emptyQuery = document.getElementById("empty-query");
+const chartCountEl = document.getElementById("chart-count");
+const lastUpdatedEl = document.getElementById("last-updated-time");
+const quicknav = document.getElementById("quicknav");
+const chartManageList = document.getElementById("chart-manage-list");
+
+/* ================================================================
+   5) UTIL
+   ================================================================ */
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>t.classList.remove("show"), 2200);
+}
+function fmtTime(d){
+  return d.toTimeString().slice(0,8);
+}
+function updateLastUpdated(){
+  lastUpdatedEl.textContent = fmtTime(new Date());
+}
+function debounce(fn, ms){
+  let t;
+  return function(...args){ clearTimeout(t); t = setTimeout(()=>fn.apply(this,args), ms); };
+}
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, s => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s]));
+}
+function isAltcoin(c){ return !["btc","eth"].includes(c.id); }
+
+/* ================================================================
+   6) SORT / FILTER
+   ================================================================ */
+function getVisibleCharts(){
+  let list = charts.slice();
+
+  // manual order always determines base ordering unless sort overrides
+  list.sort((a,b) => order.indexOf(a.id) - order.indexOf(b.id));
+
+  if(settings.sort === "priority"){
+    list.sort((a,b) => a.priority - b.priority);
+  } else if(settings.sort === "alpha"){
+    list.sort((a,b) => a.symbol.localeCompare(b.symbol));
+  }
+  // manual -> already applied above
+
+  // pinned float to top regardless of sort mode
+  list.sort((a,b) => (pinned.includes(b.id)?1:0) - (pinned.includes(a.id)?1:0));
+
+  // filter chip
+  if(settings.filter === "priority"){
+    list = list.filter(c => c.priority <= 3);
+  } else if(settings.filter === "pinned"){
+    list = list.filter(c => pinned.includes(c.id));
+  } else if(settings.filter === "altcoins"){
+    list = list.filter(isAltcoin);
+  }
+
+  // search
+  if(searchTerm.trim()){
+    const q = searchTerm.trim().toLowerCase();
+    list = list.filter(c =>
+      c.symbol.toLowerCase().includes(q) ||
+      c.name.toLowerCase().includes(q) ||
+      c.exchange.toLowerCase().includes(q)
+    );
+  }
+
+  // focus mode: only P1-P3
+  if(focusMode){
+    list = list.filter(c => c.priority <= 3);
+  }
+
+  return list;
+}
+
+/* ================================================================
+   7) RENDER
+   ================================================================ */
+function render(){
+  const visible = getVisibleCharts();
+
+  grid.className = "";
+  if(settings.view === "compact") grid.classList.add("density-compact");
+  else if(settings.density === "compact") grid.classList.add("density-compact");
+  if(settings.density === "large") grid.classList.add("density-large");
+  if(settings.view === "large") grid.classList.add("view-large");
+
+  grid.innerHTML = "";
+
+  if(visible.length === 0){
+    emptyState.style.display = "block";
+    emptyQuery.textContent = searchTerm ? '"' + searchTerm + '"' : "the current filters";
+  } else {
+    emptyState.style.display = "none";
+    visible.forEach(c => grid.appendChild(buildCard(c)));
+  }
+
+  chartCountEl.textContent = charts.length;
+  buildQuickNav();
+  buildManageList();
+  observeLazyCards();
+}
+
+function buildQuickNav(){
+  quicknav.innerHTML = "";
+  const list = charts.slice().sort((a,b)=>a.priority-b.priority);
+  list.forEach(c => {
+    const el = document.createElement("div");
+    el.className = "qn-item" + (pinned.includes(c.id) ? " pinned" : "");
+    el.textContent = c.symbol;
+    el.title = c.name;
+    el.addEventListener("click", () => {
+      const card = document.querySelector('.card[data-id="'+c.id+'"]');
+      if(card){ card.scrollIntoView({behavior:"smooth", block:"center"}); flashCard(card); }
+      else toast(c.symbol + " is filtered out — clear filters to jump to it.");
+    });
+    quicknav.appendChild(el);
+  });
+}
+function flashCard(card){
+  card.style.transition = "box-shadow .2s";
+  card.style.boxShadow = "0 0 0 2px var(--blue)";
+  setTimeout(()=>{ card.style.boxShadow = ""; }, 900);
+}
+
+function buildManageList(){
+  chartManageList.innerHTML = "";
+  charts.slice().sort((a,b)=>a.priority-b.priority).forEach(c => {
+    const row = document.createElement("div");
+    row.className = "chart-list-row";
+    row.innerHTML = `<span>${escapeHtml(c.symbol)} <span style="color:var(--text-3);font-weight:500;">— ${escapeHtml(c.name)}</span></span>`;
+    const btn = document.createElement("button");
+    btn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+    btn.title = "Remove " + c.symbol;
+    btn.addEventListener("click", () => removeChart(c.id));
+    row.appendChild(btn);
+    chartManageList.appendChild(row);
+  });
+}
+
+/* ---------------- CARD BUILDER ---------------- */
+function buildCard(c){
+  const card = document.createElement("div");
+  card.className = "card" + (pinned.includes(c.id) ? " pinned" : "");
+  card.dataset.id = c.id;
+  card.dataset.priority = c.priority;
+  card.draggable = true;
+
+  const isPinned = pinned.includes(c.id);
+
+  card.innerHTML = `
+    <div class="card-head">
+      <div class="card-title-block">
+        <div class="card-symbol-row">
+          <span class="status-dot no-url" data-role="status-dot"></span>
+          <span class="card-symbol">${escapeHtml(c.symbol)} <span class="card-pair">/ USDT</span></span>
+        </div>
+        <div class="card-meta">${escapeHtml(c.name)} · ${escapeHtml(c.exchange)} Perpetual</div>
+      </div>
+      <div class="card-actions">
+        <span class="priority-badge">P${c.priority}</span>
+        <button class="star${isPinned ? ' active':''}" data-role="pin" title="Pin"><i class="fa-solid fa-star"></i></button>
+        <button data-role="fullscreen" title="Fullscreen (F)"><i class="fa-solid fa-expand"></i></button>
+      </div>
+    </div>
+    <div class="card-body" data-role="body">
+      <div class="shimmer" data-role="shimmer"></div>
+    </div>
+    <div class="card-foot">
+      <span class="status-label" data-role="status-label" style="color:var(--text-3);"><i class="fa-solid fa-circle-notch fa-spin" style="font-size:9px;"></i> Waiting</span>
+      <a href="${c.url ? escapeHtml(c.url) : '#'}" target="_blank" rel="noopener noreferrer" class="open-original-link" data-role="open-original" ${c.url ? '' : 'style="pointer-events:none;opacity:.4;"'}>
+        Open Original <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i>
+      </a>
+    </div>
+  `;
+
+  // pin toggle
+  card.querySelector('[data-role="pin"]').addEventListener("click", (e) => {
+    e.stopPropagation();
+    togglePin(c.id);
+  });
+
+  // fullscreen
+  card.querySelector('[data-role="fullscreen"]').addEventListener("click", (e) => {
+    e.stopPropagation();
+    openFullscreen(c);
+  });
+
+  // drag & drop manual ordering
+  card.addEventListener("dragstart", () => {
+    dragSrcId = c.id;
+    card.classList.add("dragging");
+  });
+  card.addEventListener("dragend", () => {
+    card.classList.remove("dragging");
+    document.querySelectorAll(".card.drag-over").forEach(el=>el.classList.remove("drag-over"));
+  });
+  card.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    card.classList.add("drag-over");
+  });
+  card.addEventListener("dragleave", () => card.classList.remove("drag-over"));
+  card.addEventListener("drop", (e) => {
+    e.preventDefault();
+    card.classList.remove("drag-over");
+    if(!dragSrcId || dragSrcId === c.id) return;
+    reorder(dragSrcId, c.id);
+  });
+
+  // track "focused" card for the F shortcut
+  card.addEventListener("mouseenter", () => lastFocusedCardId = c.id);
+
+  return card;
+}
+
+function reorder(srcId, targetId){
+  const from = order.indexOf(srcId);
+  const to = order.indexOf(targetId);
+  if(from === -1 || to === -1) return;
+  order.splice(from,1);
+  order.splice(to,0,srcId);
+  persistOrder();
+  settings.sort = "manual";
+  persistSettings();
+  syncSortSelect();
+  render();
+  toast("Order updated");
+}
+
+/* ================================================================
+   8) LAZY LOADING + IFRAME STATUS
+   ================================================================ */
+let io = null;
+function observeLazyCards(){
+  if(io) io.disconnect();
+  io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        const card = entry.target;
+        const id = card.dataset.id;
+        const c = charts.find(x=>x.id===id);
+        if(c && !card.dataset.loadStarted){
+          card.dataset.loadStarted = "1";
+          loadCardChart(card, c);
+        }
+        io.unobserve(card);
+      }
+    });
+  }, { root:null, rootMargin:"200px", threshold:0.01 });
+
+  document.querySelectorAll(".card").forEach(card => io.observe(card));
+}
+
+function setStatus(card, status){
+  const dot = card.querySelector('[data-role="status-dot"]');
+  const label = card.querySelector('[data-role="status-label"]');
+  dot.className = "status-dot " + status;
+  const map = {
+    "no-url":  ['<i class="fa-solid fa-link-slash" style="font-size:9px;"></i> No URL', 'var(--text-3)'],
+    "loading": ['<i class="fa-solid fa-circle-notch fa-spin" style="font-size:9px;"></i> Loading', 'var(--yellow)'],
+    "loaded":  ['<i class="fa-solid fa-circle-check" style="font-size:9px;"></i> Loaded', 'var(--up)'],
+    "blocked": ['<i class="fa-solid fa-ban" style="font-size:9px;"></i> Blocked', 'var(--down)']
+  };
+  const [html,color] = map[status] || map["no-url"];
+  label.innerHTML = html;
+  label.style.color = color;
+}
+
+function loadCardChart(card, c){
+  const body = card.querySelector('[data-role="body"]');
+
+  if(!c.url){
+    setStatus(card, "no-url");
+    body.innerHTML = `
+      <div class="body-placeholder">
+        <i class="fa-solid fa-link-slash"></i>
+        <b>No chart URL configured</b>
+        <span>Add a Coinalyze (or other) chart link for ${escapeHtml(c.symbol)} from Settings → Manage Charts.</span>
+      </div>`;
+    return;
+  }
+
+  setStatus(card, "loading");
+  renderIframe(card, c);
+}
+
+function renderIframe(card, c){
+  const body = card.querySelector('[data-role="body"]');
+  body.innerHTML = '<div class="shimmer"></div>';
+  setStatus(card, "loading");
+
+  const iframe = document.createElement("iframe");
+  iframe.loading = "lazy";
+  iframe.referrerPolicy = "no-referrer";
+  iframe.title = c.symbol + " Open Interest chart";
+  iframe.style.opacity = "0";
+
+  let settled = false;
+  const timeoutId = setTimeout(() => {
+    if(settled) return;
+    settled = true;
+    showBlocked(card, c);
+  }, 7000);
+
+  iframe.addEventListener("load", () => {
+    if(settled) return;
+    settled = true;
+    clearTimeout(timeoutId);
+    iframe.style.opacity = "1";
+    setStatus(card, "loaded");
+  });
+  iframe.addEventListener("error", () => {
+    if(settled) return;
+    settled = true;
+    clearTimeout(timeoutId);
+    showBlocked(card, c);
+  });
+
+  iframe.src = c.url;
+  body.innerHTML = "";
+  body.appendChild(iframe);
+}
+
+function showBlocked(card, c){
+  const body = card.querySelector('[data-role="body"]');
+  setStatus(card, "blocked");
+  body.innerHTML = `
+    <div class="body-placeholder">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <b>Chart Preview Unavailable</b>
+      <span>${escapeHtml(c.name)} (${escapeHtml(c.symbol)}) blocks iframe embedding. This site's security policy can't be — and won't be — bypassed.</span>
+      <button class="open-btn" onclick="window.open('${escapeHtml(c.url)}','_blank','noopener,noreferrer')">
+        Open Coinalyze <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:11px;"></i>
+      </button>
+    </div>`;
+}
+
+/* ================================================================
+   9) REFRESH
+   ================================================================ */
+function refreshAll(){
+  document.querySelectorAll(".card").forEach(card => {
+    const id = card.dataset.id;
+    const c = charts.find(x=>x.id===id);
+    if(c && c.url){
+      card.dataset.loadStarted = "1";
+      renderIframe(card, c);
+    }
+  });
+  updateLastUpdated();
+  toast("Dashboard refreshed");
+}
+
+function setupAutoRefresh(){
+  if(autoRefreshTimer) clearInterval(autoRefreshTimer);
+  const ms = Number(settings.autoRefresh) || 0;
+  if(ms > 0){
+    autoRefreshTimer = setInterval(refreshAll, ms);
+  }
+}
+
+/* tick the clock every second regardless of refresh setting */
+setInterval(updateLastUpdated, 1000);
+
+/* ================================================================
+   10) PIN / FOCUS / FULLSCREEN
+   ================================================================ */
+function togglePin(id){
+  if(pinned.includes(id)){
+    pinned = pinned.filter(x=>x!==id);
+  } else {
+    pinned.push(id);
+  }
+  persistPinned();
+  render();
+}
+
+function setFocusMode(on){
+  focusMode = on;
+  document.getElementById("btn-focus").classList.toggle("on", on);
+  render();
+}
+
+const modalBackdrop = document.getElementById("modal-backdrop");
+const modalBody = document.getElementById("modal-body");
+const modalTitle = document.getElementById("modal-title");
+
+function openFullscreen(c){
+  modalTitle.textContent = c.symbol + " / USDT — " + c.name;
+  modalBody.innerHTML = "";
+  if(c.url){
+    const iframe = document.createElement("iframe");
+    iframe.src = c.url;
+    iframe.loading = "lazy";
+    iframe.referrerPolicy = "no-referrer";
+    modalBody.appendChild(iframe);
+  } else {
+    modalBody.innerHTML = `<div class="body-placeholder" style="height:100%;">
+      <i class="fa-solid fa-link-slash"></i><b>No chart URL configured</b>
+      <span>Add a chart link for ${escapeHtml(c.symbol)} in Settings.</span></div>`;
+  }
+  modalBackdrop.classList.add("open");
+}
+function closeFullscreen(){
+  modalBackdrop.classList.remove("open");
+  modalBody.innerHTML = "";
+}
+document.getElementById("modal-close").addEventListener("click", closeFullscreen);
+modalBackdrop.addEventListener("click", (e) => { if(e.target === modalBackdrop) closeFullscreen(); });
+
+/* ================================================================
+   11) SETTINGS DRAWER
+   ================================================================ */
+const drawer = document.getElementById("drawer");
+const drawerBackdrop = document.getElementById("drawer-backdrop");
+function openDrawer(){ drawer.classList.add("open"); drawerBackdrop.classList.add("open"); }
+function closeDrawer(){ drawer.classList.remove("open"); drawerBackdrop.classList.remove("open"); }
+document.getElementById("btn-settings").addEventListener("click", openDrawer);
+document.getElementById("drawer-close").addEventListener("click", closeDrawer);
+drawerBackdrop.addEventListener("click", closeDrawer);
+
+function applyTheme(){
+  document.documentElement.setAttribute("data-theme", settings.theme);
+  document.getElementById("btn-theme").innerHTML = settings.theme === "dark"
+    ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
+  document.querySelectorAll("#opt-theme .opt-btn").forEach(b => b.classList.toggle("active", b.dataset.val === settings.theme));
+}
+document.getElementById("btn-theme").addEventListener("click", () => {
+  settings.theme = settings.theme === "dark" ? "light" : "dark";
+  persistSettings(); applyTheme();
+});
+document.querySelectorAll("#opt-theme .opt-btn").forEach(btn => {
+  btn.addEventListener("click", () => { settings.theme = btn.dataset.val; persistSettings(); applyTheme(); });
+});
+
+document.querySelectorAll("#opt-density .opt-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    settings.density = btn.dataset.val;
+    persistSettings();
+    document.querySelectorAll("#opt-density .opt-btn").forEach(b=>b.classList.toggle("active", b===btn));
+    render();
+  });
+});
+
+document.querySelectorAll("#opt-autorefresh .opt-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    settings.autoRefresh = Number(btn.dataset.val);
+    persistSettings();
+    document.querySelectorAll("#opt-autorefresh .opt-btn").forEach(b=>b.classList.toggle("active", b===btn));
+    setupAutoRefresh();
+    toast(settings.autoRefresh > 0 ? "Auto refresh enabled" : "Auto refresh off");
+  });
+});
+
+/* ---- add chart ---- */
+document.getElementById("btn-add-chart").addEventListener("click", () => {
+  const symbol = document.getElementById("add-symbol").value.trim().toUpperCase();
+  const name = document.getElementById("add-name").value.trim();
+  const exchange = document.getElementById("add-exchange").value.trim() || "Binance";
+  const url = document.getElementById("add-url").value.trim();
+  const priority = Math.max(1, Number(document.getElementById("add-priority").value) || 5);
+
+  if(!symbol || !name){ toast("Symbol and name are required"); return; }
+  const id = symbol.toLowerCase().replace(/[^a-z0-9]/g,"") || ("c"+Date.now());
+  if(charts.some(c=>c.id===id)){ toast("A chart with that symbol already exists"); return; }
+
+  charts.push({ id, symbol, name, exchange, type:"Open Interest", url, priority });
+  persistCharts();
+  reconcileOrder();
+  render();
+  toast(symbol + " added");
+
+  ["add-symbol","add-name","add-exchange","add-url"].forEach(fid => document.getElementById(fid).value = "");
+  document.getElementById("add-priority").value = 5;
+});
+
+function removeChart(id){
+  const c = charts.find(x=>x.id===id);
+  if(!c) return;
+  if(!confirm('Remove "' + c.symbol + ' — ' + c.name + '" from the dashboard?')) return;
+  charts = charts.filter(x=>x.id!==id);
+  pinned = pinned.filter(x=>x!==id);
+  persistCharts(); persistPinned();
+  reconcileOrder();
+  render();
+  toast(c.symbol + " removed");
+}
+
+/* ---- export / import / reset ---- */
+document.getElementById("btn-export").addEventListener("click", () => {
+  const payload = { charts, pinned, order, settings, exportedAt:new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "crypto-oi-dashboard-config.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast("Configuration exported");
+});
+
+const importFileInput = document.getElementById("import-file");
+document.getElementById("btn-import").addEventListener("click", () => importFileInput.click());
+importFileInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      if(Array.isArray(data.charts)) charts = data.charts;
+      if(Array.isArray(data.pinned)) pinned = data.pinned;
+      if(Array.isArray(data.order)) order = data.order;
+      if(data.settings) settings = Object.assign({}, DEFAULT_SETTINGS, data.settings);
+      persistCharts(); persistPinned(); persistOrder(); persistSettings();
+      reconcileOrder();
+      applyTheme(); syncControlsFromSettings();
+      render();
+      toast("Configuration imported");
+    }catch(err){
+      toast("Invalid configuration file");
+    }
+  };
+  reader.readAsText(file);
+  importFileInput.value = "";
+});
+
+document.getElementById("btn-reset").addEventListener("click", () => {
+  if(!confirm("Reset the dashboard to its default charts and settings? This cannot be undone.")) return;
+  charts = JSON.parse(JSON.stringify(DEFAULT_CHARTS));
+  pinned = [];
+  order = charts.map(c=>c.id);
+  settings = Object.assign({}, DEFAULT_SETTINGS);
+  persistCharts(); persistPinned(); persistOrder(); persistSettings();
+  applyTheme(); syncControlsFromSettings();
+  render();
+  toast("Dashboard reset");
+});
+
+/* ================================================================
+   12) CONTROL BAR WIRING
+   ================================================================ */
+const searchInput = document.getElementById("search-input");
+searchInput.addEventListener("input", debounce((e) => {
+  searchTerm = e.target.value;
+  render();
+}, 180));
+
+document.getElementById("filter-seg").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-filter]");
+  if(!btn) return;
+  settings.filter = btn.dataset.filter;
+  persistSettings();
+  document.querySelectorAll("#filter-seg button").forEach(b=>b.classList.toggle("active", b===btn));
+  render();
+});
+
+document.getElementById("sort-select").addEventListener("change", (e) => {
+  settings.sort = e.target.value;
+  persistSettings();
+  render();
+});
+function syncSortSelect(){ document.getElementById("sort-select").value = settings.sort; }
+
+document.getElementById("view-seg").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-view]");
+  if(!btn) return;
+  settings.view = btn.dataset.view;
+  persistSettings();
+  document.querySelectorAll("#view-seg button").forEach(b=>b.classList.toggle("active", b===btn));
+  render();
+});
+
+document.getElementById("btn-focus").addEventListener("click", () => setFocusMode(!focusMode));
+document.getElementById("btn-refresh").addEventListener("click", refreshAll);
+document.getElementById("btn-fullscreen").addEventListener("click", () => {
+  if(!document.fullscreenElement){ document.documentElement.requestFullscreen().catch(()=>{}); }
+  else { document.exitFullscreen().catch(()=>{}); }
+});
+
+function syncControlsFromSettings(){
+  document.querySelectorAll("#filter-seg button").forEach(b=>b.classList.toggle("active", b.dataset.filter===settings.filter));
+  document.querySelectorAll("#view-seg button").forEach(b=>b.classList.toggle("active", b.dataset.view===settings.view));
+  document.querySelectorAll("#opt-density .opt-btn").forEach(b=>b.classList.toggle("active", b.dataset.val===settings.density));
+  document.querySelectorAll("#opt-autorefresh .opt-btn").forEach(b=>b.classList.toggle("active", Number(b.dataset.val)===Number(settings.autoRefresh)));
+  syncSortSelect();
+}
+
+/* ================================================================
+   13) KEYBOARD SHORTCUTS
+   ================================================================ */
+document.addEventListener("keydown", (e) => {
+  const tag = (e.target.tagName || "").toLowerCase();
+  const typing = tag === "input" || tag === "textarea" || e.target.isContentEditable;
+
+  if(e.key === "Escape"){
+    if(modalBackdrop.classList.contains("open")) closeFullscreen();
+    else if(drawer.classList.contains("open")) closeDrawer();
+    else if(typing) searchInput.blur();
+    return;
+  }
+  if(typing) return;
+
+  if(e.key === "/"){ e.preventDefault(); searchInput.focus(); return; }
+  if(e.key.toLowerCase() === "r"){ refreshAll(); return; }
+  if(e.key.toLowerCase() === "f"){
+    const id = lastFocusedCardId || (getVisibleCharts()[0] || {}).id;
+    const c = charts.find(x=>x.id===id);
+    if(c) openFullscreen(c);
+    return;
+  }
+  if(e.key === "1"){ setFocusMode(true); return; }
+  if(e.key === "0"){ setFocusMode(false); return; }
+});
+
+/* ================================================================
+   14) INIT
+   ================================================================ */
+function init(){
+  applyTheme();
+  syncControlsFromSettings();
+  render();
+  updateLastUpdated();
+  setupAutoRefresh();
+}
+init();
+
+})();
+</script>
+</body>
+</html>
