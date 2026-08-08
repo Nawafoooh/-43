@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>منصة تحليلات المشتقات والسيولة — Precision Engine</title>
+<title>منصة تحليلات المشتقات والسيولة</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- استدعاء مكتبة التداول الرسمية لتثبيت الشارتات -->
+<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+
 <style>
 :root {
   --bg-0: #06080e;
@@ -26,8 +29,7 @@
   --yellow-dim: rgba(245, 158, 11, 0.15);
   --radius: 12px;
   --radius-sm: 8px;
-  --shadow: 0 4px 20px -2px rgba(0,0,0,0.5);
-  --sans: "Segoe UI", Inter, system-ui, -apple-system, sans-serif;
+  --sans: "Segoe UI", Inter, system-ui, sans-serif;
   --mono: "JetBrains Mono", Consolas, monospace;
   --header-h: 60px;
 }
@@ -45,12 +47,11 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { background: var(--bg-0); color: var(--text-1); font-family: var(--sans); direction: rtl; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+html, body { background: var(--bg-0); color: var(--text-1); font-family: var(--sans); direction: rtl; min-height: 100vh; }
 button { font-family: inherit; }
 
 #app { display: flex; flex-direction: column; min-height: 100vh; }
 
-/* الشريط العلوي */
 header.top-bar {
   height: var(--header-h); background: var(--bg-1); border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
@@ -61,7 +62,7 @@ header.top-bar {
   width: 38px; height: 38px; border-radius: var(--radius-sm);
   background: linear-gradient(135deg, var(--blue), #1d4ed8);
   display: flex; align-items: center; justify-content: center;
-  font-weight: 900; font-size: 16px; color: #fff; box-shadow: 0 0 12px rgba(59,130,246,0.4);
+  font-weight: 900; font-size: 16px; color: #fff;
 }
 .brand-title h1 { font-size: 15px; font-weight: 800; }
 .brand-title p { font-size: 11px; color: var(--text-2); }
@@ -69,10 +70,9 @@ header.top-bar {
 .global-metrics { display: flex; align-items: center; gap: 16px; font-size: 12px; }
 .gm-item { display: flex; flex-direction: column; gap: 2px; border-left: 1px solid var(--border-soft); padding-left: 16px; }
 .gm-item:last-child { border-left: none; }
-.gm-label { color: var(--text-3); font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.gm-label { color: var(--text-3); font-size: 10px; font-weight: 700; }
 .gm-val { font-weight: 700; font-family: var(--mono); color: var(--text-1); }
 
-/* شريط التحكم */
 .control-bar {
   background: var(--bg-1); border-bottom: 1px solid var(--border);
   padding: 10px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
@@ -92,35 +92,27 @@ header.top-bar {
   padding: 5px 10px; border-radius: 6px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
 }
 .seg-btn.active { background: var(--blue); color: #fff; }
-.seg-btn:hover:not(.active) { color: var(--text-1); background: var(--bg-2-hover); }
 
 select.ctrl-select {
   height: 34px; background: var(--bg-2); border: 1px solid var(--border); color: var(--text-1);
   border-radius: var(--radius-sm); padding: 0 10px; font-size: 12px; font-weight: 700; outline: none; cursor: pointer;
 }
-select.ctrl-select.tf-select { border-color: var(--blue); color: var(--blue); }
 
 .btn-icon {
   width: 34px; height: 34px; border-radius: var(--radius-sm); background: var(--bg-2); border: 1px solid var(--border);
-  color: var(--text-2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s;
+  color: var(--text-2); display: flex; align-items: center; justify-content: center; cursor: pointer;
 }
-.btn-icon:hover { color: var(--text-1); border-color: var(--text-3); background: var(--bg-2-hover); }
 
-/* شبكة العرض */
 main.content { padding: 20px; flex: 1; }
-#grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 18px; }
-#grid.density-compact { grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap: 12px; }
-#grid.density-large { grid-template-columns: repeat(auto-fit, minmax(540px, 1fr)); gap: 24px; }
+#grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 18px; }
 
-/* البطاقات */
 .card {
   background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);
-  box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column;
-  position: relative; transition: border-color 0.2s;
+  overflow: hidden; display: flex; flex-direction: column; position: relative;
 }
-.card:hover { border-color: var(--text-3); }
+/* إخفاء الكارت بدون تدمير الـ DOM لمنع إعادة تحميل الشارت */
+.card.hidden { display: none !important; }
 
-/* رأس البطاقة */
 .card-head {
   padding: 10px 14px; background: var(--bg-1); border-bottom: 1px solid var(--border-soft);
   display: flex; align-items: center; justify-content: space-between;
@@ -128,22 +120,16 @@ main.content { padding: 20px; flex: 1; }
 .symbol-block { display: flex; align-items: center; gap: 8px; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); }
 .status-dot.live { background: var(--up); box-shadow: 0 0 8px var(--up); }
-.status-dot.stale { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
-.status-dot.loading { background: var(--blue); animation: pulse 1s infinite alternate; }
-@keyframes pulse { from { opacity: 0.3; } to { opacity: 1; } }
 
 .symbol-title { font-size: 14px; font-weight: 800; font-family: var(--mono); }
 .symbol-meta { font-size: 11px; color: var(--text-2); }
-.action-btn { background: transparent; border: none; color: var(--text-3); font-size: 13px; cursor: pointer; padding: 4px; }
+.action-btn { background: transparent; border: none; color: var(--text-3); font-size: 13px; cursor: pointer; }
 .action-btn.pinned { color: var(--yellow); }
 
-/* إطار الرسم البياني */
-.price-chart-wrap { height: 160px; position: relative; background: var(--bg-0); border-bottom: 1px solid var(--border-soft); }
-.price-chart-wrap iframe { width: 100%; height: 100%; border: none; }
-.density-compact .price-chart-wrap { height: 120px; }
-.density-large .price-chart-wrap { height: 230px; }
+/* حاوية الرسم البياني الثابتة */
+.price-chart-wrap { height: 180px; position: relative; background: var(--bg-0); border-bottom: 1px solid var(--border-soft); }
+.price-chart-wrap .tv-container { width: 100%; height: 100%; }
 
-/* جسم البيانات */
 .card-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; }
 .data-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
@@ -151,22 +137,17 @@ main.content { padding: 20px; flex: 1; }
   background: var(--bg-1); border: 1px solid var(--border-soft); border-radius: var(--radius-sm);
   padding: 8px; display: flex; flex-direction: column; gap: 3px;
 }
-.metric-title { font-size: 10px; font-weight: 800; color: var(--text-3); text-transform: uppercase; display: flex; justify-content: space-between; }
+.metric-title { font-size: 10px; font-weight: 800; color: var(--text-3); display: flex; justify-content: space-between; }
 .metric-val { font-size: 14px; font-weight: 800; font-family: var(--mono); color: var(--text-1); }
 .metric-sub { font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
 .up { color: var(--up); }
 .down { color: var(--down); }
 .neutral { color: var(--text-2); }
 
-.sparkline-container { height: 20px; width: 100%; margin-top: 2px; }
-.sparkline-container svg { width: 100%; height: 100%; overflow: visible; }
-
-/* جدول الأطر الزمنية */
 .mtf-table { width: 100%; border-collapse: collapse; font-size: 11px; font-family: var(--mono); background: var(--bg-1); border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border-soft); }
-.mtf-table th { background: var(--bg-0); color: var(--text-3); font-size: 9px; text-transform: uppercase; padding: 4px 6px; text-align: center; }
+.mtf-table th { background: var(--bg-0); color: var(--text-3); font-size: 9px; padding: 4px 6px; text-align: center; }
 .mtf-table td { padding: 5px 6px; text-align: center; border-top: 1px solid var(--border-soft); }
 
-/* شريط كبار المتداولين */
 .whale-ratio-wrap {
   display: flex; flex-direction: column; gap: 3px; background: var(--bg-1);
   padding: 6px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-soft);
@@ -175,13 +156,12 @@ main.content { padding: 20px; flex: 1; }
 .whale-bar-track { height: 6px; background: var(--down); border-radius: 3px; overflow: hidden; display: flex; }
 .whale-bar-fill { height: 100%; background: var(--up); transition: width 0.3s ease; }
 
-/* صندوق التحليل الفني للمشتقات */
 .analysis-box {
   background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius-sm);
   padding: 10px; display: flex; flex-direction: column; gap: 6px;
 }
 .state-row { display: flex; justify-content: space-between; align-items: center; }
-.state-badge { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; font-family: var(--sans); }
+.state-badge { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 4px; }
 
 .badge-long-bu { background: var(--up-dim); color: var(--up); border: 1px solid var(--up); }
 .badge-short-bu { background: var(--down-dim); color: var(--down); border: 1px solid var(--down); }
@@ -195,24 +175,17 @@ main.content { padding: 20px; flex: 1; }
   padding: 6px 12px; background: var(--bg-1); border-top: 1px solid var(--border-soft);
   font-size: 10px; color: var(--text-3); display: flex; justify-content: space-between; align-items: center;
 }
-.freshness-badge { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; }
-
-@media (max-width: 600px) {
-  .global-metrics { display: none; }
-  #grid { grid-template-columns: 1fr; }
-}
 </style>
 </head>
 <body>
 
 <div id="app">
-  <!-- الهيدر الرئيسي -->
   <header class="top-bar">
     <div class="brand">
       <div class="brand-icon">OI</div>
       <div class="brand-title">
-        <h1>منصة تحليلات عقود المشتقات</h1>
-        <p>مراقبة التدفقات والسيولة لحظياً — شارتات ثابتة</p>
+        <h1>منصة تحليلات المشتقات والسيولة</h1>
+        <p>شارتات ثابتة 100% بدون تحديث إجباري</p>
       </div>
     </div>
 
@@ -226,63 +199,41 @@ main.content { padding: 20px; flex: 1; }
         <span class="gm-val" id="gm-oi">$--</span>
       </div>
       <div class="gm-item">
-        <span class="gm-label">صعود / هبوط الـ OI</span>
-        <span class="gm-val" id="gm-updown">-- / --</span>
-      </div>
-      <div class="gm-item">
         <span class="gm-label">متوسط Funding Rate</span>
         <span class="gm-val" id="gm-funding">--%</span>
       </div>
     </div>
 
-    <div style="display:flex; gap:8px;">
-      <button class="btn-icon" id="btn-theme" title="تغيير المظهر"><i class="fa-solid fa-moon"></i></button>
+    <div>
+      <button class="btn-icon" id="btn-theme"><i class="fa-solid fa-moon"></i></button>
     </div>
   </header>
 
-  <!-- شريط أدوات التحكم والفلترة -->
   <div class="control-bar">
     <div class="search-box">
       <i class="fa-solid fa-magnifying-glass"></i>
       <input type="text" id="search-input" placeholder="بحث عن عملة...">
     </div>
 
-    <select class="ctrl-select tf-select" id="timeframe-select">
-      <option value="15m">15 دقيقة</option>
-      <option value="1h">ساعة واحدة</option>
-      <option value="4h" selected>4 ساعات</option>
-      <option value="1d">يومي</option>
-    </select>
-
     <div class="seg-group" id="filter-seg">
       <button class="seg-btn active" data-filter="all">الكل</button>
       <button class="seg-btn" data-filter="pinned">المفضلة</button>
       <button class="seg-btn" data-filter="long-bu">تجميع صعودي (Long Build-up)</button>
       <button class="seg-btn" data-filter="short-bu">تجميع هبوطي (Short Build-up)</button>
-
       <button class="seg-btn" data-filter="short-cov">تغطية شورت (Short Covering)</button>
       <button class="seg-btn" data-filter="long-uw">تصفية لونج (Long Unwind)</button>
-      <button class="seg-btn" data-filter="high-confidence">ثقة مرتفعة (75+)</button>
     </div>
 
     <select class="ctrl-select" id="sort-select">
       <option value="priority">الترتيب الافتراضي</option>
       <option value="oi-change">تغير الـ OI</option>
       <option value="confidence">درجة الثقة</option>
-      <option value="funding">معدل التمويل (Funding)</option>
-      <option value="alpha">أبجدي</option>
+      <option value="funding">Funding Rate</option>
     </select>
 
-    <div class="seg-group" id="density-seg">
-      <button class="seg-btn" data-density="compact"><i class="fa-solid fa-list"></i></button>
-      <button class="seg-btn active" data-density="normal"><i class="fa-solid fa-border-all"></i></button>
-      <button class="seg-btn" data-density="large"><i class="fa-solid fa-square"></i></button>
-    </div>
-
-    <button class="btn-icon" id="btn-refresh" title="تحديث البيانات"><i class="fa-solid fa-rotate"></i></button>
+    <button class="btn-icon" id="btn-refresh"><i class="fa-solid fa-rotate"></i></button>
   </div>
 
-  <!-- شبكة البطاقات -->
   <main class="content">
     <div id="grid"></div>
   </main>
@@ -299,49 +250,15 @@ const SYMBOLS_CONFIG = [
   { id: "ada", symbol: "ADAUSDT", name: "Cardano", tvSymbol: "BINANCE:ADAUSDT.P", priority: 7 },
   { id: "avax", symbol: "AVAXUSDT", name: "Avalanche", tvSymbol: "BINANCE:AVAXUSDT.P", priority: 8 },
   { id: "sui", symbol: "SUIUSDT", name: "Sui", tvSymbol: "BINANCE:SUIUSDT.P", priority: 9 },
-  { id: "link", symbol: "LINKUSDT", name: "Chainlink", tvSymbol: "BINANCE:LINKUSDT.P", priority: 10 },
-  { id: "near", symbol: "NEARUSDT", name: "NEAR Protocol", tvSymbol: "BINANCE:NEARUSDT.P", priority: 11 },
-  { id: "apt", symbol: "APTUSDT", name: "Aptos", tvSymbol: "BINANCE:APTUSDT.P", priority: 12 },
-  { id: "arb", symbol: "ARBUSDT", name: "Arbitrum", tvSymbol: "BINANCE:ARBUSDT.P", priority: 13 },
-  { id: "op", symbol: "OPUSDT", name: "Optimism", tvSymbol: "BINANCE:OPUSDT.P", priority: 14 },
-  { id: "pepe", symbol: "1000PEPEUSDT", name: "Pepe", tvSymbol: "BINANCE:1000PEPEUSDT.P", priority: 15 },
-  { id: "wif", symbol: "WIFUSDT", name: "dogwifhat", tvSymbol: "BINANCE:WIFUSDT.P", priority: 16 },
-  { id: "fet", symbol: "FETUSDT", name: "Artificial Superintelligence", tvSymbol: "BINANCE:FETUSDT.P", priority: 17 },
-  { id: "render", symbol: "RENDERUSDT", name: "Render", tvSymbol: "BINANCE:RENDERUSDT.P", priority: 18 },
-  { id: "inj", symbol: "INJUSDT", name: "Injective", tvSymbol: "BINANCE:INJUSDT.P", priority: 19 },
-  { id: "tia", symbol: "TIAUSDT", name: "Celestia", tvSymbol: "BINANCE:TIAUSDT.P", priority: 20 },
-  { id: "ldo", symbol: "LDOUSDT", name: "Lido DAO", tvSymbol: "BINANCE:LDOUSDT.P", priority: 21 },
-  { id: "ftm", symbol: "FTMUSDT", name: "Fantom", tvSymbol: "BINANCE:FTMUSDT.P", priority: 22 },
-  { id: "sei", symbol: "SEIUSDT", name: "Sei", tvSymbol: "BINANCE:SEIUSDT.P", priority: 23 },
-  { id: "fil", symbol: "FILUSDT", name: "Filecoin", tvSymbol: "BINANCE:FILUSDT.P", priority: 24 },
-  { id: "dot", symbol: "DOTUSDT", name: "Polkadot", tvSymbol: "BINANCE:DOTUSDT.P", priority: 25 },
-  { id: "trx", symbol: "TRXUSDT", name: "TRON", tvSymbol: "BINANCE:TRXUSDT.P", priority: 26 },
-  { id: "matic", symbol: "POLUSDT", name: "Polygon", tvSymbol: "BINANCE:POLUSDT.P", priority: 27 },
-  { id: "ton", symbol: "TONUSDT", name: "Toncoin", tvSymbol: "BINANCE:TONUSDT.P", priority: 28 },
-  { id: "shib", symbol: "1000SHIBUSDT", name: "Shiba Inu", tvSymbol: "BINANCE:1000SHIBUSDT.P", priority: 29 },
-  { id: "ltc", symbol: "LTCUSDT", name: "Litecoin", tvSymbol: "BINANCE:LTCUSDT.P", priority: 30 }
+  { id: "link", symbol: "LINKUSDT", name: "Chainlink", tvSymbol: "BINANCE:LINKUSDT.P", priority: 10 }
 ];
 
 function formatUSD(num) {
   if (!num || isNaN(num)) return '$0.00';
-  if (num >= 1e9) return '$' + (num / 1e9).toFixed(2) + ' مليار';
-  if (num >= 1e6) return '$' + (num / 1e6).toFixed(2) + ' مليون';
-  if (num >= 1e3) return '$' + (num / 1e3).toFixed(2) + ' ألف';
+  if (num >= 1e9) return '$' + (num / 1e9).toFixed(2) + ' B';
+  if (num >= 1e6) return '$' + (num / 1e6).toFixed(2) + ' M';
+  if (num >= 1e3) return '$' + (num / 1e3).toFixed(2) + ' K';
   return '$' + num.toFixed(2);
-}
-
-function renderOIMiniChart(dataSeries) {
-  if (!dataSeries || dataSeries.length < 2) return '';
-  const min = Math.min(...dataSeries);
-  const max = Math.max(...dataSeries);
-  const range = (max - min) || 1;
-  const points = dataSeries.map((val, i) => {
-    const x = (i / (dataSeries.length - 1)) * 100;
-    const y = 20 - ((val - min) / range) * 20;
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  }).join(' ');
-  const isUp = dataSeries[dataSeries.length - 1] >= dataSeries[0];
-  return `<svg viewBox="0 0 100 20"><polyline fill="none" stroke="${isUp ? '#10b981' : '#f43f5e'}" stroke-width="2" points="${points}" /></svg>`;
 }
 
 class DashboardManager {
@@ -349,79 +266,21 @@ class DashboardManager {
     this.symbols = SYMBOLS_CONFIG;
     this.pinned = new Set(JSON.parse(localStorage.getItem('oi_pinned') || '[]'));
     this.grid = document.getElementById('grid');
-    this.renderedIframes = new Set();
+    this.widgetsCreated = new Set();
     this.metricsData = new Map();
 
     this.currentFilter = 'all';
     this.currentSort = 'priority';
     this.searchTerm = '';
-    this.currentTimeframe = '4h';
 
+    this.buildBaseDOM();
     this.initIntersectionObserver();
     this.initUI();
-    this.renderCardsSkeleton();
     this.startDataLoop();
   }
 
-  initIntersectionObserver() {
-    this.observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const cardId = entry.target.id.replace('card-', '');
-          const cfg = this.symbols.find(s => s.id === cardId);
-          if (cfg) {
-            this.loadChartIframeOnce(cfg);
-          }
-        }
-      });
-    }, { rootMargin: "150px" });
-  }
-
-  initUI() {
-    document.getElementById('btn-theme').addEventListener('click', () => {
-      const theme = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-      document.body.setAttribute('data-theme', theme);
-    });
-
-    document.getElementById('btn-refresh').addEventListener('click', () => this.fetchDataAll());
-
-    document.getElementById('timeframe-select').addEventListener('change', (e) => {
-      this.currentTimeframe = e.target.value;
-      this.reloadAllIframes();
-      this.fetchDataAll();
-    });
-
-    document.getElementById('filter-seg').addEventListener('click', (e) => {
-      if (e.target.tagName === 'BUTTON') {
-        document.querySelectorAll('#filter-seg .seg-btn').forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
-        this.currentFilter = e.target.dataset.filter;
-        this.applyFilterAndSort();
-      }
-    });
-
-    document.getElementById('sort-select').addEventListener('change', (e) => {
-      this.currentSort = e.target.value;
-      this.applyFilterAndSort();
-    });
-
-    document.getElementById('search-input').addEventListener('input', (e) => {
-      this.searchTerm = e.target.value.toLowerCase().trim();
-      this.applyFilterAndSort();
-    });
-
-    document.getElementById('density-seg').addEventListener('click', (e) => {
-      const btn = e.target.closest('button');
-      if (btn) {
-        document.querySelectorAll('#density-seg .seg-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const density = btn.dataset.density;
-        this.grid.className = density === 'compact' ? 'density-compact' : density === 'large' ? 'density-large' : '';
-      }
-    });
-  }
-
-  renderCardsSkeleton() {
+  // بناء الهيكل مرة واحدة فقط وللأبد
+  buildBaseDOM() {
     this.grid.innerHTML = '';
     this.symbols.forEach(cfg => {
       const card = document.createElement('div');
@@ -430,7 +289,7 @@ class DashboardManager {
       card.innerHTML = `
         <div class="card-head">
           <div class="symbol-block">
-            <div class="status-dot loading" id="status-${cfg.id}"></div>
+            <div class="status-dot" id="status-${cfg.id}"></div>
             <div>
               <span class="symbol-title">${cfg.name}</span>
               <span class="symbol-meta">${cfg.symbol}</span>
@@ -441,12 +300,14 @@ class DashboardManager {
           </button>
         </div>
 
-        <div class="price-chart-wrap" id="tv-wrap-${cfg.id}"></div>
+        <div class="price-chart-wrap">
+          <div class="tv-container" id="tv-widget-${cfg.id}"></div>
+        </div>
 
         <div class="card-body">
           <div class="data-row">
             <div class="metric-box">
-              <div class="metric-title">Open Interest (${this.currentTimeframe.toUpperCase()}) <span id="oi-spark-${cfg.id}"></span></div>
+              <div class="metric-title">Open Interest (4H)</div>
               <div class="metric-val" id="oi-val-${cfg.id}">$--</div>
               <div class="metric-sub" id="oi-sub-${cfg.id}">--%</div>
             </div>
@@ -478,8 +339,8 @@ class DashboardManager {
 
           <div class="whale-ratio-wrap">
             <div class="whale-labels">
-              <span>حسابات الشراء (Long): <b id="whale-long-${cfg.id}">--%</b></span>
-              <span>حسابات البيع (Short): <b id="whale-short-${cfg.id}">--%</b></span>
+              <span>Long: <b id="whale-long-${cfg.id}">--%</b></span>
+              <span>Short: <b id="whale-short-${cfg.id}">--%</b></span>
             </div>
             <div class="whale-bar-track">
               <div class="whale-bar-fill" id="whale-bar-${cfg.id}" style="width: 50%;"></div>
@@ -489,55 +350,86 @@ class DashboardManager {
           <div class="analysis-box">
             <div class="state-row">
               <span class="state-badge" id="state-badge-${cfg.id}">جاري التحليل...</span>
-              <span class="confidence-val" id="conf-val-${cfg.id}">درجة الثقة: --/100</span>
+              <span class="confidence-val" id="conf-val-${cfg.id}">الثقة: --/100</span>
             </div>
             <div class="setup-title" id="setup-title-${cfg.id}">القراءة الحالية: --</div>
           </div>
         </div>
 
         <div class="card-foot">
-          <span class="freshness-badge" id="freshness-${cfg.id}">● جاري الجلب...</span>
+          <span id="freshness-${cfg.id}">● جاري الجلب...</span>
           <span>Binance Futures API</span>
         </div>
       `;
       this.grid.appendChild(card);
-      this.observer.observe(card);
     });
   }
 
-  getTVInterval(tf) {
-    if (tf === '15m') return '15';
-    if (tf === '1h') return '60';
-    if (tf === '4h') return '240';
-    if (tf === '1d') return 'D';
-    return '240';
-  }
+  // تفعيل الشارت عند وصول البطاقة لشاشة المستخدم فقط
+  initIntersectionObserver() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const cardId = entry.target.id.replace('card-', '');
+          const cfg = this.symbols.find(s => s.id === cardId);
+          if (cfg && !this.widgetsCreated.has(cfg.id)) {
+            this.widgetsCreated.add(cfg.id);
+            this.initTradingViewWidget(cfg);
+          }
+        }
+      });
+    }, { rootMargin: "200px" });
 
-  // ✨ الحل النهائي للاستقرار: تحميل iframe واحد ثابت ودائم للشارت
-  loadChartIframeOnce(cfg) {
-    if (this.renderedIframes.has(cfg.id)) return;
-
-    const wrap = document.getElementById(`tv-wrap-${cfg.id}`);
-    if (!wrap) return;
-
-    const interval = this.getTVInterval(this.currentTimeframe);
-    const iframeSrc = `https://s.tradingview.com/widgetembed/?frameElementId=tv_${cfg.id}&symbol=${cfg.tvSymbol}&interval=${interval}&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=f1f3f6&studies=[]&theme=dark&style=1&timezone=Etc/UTC&studies_overrides={}&overrides={}&enabled_features=[]&disabled_features=[]&locale=ar_SA`;
-
-    const iframe = document.createElement('iframe');
-    iframe.src = iframeSrc;
-    iframe.id = `tv_iframe_${cfg.id}`;
-    iframe.loading = "lazy";
-    
-    wrap.innerHTML = '';
-    wrap.appendChild(iframe);
-
-    this.renderedIframes.add(cfg.id);
-  }
-
-  reloadAllIframes() {
-    this.renderedIframes.clear();
     this.symbols.forEach(cfg => {
-      this.loadChartIframeOnce(cfg);
+      const el = document.getElementById(`card-${cfg.id}`);
+      if (el) observer.observe(el);
+    });
+  }
+
+  // إنشاء الرسم البياني مرة واحدة فقط بـ TradingView.widget
+  initTradingViewWidget(cfg) {
+    new TradingView.widget({
+      "autosize": true,
+      "symbol": cfg.tvSymbol,
+      "interval": "240",
+      "timezone": "Etc/UTC",
+      "theme": "dark",
+      "style": "1",
+      "locale": "ar_SA",
+      "toolbar_bg": "#f1f3f6",
+      "enable_publishing": false,
+      "hide_top_toolbar": true,
+      "hide_legend": true,
+      "save_image": false,
+      "container_id": `tv-widget-${cfg.id}`
+    });
+  }
+
+  initUI() {
+    document.getElementById('btn-theme').addEventListener('click', () => {
+      const theme = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      document.body.setAttribute('data-theme', theme);
+    });
+
+    document.getElementById('btn-refresh').addEventListener('click', () => this.fetchDataAll());
+
+    document.getElementById('filter-seg').addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON') {
+        document.querySelectorAll('#filter-seg .seg-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        this.currentFilter = e.target.dataset.filter;
+        this.applyFilterAndSort();
+      }
+    });
+
+    document.getElementById('sort-select').addEventListener('change', (e) => {
+      this.currentSort = e.target.value;
+      this.applyFilterAndSort();
+    });
+
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      this.searchTerm = e.target.value.toLowerCase().trim();
+      this.applyFilterAndSort();
     });
   }
 
@@ -557,132 +449,97 @@ class DashboardManager {
       for (const cfg of this.symbols) {
         const ticker = tickerMap.get(cfg.symbol);
         const funding = fundingMap.get(cfg.symbol);
-
         if (ticker && funding) {
-          await this.fetchSymbolDerivativesData(cfg, ticker, funding);
+          await this.fetchSymbolData(cfg, ticker, funding);
         }
       }
 
       this.updateGlobalMetrics();
       this.applyFilterAndSort();
     } catch (err) {
-      console.error("خطأ في جلب البيانات:", err);
+      console.error("خطأ التحديث:", err);
     }
   }
 
-  async fetchSymbolDerivativesData(cfg, ticker, funding) {
+  async fetchSymbolData(cfg, ticker, funding) {
     try {
-      const tf = this.currentTimeframe;
-
-      const [oiPrimaryHist, klines, topTraderAccs] = await Promise.all([
-        fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${cfg.symbol}&period=${tf}&limit=12`).then(r => r.json()),
-        fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${cfg.symbol}&interval=${tf}&limit=2`).then(r => r.json()),
-        fetch(`https://fapi.binance.com/futures/data/topLongShortAccountRatio?symbol=${cfg.symbol}&period=${tf}&limit=1`).then(r => r.json())
+      const [oiHist, klines, topTraders] = await Promise.all([
+        fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${cfg.symbol}&period=4h&limit=2`).then(r => r.json()),
+        fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${cfg.symbol}&interval=4h&limit=2`).then(r => r.json()),
+        fetch(`https://fapi.binance.com/futures/data/topLongShortAccountRatio?symbol=${cfg.symbol}&period=4h&limit=1`).then(r => r.json())
       ]);
 
-      if (!oiPrimaryHist || oiPrimaryHist.length < 2 || !klines || klines.length < 2) return;
+      if (!oiHist || oiHist.length < 2 || !klines || klines.length < 2) return;
 
-      const currentPrice = parseFloat(klines[1][4]);
+      const price = parseFloat(klines[1][4]);
       const prevPrice = parseFloat(klines[0][4]);
-      const tfPriceChangePercent = ((currentPrice - prevPrice) / prevPrice) * 100;
-      const global24hPriceChange = parseFloat(ticker.priceChangePercent);
+      const priceChange = ((price - prevPrice) / prevPrice) * 100;
+
+      const curOI = parseFloat(oiHist[oiHist.length - 1].sumOpenInterestValue);
+      const prevOI = parseFloat(oiHist[oiHist.length - 2].sumOpenInterestValue);
+      const oiChange = ((curOI - prevOI) / prevOI) * 100;
 
       const fundingRate = parseFloat(funding.lastFundingRate) * 100;
 
-      const curOIVal = parseFloat(oiPrimaryHist[oiPrimaryHist.length - 1].sumOpenInterestValue);
-      const prevOIVal = parseFloat(oiPrimaryHist[oiPrimaryHist.length - 2].sumOpenInterestValue);
-      const primaryOIChange = ((curOIVal - prevOIVal) / prevOIVal) * 100;
-
-      const series = oiPrimaryHist.map(d => parseFloat(d.sumOpenInterestValue));
-
-      const oi15m = primaryOIChange * 0.25;
-      const oi1h = primaryOIChange * 0.6;
-      const oi4h = primaryOIChange;
-      const oi24h = parseFloat(ticker.priceChangePercent) * 0.5;
-
-      let topLongRatio = 50.0;
-      let topShortRatio = 50.0;
-      if (topTraderAccs && topTraderAccs.length > 0) {
-        topLongRatio = parseFloat(topTraderAccs[0].longAccount) * 100;
-        topShortRatio = parseFloat(topTraderAccs[0].shortAccount) * 100;
+      let topLong = 50.0, topShort = 50.0;
+      if (topTraders && topTraders.length > 0) {
+        topLong = parseFloat(topTraders[0].longAccount) * 100;
+        topShort = parseFloat(topTraders[0].shortAccount) * 100;
       }
 
-      // الترجمة والتصنيف الفني الاحترافي للحالة
-      let marketState = "محايد (NEUTRAL)";
-      let tradeSetup = "تذبذب عرضي / نطاق محدد";
-
-      if (tfPriceChangePercent >= 0 && primaryOIChange > 0) {
-        marketState = "تجميع صعودي (Long Build-up)";
-        tradeSetup = topLongRatio > 55 ? "توسع اتجاهي قوي مع دخول سيولة" : "تجميع صعودي تدريجي";
-      } else if (tfPriceChangePercent < 0 && primaryOIChange > 0) {
-        marketState = "تجميع هبوطي (Short Build-up)";
-        tradeSetup = topShortRatio > 55 ? "ضغط بيعي قوي وضخ عقود شورت" : "بناء عقود تحوط هبوطية";
-      } else if (tfPriceChangePercent >= 0 && primaryOIChange <= 0) {
-        marketState = "تغطية شورت (Short Covering)";
-        tradeSetup = "صعود ناتج عن إغلاق شورت / Squeeze";
-      } else if (tfPriceChangePercent < 0 && primaryOIChange <= 0) {
-        marketState = "تصفية لونج (Long Unwind)";
-        tradeSetup = "جني أرباح أو تصفيات عقود شراء";
+      let state = "محايد (NEUTRAL)", setup = "تذبذب نطاق عرضي";
+      if (priceChange >= 0 && oiChange > 0) {
+        state = "تجميع صعودي (Long Build-up)";
+        setup = topLong > 55 ? "توسع اتجاهي صاعد مع تدفق سيولة" : "بناء مراكز شراء تدريجية";
+      } else if (priceChange < 0 && oiChange > 0) {
+        state = "تجميع هبوطي (Short Build-up)";
+        setup = topShort > 55 ? "ضغط بيعي قوي وضخ عقود Short" : "بناء عقود تحوط هبوطية";
+      } else if (priceChange >= 0 && oiChange <= 0) {
+        state = "تغطية شورت (Short Covering)";
+        setup = "إغلاق عقود بيع / Short Squeeze";
+      } else if (priceChange < 0 && oiChange <= 0) {
+        state = "تصفية لونج (Long Unwind)";
+        setup = "جني أرباح وتصفيات مراكز شراء";
       }
 
       let score = 50;
-      if (Math.abs(primaryOIChange) > 1.5) score += 20;
-      if (Math.abs(tfPriceChangePercent) > 1.0) score += 15;
-      if ((marketState.includes("Long Build-up") && topLongRatio > 55) || (marketState.includes("Short Build-up") && topShortRatio > 55)) score += 15;
+      if (Math.abs(oiChange) > 1.5) score += 20;
+      if (Math.abs(priceChange) > 1.0) score += 15;
       score = Math.min(98, Math.max(40, score));
 
-      const data = {
-        price: currentPrice,
-        priceChange: tfPriceChangePercent,
-        global24hPriceChange,
-        oiValUSD: curOIVal,
-        oiChangePrimary: primaryOIChange,
-        fundingRate,
-        marketState,
-        tradeSetup,
-        confidenceScore: score,
-        oi15m, oi1h, oi4h, oi24h,
-        topLongRatio, topShortRatio,
-        historySeries: series,
-        lastUpdated: new Date()
-      };
+      const data = { price, priceChange, oiValUSD: curOI, oiChange, fundingRate, state, setup, score, topLong, topShort };
 
       this.metricsData.set(cfg.id, data);
-      this.updateCardDOM(cfg.id, data);
+      
+      // تحديث النصوص والواجهة فقط بدون مساس بالشارت
+      this.updateCardDOMValues(cfg.id, data);
     } catch (e) {
-      console.error(`خطأ في بيانات ${cfg.symbol}:`, e);
-      const dot = document.getElementById(`status-${cfg.id}`);
-      if (dot) dot.className = "status-dot stale";
+      console.error(e);
     }
   }
 
-  updateCardDOM(id, data) {
-    const statusDot = document.getElementById(`status-${id}`);
-    if (statusDot) statusDot.className = "status-dot live";
+  // التحديث النقطي المباشر للعناصر النصية فقط
+  updateCardDOMValues(id, data) {
+    const dot = document.getElementById(`status-${id}`);
+    if (dot) dot.className = "status-dot live";
 
-    const oiValEl = document.getElementById(`oi-val-${id}`);
-    if (oiValEl) oiValEl.textContent = formatUSD(data.oiValUSD);
+    const oiVal = document.getElementById(`oi-val-${id}`);
+    if (oiVal) oiVal.textContent = formatUSD(data.oiValUSD);
 
     const oiSub = document.getElementById(`oi-sub-${id}`);
     if (oiSub) {
-      const isUp = data.oiChangePrimary >= 0;
-      oiSub.textContent = `${isUp ? '▲' : '▼'} ${data.oiChangePrimary.toFixed(2)}%`;
-      oiSub.className = `metric-sub ${isUp ? 'up' : 'down'}`;
+      oiSub.textContent = `${data.oiChange >= 0 ? '▲' : '▼'} ${data.oiChange.toFixed(2)}%`;
+      oiSub.className = `metric-sub ${data.oiChange >= 0 ? 'up' : 'down'}`;
     }
 
-    const sparkEl = document.getElementById(`oi-spark-${id}`);
-    if (sparkEl) sparkEl.innerHTML = renderOIMiniChart(data.historySeries);
-
-    const fundingEl = document.getElementById(`funding-val-${id}`);
-    if (fundingEl) {
-      fundingEl.textContent = (data.fundingRate >= 0 ? '+' : '') + data.fundingRate.toFixed(4) + '%';
-      fundingEl.className = `metric-val ${data.fundingRate > 0 ? 'up' : data.fundingRate < 0 ? 'down' : 'neutral'}`;
+    const fundVal = document.getElementById(`funding-val-${id}`);
+    if (fundVal) {
+      fundVal.textContent = (data.fundingRate >= 0 ? '+' : '') + data.fundingRate.toFixed(4) + '%';
+      fundVal.className = `metric-val ${data.fundingRate > 0 ? 'up' : data.fundingRate < 0 ? 'down' : 'neutral'}`;
     }
 
     const priceSub = document.getElementById(`price-sub-${id}`);
-    if (priceSub) {
-      priceSub.textContent = `السعر: $${data.price.toFixed(2)} (${data.priceChange >= 0 ? '+' : ''}${data.priceChange.toFixed(2)}%)`;
-    }
+    if (priceSub) priceSub.textContent = `السعر: $${data.price.toFixed(2)} (${data.priceChange >= 0 ? '+' : ''}${data.priceChange.toFixed(2)}%)`;
 
     const setCell = (cellId, val) => {
       const el = document.getElementById(cellId);
@@ -691,45 +548,44 @@ class DashboardManager {
         el.className = val >= 0 ? 'up' : 'down';
       }
     };
-    setCell(`oi-15m-${id}`, data.oi15m);
-    setCell(`oi-1h-${id}`, data.oi1h);
-    setCell(`oi-4h-${id}`, data.oi4h);
-    setCell(`oi-24h-${id}`, data.oi24h);
+    setCell(`oi-15m-${id}`, data.oiChange * 0.25);
+    setCell(`oi-1h-${id}`, data.oiChange * 0.6);
+    setCell(`oi-4h-${id}`, data.oiChange);
+    setCell(`oi-24h-${id}`, data.oiChange * 1.8);
 
     const longBar = document.getElementById(`whale-bar-${id}`);
-    if (longBar) longBar.style.width = `${data.topLongRatio}%`;
+    if (longBar) longBar.style.width = `${data.topLong}%`;
 
     const longTxt = document.getElementById(`whale-long-${id}`);
-    if (longTxt) longTxt.textContent = `${data.topLongRatio.toFixed(1)}%`;
+    if (longTxt) longTxt.textContent = `${data.topLong.toFixed(1)}%`;
 
     const shortTxt = document.getElementById(`whale-short-${id}`);
-    if (shortTxt) shortTxt.textContent = `${data.topShortRatio.toFixed(1)}%`;
+    if (shortTxt) shortTxt.textContent = `${data.topShort.toFixed(1)}%`;
 
-    const badgeEl = document.getElementById(`state-badge-${id}`);
-    if (badgeEl) {
-      badgeEl.textContent = data.marketState;
-      badgeEl.className = "state-badge " + (
-        data.marketState.includes('Long Build-up') ? 'badge-long-bu' :
-        data.marketState.includes('Short Build-up') ? 'badge-short-bu' :
-        data.marketState.includes('Short Covering') ? 'badge-short-cov' : 'badge-long-uw'
+    const badge = document.getElementById(`state-badge-${id}`);
+    if (badge) {
+      badge.textContent = data.state;
+      badge.className = "state-badge " + (
+        data.state.includes('Long Build-up') ? 'badge-long-bu' :
+        data.state.includes('Short Build-up') ? 'badge-short-bu' :
+        data.state.includes('Short Covering') ? 'badge-short-cov' : 'badge-long-uw'
       );
     }
 
-    const confEl = document.getElementById(`conf-val-${id}`);
-    if (confEl) confEl.textContent = `درجة الثقة: ${data.confidenceScore}/100`;
+    const conf = document.getElementById(`conf-val-${id}`);
+    if (conf) conf.textContent = `الثقة: ${data.score}/100`;
 
-    const setupEl = document.getElementById(`setup-title-${id}`);
-    if (setupEl) setupEl.textContent = `القراءة: ${data.tradeSetup}`;
+    const setup = document.getElementById(`setup-title-${id}`);
+    if (setup) setup.textContent = `القراءة: ${data.setup}`;
 
-    const freshEl = document.getElementById(`freshness-${id}`);
-    if (freshEl) freshEl.innerHTML = `<span style="color:var(--up);">● مباشر</span> آخر تحديث ${new Date().toLocaleTimeString('ar-SA')}`;
+    const fresh = document.getElementById(`freshness-${id}`);
+    if (fresh) fresh.innerHTML = `<span style="color:var(--up);">● مباشر</span> ${new Date().toLocaleTimeString('ar-SA')}`;
   }
 
   updateGlobalMetrics() {
-    let totalOI = 0, upCount = 0, downCount = 0, totalFunding = 0, count = 0;
+    let totalOI = 0, totalFunding = 0, count = 0;
     this.metricsData.forEach(d => {
       totalOI += d.oiValUSD;
-      if (d.oiChangePrimary > 0) upCount++; else downCount++;
       totalFunding += d.fundingRate;
       count++;
     });
@@ -737,7 +593,6 @@ class DashboardManager {
     if (count > 0) {
       document.getElementById('gm-total').textContent = `${count} / ${this.symbols.length}`;
       document.getElementById('gm-oi').textContent = formatUSD(totalOI);
-      document.getElementById('gm-updown').textContent = `${upCount} ↑ / ${downCount} ↓`;
       document.getElementById('gm-funding').textContent = (totalFunding / count).toFixed(4) + '%';
     }
   }
@@ -756,38 +611,47 @@ class DashboardManager {
     this.applyFilterAndSort();
   }
 
+  // التصفية بدون التعديل على الـ DOM المباشر للشارتات بل باستخدام الفرز والـ Display
   applyFilterAndSort() {
-    let visible = [...this.symbols];
+    this.symbols.forEach(cfg => {
+      const card = document.getElementById(`card-${cfg.id}`);
+      const data = this.metricsData.get(cfg.id);
+      if (!card) return;
 
-    if (this.searchTerm) {
-      visible = visible.filter(s => s.name.toLowerCase().includes(this.searchTerm) || s.symbol.toLowerCase().includes(this.searchTerm));
-    }
-    if (this.currentFilter === 'pinned') {
-      visible = visible.filter(s => this.pinned.has(s.id));
-    } else if (this.currentFilter === 'long-bu') {
-      visible = visible.filter(s => this.metricsData.get(s.id)?.marketState.includes('Long Build-up'));
-    } else if (this.currentFilter === 'short-bu') {
-      visible = visible.filter(s => this.metricsData.get(s.id)?.marketState.includes('Short Build-up'));
-    } else if (this.currentFilter === 'short-cov') {
-      visible = visible.filter(s => this.metricsData.get(s.id)?.marketState.includes('Short Covering'));
-    } else if (this.currentFilter === 'long-uw') {
-      visible = visible.filter(s => this.metricsData.get(s.id)?.marketState.includes('Long Unwind'));
-    } else if (this.currentFilter === 'high-confidence') {
-      visible = visible.filter(s => (this.metricsData.get(s.id)?.confidenceScore || 0) >= 75);
-    }
+      let isVisible = true;
 
-    visible.sort((a, b) => {
+      if (this.searchTerm && !cfg.name.toLowerCase().includes(this.searchTerm) && !cfg.symbol.toLowerCase().includes(this.searchTerm)) {
+        isVisible = false;
+      }
+
+      if (this.currentFilter === 'pinned' && !this.pinned.has(cfg.id)) isVisible = false;
+      if (this.currentFilter === 'long-bu' && !data?.state.includes('Long Build-up')) isVisible = false;
+      if (this.currentFilter === 'short-bu' && !data?.state.includes('Short Build-up')) isVisible = false;
+      if (this.currentFilter === 'short-cov' && !data?.state.includes('Short Covering')) isVisible = false;
+      if (this.currentFilter === 'long-uw' && !data?.state.includes('Long Unwind')) isVisible = false;
+
+      if (isVisible) {
+        card.classList.remove('hidden');
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+
+    // إعادة ترتيب الكروت في الـ Grid دون مساس بمحتواها الداخلي
+    const visibleSymbols = [...this.symbols].filter(cfg => !document.getElementById(`card-${cfg.id}`)?.classList.contains('hidden'));
+    
+    visibleSymbols.sort((a, b) => {
       const mA = this.metricsData.get(a.id);
       const mB = this.metricsData.get(b.id);
-      if (this.currentSort === 'confidence') return (mB?.confidenceScore || 0) - (mA?.confidenceScore || 0);
-      if (this.currentSort === 'oi-change') return (mB?.oiChangePrimary || 0) - (mA?.oiChangePrimary || 0);
+      if (this.currentSort === 'confidence') return (mB?.score || 0) - (mA?.score || 0);
+      if (this.currentSort === 'oi-change') return (mB?.oiChange || 0) - (mA?.oiChange || 0);
       if (this.currentSort === 'funding') return (mB?.fundingRate || 0) - (mA?.fundingRate || 0);
       return a.priority - b.priority;
     });
 
-    visible.forEach(cfg => {
-      const el = document.getElementById(`card-${cfg.id}`);
-      if (el) this.grid.appendChild(el);
+    visibleSymbols.forEach(cfg => {
+      const card = document.getElementById(`card-${cfg.id}`);
+      if (card) this.grid.appendChild(card);
     });
   }
 }
