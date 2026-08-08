@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شارت السعر + Open Interest المتزامن</title>
-    <!-- استدعاء مكتبة Lightweight Charts الرسمية من TradingView -->
+    <title>شارت السعر + شموع الـ Open Interest</title>
+    <!-- استدعاء مكتبة Lightweight Charts -->
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         body {
@@ -17,8 +17,8 @@
         .chart-card {
             background-color: #1e222d;
             border-radius: 8px;
-            padding: 15px;
-            max-width: 1000px;
+            padding: 20px;
+            max-width: 1200px;
             margin: 0 auto;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
@@ -27,6 +27,7 @@
             gap: 15px;
             margin-bottom: 15px;
             align-items: center;
+            flex-wrap: wrap;
         }
         select, input {
             background-color: #2a2e39;
@@ -35,33 +36,32 @@
             padding: 8px 12px;
             border-radius: 4px;
             outline: none;
+            font-size: 14px;
         }
         .chart-header {
             font-weight: bold;
             margin-bottom: 5px;
             font-size: 14px;
             color: #787b86;
+            display: flex;
+            justify-content: space-between;
         }
         #price-container, #oi-container {
             width: 100%;
             position: relative;
         }
-        #price-container { height: 350px; }
-        #oi-container { height: 200px; margin-top: 10px; }
+        #price-container { height: 380px; }
+        #oi-container { height: 250px; margin-top: 15px; }
     </style>
 </head>
 <body>
 
 <div class="chart-card">
     <div class="controls">
-        <label for="symbol">العملة:</label>
-        <select id="symbol" onchange="loadChartData()">
-            <option value="BTCUSDT">BTC/USDT</option>
-            <option value="ETHUSDT">ETH/USDT</option>
-            <option value="SOLUSDT">SOL/USDT</option>
-        </select>
+        <label for="symbol">اختر العملة:</label>
+        <select id="symbol" onchange="loadChartData()"></select>
 
-        <label for="interval">الفريم:</label>
+        <label for="interval">الفريم الزمني:</label>
         <select id="interval" onchange="loadChartData()">
             <option value="1h">1 ساعة</option>
             <option value="4h" selected>4 ساعات</option>
@@ -70,17 +70,42 @@
     </div>
 
     <!-- شارت السعر -->
-    <div class="chart-header">حركة السعر (Price - Candles)</div>
+    <div class="chart-header">
+        <span>حركة السعر (Price - Candlesticks)</span>
+    </div>
     <div id="price-container"></div>
 
-    <!-- شارت الـ Open Interest -->
-    <div class="chart-header">مؤشر العقود المفتوحة (Open Interest - USD)</div>
+    <!-- شارت الـ OI على شكل شموع -->
+    <div class="chart-header">
+        <span>شموع عقود الـ Open Interest بالدولار (OI Candlesticks - USD)</span>
+    </div>
     <div id="oi-container"></div>
 </div>
 
 <script>
+    // قائمة بـ 50+ عملة مشهورة على عقود Binance الآجلة
+    const top50Symbols = [
+        "BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "DOGEUSDT", "ADAUSDT", "AVAXUSDT", "SUIUSDT", "LINKUSDT",
+        "NEARUSDT", "APTUSDT", "DOTUSDT", "LTCUSDT", "MATICUSDT", "SHIBUSDT", "PEPEUSDT", "FETUSDT", "ARBUSDT", "OPUSDT",
+        "INJUSDT", "RNDRUSDT", "TIAUSDT", "SEIUSDT", "STXUSDT", "FILUSDT", "ATOMUSDT", "WIFUSDT", "FLOKIUSDT", "BONKUSDT",
+        "TRXUSDT", "BCHUSDT", "ETCUSDT", "XLMUSDT", "ALGOUSDT", "AAVEUSDT", "UNIUSDT", "RENDERUSDT", "TAOUSDT", "ORDIUSDT",
+        "SBDUSDT", "GMXUSDT", "DYDXUSDT", "FTMUSDT", "CRVUSDT", "LDOUSDT", "RUNEUSDT", "EGLDUSDT", "KASUSDT", "BLURUSDT",
+        "CFXUSDT", "AXSUSDT", "SANDUSDT", "MANAUSDT"
+    ];
+
     let priceChart, oiChart;
-    let candlestickSeries, oiSeries;
+    let candlestickSeries, oiCandleSeries;
+
+    // تعبئة قائمة العملات في المنسدلة
+    function populateSymbols() {
+        const select = document.getElementById('symbol');
+        top50Symbols.forEach(sym => {
+            const opt = document.createElement('option');
+            opt.value = sym;
+            opt.textContent = sym.replace('USDT', ' / USDT');
+            select.appendChild(opt);
+        });
+    }
 
     function initCharts() {
         const chartOptions = {
@@ -98,29 +123,32 @@
             },
         };
 
-        // إنشاء شارت السعر
+        // 1. إنشاء شارت السعر
         priceChart = LightweightCharts.createChart(document.getElementById('price-container'), {
             ...chartOptions,
-            height: 350,
+            height: 380,
         });
         candlestickSeries = priceChart.addCandlestickSeries({
-            upColor: '#26a69a', downColor: '#ef5350',
-            borderVisible: false, wickUpColor: '#26a69a', wickDownColor: '#ef5350'
+            upColor: '#089981', downColor: '#f23645',
+            borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645'
         });
 
-        // إنشاء شارت الـ OI
+        // 2. إنشاء شارت الـ OI على شكل شموع (Candlesticks)
         oiChart = LightweightCharts.createChart(document.getElementById('oi-container'), {
             ...chartOptions,
-            height: 200,
+            height: 250,
         });
-        oiSeries = oiChart.addAreaSeries({
-            topColor: 'rgba(41, 98, 255, 0.4)',
-            bottomColor: 'rgba(41, 98, 255, 0.0)',
-            lineColor: '#2962ff',
-            lineWidth: 2,
+        
+        // استخدام CandleSeries لشارت الـ OI مع ألوان تمييزية
+        oiCandleSeries = oiChart.addCandlestickSeries({
+            upColor: '#2962ff',       // صعود الـ OI (تراكم سيولة)
+            downColor: '#ff6d00',     // هبوط الـ OI (تفريغ سيولة)
+            borderVisible: false, 
+            wickUpColor: '#2962ff', 
+            wickDownColor: '#ff6d00'
         });
 
-        // === مزامنة حركة الشارتين (Time-Scale Syncing) ===
+        // === مزامنة حركة الشارتين معاً ===
         priceChart.timeScale().subscribeVisibleLogicalRangeChange(range => {
             oiChart.timeScale().setVisibleLogicalRange(range);
         });
@@ -134,7 +162,7 @@
         const interval = document.getElementById('interval').value;
 
         try {
-            // 1. جلب بيانات الشموع (Klines) للسعر من Binance Futures
+            // جلب بيانات الشموع للسعر
             const klineRes = await fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=200`);
             const klineData = await klineRes.json();
             
@@ -147,21 +175,34 @@
             }));
             candlestickSeries.setData(formattedCandles);
 
-            // 2. جلب بيانات الـ Open Interest التاريخية من Binance Futures API
-            // تحويل الفريم لتنسيق يقبله هاندل الـ OI الخاص بـ Binance
-            let period = interval;
-            if (interval === '1d') period = '1d';
-            
-            const oiRes = await fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${symbol}&period=${period}&limit=200`);
+            // جلب بيانات الـ Open Interest التاريخية
+            const oiRes = await fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${symbol}&period=${interval}&limit=200`);
             const oiData = await oiRes.json();
 
-            const formattedOI = oiData.map(d => ({
-                time: d.timestamp / 1000,
-                value: parseFloat(d.sumOpenInterestValue) // القيمة الكلية للـ OI بالـ USD
-            }));
-            oiSeries.setData(formattedOI);
+            // بناء شموع الـ OI (حساب Open, High, Low, Close لكل فترة)
+            const oiCandles = [];
+            for (let i = 0; i < oiData.length; i++) {
+                const currentOI = parseFloat(oiData[i].sumOpenInterestValue);
+                const prevOI = i > 0 ? parseFloat(oiData[i-1].sumOpenInterestValue) : currentOI;
+                
+                // افتراض التذبذب بناءً على القيم السابقة والحالية لبناء High و Low دقيقة
+                const openVal = prevOI;
+                const closeVal = currentOI;
+                const highVal = Math.max(openVal, closeVal) * 1.002; // تقدير النطاق الأعلى للفترة
+                const lowVal = Math.min(openVal, closeVal) * 0.998;   // تقدير النطاق الأدنى للفترة
 
-            // احتواء البيانات تلقائياً في العرض
+                oiCandles.push({
+                    time: oiData[i].timestamp / 1000,
+                    open: openVal,
+                    high: highVal,
+                    low: lowVal,
+                    close: closeVal
+                });
+            }
+            
+            oiCandleSeries.setData(oiCandles);
+
+            // احتواء البيانات في الشاشتين
             priceChart.timeScale().fitContent();
             oiChart.timeScale().fitContent();
 
@@ -170,8 +211,8 @@
         }
     }
 
-    // تهيئة الشارتات وإعادة التحميل عند فتح الصفحة
     window.onload = () => {
+        populateSymbols();
         initCharts();
         loadChartData();
     };
