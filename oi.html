@@ -1,576 +1,940 @@
-row.innerHTML = `<span>${escapeHtml(c.symbol)} <span style="color:var(--text-3);font-weight:500;">— ${escapeHtml(c.name)}</span></span>`;
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>لوحة تحكم عقود الكريبتو — مراقب السيولة والاهتمام المفتوح</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+/* ============================================================
+   TOKENS & THEME
+   ============================================================ */
+:root{
+  --bg-0:#080b12;
+  --bg-1:#0d111a;
+  --bg-2:#111827;
+  --bg-2-hover:#151d2e;
+  --border:#1e2735;
+  --border-soft:#161f2c;
+  --text-1:#e7ebf1;
+  --text-2:#8b96a5;
+  --text-3:#5b6576;
+  --up:#22c55e;
+  --up-dim:#16532f;
+  --down:#ef4444;
+  --down-dim:#5c1e1e;
+  --blue:#3b82f6;
+  --blue-dim:#16305c;
+  --yellow:#eab308;
+  --yellow-dim:#4a3c08;
+  --p1:#3b82f6;
+  --p2:#60a5fa;
+  --p3:#93b4e0;
+  --radius:12px;
+  --radius-sm:8px;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.55);
+  --mono:ui-monospace,"SF Mono",Consolas,"Liberation Mono",monospace;
+  --sans:"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  --header-h:64px;
+  --controls-h:56px;
+  --navbar-h:42px;
+}
+[data-theme="light"]{
+  --bg-0:#f3f5f8;
+  --bg-1:#ffffff;
+  --bg-2:#ffffff;
+  --bg-2-hover:#f2f4f8;
+  --border:#e2e6ec;
+  --border-soft:#eceff3;
+  --text-1:#0f1420;
+  --text-2:#5a6474;
+  --text-3:#8a93a3;
+  --shadow:0 1px 2px rgba(20,25,40,.06), 0 8px 20px -12px rgba(20,25,40,.15);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;direction:rtl;}
+body{
+  background:var(--bg-0);
+  color:var(--text-1);
+  font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+::selection{background:var(--blue-dim);color:var(--text-1);}
+button{font-family:inherit;}
+a{text-decoration:none;color:inherit;}
+.tabular{font-variant-numeric:tabular-nums;font-family:var(--mono);}
+
+/* ============================================================
+   LAYOUT SHELL
+   ============================================================ */
+#app-shell{
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+
+header.top{
+  height:var(--header-h);
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 20px;
+  background:linear-gradient(180deg,var(--bg-1),var(--bg-0));
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-mark{
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,var(--blue),#1d4ed8);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:16px;color:#fff;
+  box-shadow:0 4px 14px -4px rgba(59,130,246,.55);
+}
+.brand-text h1{
+  font-size:16px;font-weight:700;margin:0;line-height:1.15;
+}
+.brand-text p{
+  margin:2px 0 0;font-size:11px;color:var(--text-2);font-weight:500;
+}
+.header-right{display:flex;align-items:center;gap:12px;}
+.header-stat{
+  font-size:12px;color:var(--text-2);
+  display:flex;align-items:center;gap:6px;
+  padding:0 12px;border-left:1px solid var(--border-soft);
+  white-space:nowrap;
+}
+.header-stat:last-of-type{border-left:none;}
+.header-stat b{color:var(--text-1);font-weight:600;}
+.header-stat .dot{width:8px;height:8px;border-radius:50%;background:var(--up);box-shadow:0 0 0 3px var(--up-dim);}
+
+.icon-btn{
+  width:36px;height:36px;border-radius:var(--radius-sm);
+  background:var(--bg-2);border:1px solid var(--border);
+  color:var(--text-2);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .15s;
+  font-size:14px;
+}
+.icon-btn:hover{background:var(--bg-2-hover);color:var(--text-1);border-color:#2a3444;}
+.icon-btn.active{color:var(--blue);border-color:var(--blue);background:var(--blue-dim);}
+
+/* ---------- CONTROL BAR ---------- */
+.control-bar{
+  min-height:var(--controls-h);
+  flex:0 0 auto;
+  display:flex;align-items:center;gap:12px;
+  padding:10px 20px;
+  background:var(--bg-1);
+  border-bottom:1px solid var(--border);
+  flex-wrap:wrap;
+  position:sticky;top:var(--header-h);z-index:40;
+}
+.search-wrap{
+  position:relative;flex:1 1 240px;min-width:200px;max-width:360px;
+}
+.search-wrap i{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-3);font-size:13px;}
+.search-wrap input{
+  width:100%;height:36px;border-radius:var(--radius-sm);
+  background:var(--bg-2);border:1px solid var(--border);
+  color:var(--text-1);padding:0 36px 0 12px;font-size:13px;outline:none;
+  transition:border-color .15s;
+}
+.search-wrap input:focus{border-color:var(--blue);}
+.search-wrap kbd{
+  position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  font-size:10px;color:var(--text-3);border:1px solid var(--border);
+  border-radius:4px;padding:1px 5px;background:var(--bg-1);
+}
+.seg{
+  display:flex;background:var(--bg-2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:3px;gap:3px;
+}
+.seg button{
+  border:none;background:transparent;color:var(--text-2);
+  font-size:12px;font-weight:600;padding:6px 12px;border-radius:6px;cursor:pointer;
+  white-space:nowrap;transition:all .15s;
+}
+.seg button.active{background:var(--blue);color:#fff;}
+.seg button:not(.active):hover{color:var(--text-1);background:var(--bg-2-hover);}
+
+select.plain{
+  height:36px;background:var(--bg-2);border:1px solid var(--border);
+  color:var(--text-1);border-radius:var(--radius-sm);font-size:12px;padding:0 10px;
+  outline:none;cursor:pointer;
+}
+
+.pill-btn{
+  height:36px;display:flex;align-items:center;gap:8px;
+  background:var(--bg-2);border:1px solid var(--border);color:var(--text-2);
+  border-radius:var(--radius-sm);padding:0 14px;font-size:12px;font-weight:600;cursor:pointer;
+}
+.pill-btn:hover{color:var(--text-1);background:var(--bg-2-hover);}
+.pill-btn.on{color:var(--yellow);border-color:var(--yellow);background:var(--yellow-dim);}
+
+/* ---------- QUICK NAV ---------- */
+.quicknav{
+  height:var(--navbar-h);flex:0 0 auto;
+  display:flex;align-items:center;gap:8px;
+  padding:0 20px;overflow-x:auto;
+  background:var(--bg-0);border-bottom:1px solid var(--border-soft);
+  position:sticky;top:calc(var(--header-h) + var(--controls-h));z-index:30;
+}
+.quicknav::-webkit-scrollbar{height:4px;}
+.quicknav::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.qn-item{
+  flex:0 0 auto;font-size:12px;font-weight:700;color:var(--text-2);
+  padding:4px 10px;border-radius:6px;cursor:pointer;
+  border:1px solid transparent;transition:all .15s;
+}
+.qn-item:hover{color:var(--text-1);background:var(--bg-2);}
+.qn-item.pinned{color:var(--yellow);background:var(--yellow-dim);border-color:var(--yellow-dim);}
+
+/* ---------- MAIN / GRID ---------- */
+main{flex:1 1 auto;padding:20px 20px 60px;}
+#grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(420px,1fr));
+  gap:20px;
+}
+#grid.density-compact{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;}
+#grid.density-large{grid-template-columns:repeat(auto-fit,minmax(580px,1fr));gap:24px;}
+#grid.view-large{grid-template-columns:1fr;}
+
+.empty-state{
+  text-align:center;padding:80px 20px;color:var(--text-2);grid-column:1/-1;
+}
+.empty-state i{font-size:32px;color:var(--text-3);margin-bottom:15px;display:block;}
+
+/* ---------- CARD ---------- */
+.card{
+  background:var(--bg-2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  position:relative;
+  transition:transform .2s, border-color .2s;
+}
+.card:hover{border-color:var(--text-3);}
+.card.pinned{border-color:var(--yellow-dim);box-shadow:0 0 15px rgba(234,179,8,0.05);}
+.card::before{
+  content:"";position:absolute;right:0;top:0;bottom:0;width:4px;
+  background:var(--p3);z-index:10;
+}
+.card[data-priority="1"]::before{background:var(--p1);box-shadow:0 0 12px 0 rgba(59,130,246,.6);}
+.card[data-priority="2"]::before{background:var(--p2);}
+
+.card-head{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:14px 16px 12px;border-bottom:1px solid var(--border-soft);
+  gap:10px;cursor:grab;
+}
+.card-head:active{cursor:grabbing;}
+.card-title-block{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.card-symbol-row{display:flex;align-items:center;gap:8px;}
+.card-symbol{font-size:16px;font-weight:700;letter-spacing:.2px;}
+.card-pair{font-size:12px;color:var(--text-3);font-weight:600;}
+.status-dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+.status-dot.loaded{background:var(--up);box-shadow:0 0 0 3px var(--up-dim);}
+.status-dot.loading{background:var(--yellow);box-shadow:0 0 0 3px var(--yellow-dim);animation:pulse 1.2s infinite;}
+.status-dot.blocked{background:var(--down);box-shadow:0 0 0 3px var(--down-dim);}
+.status-dot.no-url{background:var(--text-3);box-shadow:0 0 0 3px var(--border-soft);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+.card-meta{font-size:11px;color:var(--text-2);margin-top:2px;}
+.card-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto;}
+.card-actions button{
+  width:30px;height:30px;border-radius:8px;background:transparent;border:1px solid transparent;
+  color:var(--text-3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;
+  transition:all .15s;
+}
+.card-actions button:hover{background:var(--bg-2-hover);color:var(--text-1);border-color:var(--border);}
+.card-actions button.star.active{color:var(--yellow);}
+.priority-badge{
+  font-size:10px;font-weight:800;color:var(--p1);background:var(--blue-dim);
+  border-radius:5px;padding:2px 7px;letter-spacing:.4px;
+}
+
+.card-body{
+  flex:1 1 auto;min-height:300px;position:relative;background:var(--bg-1);
+}
+#grid.density-compact .card-body{min-height:220px;}
+#grid.density-large .card-body{min-height:420px;}
+.card-body iframe{width:100%;height:100%;border:none;display:block;position:absolute;inset:0;}
+
+.body-placeholder{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:30px;text-align:center;color:var(--text-2);
+}
+.body-placeholder i{font-size:28px;color:var(--text-3);}
+.body-placeholder b{color:var(--text-1);font-size:14px;}
+.body-placeholder span{font-size:12px;line-height:1.6;max-width:300px;}
+.body-placeholder .open-btn{
+  margin-top:8px;display:inline-flex;align-items:center;gap:8px;
+  background:var(--blue);color:#fff;border:none;border-radius:8px;
+  padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s;
+}
+.body-placeholder .open-btn:hover{background:#2f6fe0;}
+
+.shimmer{
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,var(--bg-1) 25%,var(--bg-2-hover) 37%,var(--bg-1) 63%);
+  background-size:400% 100%;animation:shimmer 1.4s ease infinite;
+}
+@keyframes shimmer{0%{background-position:100% 0;}100%{background-position:0 0;}}
+
+.card-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;border-top:1px solid var(--border-soft);
+  font-size:12px;color:var(--text-2);
+}
+.open-original-link{
+  display:flex;align-items:center;gap:6px;color:var(--blue);font-weight:700;font-size:12px;
+}
+.open-original-link:hover{text-decoration:underline;}
+.status-label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;}
+
+/* ---------- MODAL & DRAWER ---------- */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(3,5,10,.85);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;z-index:200;padding:20px;
+}
+.modal-backdrop.open{display:flex;}
+.modal{
+  width:min(1400px,100%);height:min(900px,90vh);
+  background:var(--bg-1);border:1px solid var(--border);border-radius:16px;
+  display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px -20px rgba(0,0,0,.8);
+}
+.modal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;border-bottom:1px solid var(--border);
+}
+.modal-body{flex:1;position:relative;background:var(--bg-0);}
+.modal-body iframe{width:100%;height:100%;border:none;}
+
+.drawer-backdrop{
+  position:fixed;inset:0;background:rgba(3,5,10,.6);display:none;z-index:150;
+}
+.drawer-backdrop.open{display:block;}
+.drawer{
+  position:fixed;top:0;left:0;bottom:0;width:380px;max-width:92vw;
+  background:var(--bg-1);border-right:1px solid var(--border);
+  transform:translateX(-100%);transition:transform .3s cubic-bezier(0.4, 0, 0.2, 1);z-index:160;
+  display:flex;flex-direction:column;
+}
+.drawer.open{transform:translateX(0);}
+.drawer-head{
+  padding:18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.drawer-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:24px;}
+.settings-group label.group-title{
+  display:block;font-size:11px;font-weight:800;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;
+}
+.opt-row{display:flex;gap:8px;flex-wrap:wrap;}
+.opt-btn{
+  flex:1 1 auto;text-align:center;font-size:12px;font-weight:600;
+  padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg-2);
+  color:var(--text-2);cursor:pointer;transition:all .15s;
+}
+.opt-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+
+.settings-btn{
+  width:100%;text-align:right;background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);
+  padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;gap:10px;transition:all .15s;
+}
+.settings-btn:hover{background:var(--bg-2-hover);}
+.settings-btn.danger{color:var(--down);}
+.settings-btn.danger:hover{background:var(--down-dim);border-color:var(--down);}
+
+.add-form{display:flex;flex-direction:column;gap:10px;}
+.add-form input{
+  height:36px;background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);
+  border-radius:8px;padding:0 12px;font-size:13px;outline:none;
+}
+.add-form input:focus{border-color:var(--blue);}
+.add-form label{font-size:11px;color:var(--text-2);font-weight:700;margin-bottom:-6px;}
+
+.chart-list{display:flex;flex-direction:column;gap:8px;max-height:250px;overflow-y:auto;padding-left:4px;}
+.chart-list-row{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg-2);border:1px solid var(--border-soft);border-radius:8px;padding:8px 12px;font-size:13px;
+}
+.chart-list-row button{background:none;border:none;color:var(--text-3);cursor:pointer;padding:4px;}
+.chart-list-row button:hover{color:var(--down);}
+
+#toast{
+  position:fixed;bottom:24px;right:50%;transform:translateX(50%) translateY(100px);
+  background:var(--bg-2);border:1px solid var(--border);color:var(--text-1);
+  padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);z-index:300;transition:transform .3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+#toast.show{transform:translateX(50%) translateY(0);}
+
+@media (max-width:600px){
+  .header-stat{display:none;}
+  .control-bar{padding:8px 12px;}
+  #grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="app-shell">
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark">OI</div>
+      <div class="brand-text">
+        <h1>لوحة تحكم الكريبتو</h1>
+        <p>مراقب الاهتمام المفتوح (Open Interest)</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="header-stat">
+        <div class="dot"></div>
+        <span>الحالة: <b>مباشر</b></span>
+      </div>
+      <div class="header-stat">
+        <span>تحديث: <b id="last-updated-time" class="tabular">--:--:--</b></span>
+      </div>
+      <button class="icon-btn" id="btn-theme" title="تبديل المظهر"><i class="fa-solid fa-moon"></i></button>
+      <button class="icon-btn" id="btn-settings" title="الإعدادات"><i class="fa-solid fa-gear"></i></button>
+    </div>
+  </header>
+
+  <div class="control-bar">
+    <div class="search-wrap">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="search-input" placeholder="بحث عن عملة...">
+      <kbd>/</kbd>
+    </div>
+
+    <div class="seg" id="filter-seg">
+      <button class="active" data-filter="all">الكل</button>
+      <button data-filter="priority">الأهم</button>
+      <button data-filter="pinned">المثبتة</button>
+      <button data-filter="altcoins">البديلة</button>
+    </div>
+
+    <select class="plain" id="sort-select">
+      <option value="priority">ترتيب حسب الأهمية</option>
+      <option value="alpha">ترتيب أبجدي</option>
+      <option value="manual">ترتيب يدوي</option>
+    </select>
+
+    <div class="seg" id="view-seg">
+      <button class="active" data-view="grid"><i class="fa-solid fa-grip"></i></button>
+      <button data-view="large"><i class="fa-solid fa-square"></i></button>
+    </div>
+
+    <button class="pill-btn" id="btn-focus" title="وضع التركيز">
+      <i class="fa-solid fa-bullseye"></i> التركيز
+    </button>
+
+    <div style="flex:1"></div>
+
+    <button class="icon-btn" id="btn-refresh" title="تحديث الكل"><i class="fa-solid fa-rotate"></i></button>
+    <button class="icon-btn" id="btn-fullscreen" title="ملء الشاشة"><i class="fa-solid fa-expand"></i></button>
+  </div>
+
+  <nav class="quicknav" id="quicknav"></nav>
+
+  <main>
+    <div id="grid"></div>
+    <div id="empty-state" class="empty-state" style="display:none;">
+      <i class="fa-solid fa-face-frown"></i>
+      <p>لم يتم العثور على نتائج لـ <b id="empty-query"></b></p>
+    </div>
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modal-title">الشارت</h3>
+      <button class="icon-btn" id="modal-close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- Drawer -->
+<div class="drawer-backdrop" id="drawer-backdrop"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3>إعدادات لوحة التحكم</h3>
+    <button class="icon-btn" id="drawer-close"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="drawer-body">
+    <div class="settings-group">
+      <label class="group-title">المظهر</label>
+      <div class="opt-row" id="opt-theme">
+        <button class="opt-btn" data-val="dark">داكن</button>
+        <button class="opt-btn" data-val="light">فاتح</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <label class="group-title">كثافة الشبكة</label>
+      <div class="opt-row" id="opt-density">
+        <button class="opt-btn" data-val="compact">مدمج</button>
+        <button class="opt-btn active" data-val="normal">عادي</button>
+        <button class="opt-btn" data-val="large">كبير</button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <label class="group-title">إضافة شارت جديد</label>
+      <div class="add-form">
+        <label>الرمز (مثل BTC)</label>
+        <input id="add-symbol" placeholder="BTC">
+        <label>الاسم (مثل Bitcoin)</label>
+        <input id="add-name" placeholder="Bitcoin">
+        <label>المنصة (مثل Binance)</label>
+        <input id="add-exchange" placeholder="Binance">
+        <label>رابط الشارت (Coinalyze)</label>
+        <input id="add-url" placeholder="https://coinalyze.net/...">
+        <label>الأولوية (1 = الأعلى)</label>
+        <input id="add-priority" type="number" min="1" value="5">
+        <button class="settings-btn" id="btn-add-chart" style="margin-top:8px;justify-content:center;background:var(--blue);border-color:var(--blue);color:#fff;">
+          <i class="fa-solid fa-plus"></i> إضافة عملة
+        </button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <label class="group-title">إدارة العملات</label>
+      <div class="chart-list" id="chart-manage-list"></div>
+    </div>
+
+    <div class="settings-group">
+      <label class="group-title">البيانات</label>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="settings-btn" id="btn-export"><i class="fa-solid fa-file-export"></i> تصدير الإعدادات</button>
+        <button class="settings-btn" id="btn-import"><i class="fa-solid fa-file-import"></i> استيراد الإعدادات</button>
+        <input type="file" id="import-file" accept="application/json" style="display:none;">
+        <button class="settings-btn danger" id="btn-reset"><i class="fa-solid fa-trash"></i> إعادة ضبط المصنع</button>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+const DEFAULT_CHARTS = [
+  { id:"btc",  symbol:"BTC",  name:"Bitcoin",    exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/bitcoin/usdt/binance/open-interest-chart/btcusdt_perp_oi/", priority:1 },
+  { id:"eth",  symbol:"ETH",  name:"Ethereum",   exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/ethereum/usdt/binance/open-interest-chart/ethusdt_perp_oi/", priority:2 },
+  { id:"sol",  symbol:"SOL",  name:"Solana",     exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/solana/usdt/binance/open-interest-chart/solusdt_perp_oi/", priority:3 },
+  { id:"bnb",  symbol:"BNB",  name:"BNB",        exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/binance-coin/usdt/binance/open-interest-chart/bnbusdt_perp_oi/", priority:4 },
+  { id:"xrp",  symbol:"XRP",  name:"XRP",        exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/xrp/usdt/binance/open-interest-chart/xrpusdt_perp_oi/", priority:5 },
+  { id:"doge", symbol:"DOGE", name:"Dogecoin",   exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/dogecoin/usdt/binance/open-interest-chart/dogeusdt_perp_oi/", priority:6 },
+  { id:"ada",  symbol:"ADA",  name:"Cardano",    exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/cardano/usdt/binance/open-interest-chart/adausdt_perp_oi/", priority:7 },
+  { id:"avax", symbol:"AVAX", name:"Avalanche",  exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/avalanche/usdt/binance/open-interest-chart/avaxusdt_perp_oi/", priority:8 },
+  { id:"link", symbol:"LINK", name:"Chainlink",  exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/chainlink/usdt/binance/open-interest-chart/linkusdt_perp_oi/", priority:9 },
+  { id:"sui",  symbol:"SUI",  name:"Sui",        exchange:"Binance", type:"Open Interest", url:"https://coinalyze.net/sui/usdt/binance/open-interest-chart/suiusdt_perp_oi/", priority:10 }
+];
+
+const LS = {
+  charts:   "oi_dashboard_charts_v1",
+  pinned:   "oi_dashboard_pinned_v1",
+  order:    "oi_dashboard_order_v1",
+  settings: "oi_dashboard_settings_v1"
+};
+
+const DEFAULT_SETTINGS = {
+  theme:"dark", density:"normal", view:"grid", autoRefresh:0,
+  sort:"priority", filter:"all"
+};
+
+let charts   = loadJSON(LS.charts, DEFAULT_CHARTS);
+let pinned   = loadJSON(LS.pinned, []);
+let order    = loadJSON(LS.order, charts.map(c=>c.id));
+let settings = Object.assign({}, DEFAULT_SETTINGS, loadJSON(LS.settings, {}));
+
+let searchTerm = "";
+let autoRefreshTimer = null;
+let focusMode = false;
+let lastFocusedCardId = null;
+let dragSrcId = null;
+
+function loadJSON(key, fallback){
+  try{
+    const raw = localStorage.getItem(key);
+    if(!raw) return JSON.parse(JSON.stringify(fallback));
+    return JSON.parse(raw);
+  }catch(e){ return JSON.parse(JSON.stringify(fallback)); }
+}
+function saveJSON(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){ }
+}
+function persistCharts(){ saveJSON(LS.charts, charts); }
+function persistPinned(){ saveJSON(LS.pinned, pinned); }
+function persistOrder(){ saveJSON(LS.order, order); }
+function persistSettings(){ saveJSON(LS.settings, settings); }
+
+function reconcileOrder(){
+  const ids = charts.map(c=>c.id);
+  order = order.filter(id => ids.includes(id));
+  ids.forEach(id => { if(!order.includes(id)) order.push(id); });
+  persistOrder();
+}
+reconcileOrder();
+
+const grid = document.getElementById("grid");
+const emptyState = document.getElementById("empty-state");
+const emptyQuery = document.getElementById("empty-query");
+const lastUpdatedEl = document.getElementById("last-updated-time");
+const quicknav = document.getElementById("quicknav");
+const chartManageList = document.getElementById("chart-manage-list");
+
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>t.classList.remove("show"), 2200);
+}
+function fmtTime(d){ return d.toTimeString().slice(0,8); }
+function updateLastUpdated(){ lastUpdatedEl.textContent = fmtTime(new Date()); }
+function debounce(fn, ms){
+  let t;
+  return function(...args){ clearTimeout(t); t = setTimeout(()=>fn.apply(this,args), ms); };
+}
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, s => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s]));
+}
+
+function getVisibleCharts(){
+  let list = charts.slice();
+  list.sort((a,b) => order.indexOf(a.id) - order.indexOf(b.id));
+  if(settings.sort === "priority") list.sort((a,b) => a.priority - b.priority);
+  else if(settings.sort === "alpha") list.sort((a,b) => a.symbol.localeCompare(b.symbol));
+  list.sort((a,b) => (pinned.includes(b.id)?1:0) - (pinned.includes(a.id)?1:0));
+
+  if(settings.filter === "priority") list = list.filter(c => c.priority <= 3);
+  else if(settings.filter === "pinned") list = list.filter(c => pinned.includes(c.id));
+  else if(settings.filter === "altcoins") list = list.filter(c => !["btc","eth"].includes(c.id));
+
+  if(searchTerm.trim()){
+    const q = searchTerm.trim().toLowerCase();
+    list = list.filter(c => c.symbol.toLowerCase().includes(q) || c.name.toLowerCase().includes(q));
+  }
+  if(focusMode) list = list.filter(c => c.priority <= 3);
+  return list;
+}
+
+function render(){
+  const visible = getVisibleCharts();
+  grid.className = "";
+  if(settings.view === "large") grid.classList.add("view-large");
+  else if(settings.density === "compact") grid.classList.add("density-compact");
+  else if(settings.density === "large") grid.classList.add("density-large");
+
+  grid.innerHTML = "";
+  if(visible.length === 0){
+    emptyState.style.display = "block";
+    emptyQuery.textContent = searchTerm || "الفلاتر الحالية";
+  } else {
+    emptyState.style.display = "none";
+    visible.forEach(c => grid.appendChild(buildCard(c)));
+  }
+  buildQuickNav();
+  buildManageList();
+  observeLazyCards();
+}
+
+function buildQuickNav(){
+  quicknav.innerHTML = "";
+  charts.slice().sort((a,b)=>a.priority-b.priority).forEach(c => {
+    const el = document.createElement("div");
+    el.className = "qn-item" + (pinned.includes(c.id) ? " pinned" : "");
+    el.textContent = c.symbol;
+    el.addEventListener("click", () => {
+      const card = document.querySelector('.card[data-id="'+c.id+'"]');
+      if(card){ card.scrollIntoView({behavior:"smooth", block:"center"}); flashCard(card); }
+      else toast("العملة مخفية بسبب الفلتر");
+    });
+    quicknav.appendChild(el);
+  });
+}
+function flashCard(card){
+  card.style.boxShadow = "0 0 0 3px var(--blue)";
+  setTimeout(()=>{ card.style.boxShadow = ""; }, 1000);
+}
+
+function buildManageList(){
+  chartManageList.innerHTML = "";
+  charts.slice().sort((a,b)=>a.priority-b.priority).forEach(c => {
+    const row = document.createElement("div");
+    row.className = "chart-list-row";
+    row.innerHTML = `<span>${escapeHtml(c.symbol)} <small style="color:var(--text-3)">— ${escapeHtml(c.name)}</small></span>`;
     const btn = document.createElement("button");
-    btn.innerHTML = `<i class="fa-solid fa-trash"></i>`;
-    btn.title = "Delete chart";
-    btn.addEventListener("click", () => deleteChart(c.id));
+    btn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+    btn.addEventListener("click", () => removeChart(c.id));
     row.appendChild(btn);
     chartManageList.appendChild(row);
   });
 }
 
-function buildCard(c) {
-  const card = document.createElement("article");
+function buildCard(c){
+  const card = document.createElement("div");
   card.className = "card" + (pinned.includes(c.id) ? " pinned" : "");
   card.dataset.id = c.id;
   card.dataset.priority = c.priority;
   card.draggable = true;
-
-  const hasUrl = Boolean(c.url && c.url.trim());
-  const initialStatusClass = hasUrl ? "loading" : "no-url";
-  const initialStatusLabel = hasUrl ? "LOADING" : "NO URL";
+  const isPinned = pinned.includes(c.id);
 
   card.innerHTML = `
     <div class="card-head">
       <div class="card-title-block">
         <div class="card-symbol-row">
-          <span class="status-dot ${initialStatusClass}" id="dot-${c.id}"></span>
-          <span class="card-symbol">${escapeHtml(c.symbol)}</span>
-          <span class="card-pair">/ USDT</span>
-          <span class="priority-badge">P${c.priority}</span>
+          <span class="status-dot no-url" data-role="status-dot"></span>
+          <span class="card-symbol">${escapeHtml(c.symbol)} <span class="card-pair">/ USDT</span></span>
         </div>
-        <div class="card-meta">${escapeHtml(c.name)} • ${escapeHtml(c.exchange)} (${escapeHtml(c.type)})</div>
+        <div class="card-meta">${escapeHtml(c.name)} · ${escapeHtml(c.exchange)}</div>
       </div>
       <div class="card-actions">
-        <button class="star ${pinned.includes(c.id) ? "active" : ""}" title="Pin chart" data-act="pin">
-          <i class="fa-${pinned.includes(c.id) ? "solid" : "regular"} fa-star"></i>
-        </button>
-        <button title="Open modal view" data-act="expand">
-          <i class="fa-solid fa-expand"></i>
-        </button>
-        <button title="Reload chart" data-act="reload">
-          <i class="fa-solid fa-rotate-right"></i>
-        </button>
+        <span class="priority-badge">P${c.priority}</span>
+        <button class="star${isPinned ? ' active':''}" data-role="pin"><i class="fa-solid fa-star"></i></button>
+        <button data-role="fullscreen"><i class="fa-solid fa-expand"></i></button>
       </div>
     </div>
-    <div class="card-body" id="body-${c.id}">
-      <div class="shimmer" id="shimmer-${c.id}"></div>
+    <div class="card-body" data-role="body">
+      <div class="shimmer"></div>
     </div>
     <div class="card-foot">
-      <span class="status-label" id="lbl-${c.id}">
-        <i class="fa-solid fa-${hasUrl ? "circle-notch fa-spin" : "link-slash"}"></i>
-        <span id="txt-${c.id}">${initialStatusLabel}</span>
-      </span>
-      ${hasUrl ? `<a href="${escapeHtml(c.url)}" target="_blank" rel="noopener noreferrer" class="open-original-link">Open Original <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:10px;"></i></a>` : ""}
+      <span class="status-label" data-role="status-label"><i class="fa-solid fa-circle-notch fa-spin"></i> انتظار</span>
+      <a href="${c.url || '#'}" target="_blank" rel="noopener noreferrer" class="open-original-link">
+        فتح الرابط <i class="fa-solid fa-arrow-up-right-from-square"></i>
+      </a>
     </div>
   `;
 
-  // Drag & drop handlers
-  card.addEventListener("dragstart", (e) => {
-    dragSrcId = c.id;
-    card.classList.add("dragging");
-    e.dataTransfer.effectAllowed = "move";
-  });
-  card.addEventListener("dragend", () => {
-    card.classList.remove("dragging");
-    document.querySelectorAll(".card").forEach(el => el.classList.remove("drag-over"));
-  });
-  card.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    card.classList.add("drag-over");
-  });
+  card.querySelector('[data-role="pin"]').addEventListener("click", (e) => { e.stopPropagation(); togglePin(c.id); });
+  card.querySelector('[data-role="fullscreen"]').addEventListener("click", (e) => { e.stopPropagation(); openFullscreen(c); });
+  card.addEventListener("dragstart", () => { dragSrcId = c.id; card.classList.add("dragging"); });
+  card.addEventListener("dragend", () => { card.classList.remove("dragging"); document.querySelectorAll(".card.drag-over").forEach(el=>el.classList.remove("drag-over")); });
+  card.addEventListener("dragover", (e) => { e.preventDefault(); card.classList.add("drag-over"); });
   card.addEventListener("dragleave", () => card.classList.remove("drag-over"));
   card.addEventListener("drop", (e) => {
-    e.preventDefault();
-    card.classList.remove("drag-over");
-    if (dragSrcId && dragSrcId !== c.id) {
-      const fromIdx = order.indexOf(dragSrcId);
-      const toIdx = order.indexOf(c.id);
-      if (fromIdx !== -1 && toIdx !== -1) {
-        order.splice(fromIdx, 1);
-        order.splice(toIdx, 0, dragSrcId);
-        persistOrder();
-        settings.sort = "manual";
-        document.getElementById("sort-select").value = "manual";
-        persistSettings();
-        render();
-        toast("Updated manual order");
-      }
-    }
+    e.preventDefault(); card.classList.remove("drag-over");
+    if(!dragSrcId || dragSrcId === c.id) return;
+    reorder(dragSrcId, c.id);
   });
-
-  // Action buttons
-  card.querySelector('[data-act="pin"]').addEventListener("click", () => togglePin(c.id));
-  card.querySelector('[data-act="expand"]').addEventListener("click", () => openModal(c));
-  card.querySelector('[data-act="reload"]').addEventListener("click", () => reloadCardIframe(c.id));
-
-  card.addEventListener("click", (e) => {
-    if (!e.target.closest("button") && !e.target.closest("a")) {
-      lastFocusedCardId = c.id;
-    }
-  });
-
   return card;
 }
 
-/* ================================================================
-   8) LAZY IFRAME LOADING & FALLBACKS
-   ================================================================ */
-let cardObserver = null;
+function reorder(srcId, targetId){
+  const from = order.indexOf(srcId), to = order.indexOf(targetId);
+  if(from === -1 || to === -1) return;
+  order.splice(from,1); order.splice(to,0,srcId);
+  persistOrder(); settings.sort = "manual"; persistSettings();
+  document.getElementById("sort-select").value = "manual";
+  render();
+}
 
-function observeLazyCards() {
-  if (cardObserver) cardObserver.disconnect();
-
-  cardObserver = new IntersectionObserver((entries) => {
+let io = null;
+function observeLazyCards(){
+  if(io) io.disconnect();
+  io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
+      if(entry.isIntersecting){
         const card = entry.target;
-        const id = card.dataset.id;
-        const chartData = charts.find(c => c.id === id);
-        if (chartData) {
-          loadCardIframe(chartData);
+        const c = charts.find(x=>x.id===card.dataset.id);
+        if(c && !card.dataset.loadStarted){
+          card.dataset.loadStarted = "1";
+          loadCardChart(card, c);
         }
-        cardObserver.unobserve(card);
+        io.unobserve(card);
       }
     });
-  }, { rootMargin: "200px 0px" });
-
-  document.querySelectorAll(".card").forEach(card => cardObserver.observe(card));
+  }, { rootMargin:"200px" });
+  document.querySelectorAll(".card").forEach(card => io.observe(card));
 }
 
-function loadCardIframe(c) {
-  const bodyEl = document.getElementById(`body-${c.id}`);
-  const shimmer = document.getElementById(`shimmer-${c.id}`);
-  const dot = document.getElementById(`dot-${c.id}`);
-  const txt = document.getElementById(`txt-${c.id}`);
-  const lbl = document.getElementById(`lbl-${c.id}`);
+function setStatus(card, status){
+  const dot = card.querySelector('[data-role="status-dot"]');
+  const label = card.querySelector('[data-role="status-label"]');
+  dot.className = "status-dot " + status;
+  const map = {
+    "no-url":  ['<i class="fa-solid fa-link-slash"></i> لا يوجد رابط', 'var(--text-3)'],
+    "loading": ['<i class="fa-solid fa-circle-notch fa-spin"></i> جاري التحميل', 'var(--yellow)'],
+    "loaded":  ['<i class="fa-solid fa-circle-check"></i> تم التحميل', 'var(--up)'],
+    "blocked": ['<i class="fa-solid fa-ban"></i> محجوب', 'var(--down)']
+  };
+  const [html,color] = map[status] || map["no-url"];
+  label.innerHTML = html; label.style.color = color;
+}
 
-  if (!bodyEl) return;
-
-  if (!c.url || !c.url.trim()) {
-    if (shimmer) shimmer.remove();
-    bodyEl.innerHTML = `
-      <div class="body-placeholder">
-        <i class="fa-solid fa-link-slash"></i>
-        <b>No Chart URL Configured</b>
-        <span>Configure a valid chart URL in settings to view live data for ${escapeHtml(c.symbol)}.</span>
-      </div>
-    `;
+function loadCardChart(card, c){
+  const body = card.querySelector('[data-role="body"]');
+  if(!c.url){
+    setStatus(card, "no-url");
+    body.innerHTML = `<div class="body-placeholder"><i class="fa-solid fa-link-slash"></i><b>الرابط غير متوفر</b><span>يرجى إضافة رابط Coinalyze للعملة ${c.symbol}</span></div>`;
     return;
   }
-
+  setStatus(card, "loading");
   const iframe = document.createElement("iframe");
+  iframe.referrerPolicy = "strict-origin-when-cross-origin";
   iframe.src = c.url;
-  iframe.loading = "lazy";
+  iframe.style.opacity = "0";
+  iframe.style.transition = "opacity .5s";
 
-  let loaded = false;
-  const timeoutId = setTimeout(() => {
-    if (!loaded) {
-      if (shimmer) shimmer.remove();
-      if (dot) dot.className = "status-dot blocked";
-      if (txt) txt.textContent = "BLOCKED / SLOW";
-      if (lbl) lbl.innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="color:var(--yellow)"></i> <span>X-FRAME / TIMEOUT</span>`;
-      
-      bodyEl.innerHTML = `
-        <div class="body-placeholder">
-          <i class="fa-solid fa-shield-halved"></i>
-          <b>Cannot Embed Chart Directly</b>
-          <span>This exchange or provider prevents embedding via x-frame-options, or response timed out.</span>
-          <button class="open-btn" onclick="window.open('${escapeHtml(c.url)}','_blank')">
-            Open Chart External <i class="fa-solid fa-arrow-up-right-from-square"></i>
-          </button>
-        </div>
-      `;
-    }
-  }, 7000);
+  let settled = false;
+  const timeout = setTimeout(() => { if(!settled){ settled=true; showBlocked(card, c); } }, 8000);
 
   iframe.onload = () => {
-    loaded = true;
-    clearTimeout(timeoutId);
-    if (shimmer) shimmer.remove();
-    if (dot) dot.className = "status-dot loaded";
-    if (txt) txt.textContent = "LIVE";
-    if (lbl) lbl.innerHTML = `<i class="fa-solid fa-check" style="color:var(--up)"></i> <span>LIVE</span>`;
+    if(settled) return; settled = true; clearTimeout(timeout);
+    iframe.style.opacity = "1"; setStatus(card, "loaded");
   };
-
   iframe.onerror = () => {
-    loaded = true;
-    clearTimeout(timeoutId);
-    if (shimmer) shimmer.remove();
-    if (dot) dot.className = "status-dot blocked";
-    if (txt) txt.textContent = "ERROR";
+    if(settled) return; settled = true; clearTimeout(timeout);
+    showBlocked(card, c);
   };
-
-  bodyEl.appendChild(iframe);
+  body.innerHTML = ""; body.appendChild(iframe);
 }
 
-function reloadCardIframe(id) {
-  const c = charts.find(x => x.id === id);
-  if (!c) return;
-  const bodyEl = document.getElementById(`body-${id}`);
-  if (!bodyEl) return;
-
-  bodyEl.innerHTML = `<div class="shimmer" id="shimmer-${id}"></div>`;
-  const dot = document.getElementById(`dot-${id}`);
-  const txt = document.getElementById(`txt-${id}`);
-  const lbl = document.getElementById(`lbl-${id}`);
-
-  if (dot) dot.className = "status-dot loading";
-  if (txt) txt.textContent = "LOADING";
-  if (lbl) lbl.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> <span>LOADING</span>`;
-
-  loadCardIframe(c);
-  toast(`Reloaded ${c.symbol}`);
+function showBlocked(card, c){
+  const body = card.querySelector('[data-role="body"]');
+  setStatus(card, "blocked");
+  body.innerHTML = `
+    <div class="body-placeholder">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <b>تعذر عرض الشارت هنا</b>
+      <span>موقع Coinalyze قد يمنع العرض داخل الإطارات لبعض المتصفحات.</span>
+      <button class="open-btn" onclick="window.open('${c.url}','_blank')">
+        فتح في نافذة جديدة <i class="fa-solid fa-arrow-up-right-from-square"></i>
+      </button>
+    </div>`;
 }
 
-/* ================================================================
-   9) ACTIONS & SETTINGS
-   ================================================================ */
-function togglePin(id) {
-  if (pinned.includes(id)) {
-    pinned = pinned.filter(x => x !== id);
-    toast("Unpinned chart");
-  } else {
-    pinned.push(id);
-    toast("Pinned chart");
-  }
-  persistPinned();
-  render();
+function refreshAll(){
+  document.querySelectorAll(".card").forEach(card => {
+    const c = charts.find(x=>x.id===card.dataset.id);
+    if(c && c.url){ card.dataset.loadStarted = "1"; loadCardChart(card, c); }
+  });
+  updateLastUpdated(); toast("تم تحديث اللوحة");
 }
 
-function addChart() {
-  const symbolEl = document.getElementById("add-symbol");
-  const nameEl = document.getElementById("add-name");
-  const exchangeEl = document.getElementById("add-exchange");
-  const urlEl = document.getElementById("add-url");
-  const priorityEl = document.getElementById("add-priority");
-
-  const symbol = symbolEl.value.trim().toUpperCase();
-  const name = nameEl.value.trim() || symbol;
-  const exchange = exchangeEl.value.trim() || "Exchange";
-  const url = urlEl.value.trim();
-  const priority = parseInt(priorityEl.value, 10) || 5;
-
-  if (!symbol) {
-    toast("Symbol is required");
-    return;
-  }
-
-  const id = symbol.toLowerCase().replace(/[^a-z0-9]/g, "");
-  if (charts.some(c => c.id === id)) {
-    toast("Chart symbol already exists!");
-    return;
-  }
-
-  const newChart = { id, symbol, name, exchange, type: "Open Interest", url, priority };
-  charts.push(newChart);
-  order.push(id);
-
-  persistCharts();
-  persistOrder();
-  render();
-
-  symbolEl.value = "";
-  nameEl.value = "";
-  exchangeEl.value = "";
-  urlEl.value = "";
-  priorityEl.value = "5";
-
-  toast(`Added ${symbol}`);
+function togglePin(id){
+  if(pinned.includes(id)) pinned = pinned.filter(x=>x!==id);
+  else pinned.push(id);
+  persistPinned(); render();
 }
 
-function deleteChart(id) {
-  charts = charts.filter(c => c.id !== id);
-  pinned = pinned.filter(p => p !== id);
-  order = order.filter(o => o !== id);
-
-  persistCharts();
-  persistPinned();
-  persistOrder();
-  render();
-
-  toast("Chart deleted");
-}
-
-/* ================================================================
-   10) MODAL
-   ================================================================ */
 const modalBackdrop = document.getElementById("modal-backdrop");
-const modalTitle = document.getElementById("modal-title");
 const modalBody = document.getElementById("modal-body");
-const modalClose = document.getElementById("modal-close");
+const modalTitle = document.getElementById("modal-title");
 
-function openModal(c) {
-  modalTitle.textContent = `${c.symbol} / USDT — ${c.name} (${c.exchange})`;
-  if (c.url && c.url.trim()) {
-    modalBody.innerHTML = `<iframe src="${escapeHtml(c.url)}"></iframe>`;
-  } else {
-    modalBody.innerHTML = `
-      <div class="body-placeholder">
-        <i class="fa-solid fa-link-slash"></i>
-        <b>No Chart URL Configured</b>
-      </div>
-    `;
-  }
+function openFullscreen(c){
+  modalTitle.textContent = `${c.symbol} / USDT — ${c.name}`;
+  modalBody.innerHTML = c.url ? `<iframe src="${c.url}" referrerPolicy="strict-origin-when-cross-origin"></iframe>` : '<div class="body-placeholder">الرابط غير متوفر</div>';
   modalBackdrop.classList.add("open");
 }
+function closeFullscreen(){ modalBackdrop.classList.remove("open"); modalBody.innerHTML = ""; }
+document.getElementById("modal-close").addEventListener("click", closeFullscreen);
+modalBackdrop.addEventListener("click", (e) => { if(e.target === modalBackdrop) closeFullscreen(); });
 
-function closeModal() {
-  modalBackdrop.classList.remove("open");
-  modalBody.innerHTML = "";
-}
-
-modalClose.addEventListener("click", closeModal);
-modalBackdrop.addEventListener("click", (e) => {
-  if (e.target === modalBackdrop) closeModal();
-});
-
-/* ================================================================
-   11) DRAWER & CONTROLS
-   ================================================================ */
 const drawer = document.getElementById("drawer");
 const drawerBackdrop = document.getElementById("drawer-backdrop");
-const btnSettings = document.getElementById("btn-settings");
-const drawerClose = document.getElementById("drawer-close");
+document.getElementById("btn-settings").addEventListener("click", () => { drawer.classList.add("open"); drawerBackdrop.classList.add("open"); });
+document.getElementById("drawer-close").addEventListener("click", () => { drawer.classList.remove("open"); drawerBackdrop.classList.remove("open"); });
+drawerBackdrop.addEventListener("click", () => { drawer.classList.remove("open"); drawerBackdrop.classList.remove("open"); });
 
-function openDrawer() {
-  drawer.classList.add("open");
-  drawerBackdrop.classList.add("open");
+function applyTheme(){
+  document.documentElement.setAttribute("data-theme", settings.theme);
+  document.getElementById("btn-theme").innerHTML = settings.theme === "dark" ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
+  document.querySelectorAll("#opt-theme .opt-btn").forEach(b => b.classList.toggle("active", b.dataset.val === settings.theme));
 }
-function closeDrawer() {
-  drawer.classList.remove("open");
-  drawerBackdrop.classList.remove("open");
-}
+document.getElementById("btn-theme").addEventListener("click", () => { settings.theme = settings.theme === "dark" ? "light" : "dark"; persistSettings(); applyTheme(); });
+document.querySelectorAll("#opt-theme .opt-btn").forEach(btn => btn.addEventListener("click", () => { settings.theme = btn.dataset.val; persistSettings(); applyTheme(); }));
 
-btnSettings.addEventListener("click", openDrawer);
-drawerClose.addEventListener("click", closeDrawer);
-drawerBackdrop.addEventListener("click", closeDrawer);
-
-/* Theme */
-function applyTheme(t) {
-  settings.theme = t;
-  document.documentElement.setAttribute("data-theme", t);
-  document.querySelectorAll("#opt-theme .opt-btn").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.val === t);
-  });
-  persistSettings();
-}
-
-document.querySelectorAll("#opt-theme .opt-btn").forEach(btn => {
-  btn.addEventListener("click", () => applyTheme(btn.dataset.val));
-});
-
-document.getElementById("btn-theme").addEventListener("click", () => {
-  applyTheme(settings.theme === "dark" ? "light" : "dark");
-});
-
-/* Grid Density */
-function applyDensity(d) {
-  settings.density = d;
-  document.querySelectorAll("#opt-density .opt-btn").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.val === d);
-  });
-  persistSettings();
+document.querySelectorAll("#opt-density .opt-btn").forEach(btn => btn.addEventListener("click", () => {
+  settings.density = btn.dataset.val; persistSettings();
+  document.querySelectorAll("#opt-density .opt-btn").forEach(b=>b.classList.toggle("active", b===btn));
   render();
+}));
+
+document.getElementById("btn-add-chart").addEventListener("click", () => {
+  const symbol = document.getElementById("add-symbol").value.trim().toUpperCase();
+  const name = document.getElementById("add-name").value.trim();
+  const url = document.getElementById("add-url").value.trim();
+  const priority = Number(document.getElementById("add-priority").value) || 5;
+  if(!symbol || !name){ toast("الرمز والاسم مطلوبان"); return; }
+  const id = symbol.toLowerCase().replace(/[^a-z0-9]/g,"") + Date.now();
+  charts.push({ id, symbol, name, exchange:"Binance", type:"Open Interest", url, priority });
+  persistCharts(); reconcileOrder(); render(); toast("تمت الإضافة");
+  ["add-symbol","add-name","add-url"].forEach(id => document.getElementById(id).value = "");
+});
+
+function removeChart(id){
+  if(!confirm("هل أنت متأكد من حذف هذه العملة؟")) return;
+  charts = charts.filter(x=>x.id!==id); pinned = pinned.filter(x=>x!==id);
+  persistCharts(); persistPinned(); reconcileOrder(); render();
 }
 
-document.querySelectorAll("#opt-density .opt-btn").forEach(btn => {
-  btn.addEventListener("click", () => applyDensity(btn.dataset.val));
-});
-
-/* Auto Refresh */
-function applyAutoRefresh(ms) {
-  settings.autoRefresh = parseInt(ms, 10);
-  document.querySelectorAll("#opt-autorefresh .opt-btn").forEach(btn => {
-    btn.classList.toggle("active", parseInt(btn.dataset.val, 10) === settings.autoRefresh);
-  });
-  persistSettings();
-
-  if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-  if (settings.autoRefresh > 0) {
-    autoRefreshTimer = setInterval(() => {
-      refreshAll();
-    }, settings.autoRefresh);
-    toast(`Auto-refresh set to ${settings.autoRefresh / 60000}m`);
-  } else {
-    toast("Auto-refresh disabled");
-  }
-}
-
-document.querySelectorAll("#opt-autorefresh .opt-btn").forEach(btn => {
-  btn.addEventListener("click", () => applyAutoRefresh(btn.dataset.val));
-});
-
-/* Filters Segment */
-document.querySelectorAll("#filter-seg button").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll("#filter-seg button").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    settings.filter = btn.dataset.filter;
-    persistSettings();
-    render();
-  });
-});
-
-/* View Segment */
-document.querySelectorAll("#view-seg button").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll("#view-seg button").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    settings.view = btn.dataset.view;
-    persistSettings();
-    render();
-  });
-});
-
-/* Sort Select */
-document.getElementById("sort-select").addEventListener("change", (e) => {
-  settings.sort = e.target.value;
-  persistSettings();
-  render();
-});
-
-/* Search */
-const searchInput = document.getElementById("search-input");
-searchInput.addEventListener("input", debounce((e) => {
-  searchTerm = e.target.value;
-  render();
-}, 200));
-
-/* Focus Mode */
-const btnFocus = document.getElementById("btn-focus");
-btnFocus.addEventListener("click", () => {
-  focusMode = !focusMode;
-  btnFocus.classList.toggle("on", focusMode);
-  render();
-  toast(focusMode ? "Focus Mode: Enabled (P1-P3)" : "Focus Mode: Disabled");
-});
-
-/* Add Chart Button */
-document.getElementById("btn-add-chart").addEventListener("click", addChart);
-
-/* Refresh All */
-function refreshAll() {
-  updateLastUpdated();
-  charts.forEach(c => reloadCardIframe(c.id));
-  toast("Refreshed all active charts");
-}
-document.getElementById("btn-refresh").addEventListener("click", refreshAll);
-
-/* Fullscreen App */
-document.getElementById("btn-fullscreen").addEventListener("click", () => {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen().catch(() => {});
-  } else {
-    document.exitFullscreen().catch(() => {});
-  }
-});
-
-/* Export / Import / Reset */
 document.getElementById("btn-export").addEventListener("click", () => {
-  const data = { charts, pinned, order, settings };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `oi_dashboard_backup_${new Date().toISOString().slice(0, 10)}.json`;
-  a.click();
-  toast("Configuration exported");
+  const blob = new Blob([JSON.stringify({ charts, pinned, order, settings })], {type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "config.json"; a.click();
 });
 
-document.getElementById("btn-import").addEventListener("click", () => {
-  document.getElementById("import-file").click();
-});
-
+document.getElementById("btn-import").addEventListener("click", () => document.getElementById("import-file").click());
 document.getElementById("import-file").addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const file = e.target.files[0]; if(!file) return;
   const reader = new FileReader();
-  reader.onload = (evt) => {
+  reader.onload = () => {
     try {
-      const data = JSON.parse(evt.target.result);
-      if (data.charts) { charts = data.charts; persistCharts(); }
-      if (data.pinned) { pinned = data.pinned; persistPinned(); }
-      if (data.order) { order = data.order; persistOrder(); }
-      if (data.settings) { settings = Object.assign({}, DEFAULT_SETTINGS, data.settings); persistSettings(); }
-      reconcileOrder();
-      initUI();
-      render();
-      toast("Configuration imported successfully!");
-    } catch (err) {
-      toast("Invalid JSON configuration file");
-    }
+      const d = JSON.parse(reader.result);
+      if(d.charts) charts = d.charts; if(d.pinned) pinned = d.pinned; if(d.order) order = d.order; if(d.settings) settings = d.settings;
+      persistCharts(); persistPinned(); persistOrder(); persistSettings(); render(); applyTheme(); toast("تم الاستيراد");
+    } catch(e) { toast("ملف غير صالح"); }
   };
   reader.readAsText(file);
 });
 
 document.getElementById("btn-reset").addEventListener("click", () => {
-  if (confirm("Are you sure you want to reset all charts and settings to default?")) {
-    localStorage.removeItem(LS.charts);
-    localStorage.removeItem(LS.pinned);
-    localStorage.removeItem(LS.order);
-    localStorage.removeItem(LS.settings);
-    charts = JSON.parse(JSON.stringify(DEFAULT_CHARTS));
-    pinned = [];
-    order = charts.map(c => c.id);
-    settings = Object.assign({}, DEFAULT_SETTINGS);
-    initUI();
-    render();
-    toast("Dashboard reset to defaults");
-  }
+  if(!confirm("إعادة الضبط ستحذف كل التعديلات، هل أنت متأكد؟")) return;
+  localStorage.clear(); location.reload();
 });
 
-/* Shortcuts */
-window.addEventListener("keydown", (e) => {
-  if (["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
-
-  if (e.key === "/") {
-    e.preventDefault();
-    searchInput.focus();
-  } else if (e.key.toLowerCase() === "r") {
-    refreshAll();
-  } else if (e.key.toLowerCase() === "f") {
-    if (lastFocusedCardId) {
-      const c = charts.find(x => x.id === lastFocusedCardId);
-      if (c) openModal(c);
-    }
-  } else if (e.key === "1") {
-    focusMode = true;
-    btnFocus.classList.add("on");
-    render();
-  } else if (e.key === "0") {
-    focusMode = false;
-    btnFocus.classList.remove("on");
-    render();
-  } else if (e.key === "Escape") {
-    closeModal();
-    closeDrawer();
-  }
+document.getElementById("search-input").addEventListener("input", debounce((e) => { searchTerm = e.target.value; render(); }, 200));
+document.getElementById("filter-seg").addEventListener("click", (e) => {
+  const btn = e.target.closest("button"); if(!btn) return;
+  settings.filter = btn.dataset.filter; persistSettings();
+  document.querySelectorAll("#filter-seg button").forEach(b=>b.classList.toggle("active", b===btn));
+  render();
 });
+document.getElementById("sort-select").addEventListener("change", (e) => { settings.sort = e.target.value; persistSettings(); render(); });
+document.getElementById("view-seg").addEventListener("click", (e) => {
+  const btn = e.target.closest("button"); if(!btn) return;
+  settings.view = btn.dataset.view; persistSettings();
+  document.querySelectorAll("#view-seg button").forEach(b=>b.classList.toggle("active", b===btn));
+  render();
+});
+document.getElementById("btn-focus").addEventListener("click", () => { focusMode = !focusMode; document.getElementById("btn-focus").classList.toggle("on", focusMode); render(); });
+document.getElementById("btn-refresh").addEventListener("click", refreshAll);
+document.getElementById("btn-fullscreen").addEventListener("click", () => { if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); });
 
-/* ================================================================
-   12) INIT
-   ================================================================ */
-function initUI() {
-  applyTheme(settings.theme || "dark");
-
-  document.querySelectorAll("#opt-density .opt-btn").forEach(b => {
-    b.classList.toggle("active", b.dataset.val === (settings.density || "normal"));
-  });
-
-  document.querySelectorAll("#opt-autorefresh .opt-btn").forEach(b => {
-    b.classList.toggle("active", parseInt(b.dataset.val, 10) === (settings.autoRefresh || 0));
-  });
-
-  document.querySelectorAll("#filter-seg button").forEach(b => {
-    b.classList.toggle("active", b.dataset.filter === (settings.filter || "all"));
-  });
-
-  document.querySelectorAll("#view-seg button").forEach(b => {
-    b.classList.toggle("active", b.dataset.view === (settings.view || "grid"));
-  });
-
-  document.getElementById("sort-select").value = settings.sort || "priority";
-
-  if (settings.autoRefresh > 0) {
-    applyAutoRefresh(settings.autoRefresh);
-  }
-}
-
-initUI();
 updateLastUpdated();
+applyTheme();
 render();
+setInterval(updateLastUpdated, 1000);
 
 })();
 </script>
 </body>
 </html>
+
