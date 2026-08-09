@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TradingView Pro - Smart OI & Funding Assistant</title>
+    <title>TradingView Pro - Multi-Bar Cumulative AI Engine</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -58,9 +58,9 @@
         .tf-btn.active, .tf-btn:hover { background-color: #363a45; color: #f0f3fa; }
         .tf-btn.active { color: #2962ff; }
 
-        /* شريط مساعد التحليل الذكي في الأعلى */
+        /* شريط مساعد التحليل الذكي المطور التراكمي */
         .market-assistant {
-            background: linear-gradient(90deg, #1e222d 0%, #252a37 100%);
+            background: linear-gradient(90deg, #181b25 0%, #222735 100%);
             border-bottom: 1px solid #2a2e39;
             padding: 10px 20px;
             display: flex;
@@ -76,23 +76,26 @@
             color: #f0f3fa;
         }
         .assistant-badge {
-            background-color: #2962ff;
+            background: linear-gradient(135deg, #2962ff 0%, #1e88e5 100%);
             color: #fff;
-            padding: 2px 8px;
+            padding: 3px 10px;
             border-radius: 4px;
             font-size: 11px;
+            font-weight: 800;
             letter-spacing: 0.5px;
+            box-shadow: 0 0 10px rgba(41, 98, 255, 0.4);
         }
         .assistant-msg {
             color: #d1d4dc;
             font-weight: 500;
             display: flex;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
         }
-        .highlight-up { color: #089981; font-weight: bold; }
-        .highlight-down { color: #f23645; font-weight: bold; }
+        .highlight-bull { color: #089981; font-weight: bold; text-shadow: 0 0 8px rgba(8, 153, 129, 0.3); }
+        .highlight-bear { color: #f23645; font-weight: bold; text-shadow: 0 0 8px rgba(242, 54, 69, 0.3); }
         .highlight-warn { color: #ffa726; font-weight: bold; }
+        .highlight-purple { color: #bb86fc; font-weight: bold; }
 
         .live-status {
             display: flex;
@@ -160,14 +163,14 @@
         </div>
     </div>
 
-    <!-- مساعد التحليل الذكي المدمج في الأعلى -->
+    <!-- مساعد التحليل الذكي التراكمي (3 Bars Window Engine) -->
     <div class="market-assistant" id="marketAssistant">
         <div class="assistant-title">
-            <span class="assistant-badge">AI ANALYST</span>
-            <span>مساعد السيولة والتمويل:</span>
+            <span class="assistant-badge">SMART ENGINE [3-BARS]</span>
+            <span>محلل التدفق والسيولة:</span>
         </div>
         <div class="assistant-msg" id="assistantText">
-            جاري تحليل بنية السيولة وربط الـ OI مع معدل التمويل (Funding Rate)...
+            جاري معالجة السلوك التراكمي عبر آخر 3 بارات متتالية...
         </div>
     </div>
 
@@ -196,7 +199,7 @@
     let chart;
     let priceSeries, oiSeries, volumeSeries, fundingSeries;
     let ws;
-    let lastOIVat = 0;
+    let cachedPriceData = [], cachedOIData = [], cachedFundingData = [];
 
     function populateSymbols() {
         const select = document.getElementById('symbol');
@@ -215,39 +218,80 @@
         return val.toFixed(2);
     }
 
-    // تلوين شموع الـ OI حسب القواعد الدقيقة للمستخدم
     function getOICandleColor(priceIsUp, oiIsUp) {
-        if (priceIsUp && oiIsUp) return '#089981';       // صعود السعر + صعود الـ OI = أخضر (موافقة صعود وتكملة)
-        if (!priceIsUp && !oiIsUp) return '#f23645';     // هبوط السعر + هبوط الـ OI = أحمر (تخلص مراكز / تراجع)
-        if (!priceIsUp && oiIsUp) return '#000000';      // هبوط السعر + صعود الـ OI = أسود (بناء مراكز بيع / ضغط)
-        if (priceIsUp && !oiIsUp) return '#2962ff';      // صعود السعر + هبوط الـ OI = أزرق (تغطية شورتات / صعود وهمي)
+        if (priceIsUp && oiIsUp) return '#089981';       // صعود صريح
+        if (!priceIsUp && !oiIsUp) return '#f23645';     // هبوط وتفريغ
+        if (!priceIsUp && oiIsUp) return '#000000';      // هبوط السعر + صعود الـ OI (أسود / تجميع بيعي أو امتصاص)
+        if (priceIsUp && !oiIsUp) return '#2962ff';      // صعود السعر + هبوط الـ OI (أزرق / تغطية شورتات)
         return '#787b86';
     }
 
-    // تحليل متقدم يدمج الـ OI مع الـ Funding Rate لاستنباط نوايا صناع السوق
-    function updateMarketAssistant(priceUp, oiUp, fundingRate, priceChange) {
+    // 🔥 المحرك التراكمي المتقدم: تحليل سلوك 3 بارات متتالية + التمويل
+    function evaluateMultiBarDynamics(targetIndex) {
         const assistantEl = document.getElementById('assistantText');
-        let statusHtml = "";
-        let fundingContext = "";
+        if (!cachedPriceData || cachedPriceData.length < 4 || targetIndex < 3) return;
 
-        // دمج قراءة الـ Funding Rate مع السلوك
-        if (fundingRate > 0.0005) {
-            fundingContext = ` | <span class="highlight-warn">⚠️ تمويل إيجابي مرتفع (المتداولون متفائلون جداً بالشراء بالمارجن)</span>`;
-        } else if (fundingRate < -0.0002) {
-            fundingContext = ` | <span class="highlight-up">💡 تمويل سلبية (فرصة محتملة لانعكاس صعودي نتيجة ضغط البيع)</span>`;
-        } else {
-            fundingContext = ` | <span>تمويل مستقر (توازن نسبي)</span>`;
+        // استخراج آخر 3 بارات من النقطة المحددة
+        const pSlice = cachedPriceData.slice(targetIndex - 2, targetIndex + 1);
+        const oiSlice = cachedOIData.slice(targetIndex - 2, targetIndex + 1);
+        const currentFunding = cachedFundingData[targetIndex] ? cachedFundingData[targetIndex].value : 0;
+
+        // 1. حساب المحصلة التراكمية للتغير في السعر والـ OI عبر الـ 3 بارات
+        const priceNetChange = pSlice[2].close - pSlice[0].open;
+        const priceNetPercent = (priceNetChange / pSlice[0].open) * 100;
+        
+        const oiNetChange = oiSlice[2].close - oiSlice[0].open;
+        const oiNetPercent = (oiNetChange / oiSlice[0].open) * 100;
+
+        // حساب عدد البارات الهابطة والصاعدة بشكل منفصل
+        let priceDownBars = 0, priceUpBars = 0;
+        let oiUpBars = 0, oiDownBars = 0;
+
+        for (let i = 0; i < 3; i++) {
+            if (pSlice[i].close >= pSlice[i].open) priceUpBars++; else priceDownBars++;
+            if (oiSlice[i].close >= oiSlice[i].open) oiUpBars++; else oiDownBars++;
         }
 
-        // الحالات الأساسية المحددة بناءً على طلبك
-        if (priceUp && oiUp) {
-            statusHtml = `<span>الحالة:</span> <span class="highlight-up">توافق صعودي قوي (تكملة اتجاه)</span> - صعود السعر مع تدفق سيولة جديدة وفتح عقود جديدة. ${fundingContext}`;
-        } else if (priceUp && !oiUp) {
-            statusHtml = `<span>الحالة:</span> <span class="highlight-warn">انتبه! صعود خادع (تغطية شورتات Short Covering)</span> - السعر يصعد والـ OI ينخفض، الصعود بلا سيولة جديدة وغالباً معرض للانعكاس. ${fundingContext}`;
-        } else if (!priceUp && oiUp) {
-            statusHtml = `<span>الحالة:</span> <span class="highlight-down">ضغط بيع مكثف (Short / Long Building)</span> - هبوط السعر مع صعود الـ OI يعني دخول بائعين بقوة أو تفعيل وقائع بيع كبرى. ${fundingContext}`;
-        } else if (!priceUp && !oiUp) {
-            statusHtml = `<span>الحالة:</span> <span class="highlight-warn">تخلص من العقود (Long Unwinding)</span> - هبوط السعر مع خروج السيولة، إذا هبط السعر ورافقه ارتداد في شموع الـ OI فانتظر انعكاساً صعودياً قريباً. ${fundingContext}`;
+        let statusHtml = "";
+        let fundingNote = "";
+
+        if (currentFunding > 0.0003) {
+            fundingNote = ` | <span class="highlight-warn">⚠️ التمويل إيجابي مرتفع (${(currentFunding*100).toFixed(4)}%)</span>`;
+        } else if (currentFunding < -0.0001) {
+            fundingNote = ` | <span class="highlight-purple">⚡ التمويل سلبي (${(currentFunding*100).toFixed(4)}%) - ضغط شورتات مكثف</span>`;
+        } else {
+            fundingNote = ` | <span>التمويل متوازن (${(currentFunding*100).toFixed(4)}%)</span>`;
+        }
+
+        // --- السيناريوهات المركبة عالية الدقة ---
+
+        // السيناريو الأول: امتصاص واستعداد لانعكاس صعودي قادم (Bullish Reversal / Short Squeeze)
+        if (priceDownBars >= 2 && oiUpBars >= 2 && oiNetPercent > 0.5) {
+            if (currentFunding < 0) {
+                statusHtml = `<span class="highlight-bull">🚀 إشارة الشورت سكويز (Short Squeeze Alert):</span> السعر يضغط لأسفل لـ 3 بارات بينما الـ OI يرتفع بقوة (+${oiNetPercent.toFixed(2)}%) مع تمويل سلبي. <b style="color:#089981">انعكاس صعودي حاد متوقع قريباً!</b> ${fundingNote}`;
+            } else {
+                statusHtml = `<span class="highlight-bull">💎 امتصاص بيعي وتجميع خفي (Absorption):</span> هبوط السعر لـ 3 بارات يقابله ارتفاع تراكمي في الـ OI. صناع السوق يبتلعون البيع. <b style="color:#089981">توقع ارتداد لأعلى.</b> ${fundingNote}`;
+            }
+        }
+        // السيناريو الثاني: توافق صعودي قوي واستمرار للاتجاه (Strong Bullish Continuation)
+        else if (priceUpBars >= 2 && oiUpBars >= 2 && priceNetPercent > 0) {
+            statusHtml = `<span class="highlight-bull">🟢 اتجاه صاعد صحي ومستمر (Long Accumulation):</span> توافق صعودي عبر آخر 3 بارات (السعر +${priceNetPercent.toFixed(2)}% | الـ OI +${oiNetPercent.toFixed(2)}%). السيولة حقيقية وتدعم صعوداً أطول. ${fundingNote}`;
+        }
+        // السيناريو الثالث: صعود وهمي ونفاد السيولة (Bull Trap / Short Covering)
+        else if (priceUpBars >= 2 && oiDownBars >= 2 && oiNetPercent < -0.5) {
+            statusHtml = `<span class="highlight-warn">⚠️ تحذير: صعود كاذب (Bull Trap / Long Unwinding):</span> السعر يرتفع لـ 3 بارات بينما الـ OI ينخفض بـ (${oiNetPercent.toFixed(2)}%). الصعود بدون سيولة حقيقية. <b style="color:#ffa726">انتبه من هبوط مفاجئ!</b> ${fundingNote}`;
+        }
+        // السيناريو الرابع: هبوط متسارع مع ضغط شورتات جديد (Aggressive Short Building)
+        else if (priceDownBars >= 2 && priceNetPercent < -0.8 && oiUpBars >= 2) {
+            statusHtml = `<span class="highlight-bear">🔴 هبوط قوي ودخول بائعين جدد (Aggressive Selling):</span> انخفاض السعر لـ 3 بارات بـ (${priceNetPercent.toFixed(2)}%) مترافق مع فتح عقود شورت جديدة. ${fundingNote}`;
+        }
+        // السيناريو الخامس: تصفية المراكز والهبوط الخفيف (Long Liquidation)
+        else if (priceDownBars >= 2 && oiDownBars >= 2) {
+            statusHtml = `<span class="highlight-bear">🔻 خروج مراكز واستراحة مؤقتة (Long Liquidation):</span> هبوط السعر مع انخفاض الـ OI كالمعتاد. السوق يتخلص من الرافعات المالية العالية. ${fundingNote}`;
+        }
+        // متوازن / غير محدد
+        else {
+            statusHtml = `<span>🔄 سلوك متذبذب (3-Bars):</span> تغير السعر (${priceNetPercent.toFixed(2)}%) | تغير الـ OI (${oiNetPercent.toFixed(2)}%). لا توجد هيمنة واضحة حالياً. ${fundingNote}`;
         }
 
         assistantEl.innerHTML = statusHtml;
@@ -315,6 +359,7 @@
             chart.applyOptions({ width: container.clientWidth, height: container.clientHeight });
         });
 
+        // قراءة الماوس اللحظية وتطبيق المحرك التراكمي على النقطة المحددة
         chart.subscribeCrosshairMove(param => {
             if (param.time) {
                 const pData = param.seriesData.get(priceSeries);
@@ -336,13 +381,12 @@
                 if (fData) {
                     document.getElementById('funding-val').innerText = (fData.value * 100).toFixed(4) + '%';
                     document.getElementById('funding-val').className = `legend-value ${fData.value >= 0 ? 'up' : 'down'}`;
-                    
-                    // تحديث المساعد بناءً على الشمعة الحالية للماوس
-                    if (pData && oiData) {
-                        const pUp = pData.close >= pData.open;
-                        const oiUp = oiData.close >= oiData.open;
-                        updateMarketAssistant(pUp, oiUp, fData.value);
-                    }
+                }
+
+                // العثور على الفهرس الزمني وتحليل آخر 3 بارات عنده
+                const hoverIdx = cachedPriceData.findIndex(item => item.time === param.time);
+                if (hoverIdx !== -1) {
+                    evaluateMultiBarDynamics(hoverIdx);
                 }
             }
         });
@@ -365,10 +409,10 @@
             const fundingMap = new Map();
             fundingData.forEach(item => fundingMap.set(Math.floor(item.fundingTime / 1000), parseFloat(item.fundingRate)));
 
-            const priceCandles = [];
-            const oiCandles = [];
+            cachedPriceData = [];
+            cachedOIData = [];
+            cachedFundingData = [];
             const volumeBars = [];
-            const fundingPoints = [];
 
             let lastKnownOI = oiData.length > 0 ? parseFloat(oiData[0].sumOpenInterest) : 0;
             let lastKnownFunding = fundingData.length > 0 ? parseFloat(fundingData[0].fundingRate) : 0;
@@ -378,7 +422,7 @@
                 const openP = parseFloat(d[1]), highP = parseFloat(d[2]), lowP = parseFloat(d[3]), closeP = parseFloat(d[4]);
                 const vol = parseFloat(d[5]);
 
-                priceCandles.push({ time: candleTime, open: openP, high: highP, low: lowP, close: closeP });
+                cachedPriceData.push({ time: candleTime, open: openP, high: highP, low: lowP, close: closeP });
 
                 const priceIsUp = closeP >= openP;
                 volumeBars.push({ time: candleTime, value: vol, color: priceIsUp ? '#089981' : '#f23645' });
@@ -386,13 +430,13 @@
                 let currentOI = oiMap.get(candleTime) !== undefined ? oiMap.get(candleTime) : lastKnownOI;
                 lastKnownOI = currentOI;
                 
-                const oiOpen = oiCandles.length > 0 ? oiCandles[oiCandles.length - 1].close : currentOI;
+                const oiOpen = cachedOIData.length > 0 ? cachedOIData[cachedOIData.length - 1].close : currentOI;
                 const oiClose = currentOI;
                 const oiIsUp = oiClose >= oiOpen;
 
                 const candleColor = getOICandleColor(priceIsUp, oiIsUp);
 
-                oiCandles.push({
+                cachedOIData.push({
                     time: candleTime,
                     open: oiOpen,
                     high: Math.max(oiOpen, oiClose),
@@ -405,21 +449,17 @@
 
                 let currentFunding = fundingMap.get(candleTime) !== undefined ? fundingMap.get(candleTime) : lastKnownFunding;
                 lastKnownFunding = currentFunding;
-                fundingPoints.push({ time: candleTime, value: currentFunding });
+                cachedFundingData.push({ time: candleTime, value: currentFunding });
             });
 
-            priceSeries.setData(priceCandles);
-            oiSeries.setData(oiCandles);
+            priceSeries.setData(cachedPriceData);
+            oiSeries.setData(cachedOIData);
             volumeSeries.setData(volumeBars);
-            fundingSeries.setData(fundingPoints);
+            fundingSeries.setData(cachedFundingData);
 
-            lastOIVat = oiCandles[oiCandles.length - 1].close;
-
-            // تحديث المساعد بآخر شمعة تم تحميلها
-            if(priceCandles.length > 0 && oiCandles.length > 0) {
-                const lastP = priceCandles[priceCandles.length - 1];
-                const lastOI = oiCandles[oiCandles.length - 1];
-                updateMarketAssistant(lastP.close >= lastP.open, lastOI.close >= lastOI.open, lastKnownFunding);
+            // تشغيل المحرك التراكمي فوراً على أحدث بار بعد التحميل
+            if (cachedPriceData.length > 3) {
+                evaluateMultiBarDynamics(cachedPriceData.length - 1);
             }
 
             chart.timeScale().fitContent();
