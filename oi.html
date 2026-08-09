@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TradingView Pro - OI Spread & Color Sequence Platform</title>
+    <title>TradingView Pro - Order Flow & Coinalyze Hub</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,19 +24,51 @@
             display: flex;
             align-items: center;
             padding: 0 16px;
-            gap: 20px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
+        
+        .selector-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 11px;
+            font-weight: bold;
+            color: #787b86;
+        }
+
         select {
             background-color: #2a2e39;
             color: #f0f3fa;
             border: 1px solid #434651;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 4px;
             outline: none;
             font-weight: 600;
             cursor: pointer;
+            font-size: 12px;
         }
         select:hover { border-color: #2962ff; }
+
+        .coinalyze-btn {
+            background-color: #2962ff;
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.2s;
+        }
+        .coinalyze-btn:hover { background-color: #1e4bd8; }
 
         .timeframe-group {
             display: flex;
@@ -50,7 +82,7 @@
             border: none;
             color: #787b86;
             padding: 4px 8px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             border-radius: 3px;
             cursor: pointer;
@@ -61,11 +93,11 @@
         .market-assistant {
             background: linear-gradient(90deg, #181b25 0%, #222735 100%);
             border-bottom: 1px solid #2a2e39;
-            padding: 10px 20px;
+            padding: 8px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 13px;
+            font-size: 12px;
         }
         .assistant-title {
             display: flex;
@@ -75,9 +107,8 @@
             color: #f0f3fa;
         }
         
-        /* شارات الحالة */
         .status-badge {
-            padding: 4px 10px;
+            padding: 4px 8px;
             border-radius: 4px;
             font-size: 11px;
             font-weight: 800;
@@ -92,9 +123,6 @@
         .assistant-msg {
             color: #d1d4dc;
             font-weight: 500;
-            display: flex;
-            gap: 12px;
-            align-items: center;
         }
 
         .live-status {
@@ -102,12 +130,12 @@
             align-items: center;
             gap: 6px;
             margin-right: auto;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             color: #089981;
         }
         .live-dot {
-            width: 8px; height: 8px;
+            width: 7px; height: 7px;
             background-color: #089981;
             border-radius: 50%;
             box-shadow: 0 0 8px #089981;
@@ -123,10 +151,10 @@
 
         .chart-legend {
             position: absolute;
-            top: 12px;
-            right: 12px;
+            top: 10px;
+            right: 10px;
             z-index: 10;
-            font-size: 12px;
+            font-size: 11px;
             color: #b2b5be;
             background: rgba(19, 23, 34, 0.85);
             padding: 6px 12px;
@@ -135,7 +163,7 @@
             border: 1px solid #2a2e39;
             pointer-events: none;
             display: flex;
-            gap: 16px;
+            gap: 12px;
         }
         .legend-item { display: flex; gap: 4px; align-items: center; }
         .legend-title { font-weight: 600; color: #787b86; }
@@ -147,7 +175,9 @@
 <body>
 
     <div class="tv-header">
-        <div class="symbol-selector">
+        <!-- خيار شارت البينانس -->
+        <div class="selector-group">
+            <label>شارت Binance:</label>
             <select id="symbol" onchange="switchSymbol()"></select>
         </div>
 
@@ -157,9 +187,16 @@
             <button class="tf-btn" onclick="changeInterval('1d')">1D</button>
         </div>
 
+        <!-- قائمة 100 عملة على Coinalyze -->
+        <div class="selector-group" style="margin-right: 15px;">
+            <label>رابط Coinalyze (100 عملة):</label>
+            <select id="coinalyzeSelect"></select>
+            <button class="coinalyze-btn" onclick="openCoinalyzeLink()">🔗 فتح Coinalyze</button>
+        </div>
+
         <div class="live-status">
             <div class="live-dot"></div>
-            <span>LIVE BINANCE FUTURES</span>
+            <span>LIVE DATA</span>
         </div>
     </div>
 
@@ -167,7 +204,7 @@
     <div class="market-assistant">
         <div class="assistant-title">
             <span id="stateBadge" class="status-badge badge-wait">⚪ WAIT</span>
-            <span>تتابع ألوان ومدى السيولة:</span>
+            <span>تتابع السيولة:</span>
         </div>
         <div class="assistant-msg" id="assistantText">
             جاري قراءة أحداث المدى الواسع للـ OI وتتابع ألوان الشموع...
@@ -185,15 +222,111 @@
     </div>
 
 <script>
-    const top50Symbols = [
-        "ETHUSDT", "BTCUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "DOGEUSDT", "ADAUSDT", "AVAXUSDT", "SUIUSDT", "LINKUSDT",
-        "NEARUSDT", "APTUSDT", "DOTUSDT", "LTCUSDT", "MATICUSDT", "SHIBUSDT", "PEPEUSDT", "FETUSDT", "ARBUSDT", "OPUSDT",
-        "INJUSDT", "RNDRUSDT", "TIAUSDT", "SEIUSDT", "STXUSDT", "FILUSDT", "ATOMUSDT", "WIFUSDT", "FLOKIUSDT", "BONKUSDT",
-        "TRXUSDT", "BCHUSDT", "ETCUSDT", "XLMUSDT", "ALGOUSDT", "AAVEUSDT", "UNIUSDT", "RENDERUSDT", "TAOUSDT", "ORDIUSDT",
-        "SBDUSDT", "GMXUSDT", "DYDXUSDT", "FTMUSDT", "CRVUSDT", "LDOUSDT", "RUNEUSDT", "EGLDUSDT", "KASUSDT", "BLURUSDT"
+    // قائمة 100 عملة مع الاسم والرابط المخصص في Coinalyze
+    const coinalyze100List = [
+        { name: "1. Bitcoin (BTC)", slug: "bitcoin" },
+        { name: "2. Ethereum (ETH)", slug: "ethereum" },
+        { name: "3. Binance Coin (BNB)", slug: "binance-coin" },
+        { name: "4. Solana (SOL)", slug: "solana" },
+        { name: "5. Ripple (XRP)", slug: "ripple" },
+        { name: "6. Dogecoin (DOGE)", slug: "dogecoin" },
+        { name: "7. Cardano (ADA)", slug: "cardano" },
+        { name: "8. Avalanche (AVAX)", slug: "avalanche" },
+        { name: "9. Sui (SUI)", slug: "sui" },
+        { name: "10. Chainlink (LINK)", slug: "chainlink" },
+        { name: "11. Near Protocol (NEAR)", slug: "near-protocol" },
+        { name: "12. Aptos (APT)", slug: "aptos" },
+        { name: "13. Polkadot (DOT)", slug: "polkadot" },
+        { name: "14. Litecoin (LTC)", slug: "litecoin" },
+        { name: "15. Polygon (MATIC)", slug: "polygon" },
+        { name: "16. Shiba Inu (SHIB)", slug: "shiba-inu" },
+        { name: "17. Pepe (PEPE)", slug: "pepe" },
+        { name: "18. Artificial Superintelligence (FET)", slug: "artificial-superintelligence-alliance" },
+        { name: "19. Arbitrum (ARB)", slug: "arbitrum" },
+        { name: "20. Optimism (OP)", slug: "optimism" },
+        { name: "21. Injective (INJ)", slug: "injective" },
+        { name: "22. Render (RENDER)", slug: "render" },
+        { name: "23. Celestia (TIA)", slug: "celestia" },
+        { name: "24. Sei (SEI)", slug: "sei" },
+        { name: "25. Stacks (STX)", slug: "stacks" },
+        { name: "26. Filecoin (FIL)", slug: "filecoin" },
+        { name: "27. Cosmos (ATOM)", slug: "cosmos" },
+        { name: "28. dogwifhat (WIF)", slug: "dogwifhat" },
+        { name: "29. Floki (FLOKI)", slug: "floki" },
+        { name: "30. Bonk (BONK)", slug: "bonk" },
+        { name: "31. Tron (TRX)", slug: "tron" },
+        { name: "32. Bitcoin Cash (BCH)", slug: "bitcoin-cash" },
+        { name: "33. Ethereum Classic (ETC)", slug: "ethereum-classic" },
+        { name: "34. Stellar (XLM)", slug: "stellar" },
+        { name: "35. Algorand (ALGO)", slug: "algorand" },
+        { name: "36. Aave (AAVE)", slug: "aave" },
+        { name: "37. Uniswap (UNI)", slug: "uniswap" },
+        { name: "38. Bittensor (TAO)", slug: "bittensor" },
+        { name: "39. ORDI (ORDI)", slug: "ordi" },
+        { name: "40. Fantom (FTM)", slug: "fantom" },
+        { name: "41. Curve (CRV)", slug: "curve-dao-token" },
+        { name: "42. Lido DAO (LDO)", slug: "lido-dao" },
+        { name: "43. THORChain (RUNE)", slug: "thorchain" },
+        { name: "44. MultiversX (EGLD)", slug: "elrond" },
+        { name: "45. Kaspa (KAS)", slug: "kaspa" },
+        { name: "46. Blur (BLUR)", slug: "blur" },
+        { name: "47. Worldcoin (WLD)", slug: "worldcoin" },
+        { name: "48. Ethena (ENA)", slug: "ethena" },
+        { name: "49. Ondo (ONDO)", slug: "ondo" },
+        { name: "50. Notcoin (NOT)", slug: "notcoin" },
+        { name: "51. Pyth Network (PYTH)", slug: "pyth-network" },
+        { name: "52. Jupiter (JUP)", slug: "jupiter" },
+        { name: "53. Core (CORE)", slug: "core" },
+        { name: "54. Starknet (STRK)", slug: "starknet" },
+        { name: "55. Wormhole (W)", slug: "wormhole" },
+        { name: "56. GMX (GMX)", slug: "gmx" },
+        { name: "57. dYdX (DYDX)", slug: "dydx" },
+        { name: "58. Pendle (PENDLE)", slug: "pendle" },
+        { name: "59. JasmyCoin (JASMY)", slug: "jasmycoin" },
+        { name: "60. Arweave (AR)", slug: "arweave" },
+        { name: "61. Gala (GALA)", slug: "gala" },
+        { name: "62. The Sandbox (SAND)", slug: "the-sandbox" },
+        { name: "63. Decentraland (MANA)", slug: "decentraland" },
+        { name: "64. Axie Infinity (AXS)", slug: "axie-infinity" },
+        { name: "65. Chiliz (CHZ)", slug: "chiliz" },
+        { name: "66. EOS (EOS)", slug: "eos" },
+        { name: "67. Neo (NEO)", slug: "neo" },
+        { name: "68. IOTA (IOTA)", slug: "iota" },
+        { name: "69. Tezos (XTZ)", slug: "tezos" },
+        { name: "70. Kava (KAVA)", slug: "kava" },
+        { name: "71. Mina (MINA)", slug: "mina" },
+        { name: "72. Flow (FLOW)", slug: "flow" },
+        { name: "73. Conflux (CFX)", slug: "conflux-network" },
+        { name: "74. Klaytn (KLAY)", slug: "klaytn" },
+        { name: "75. Oasis Network (ROSE)", slug: "oasis-network" },
+        { name: "76. WOONetwork (WOO)", slug: "woo-network" },
+        { name: "77. 1inch (1INCH)", slug: "1inch" },
+        { name: "78. Zcash (ZEC)", slug: "zcash" },
+        { name: "79. Monero (XMR)", slug: "monero" },
+        { name: "80. Dash (DASH)", slug: "dash" },
+        { name: "81. Comp (COMP)", slug: "compound" },
+        { name: "82. Synthetix (SNX)", slug: "synthetix-network-token" },
+        { name: "83. Enjin Coin (ENJ)", slug: "enjin-coin" },
+        { name: "84. Loopring (LRC)", slug: "loopring" },
+        { name: "85. Mask Network (MASK)", slug: "mask-network" },
+        { name: "86. Ankr (ANKR)", slug: "ankr" },
+        { name: "87. 1000SATS (SATS)", slug: "sats" },
+        { name: "88. Biaoqing (BIAO)", slug: "biaoqing" },
+        { name: "89. Popcat (POPCAT)", slug: "popcat" },
+        { name: "90. Cats in a dogs world (MEW)", slug: "cat-in-a-dogs-world" },
+        { name: "91. Brett (BRETT)", slug: "brett" },
+        { name: "92. Mog Coin (MOG)", slug: "mog-coin" },
+        { name: "93. BOOK OF MEME (BOME)", slug: "book-of-meme" },
+        { name: "94. Memecoin (MEME)", slug: "memecoin" },
+        { name: "95. Turbo (TURBO)", slug: "turbo" },
+        { name: "96. Myro (MYRO)", slug: "myro" },
+        { name: "97. Ether.fi (ETHFI)", slug: "ether-fi" },
+        { name: "98. Altlayer (ALT)", slug: "altlayer" },
+        { name: "99. Pixel (PIXEL)", slug: "pixels" },
+        { name: "100. Portal (PORTAL)", slug: "portal" }
     ];
 
-    let currentSymbol = "ETHUSDT";
+    let currentSymbol = "BTCUSDT";
     let currentInterval = "4h";
     
     let chart;
@@ -201,15 +334,38 @@
     let ws;
     let cachedPriceData = [], cachedOIData = [], cachedFundingData = [];
 
-    function populateSymbols() {
-        const select = document.getElementById('symbol');
-        select.innerHTML = '';
-        top50Symbols.forEach(sym => {
-            const opt = document.createElement('option');
-            opt.value = sym;
-            opt.textContent = sym.replace('USDT', ' / USDT');
-            select.appendChild(opt);
+    // تعبئة القوائم المنسدلة
+    function populateDropdowns() {
+        const binanceSelect = document.getElementById('symbol');
+        const coinalyzeSelect = document.getElementById('coinalyzeSelect');
+
+        binanceSelect.innerHTML = '';
+        coinalyzeSelect.innerHTML = '';
+
+        coinalyze100List.forEach(item => {
+            // استخراج اسم الرمز مثل BTC, ETH
+            const symbolMatch = item.name.match(/\(([^)]+)\)/);
+            const rawSymbol = symbolMatch ? symbolMatch[1] : item.slug.toUpperCase();
+            
+            // خيار Binance
+            const optB = document.createElement('option');
+            optB.value = rawSymbol + "USDT";
+            optB.textContent = rawSymbol + " / USDT";
+            binanceSelect.appendChild(optB);
+
+            // خيار Coinalyze
+            const optC = document.createElement('option');
+            optC.value = item.slug;
+            optC.textContent = item.name;
+            coinalyzeSelect.appendChild(optC);
         });
+    }
+
+    // فتح رابط Coinalyze المباشر
+    function openCoinalyzeLink() {
+        const slug = document.getElementById('coinalyzeSelect').value;
+        const url = `https://coinalyze.net/${slug}/open-interest/`;
+        window.open(url, '_blank');
     }
 
     function formatNumber(val) {
@@ -218,11 +374,6 @@
         return val.toFixed(2);
     }
 
-    // تحديد ألوان شموع الـ OI حسب المنطق
-    // أسود = سعر هابط + OI صاعد
-    // أزرق = سعر صاعد + OI هابط
-    // أخضر = سعر صاعد + OI صاعد
-    // أحمر = سعر هابط + OI هابط
     function getOICandleType(priceIsUp, oiIsUp) {
         if (!priceIsUp && oiIsUp) return { color: '#000000', type: 'BLACK' };  
         if (priceIsUp && !oiIsUp) return { color: '#2962ff', type: 'BLUE' };   
@@ -231,7 +382,7 @@
         return { color: '#787b86', type: 'NEUTRAL' };
     }
 
-    // 🔥 المحرك القائم حصرياً على منطق مدى وتتابع ألوان OI
+    // 🔥 محرك تتابع ألوان مدى الـ OI
     function evaluateOISpreadAndSequenceEngine(targetIndex) {
         const badgeEl = document.getElementById('stateBadge');
         const textEl = document.getElementById('assistantText');
@@ -243,40 +394,30 @@
             return;
         }
 
-        // 1. حساب متوسط مدى شمعة الـ OI لـ 14 بار سابق لتحديد الـ Wide Range
         let totalOISpread = 0;
         for (let i = targetIndex - 14; i < targetIndex; i++) {
             totalOISpread += Math.abs(cachedOIData[i].close - cachedOIData[i].open);
         }
         const avgOISpread = totalOISpread / 14;
 
-        // 2. فحص حالة الشموع السابقة القريبة (Lookback Sequence)
-        let activeState = "WAIT";
-        let detailMessage = "";
         let climaxIndex = -1;
 
-        // البحث العكسي لآخر 10 بارات عن آخر شمعة ذروة (Climax Bar)
         for (let i = targetIndex; i >= Math.max(0, targetIndex - 10); i--) {
             const pUp = cachedPriceData[i].close >= cachedPriceData[i].open;
             const oiUp = cachedOIData[i].close >= cachedOIData[i].open;
             const candleInfo = getOICandleType(pUp, oiUp);
             const spread = Math.abs(cachedOIData[i].close - cachedOIData[i].open);
 
-            // شمعة ذروة الامتصاص الصاعد: سوداء + مدى واسع (Wide Range)
             if (candleInfo.type === 'BLACK' && spread >= avgOISpread * 1.35) {
                 climaxIndex = i;
                 break;
             }
         }
 
-        // قراءة الشمعة الحالية عند مؤشر الماوس
         const currPUp = cachedPriceData[targetIndex].close >= cachedPriceData[targetIndex].open;
         const currOIUp = cachedOIData[targetIndex].close >= cachedOIData[targetIndex].open;
         const currCandle = getOICandleType(currPUp, currOIUp);
 
-        // --- تطبيق قواعد التسلسل الشفاف ---
-
-        // أ) حالة تحقق شمعة ذروة سوداء واسعة في البار الحالي بالضبط
         if (currCandle.type === 'BLACK' && Math.abs(cachedOIData[targetIndex].close - cachedOIData[targetIndex].open) >= avgOISpread * 1.35) {
             badgeEl.className = "status-badge badge-setup";
             badgeEl.innerText = "🟡 REVERSAL SETUP (ذروة امتصاص)";
@@ -284,9 +425,7 @@
             return;
         }
 
-        // ب) حالة وجود شمعة ذروة سوداء سابقة وتم تأكيدها
         if (climaxIndex !== -1 && climaxIndex < targetIndex) {
-            // فحص هل حدث تأكيد (شمعة أزرق أو أخضر) بعد شمعة الذروة السوداء
             let confirmedIdx = -1;
             for (let j = climaxIndex + 1; j <= targetIndex; j++) {
                 const pU = cachedPriceData[j].close >= cachedPriceData[j].open;
@@ -298,7 +437,6 @@
                 }
             }
 
-            // إذا تم التأكيد، نتحقق هل ظهرت شمعة أحمر تنهي الصعود أم لا
             if (confirmedIdx !== -1) {
                 let hasRedExit = false;
                 for (let k = confirmedIdx + 1; k <= targetIndex; k++) {
@@ -329,7 +467,6 @@
             }
         }
 
-        // ج) متابعة الاتجاه بناءً على هيمنة اللون الأزرق (Short Covering Continuous Climb)
         if (currCandle.type === 'BLUE') {
             badgeEl.className = "status-badge badge-long";
             badgeEl.innerText = "🟢 BULLISH MOMENTUM (تغطية شورتات)";
@@ -337,7 +474,6 @@
             return;
         }
 
-        // د) حالة البيع الهابط (Mirror Short Logic) عند تتابع الشموع الحمراء
         if (currCandle.type === 'RED') {
             badgeEl.className = "status-badge badge-short";
             badgeEl.innerText = "🔴 SHORT / BEARISH DRIFT";
@@ -345,7 +481,6 @@
             return;
         }
 
-        // هـ) الحالة الافتراضية عند عدم توفر نمط واسع
         badgeEl.className = "status-badge badge-wait";
         badgeEl.innerText = "⚪ WAIT (نطاق اعتيادي)";
         textEl.innerHTML = `بارات OI ضمن المدى الطبيعي الاعتيادي. بانتظار تشكل شمعة سوداء بمدى واسع أو تتابع أزرق صريح.`;
@@ -549,6 +684,14 @@
 
     function switchSymbol() {
         currentSymbol = document.getElementById('symbol').value;
+        
+        // ربط تلقائي: تحديث خيار Coinalyze ليتوافق مع العملة المختارة
+        const symbolWithoutUSDT = currentSymbol.replace('USDT', '');
+        const matchedItem = coinalyze100List.find(item => item.name.includes(`(${symbolWithoutUSDT})`));
+        if (matchedItem) {
+            document.getElementById('coinalyzeSelect').value = matchedItem.slug;
+        }
+
         loadHistoricalData();
     }
 
@@ -560,7 +703,7 @@
     }
 
     window.onload = () => {
-        populateSymbols();
+        populateDropdowns();
         initChart();
         loadHistoricalData();
     };
