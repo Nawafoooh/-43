@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TradingView Pro - Order Flow State Machine</title>
+    <title>TradingView Pro - OI Spread & Color Sequence Platform</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -58,7 +58,6 @@
         .tf-btn.active, .tf-btn:hover { background-color: #363a45; color: #f0f3fa; }
         .tf-btn.active { color: #2962ff; }
 
-        /* شريط المساعد بتنسيق الحالات الخمس الاحترافية */
         .market-assistant {
             background: linear-gradient(90deg, #181b25 0%, #222735 100%);
             border-bottom: 1px solid #2a2e39;
@@ -76,7 +75,7 @@
             color: #f0f3fa;
         }
         
-        /* شارات الحالة (State Badges) */
+        /* شارات الحالة */
         .status-badge {
             padding: 4px 10px;
             border-radius: 4px;
@@ -86,10 +85,9 @@
             display: inline-block;
         }
         .badge-wait { background-color: #434651; color: #d1d4dc; }
-        .badge-long { background-color: #089981; color: #ffffff; box-shadow: 0 0 10px rgba(8, 153, 129, 0.4); }
-        .badge-short { background-color: #f23645; color: #ffffff; box-shadow: 0 0 10px rgba(242, 54, 69, 0.4); }
-        .badge-watch { background-color: #ffa726; color: #131722; box-shadow: 0 0 10px rgba(255, 167, 38, 0.4); }
-        .badge-unwind { background-color: #2962ff; color: #ffffff; }
+        .badge-long { background-color: #089981; color: #ffffff; box-shadow: 0 0 10px rgba(8, 153, 129, 0.5); }
+        .badge-short { background-color: #f23645; color: #ffffff; box-shadow: 0 0 10px rgba(242, 54, 69, 0.5); }
+        .badge-setup { background-color: #ffa726; color: #131722; box-shadow: 0 0 10px rgba(255, 167, 38, 0.5); }
 
         .assistant-msg {
             color: #d1d4dc;
@@ -165,14 +163,14 @@
         </div>
     </div>
 
-    <!-- شريط المحلل الذكي المبني على Order Flow State Machine -->
+    <!-- شريط تحليل تسلسل ألوان مدى الـ OI -->
     <div class="market-assistant">
         <div class="assistant-title">
             <span id="stateBadge" class="status-badge badge-wait">⚪ WAIT</span>
-            <span>حالة هيكل السيولة:</span>
+            <span>تتابع ألوان ومدى السيولة:</span>
         </div>
         <div class="assistant-msg" id="assistantText">
-            جاري قراءة بنية السعر والسيولة وتغير معدل التمويل (Price + OI + Funding State Engine)...
+            جاري قراءة أحداث المدى الواسع للـ OI وتتابع ألوان الشموع...
         </div>
     </div>
 
@@ -220,136 +218,137 @@
         return val.toFixed(2);
     }
 
-    function getOICandleColor(priceIsUp, oiIsUp) {
-        if (priceIsUp && oiIsUp) return '#089981';       
-        if (!priceIsUp && !oiIsUp) return '#f23645';     
-        if (!priceIsUp && oiIsUp) return '#000000';      
-        if (priceIsUp && !oiIsUp) return '#2962ff';      
-        return '#787b86';
+    // تحديد ألوان شموع الـ OI حسب المنطق
+    // أسود = سعر هابط + OI صاعد
+    // أزرق = سعر صاعد + OI هابط
+    // أخضر = سعر صاعد + OI صاعد
+    // أحمر = سعر هابط + OI هابط
+    function getOICandleType(priceIsUp, oiIsUp) {
+        if (!priceIsUp && oiIsUp) return { color: '#000000', type: 'BLACK' };  
+        if (priceIsUp && !oiIsUp) return { color: '#2962ff', type: 'BLUE' };   
+        if (priceIsUp && oiIsUp) return { color: '#089981', type: 'GREEN' };   
+        if (!priceIsUp && !oiIsUp) return { color: '#f23645', type: 'RED' };  
+        return { color: '#787b86', type: 'NEUTRAL' };
     }
 
-    // 🔥 المحرك المطور الصارم: Order Flow State Machine Engine
-    function evaluateOrderFlowEngine(targetIndex) {
+    // 🔥 المحرك القائم حصرياً على منطق مدى وتتابع ألوان OI
+    function evaluateOISpreadAndSequenceEngine(targetIndex) {
         const badgeEl = document.getElementById('stateBadge');
         const textEl = document.getElementById('assistantText');
-        
-        const LOOKBACK_EXTENDED = 12; // نطاق قراءة الحركة الممتدة
-        const LOOKBACK_SHORT = 3;     // نطاق قراءة التغير اللحظي القريب
 
-        if (!cachedPriceData || cachedPriceData.length < LOOKBACK_EXTENDED || targetIndex < LOOKBACK_EXTENDED) {
+        if (!cachedOIData || cachedOIData.length < 15 || targetIndex < 5) {
             badgeEl.className = "status-badge badge-wait";
             badgeEl.innerText = "⚪ WAIT";
-            textEl.innerText = "بيانات غير كافية لبناء الهيكل التراكمي.";
+            textEl.innerText = "جاري تحميل وتجميع بيانات الـ OI...";
             return;
         }
 
-        // 1. حسابات الحركة الممتدة (Context Movement)
-        const extendedStartPrice = cachedPriceData[targetIndex - LOOKBACK_EXTENDED].open;
-        const currentPrice = cachedPriceData[targetIndex].close;
-        const extendedPricePct = ((currentPrice - extendedStartPrice) / extendedStartPrice) * 100;
-
-        const extendedStartOI = cachedOIData[targetIndex - LOOKBACK_EXTENDED].open;
-        const currentOI = cachedOIData[targetIndex].close;
-        const extendedOIPct = ((currentOI - extendedStartOI) / extendedStartOI) * 100;
-
-        // 2. حسابات الحركة القريبة اللحظية (3 Bars Dynamics)
-        const shortStartPrice = cachedPriceData[targetIndex - LOOKBACK_SHORT].open;
-        const shortPricePct = ((currentPrice - shortStartPrice) / shortStartPrice) * 100;
-
-        const shortStartOI = cachedOIData[targetIndex - LOOKBACK_SHORT].open;
-        const shortOIPct = ((currentOI - shortStartOI) / shortStartOI) * 100;
-
-        // 3. تحليل ديناميكية الفندنج (Funding State & Velocity)
-        const curFunding = cachedFundingData[targetIndex] ? cachedFundingData[targetIndex].value : 0;
-        const prevFunding = cachedFundingData[targetIndex - LOOKBACK_SHORT] ? cachedFundingData[targetIndex - LOOKBACK_SHORT].value : curFunding;
-        const fundingDelta = curFunding - prevFunding;
-
-        let fundingStateText = "";
-        if (curFunding > 0.0002 && fundingDelta > 0) {
-            fundingStateText = "Funding موجبة متسارعة (تسخين رافعات الشراء)";
-        } else if (curFunding > 0.0002 && fundingDelta <= 0) {
-            fundingStateText = "Funding موجبة لكنها تتراجع";
-        } else if (curFunding < -0.0001 && fundingDelta < 0) {
-            fundingStateText = "Funding سالبة تزداد حدة (تضخم الشورتات)";
-        } else if (curFunding < -0.0001 && fundingDelta >= 0) {
-            fundingStateText = "Funding سالبة لكنها ترتد للتحسن";
-        } else {
-            fundingStateText = "Funding متوازنة";
+        // 1. حساب متوسط مدى شمعة الـ OI لـ 14 بار سابق لتحديد الـ Wide Range
+        let totalOISpread = 0;
+        for (let i = targetIndex - 14; i < targetIndex; i++) {
+            totalOISpread += Math.abs(cachedOIData[i].close - cachedOIData[i].open);
         }
+        const avgOISpread = totalOISpread / 14;
 
-        // 4. تقييم القمم والقيعان المحلية (High/Low Failures)
-        const recentSlice = cachedPriceData.slice(targetIndex - 5, targetIndex + 1);
-        const maxHigh = Math.max(...recentSlice.map(p => p.high));
-        const minLow = Math.min(...recentSlice.map(p => p.low));
-        
-        const isFailingHigh = extendedPricePct > 5 && (currentPrice < maxHigh * 0.993);
-        const isFailingLow = extendedPricePct < -5 && (currentPrice > minLow * 1.007);
+        // 2. فحص حالة الشموع السابقة القريبة (Lookback Sequence)
+        let activeState = "WAIT";
+        let detailMessage = "";
+        let climaxIndex = -1;
 
-        // --- تنفيذ منطق حالات السوق (State Machine logic) ---
+        // البحث العكسي لآخر 10 بارات عن آخر شمعة ذروة (Climax Bar)
+        for (let i = targetIndex; i >= Math.max(0, targetIndex - 10); i--) {
+            const pUp = cachedPriceData[i].close >= cachedPriceData[i].open;
+            const oiUp = cachedOIData[i].close >= cachedOIData[i].open;
+            const candleInfo = getOICandleType(pUp, oiUp);
+            const spread = Math.abs(cachedOIData[i].close - cachedOIData[i].open);
 
-        // A. إشارات التصفية وتفكيك المراكز (POSITION UNWINDING)
-        if (Math.abs(extendedPricePct) > 3 && shortOIPct < -1.5) {
-            badgeEl.className = "status-badge badge-unwind";
-            badgeEl.innerText = "🔵 POSITION UNWINDING";
-            textEl.innerHTML = `الحركة ناتجة عن إغلاق وتفريغ عقود وليس بناء اتجاه جديد (OI ينخفض بـ ${shortOIPct.toFixed(2)}%). لا يوصى بالدخول. | <small>${fundingStateText}</small>`;
-            return;
-        }
-
-        // B. مراقبة الانعكاس من الصعود (SELLING / BULL EXHAUSTION WATCH)
-        if (extendedPricePct > 6 && (curFunding > 0.0003 || extendedOIPct > 8)) {
-            if (isFailingHigh && shortPricePct < 0 && shortOIPct >= 0) {
-                // تأكيد الضغط البيعي (Phase E / Confirmation)
-                badgeEl.className = "status-badge badge-short";
-                badgeEl.innerText = "🔴 SHORT BIAS CONFIRMED";
-                textEl.innerHTML = `تأكيد انعكاس بيعي: صعود ممتد (+${extendedPricePct.toFixed(1)}%) متبوع بضعف عن تحقيق قمة جديدة وزيادة في عقود البيع (Short Building). | <small>${fundingStateText}</small>`;
-            } else {
-                // مراقبة إنهاك صعودي (Phase C / Extreme)
-                badgeEl.className = "status-badge badge-watch";
-                badgeEl.innerText = "🟡 BULL EXHAUSTION WATCH";
-                textEl.innerHTML = `صعود ممتد (+${extendedPricePct.toFixed(1)}%) مع ارتفاع متطرف في OI/Funding. توجد علامات إنهاك، ننتظر تأكيد الانعكاس. | <small>${fundingStateText}</small>`;
+            // شمعة ذروة الامتصاص الصاعد: سوداء + مدى واسع (Wide Range)
+            if (candleInfo.type === 'BLACK' && spread >= avgOISpread * 1.35) {
+                climaxIndex = i;
+                break;
             }
+        }
+
+        // قراءة الشمعة الحالية عند مؤشر الماوس
+        const currPUp = cachedPriceData[targetIndex].close >= cachedPriceData[targetIndex].open;
+        const currOIUp = cachedOIData[targetIndex].close >= cachedOIData[targetIndex].open;
+        const currCandle = getOICandleType(currPUp, currOIUp);
+
+        // --- تطبيق قواعد التسلسل الشفاف ---
+
+        // أ) حالة تحقق شمعة ذروة سوداء واسعة في البار الحالي بالضبط
+        if (currCandle.type === 'BLACK' && Math.abs(cachedOIData[targetIndex].close - cachedOIData[targetIndex].open) >= avgOISpread * 1.35) {
+            badgeEl.className = "status-badge badge-setup";
+            badgeEl.innerText = "🟡 REVERSAL SETUP (ذروة امتصاص)";
+            textEl.innerHTML = `<b>شمعة سوداء بمدى واسع على الـ OI:</b> تم امتصاص بيع مكثف. <span style="color:#ffa726">اقترب الانعكاس الصاعد، بانتظار إغلاق شمعة أزرق أو أخضر للتأكيد.</span>`;
             return;
         }
 
-        // C. مراقبة الانعكاس من الهبوط (BUYING / BEAR EXHAUSTION WATCH)
-        if (extendedPricePct < -6 && (curFunding < -0.0001 || extendedOIPct > 8)) {
-            if (isFailingLow && shortPricePct > 0 && shortOIPct < 0) {
-                // تأكيد التجميع والارتداد (Phase E / Confirmation)
-                badgeEl.className = "status-badge badge-long";
-                badgeEl.innerText = "🟢 LONG BIAS CONFIRMED";
-                textEl.innerHTML = `تأكيد انعكاس صاعد: هبوط ممتد (${extendedPricePct.toFixed(1)}%) مع توقف الهبوط وتراجع عقود الشورت (Short Unwinding). | <small>${fundingStateText}</small>`;
-            } else if (shortPricePct < 0 && shortOIPct > 0.8) {
-                // امتصاص وتجميع خفي أثناء الهبوط (Absorption Phase)
-                badgeEl.className = "status-badge badge-watch";
-                badgeEl.innerText = "🟡 ABSORPTION / REVERSAL WATCH";
-                textEl.innerHTML = `هبوط ممتد مع استمرار ارتفاع الـ OI (+${shortOIPct.toFixed(2)}%) وتعمق الفندنج السلبي. احتمالية امتصاص بيعي وتهيؤ لارتقاء صاعد. | <small>${fundingStateText}</small>`;
-            } else {
-                badgeEl.className = "status-badge badge-watch";
-                badgeEl.innerText = "🟡 BEAR EXHAUSTION WATCH";
-                textEl.innerHTML = `هبوط ممتد (${extendedPricePct.toFixed(1)}%) وصل لمناطق متطرفة. ننتظر دليلاً بنيوياً قبل تحديد Bias صاعد. | <small>${fundingStateText}</small>`;
+        // ب) حالة وجود شمعة ذروة سوداء سابقة وتم تأكيدها
+        if (climaxIndex !== -1 && climaxIndex < targetIndex) {
+            // فحص هل حدث تأكيد (شمعة أزرق أو أخضر) بعد شمعة الذروة السوداء
+            let confirmedIdx = -1;
+            for (let j = climaxIndex + 1; j <= targetIndex; j++) {
+                const pU = cachedPriceData[j].close >= cachedPriceData[j].open;
+                const oiU = cachedOIData[j].close >= cachedOIData[j].open;
+                const cType = getOICandleType(pU, oiU).type;
+                if (cType === 'BLUE' || cType === 'GREEN') {
+                    confirmedIdx = j;
+                    break;
+                }
             }
-            return;
+
+            // إذا تم التأكيد، نتحقق هل ظهرت شمعة أحمر تنهي الصعود أم لا
+            if (confirmedIdx !== -1) {
+                let hasRedExit = false;
+                for (let k = confirmedIdx + 1; k <= targetIndex; k++) {
+                    const pU = cachedPriceData[k].close >= cachedPriceData[k].open;
+                    const oiU = cachedOIData[k].close >= cachedOIData[k].open;
+                    if (getOICandleType(pU, oiU).type === 'RED') {
+                        hasRedExit = true;
+                        break;
+                    }
+                }
+
+                if (!hasRedExit) {
+                    badgeEl.className = "status-badge badge-long";
+                    badgeEl.innerText = "🟢 LONG BIAS (جاهز للصعود)";
+                    textEl.innerHTML = `<b>الاتجاه صاعد مستمر:</b> تأكد الانعكاس بعد شمعة الامتصاص السوداء، والبارات مستمرة بالأزرق/الأخضر. <span style="color:#089981">يستمر الاتجاه حتى ظهور إغلاق أحمر.</span>`;
+                    return;
+                } else {
+                    badgeEl.className = "status-badge badge-wait";
+                    badgeEl.innerText = "⚪ EXIT / WAIT (توقف الاتجاه)";
+                    textEl.innerHTML = `<b>تم الخروج من الصعود:</b> ظهرت شمعة إغلاق حمراء على الـ OI وأنهت الموجه الصاعدة. <span style="color:#787b86">انتظر شمعة ذروة جديدة.</span>`;
+                    return;
+                }
+            } else {
+                badgeEl.className = "status-badge badge-setup";
+                badgeEl.innerText = "🟡 REVERSAL WATCH";
+                textEl.innerHTML = `<b>تأهب:</b> توجد شمعة امتصاص سوداء سابقة، بانتظار أول إغلاق أزرق أو أخضر لتأكيد بداية الاتجاه الصاعد.`;
+                return;
+            }
         }
 
-        // D. الاتجاهات القوية الممتدة الصحيحة (TREND CONTINUATION)
-        if (extendedPricePct > 4 && shortPricePct > 0 && shortOIPct > 0) {
+        // ج) متابعة الاتجاه بناءً على هيمنة اللون الأزرق (Short Covering Continuous Climb)
+        if (currCandle.type === 'BLUE') {
             badgeEl.className = "status-badge badge-long";
-            badgeEl.innerText = "🟢 STRONG LONG BIAS";
-            textEl.innerHTML = `اتجاه صاعد صحي ومستمر: صعود متبوع بتدفق سيولة جديدة (Price +${shortPricePct.toFixed(2)}% | OI +${shortOIPct.toFixed(2)}%). | <small>${fundingStateText}</small>`;
+            badgeEl.innerText = "🟢 BULLISH MOMENTUM (تغطية شورتات)";
+            textEl.innerHTML = `<b>شمعة زرقاء على الـ OI:</b> السعر يواصل الارتفاع مع انخفاض الـ OI (Short Covering). <span style="color:#2962ff">مستمر بالصعود حتى إغلاق أحمر.</span>`;
             return;
         }
 
-        if (extendedPricePct < -4 && shortPricePct < 0 && shortOIPct > 0) {
+        // د) حالة البيع الهابط (Mirror Short Logic) عند تتابع الشموع الحمراء
+        if (currCandle.type === 'RED') {
             badgeEl.className = "status-badge badge-short";
-            badgeEl.innerText = "🔴 STRONG SHORT BIAS";
-            textEl.innerHTML = `اتجاه هابط صريح: ضغط بيعي متواصل بدخول مراكز شورت جديدة. | <small>${fundingStateText}</small>`;
+            badgeEl.innerText = "🔴 SHORT / BEARISH DRIFT";
+            textEl.innerHTML = `<b>شمعة حمراء على الـ OI:</b> هبوط السعر مع تفريغ عقود. <span style="color:#f23645">البيع مستمر أو خروج من الشراء.</span>`;
             return;
         }
 
-        // E. الحالة الافتراضية والأساسية (DEFAULT STATE: WAIT)
+        // هـ) الحالة الافتراضية عند عدم توفر نمط واسع
         badgeEl.className = "status-badge badge-wait";
-        badgeEl.innerText = "⚪ WAIT";
-        textEl.innerHTML = `البيانات متضاربة أو داخل نطاق متوازن. لا توجد أفضلية إحصائية واضحة حالياً (Price 3B: ${shortPricePct.toFixed(2)}% | OI 3B: ${shortOIPct.toFixed(2)}%). | <small>${fundingStateText}</small>`;
+        badgeEl.innerText = "⚪ WAIT (نطاق اعتيادي)";
+        textEl.innerHTML = `بارات OI ضمن المدى الطبيعي الاعتيادي. بانتظار تشكل شمعة سوداء بمدى واسع أو تتابع أزرق صريح.`;
     }
 
     function initChart() {
@@ -439,7 +438,7 @@
 
                 const hoverIdx = cachedPriceData.findIndex(item => item.time === param.time);
                 if (hoverIdx !== -1) {
-                    evaluateOrderFlowEngine(hoverIdx);
+                    evaluateOISpreadAndSequenceEngine(hoverIdx);
                 }
             }
         });
@@ -487,7 +486,7 @@
                 const oiClose = currentOI;
                 const oiIsUp = oiClose >= oiOpen;
 
-                const candleColor = getOICandleColor(priceIsUp, oiIsUp);
+                const candleInfo = getOICandleType(priceIsUp, oiIsUp);
 
                 cachedOIData.push({
                     time: candleTime,
@@ -495,9 +494,9 @@
                     high: Math.max(oiOpen, oiClose),
                     low: Math.min(oiOpen, oiClose),
                     close: oiClose,
-                    color: candleColor,
-                    wickColor: candleColor === '#000000' ? '#555555' : candleColor,
-                    borderColor: candleColor
+                    color: candleInfo.color,
+                    wickColor: candleInfo.color === '#000000' ? '#555555' : candleInfo.color,
+                    borderColor: candleInfo.color
                 });
 
                 let currentFunding = fundingMap.get(candleTime) !== undefined ? fundingMap.get(candleTime) : lastKnownFunding;
@@ -510,8 +509,8 @@
             volumeSeries.setData(volumeBars);
             fundingSeries.setData(cachedFundingData);
 
-            if (cachedPriceData.length > 12) {
-                evaluateOrderFlowEngine(cachedPriceData.length - 1);
+            if (cachedPriceData.length > 15) {
+                evaluateOISpreadAndSequenceEngine(cachedPriceData.length - 1);
             }
 
             chart.timeScale().fitContent();
