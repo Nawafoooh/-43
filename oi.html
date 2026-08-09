@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TradingView Pro - Multi-Bar Cumulative AI Engine</title>
+    <title>TradingView Pro - Order Flow State Machine</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -58,7 +58,7 @@
         .tf-btn.active, .tf-btn:hover { background-color: #363a45; color: #f0f3fa; }
         .tf-btn.active { color: #2962ff; }
 
-        /* شريط مساعد التحليل الذكي المطور التراكمي */
+        /* شريط المساعد بتنسيق الحالات الخمس الاحترافية */
         .market-assistant {
             background: linear-gradient(90deg, #181b25 0%, #222735 100%);
             border-bottom: 1px solid #2a2e39;
@@ -75,16 +75,22 @@
             font-weight: bold;
             color: #f0f3fa;
         }
-        .assistant-badge {
-            background: linear-gradient(135deg, #2962ff 0%, #1e88e5 100%);
-            color: #fff;
-            padding: 3px 10px;
+        
+        /* شارات الحالة (State Badges) */
+        .status-badge {
+            padding: 4px 10px;
             border-radius: 4px;
             font-size: 11px;
             font-weight: 800;
             letter-spacing: 0.5px;
-            box-shadow: 0 0 10px rgba(41, 98, 255, 0.4);
+            display: inline-block;
         }
+        .badge-wait { background-color: #434651; color: #d1d4dc; }
+        .badge-long { background-color: #089981; color: #ffffff; box-shadow: 0 0 10px rgba(8, 153, 129, 0.4); }
+        .badge-short { background-color: #f23645; color: #ffffff; box-shadow: 0 0 10px rgba(242, 54, 69, 0.4); }
+        .badge-watch { background-color: #ffa726; color: #131722; box-shadow: 0 0 10px rgba(255, 167, 38, 0.4); }
+        .badge-unwind { background-color: #2962ff; color: #ffffff; }
+
         .assistant-msg {
             color: #d1d4dc;
             font-weight: 500;
@@ -92,10 +98,6 @@
             gap: 12px;
             align-items: center;
         }
-        .highlight-bull { color: #089981; font-weight: bold; text-shadow: 0 0 8px rgba(8, 153, 129, 0.3); }
-        .highlight-bear { color: #f23645; font-weight: bold; text-shadow: 0 0 8px rgba(242, 54, 69, 0.3); }
-        .highlight-warn { color: #ffa726; font-weight: bold; }
-        .highlight-purple { color: #bb86fc; font-weight: bold; }
 
         .live-status {
             display: flex;
@@ -163,14 +165,14 @@
         </div>
     </div>
 
-    <!-- مساعد التحليل الذكي التراكمي (3 Bars Window Engine) -->
-    <div class="market-assistant" id="marketAssistant">
+    <!-- شريط المحلل الذكي المبني على Order Flow State Machine -->
+    <div class="market-assistant">
         <div class="assistant-title">
-            <span class="assistant-badge">SMART ENGINE [3-BARS]</span>
-            <span>محلل التدفق والسيولة:</span>
+            <span id="stateBadge" class="status-badge badge-wait">⚪ WAIT</span>
+            <span>حالة هيكل السيولة:</span>
         </div>
         <div class="assistant-msg" id="assistantText">
-            جاري معالجة السلوك التراكمي عبر آخر 3 بارات متتالية...
+            جاري قراءة بنية السعر والسيولة وتغير معدل التمويل (Price + OI + Funding State Engine)...
         </div>
     </div>
 
@@ -219,82 +221,135 @@
     }
 
     function getOICandleColor(priceIsUp, oiIsUp) {
-        if (priceIsUp && oiIsUp) return '#089981';       // صعود صريح
-        if (!priceIsUp && !oiIsUp) return '#f23645';     // هبوط وتفريغ
-        if (!priceIsUp && oiIsUp) return '#000000';      // هبوط السعر + صعود الـ OI (أسود / تجميع بيعي أو امتصاص)
-        if (priceIsUp && !oiIsUp) return '#2962ff';      // صعود السعر + هبوط الـ OI (أزرق / تغطية شورتات)
+        if (priceIsUp && oiIsUp) return '#089981';       
+        if (!priceIsUp && !oiIsUp) return '#f23645';     
+        if (!priceIsUp && oiIsUp) return '#000000';      
+        if (priceIsUp && !oiIsUp) return '#2962ff';      
         return '#787b86';
     }
 
-    // 🔥 المحرك التراكمي المتقدم: تحليل سلوك 3 بارات متتالية + التمويل
-    function evaluateMultiBarDynamics(targetIndex) {
-        const assistantEl = document.getElementById('assistantText');
-        if (!cachedPriceData || cachedPriceData.length < 4 || targetIndex < 3) return;
-
-        // استخراج آخر 3 بارات من النقطة المحددة
-        const pSlice = cachedPriceData.slice(targetIndex - 2, targetIndex + 1);
-        const oiSlice = cachedOIData.slice(targetIndex - 2, targetIndex + 1);
-        const currentFunding = cachedFundingData[targetIndex] ? cachedFundingData[targetIndex].value : 0;
-
-        // 1. حساب المحصلة التراكمية للتغير في السعر والـ OI عبر الـ 3 بارات
-        const priceNetChange = pSlice[2].close - pSlice[0].open;
-        const priceNetPercent = (priceNetChange / pSlice[0].open) * 100;
+    // 🔥 المحرك المطور الصارم: Order Flow State Machine Engine
+    function evaluateOrderFlowEngine(targetIndex) {
+        const badgeEl = document.getElementById('stateBadge');
+        const textEl = document.getElementById('assistantText');
         
-        const oiNetChange = oiSlice[2].close - oiSlice[0].open;
-        const oiNetPercent = (oiNetChange / oiSlice[0].open) * 100;
+        const LOOKBACK_EXTENDED = 12; // نطاق قراءة الحركة الممتدة
+        const LOOKBACK_SHORT = 3;     // نطاق قراءة التغير اللحظي القريب
 
-        // حساب عدد البارات الهابطة والصاعدة بشكل منفصل
-        let priceDownBars = 0, priceUpBars = 0;
-        let oiUpBars = 0, oiDownBars = 0;
-
-        for (let i = 0; i < 3; i++) {
-            if (pSlice[i].close >= pSlice[i].open) priceUpBars++; else priceDownBars++;
-            if (oiSlice[i].close >= oiSlice[i].open) oiUpBars++; else oiDownBars++;
+        if (!cachedPriceData || cachedPriceData.length < LOOKBACK_EXTENDED || targetIndex < LOOKBACK_EXTENDED) {
+            badgeEl.className = "status-badge badge-wait";
+            badgeEl.innerText = "⚪ WAIT";
+            textEl.innerText = "بيانات غير كافية لبناء الهيكل التراكمي.";
+            return;
         }
 
-        let statusHtml = "";
-        let fundingNote = "";
+        // 1. حسابات الحركة الممتدة (Context Movement)
+        const extendedStartPrice = cachedPriceData[targetIndex - LOOKBACK_EXTENDED].open;
+        const currentPrice = cachedPriceData[targetIndex].close;
+        const extendedPricePct = ((currentPrice - extendedStartPrice) / extendedStartPrice) * 100;
 
-        if (currentFunding > 0.0003) {
-            fundingNote = ` | <span class="highlight-warn">⚠️ التمويل إيجابي مرتفع (${(currentFunding*100).toFixed(4)}%)</span>`;
-        } else if (currentFunding < -0.0001) {
-            fundingNote = ` | <span class="highlight-purple">⚡ التمويل سلبي (${(currentFunding*100).toFixed(4)}%) - ضغط شورتات مكثف</span>`;
+        const extendedStartOI = cachedOIData[targetIndex - LOOKBACK_EXTENDED].open;
+        const currentOI = cachedOIData[targetIndex].close;
+        const extendedOIPct = ((currentOI - extendedStartOI) / extendedStartOI) * 100;
+
+        // 2. حسابات الحركة القريبة اللحظية (3 Bars Dynamics)
+        const shortStartPrice = cachedPriceData[targetIndex - LOOKBACK_SHORT].open;
+        const shortPricePct = ((currentPrice - shortStartPrice) / shortStartPrice) * 100;
+
+        const shortStartOI = cachedOIData[targetIndex - LOOKBACK_SHORT].open;
+        const shortOIPct = ((currentOI - shortStartOI) / shortStartOI) * 100;
+
+        // 3. تحليل ديناميكية الفندنج (Funding State & Velocity)
+        const curFunding = cachedFundingData[targetIndex] ? cachedFundingData[targetIndex].value : 0;
+        const prevFunding = cachedFundingData[targetIndex - LOOKBACK_SHORT] ? cachedFundingData[targetIndex - LOOKBACK_SHORT].value : curFunding;
+        const fundingDelta = curFunding - prevFunding;
+
+        let fundingStateText = "";
+        if (curFunding > 0.0002 && fundingDelta > 0) {
+            fundingStateText = "Funding موجبة متسارعة (تسخين رافعات الشراء)";
+        } else if (curFunding > 0.0002 && fundingDelta <= 0) {
+            fundingStateText = "Funding موجبة لكنها تتراجع";
+        } else if (curFunding < -0.0001 && fundingDelta < 0) {
+            fundingStateText = "Funding سالبة تزداد حدة (تضخم الشورتات)";
+        } else if (curFunding < -0.0001 && fundingDelta >= 0) {
+            fundingStateText = "Funding سالبة لكنها ترتد للتحسن";
         } else {
-            fundingNote = ` | <span>التمويل متوازن (${(currentFunding*100).toFixed(4)}%)</span>`;
+            fundingStateText = "Funding متوازنة";
         }
 
-        // --- السيناريوهات المركبة عالية الدقة ---
+        // 4. تقييم القمم والقيعان المحلية (High/Low Failures)
+        const recentSlice = cachedPriceData.slice(targetIndex - 5, targetIndex + 1);
+        const maxHigh = Math.max(...recentSlice.map(p => p.high));
+        const minLow = Math.min(...recentSlice.map(p => p.low));
+        
+        const isFailingHigh = extendedPricePct > 5 && (currentPrice < maxHigh * 0.993);
+        const isFailingLow = extendedPricePct < -5 && (currentPrice > minLow * 1.007);
 
-        // السيناريو الأول: امتصاص واستعداد لانعكاس صعودي قادم (Bullish Reversal / Short Squeeze)
-        if (priceDownBars >= 2 && oiUpBars >= 2 && oiNetPercent > 0.5) {
-            if (currentFunding < 0) {
-                statusHtml = `<span class="highlight-bull">🚀 إشارة الشورت سكويز (Short Squeeze Alert):</span> السعر يضغط لأسفل لـ 3 بارات بينما الـ OI يرتفع بقوة (+${oiNetPercent.toFixed(2)}%) مع تمويل سلبي. <b style="color:#089981">انعكاس صعودي حاد متوقع قريباً!</b> ${fundingNote}`;
+        // --- تنفيذ منطق حالات السوق (State Machine logic) ---
+
+        // A. إشارات التصفية وتفكيك المراكز (POSITION UNWINDING)
+        if (Math.abs(extendedPricePct) > 3 && shortOIPct < -1.5) {
+            badgeEl.className = "status-badge badge-unwind";
+            badgeEl.innerText = "🔵 POSITION UNWINDING";
+            textEl.innerHTML = `الحركة ناتجة عن إغلاق وتفريغ عقود وليس بناء اتجاه جديد (OI ينخفض بـ ${shortOIPct.toFixed(2)}%). لا يوصى بالدخول. | <small>${fundingStateText}</small>`;
+            return;
+        }
+
+        // B. مراقبة الانعكاس من الصعود (SELLING / BULL EXHAUSTION WATCH)
+        if (extendedPricePct > 6 && (curFunding > 0.0003 || extendedOIPct > 8)) {
+            if (isFailingHigh && shortPricePct < 0 && shortOIPct >= 0) {
+                // تأكيد الضغط البيعي (Phase E / Confirmation)
+                badgeEl.className = "status-badge badge-short";
+                badgeEl.innerText = "🔴 SHORT BIAS CONFIRMED";
+                textEl.innerHTML = `تأكيد انعكاس بيعي: صعود ممتد (+${extendedPricePct.toFixed(1)}%) متبوع بضعف عن تحقيق قمة جديدة وزيادة في عقود البيع (Short Building). | <small>${fundingStateText}</small>`;
             } else {
-                statusHtml = `<span class="highlight-bull">💎 امتصاص بيعي وتجميع خفي (Absorption):</span> هبوط السعر لـ 3 بارات يقابله ارتفاع تراكمي في الـ OI. صناع السوق يبتلعون البيع. <b style="color:#089981">توقع ارتداد لأعلى.</b> ${fundingNote}`;
+                // مراقبة إنهاك صعودي (Phase C / Extreme)
+                badgeEl.className = "status-badge badge-watch";
+                badgeEl.innerText = "🟡 BULL EXHAUSTION WATCH";
+                textEl.innerHTML = `صعود ممتد (+${extendedPricePct.toFixed(1)}%) مع ارتفاع متطرف في OI/Funding. توجد علامات إنهاك، ننتظر تأكيد الانعكاس. | <small>${fundingStateText}</small>`;
             }
-        }
-        // السيناريو الثاني: توافق صعودي قوي واستمرار للاتجاه (Strong Bullish Continuation)
-        else if (priceUpBars >= 2 && oiUpBars >= 2 && priceNetPercent > 0) {
-            statusHtml = `<span class="highlight-bull">🟢 اتجاه صاعد صحي ومستمر (Long Accumulation):</span> توافق صعودي عبر آخر 3 بارات (السعر +${priceNetPercent.toFixed(2)}% | الـ OI +${oiNetPercent.toFixed(2)}%). السيولة حقيقية وتدعم صعوداً أطول. ${fundingNote}`;
-        }
-        // السيناريو الثالث: صعود وهمي ونفاد السيولة (Bull Trap / Short Covering)
-        else if (priceUpBars >= 2 && oiDownBars >= 2 && oiNetPercent < -0.5) {
-            statusHtml = `<span class="highlight-warn">⚠️ تحذير: صعود كاذب (Bull Trap / Long Unwinding):</span> السعر يرتفع لـ 3 بارات بينما الـ OI ينخفض بـ (${oiNetPercent.toFixed(2)}%). الصعود بدون سيولة حقيقية. <b style="color:#ffa726">انتبه من هبوط مفاجئ!</b> ${fundingNote}`;
-        }
-        // السيناريو الرابع: هبوط متسارع مع ضغط شورتات جديد (Aggressive Short Building)
-        else if (priceDownBars >= 2 && priceNetPercent < -0.8 && oiUpBars >= 2) {
-            statusHtml = `<span class="highlight-bear">🔴 هبوط قوي ودخول بائعين جدد (Aggressive Selling):</span> انخفاض السعر لـ 3 بارات بـ (${priceNetPercent.toFixed(2)}%) مترافق مع فتح عقود شورت جديدة. ${fundingNote}`;
-        }
-        // السيناريو الخامس: تصفية المراكز والهبوط الخفيف (Long Liquidation)
-        else if (priceDownBars >= 2 && oiDownBars >= 2) {
-            statusHtml = `<span class="highlight-bear">🔻 خروج مراكز واستراحة مؤقتة (Long Liquidation):</span> هبوط السعر مع انخفاض الـ OI كالمعتاد. السوق يتخلص من الرافعات المالية العالية. ${fundingNote}`;
-        }
-        // متوازن / غير محدد
-        else {
-            statusHtml = `<span>🔄 سلوك متذبذب (3-Bars):</span> تغير السعر (${priceNetPercent.toFixed(2)}%) | تغير الـ OI (${oiNetPercent.toFixed(2)}%). لا توجد هيمنة واضحة حالياً. ${fundingNote}`;
+            return;
         }
 
-        assistantEl.innerHTML = statusHtml;
+        // C. مراقبة الانعكاس من الهبوط (BUYING / BEAR EXHAUSTION WATCH)
+        if (extendedPricePct < -6 && (curFunding < -0.0001 || extendedOIPct > 8)) {
+            if (isFailingLow && shortPricePct > 0 && shortOIPct < 0) {
+                // تأكيد التجميع والارتداد (Phase E / Confirmation)
+                badgeEl.className = "status-badge badge-long";
+                badgeEl.innerText = "🟢 LONG BIAS CONFIRMED";
+                textEl.innerHTML = `تأكيد انعكاس صاعد: هبوط ممتد (${extendedPricePct.toFixed(1)}%) مع توقف الهبوط وتراجع عقود الشورت (Short Unwinding). | <small>${fundingStateText}</small>`;
+            } else if (shortPricePct < 0 && shortOIPct > 0.8) {
+                // امتصاص وتجميع خفي أثناء الهبوط (Absorption Phase)
+                badgeEl.className = "status-badge badge-watch";
+                badgeEl.innerText = "🟡 ABSORPTION / REVERSAL WATCH";
+                textEl.innerHTML = `هبوط ممتد مع استمرار ارتفاع الـ OI (+${shortOIPct.toFixed(2)}%) وتعمق الفندنج السلبي. احتمالية امتصاص بيعي وتهيؤ لارتقاء صاعد. | <small>${fundingStateText}</small>`;
+            } else {
+                badgeEl.className = "status-badge badge-watch";
+                badgeEl.innerText = "🟡 BEAR EXHAUSTION WATCH";
+                textEl.innerHTML = `هبوط ممتد (${extendedPricePct.toFixed(1)}%) وصل لمناطق متطرفة. ننتظر دليلاً بنيوياً قبل تحديد Bias صاعد. | <small>${fundingStateText}</small>`;
+            }
+            return;
+        }
+
+        // D. الاتجاهات القوية الممتدة الصحيحة (TREND CONTINUATION)
+        if (extendedPricePct > 4 && shortPricePct > 0 && shortOIPct > 0) {
+            badgeEl.className = "status-badge badge-long";
+            badgeEl.innerText = "🟢 STRONG LONG BIAS";
+            textEl.innerHTML = `اتجاه صاعد صحي ومستمر: صعود متبوع بتدفق سيولة جديدة (Price +${shortPricePct.toFixed(2)}% | OI +${shortOIPct.toFixed(2)}%). | <small>${fundingStateText}</small>`;
+            return;
+        }
+
+        if (extendedPricePct < -4 && shortPricePct < 0 && shortOIPct > 0) {
+            badgeEl.className = "status-badge badge-short";
+            badgeEl.innerText = "🔴 STRONG SHORT BIAS";
+            textEl.innerHTML = `اتجاه هابط صريح: ضغط بيعي متواصل بدخول مراكز شورت جديدة. | <small>${fundingStateText}</small>`;
+            return;
+        }
+
+        // E. الحالة الافتراضية والأساسية (DEFAULT STATE: WAIT)
+        badgeEl.className = "status-badge badge-wait";
+        badgeEl.innerText = "⚪ WAIT";
+        textEl.innerHTML = `البيانات متضاربة أو داخل نطاق متوازن. لا توجد أفضلية إحصائية واضحة حالياً (Price 3B: ${shortPricePct.toFixed(2)}% | OI 3B: ${shortOIPct.toFixed(2)}%). | <small>${fundingStateText}</small>`;
     }
 
     function initChart() {
@@ -359,7 +414,6 @@
             chart.applyOptions({ width: container.clientWidth, height: container.clientHeight });
         });
 
-        // قراءة الماوس اللحظية وتطبيق المحرك التراكمي على النقطة المحددة
         chart.subscribeCrosshairMove(param => {
             if (param.time) {
                 const pData = param.seriesData.get(priceSeries);
@@ -383,10 +437,9 @@
                     document.getElementById('funding-val').className = `legend-value ${fData.value >= 0 ? 'up' : 'down'}`;
                 }
 
-                // العثور على الفهرس الزمني وتحليل آخر 3 بارات عنده
                 const hoverIdx = cachedPriceData.findIndex(item => item.time === param.time);
                 if (hoverIdx !== -1) {
-                    evaluateMultiBarDynamics(hoverIdx);
+                    evaluateOrderFlowEngine(hoverIdx);
                 }
             }
         });
@@ -457,9 +510,8 @@
             volumeSeries.setData(volumeBars);
             fundingSeries.setData(cachedFundingData);
 
-            // تشغيل المحرك التراكمي فوراً على أحدث بار بعد التحميل
-            if (cachedPriceData.length > 3) {
-                evaluateMultiBarDynamics(cachedPriceData.length - 1);
+            if (cachedPriceData.length > 12) {
+                evaluateOrderFlowEngine(cachedPriceData.length - 1);
             }
 
             chart.timeScale().fitContent();
