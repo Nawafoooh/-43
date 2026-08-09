@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TradingView Pro - Top 50 & Precise OI Logic</title>
+    <title>TradingView Pro - Accurate Contracts OI & Clean UI</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,7 +26,6 @@
             padding: 0 16px;
             gap: 20px;
         }
-        .symbol-selector { display: flex; align-items: center; gap: 8px; }
         select {
             background-color: #2a2e39;
             color: #f0f3fa;
@@ -56,10 +55,7 @@
             border-radius: 3px;
             cursor: pointer;
         }
-        .tf-btn.active, .tf-btn:hover {
-            background-color: #363a45;
-            color: #f0f3fa;
-        }
+        .tf-btn.active, .tf-btn:hover { background-color: #363a45; color: #f0f3fa; }
         .tf-btn.active { color: #2962ff; }
 
         .live-status {
@@ -72,8 +68,7 @@
             color: #089981;
         }
         .live-dot {
-            width: 8px;
-            height: 8px;
+            width: 8px; height: 8px;
             background-color: #089981;
             border-radius: 50%;
             box-shadow: 0 0 8px #089981;
@@ -86,16 +81,10 @@
             100% { opacity: 1; }
         }
 
-        .main-container {
-            flex: 1;
-            position: relative;
-            width: 100%;
-        }
-        #chart-container {
-            width: 100%;
-            height: 100%;
-        }
+        .main-container { flex: 1; position: relative; width: 100%; }
+        #chart-container { width: 100%; height: 100%; }
 
+        /* شريط المعلومات النظيف (TradingView Style Legend) */
         .chart-legend {
             position: absolute;
             top: 12px;
@@ -103,17 +92,16 @@
             z-index: 10;
             font-size: 12px;
             color: #b2b5be;
-            background: rgba(30, 34, 45, 0.90);
-            padding: 8px 14px;
-            border-radius: 6px;
+            background: rgba(19, 23, 34, 0.85);
+            padding: 6px 12px;
+            border-radius: 4px;
             backdrop-filter: blur(4px);
             border: 1px solid #2a2e39;
             pointer-events: none;
             display: flex;
             gap: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-        .legend-item { display: flex; gap: 5px; align-items: center; }
+        .legend-item { display: flex; gap: 4px; align-items: center; }
         .legend-title { font-weight: 600; color: #787b86; }
         .legend-value { font-weight: bold; }
         .up { color: #089981; }
@@ -142,7 +130,7 @@
     <div class="main-container">
         <div class="chart-legend" id="legend">
             <div class="legend-item"><span class="legend-title">Price:</span> <span id="price-val" class="legend-value">-</span></div>
-            <div class="legend-item"><span class="legend-title">OI:</span> <span id="oi-val" class="legend-value">-</span></div>
+            <div class="legend-item"><span class="legend-title">OI (Contracts):</span> <span id="oi-val" class="legend-value">-</span></div>
             <div class="legend-item"><span class="legend-title">Vol:</span> <span id="vol-val" class="legend-value">-</span></div>
             <div class="legend-item"><span class="legend-title">Funding:</span> <span id="funding-val" class="legend-value">-</span></div>
         </div>
@@ -150,16 +138,15 @@
     </div>
 
 <script>
-    // قائمة أشهر 50 عملة في منصة العقود Binance Futures
     const top50Symbols = [
-        "BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "DOGEUSDT", "ADAUSDT", "AVAXUSDT", "SUIUSDT", "LINKUSDT",
+        "ETHUSDT", "BTCUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "DOGEUSDT", "ADAUSDT", "AVAXUSDT", "SUIUSDT", "LINKUSDT",
         "NEARUSDT", "APTUSDT", "DOTUSDT", "LTCUSDT", "MATICUSDT", "SHIBUSDT", "PEPEUSDT", "FETUSDT", "ARBUSDT", "OPUSDT",
         "INJUSDT", "RNDRUSDT", "TIAUSDT", "SEIUSDT", "STXUSDT", "FILUSDT", "ATOMUSDT", "WIFUSDT", "FLOKIUSDT", "BONKUSDT",
         "TRXUSDT", "BCHUSDT", "ETCUSDT", "XLMUSDT", "ALGOUSDT", "AAVEUSDT", "UNIUSDT", "RENDERUSDT", "TAOUSDT", "ORDIUSDT",
         "SBDUSDT", "GMXUSDT", "DYDXUSDT", "FTMUSDT", "CRVUSDT", "LDOUSDT", "RUNEUSDT", "EGLDUSDT", "KASUSDT", "BLURUSDT"
     ];
 
-    let currentSymbol = "BTCUSDT";
+    let currentSymbol = "ETHUSDT";
     let currentInterval = "4h";
     
     let chart;
@@ -178,17 +165,19 @@
         });
     }
 
-    // المعادلة المركزية لتحديد لون شمعة الـ OI حسب القواعد المطلوبة بالضبط
+    // دالة اختصار الأرقام الكبيرة إلى M / K مثل TradingView
+    function formatNumber(val) {
+        if (val >= 1000000) return (val / 1000000).toFixed(3) + 'M';
+        if (val >= 1000) return (val / 1000).toFixed(2) + 'K';
+        return val.toFixed(2);
+    }
+
+    // معادلة التلوين الشرطي لشموع الـ OI
     function getOICandleColor(priceIsUp, oiIsUp) {
-        if (priceIsUp && oiIsUp) {
-            return '#089981'; // 1. موافقة صعود = أخضر
-        } else if (!priceIsUp && !oiIsUp) {
-            return '#f23645'; // 2. موافقة هبوط = أحمر
-        } else if (!priceIsUp && oiIsUp) {
-            return '#000000'; // 3. السعر يهبط والـ OI يصعد = أسود
-        } else if (priceIsUp && !oiIsUp) {
-            return '#2962ff'; // 4. السعر يصعد والـ OI يهبط = أزرق
-        }
+        if (priceIsUp && oiIsUp) return '#089981';       // موافقة صعود (اخضر)
+        if (!priceIsUp && !oiIsUp) return '#f23645';     // موافقة هبوط (احمر)
+        if (!priceIsUp && oiIsUp) return '#000000';      // سعر يهبط و OI يصعد (اسود)
+        if (priceIsUp && !oiIsUp) return '#2962ff';      // سعر يصعد و OI يهبط (ازرق)
         return '#787b86';
     }
 
@@ -199,7 +188,11 @@
             width: container.clientWidth,
             height: container.clientHeight,
             layout: { backgroundColor: '#131722', textColor: '#787b86', fontSize: 11 },
-            grid: { vertLines: { color: '#1e222d' }, horzLines: { color: '#1e222d' } },
+            // خطوط شبكة شفافة وناعمة كالمحترفين
+            grid: {
+                vertLines: { color: 'rgba(42, 46, 57, 0.3)' },
+                horzLines: { color: 'rgba(42, 46, 57, 0.3)' }
+            },
             crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
             timeScale: {
                 timeVisible: true,
@@ -214,7 +207,6 @@
                     return currentInterval === '1d' ? `${month}/${day}` : `${month}/${day} ${hours}:${minutes}`;
                 }
             },
-            leftPriceScale: { visible: true, borderColor: '#2a2e39' },
             rightPriceScale: { visible: true, borderColor: '#2a2e39' }
         });
 
@@ -225,10 +217,14 @@
             borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645'
         });
 
-        // 2. شارت الـ OI
+        // 2. شارت الـ OI (تحسين التنسيق ليقرأ العقود باختصار M)
         oiSeries = chart.addCandlestickSeries({
             priceScaleId: 'oiScale',
-            borderVisible: false
+            borderVisible: false,
+            priceFormat: {
+                type: 'custom',
+                formatter: price => formatNumber(price),
+            },
         });
 
         // 3. شارت الفوليوم
@@ -246,9 +242,9 @@
             lineWidth: 2
         });
 
-        // ضبط المساحات العمودية لجميع الشاشات
+        // التوزيع العمودي الاحترافي للـ Panes
         chart.priceScale('right').applyOptions({ scaleMargins: { top: 0.02, bottom: 0.52 } });
-        chart.priceScale('oiScale').applyOptions({ scaleMargins: { top: 0.52, bottom: 0.32 } });
+        chart.priceScale('oiScale').applyOptions({ scaleMargins: { top: 0.52, bottom: 0.32 }, autoScale: true });
         chart.priceScale('volScale').applyOptions({ scaleMargins: { top: 0.70, bottom: 0.16 } });
         chart.priceScale('fundingScale').applyOptions({ scaleMargins: { top: 0.86, bottom: 0.02 } });
 
@@ -256,7 +252,6 @@
             chart.applyOptions({ width: container.clientWidth, height: container.clientHeight });
         });
 
-        // ربط شريط القيم مع حركة الماوس
         chart.subscribeCrosshairMove(param => {
             if (param.time) {
                 const pData = param.seriesData.get(priceSeries);
@@ -269,10 +264,10 @@
                     document.getElementById('price-val').className = `legend-value ${pData.close >= pData.open ? 'up' : 'down'}`;
                 }
                 if (oiData) {
-                    document.getElementById('oi-val').innerText = (oiData.close / 1000000).toFixed(2) + 'M $';
+                    document.getElementById('oi-val').innerText = formatNumber(oiData.close);
                 }
                 if (vData) {
-                    document.getElementById('vol-val').innerText = (vData.value / 1000000).toFixed(2) + 'M';
+                    document.getElementById('vol-val').innerText = formatNumber(vData.value);
                     document.getElementById('vol-val').className = `legend-value ${vData.color === '#089981' ? 'up' : 'down'}`;
                 }
                 if (fData) {
@@ -288,6 +283,7 @@
             const klineRes = await fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${currentSymbol}&interval=${currentInterval}&limit=300`);
             const klineData = await klineRes.json();
 
+            // جلب الـ OI بوحدة العقود/العملات الصريحة (sumOpenInterest) المطابقة لـ TradingView
             const oiRes = await fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${currentSymbol}&period=${currentInterval}&limit=500`);
             const oiData = await oiRes.json();
 
@@ -295,7 +291,8 @@
             const fundingData = await fundingRes.json();
 
             const oiMap = new Map();
-            oiData.forEach(item => oiMap.set(Math.floor(item.timestamp / 1000), parseFloat(item.sumOpenInterestValue)));
+            // استخدام sumOpenInterest (عدد العملات) بدلاً من sumOpenInterestValue (الدولار)
+            oiData.forEach(item => oiMap.set(Math.floor(item.timestamp / 1000), parseFloat(item.sumOpenInterest)));
 
             const fundingMap = new Map();
             fundingData.forEach(item => fundingMap.set(Math.floor(item.fundingTime / 1000), parseFloat(item.fundingRate)));
@@ -305,13 +302,13 @@
             const volumeBars = [];
             const fundingPoints = [];
 
-            let lastKnownOI = oiData.length > 0 ? parseFloat(oiData[0].sumOpenInterestValue) : 0;
+            let lastKnownOI = oiData.length > 0 ? parseFloat(oiData[0].sumOpenInterest) : 0;
             let lastKnownFunding = fundingData.length > 0 ? parseFloat(fundingData[0].fundingRate) : 0;
 
             klineData.forEach((d) => {
                 const candleTime = d[0] / 1000;
                 const openP = parseFloat(d[1]), highP = parseFloat(d[2]), lowP = parseFloat(d[3]), closeP = parseFloat(d[4]);
-                const vol = parseFloat(d[7]);
+                const vol = parseFloat(d[5]); // Volume بالعقود
 
                 priceCandles.push({ time: candleTime, open: openP, high: highP, low: lowP, close: closeP });
 
@@ -329,7 +326,6 @@
                 const oiClose = currentOI;
                 const oiIsUp = oiClose >= oiOpen;
 
-                // تطبيق منطق التلوين الدقيق للـ OI
                 const candleColor = getOICandleColor(priceIsUp, oiIsUp);
 
                 oiCandles.push({
@@ -359,7 +355,7 @@
             connectWebSocket();
 
         } catch (err) {
-            console.error("خطأ في تحميل البيانات:", err);
+            console.error("خطأ في جلب البيانات:", err);
         }
     }
 
@@ -375,7 +371,7 @@
                 const k = message.k;
                 const candleTime = k.t / 1000;
                 const openP = parseFloat(k.o), closeP = parseFloat(k.c);
-                const vol = parseFloat(k.q);
+                const vol = parseFloat(k.v);
 
                 const priceIsUp = closeP >= openP;
 
@@ -389,8 +385,7 @@
                     color: priceIsUp ? '#089981' : '#f23645'
                 });
 
-                // تحديث مباشر لشمعة الـ OI بنفس منطق الألوان
-                const oiIsUp = true; // يفترض بقاء اتجاه السيولة الحالية لحين استقبال تحديث API الموالي
+                const oiIsUp = true;
                 const candleColor = getOICandleColor(priceIsUp, oiIsUp);
 
                 oiSeries.update({
