@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TradingView Pro - Live Price & OI</title>
+    <title>TradingView Pro - Price, OI, Volume & Funding Rate</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -17,7 +17,6 @@
             overflow: hidden;
         }
 
-        /* شريط الأدوات العلوي (TradingView Header Bar) */
         .tv-header {
             height: 50px;
             background-color: #1e222d;
@@ -27,11 +26,7 @@
             padding: 0 16px;
             gap: 20px;
         }
-        .symbol-selector {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .symbol-selector { display: flex; align-items: center; gap: 8px; }
         select {
             background-color: #2a2e39;
             color: #f0f3fa;
@@ -91,7 +86,6 @@
             100% { opacity: 1; }
         }
 
-        /* منطقة الشارت والرسم */
         .main-container {
             flex: 1;
             position: relative;
@@ -102,7 +96,7 @@
             height: 100%;
         }
 
-        /* شريط معلومات الشمعة الحالية (Legend Bar) */
+        /* شريط التتبع المتقدم (Pro Legend Overlay) */
         .chart-legend {
             position: absolute;
             top: 12px;
@@ -110,25 +104,26 @@
             z-index: 10;
             font-size: 12px;
             color: #b2b5be;
-            background: rgba(30, 34, 45, 0.85);
-            padding: 8px 12px;
-            border-radius: 4px;
+            background: rgba(30, 34, 45, 0.90);
+            padding: 8px 14px;
+            border-radius: 6px;
             backdrop-filter: blur(4px);
             border: 1px solid #2a2e39;
             pointer-events: none;
             display: flex;
-            gap: 12px;
+            gap: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-        .legend-item { display: flex; gap: 4px; }
+        .legend-item { display: flex; gap: 5px; align-items: center; }
+        .legend-title { font-weight: 600; color: #787b86; }
         .legend-value { font-weight: bold; }
         .up { color: #089981; }
         .down { color: #f23645; }
-        .oi-black { color: #111; background: #fff; padding: 0 4px; border-radius: 2px; }
+        .neutral { color: #2962ff; }
     </style>
 </head>
 <body>
 
-    <!-- شريط الأدوات الرئيسي -->
     <div class="tv-header">
         <div class="symbol-selector">
             <select id="symbol" onchange="switchSymbol()"></select>
@@ -142,15 +137,17 @@
 
         <div class="live-status">
             <div class="live-dot"></div>
-            <span>LIVE BINANCE FUTURES</span>
+            <span>LIVE DATA FEED</span>
         </div>
     </div>
 
-    <!-- حاوية الشارت الموحدة -->
     <div class="main-container">
+        <!-- شريط قراءة القيم الموحد -->
         <div class="chart-legend" id="legend">
-            <div class="legend-item">السعر: <span id="price-val" class="legend-value">-</span></div>
-            <div class="legend-item">OI: <span id="oi-val" class="legend-value">-</span></div>
+            <div class="legend-item"><span class="legend-title">Price:</span> <span id="price-val" class="legend-value">-</span></div>
+            <div class="legend-item"><span class="legend-title">OI:</span> <span id="oi-val" class="legend-value">-</span></div>
+            <div class="legend-item"><span class="legend-title">Vol:</span> <span id="vol-val" class="legend-value">-</span></div>
+            <div class="legend-item"><span class="legend-title">Funding:</span> <span id="funding-val" class="legend-value">-</span></div>
         </div>
         <div id="chart-container"></div>
     </div>
@@ -158,16 +155,15 @@
 <script>
     const top50Symbols = [
         "BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT", "XRPUSDT", "DOGEUSDT", "ADAUSDT", "AVAXUSDT", "SUIUSDT", "LINKUSDT",
-        "NEARUSDT", "APTUSDT", "DOTUSDT", "LTCUSDT", "MATICUSDT", "SHIBUSDT", "PEPEUSDT", "FETUSDT", "ARBUSDT", "OPUSDT",
-        "INJUSDT", "RNDRUSDT", "TIAUSDT", "SEIUSDT", "STXUSDT", "FILUSDT", "ATOMUSDT", "WIFUSDT", "FLOKIUSDT", "BONKUSDT"
+        "NEARUSDT", "APTUSDT", "DOTUSDT", "LTCUSDT", "MATICUSDT", "SHIBUSDT", "PEPEUSDT", "FETUSDT", "ARBUSDT", "OPUSDT"
     ];
 
     let currentSymbol = "BTCUSDT";
     let currentInterval = "4h";
     
-    let chart, priceSeries, oiSeries;
-    let ws; // WebSocket للبث المباشر
-    let lastCandle = null;
+    let chart;
+    let priceSeries, oiSeries, volumeSeries, fundingSeries;
+    let ws;
     let lastOIVat = 0;
 
     function populateSymbols() {
@@ -189,7 +185,7 @@
             layout: {
                 backgroundColor: '#131722',
                 textColor: '#787b86',
-                fontSize: 12
+                fontSize: 11
             },
             grid: {
                 vertLines: { color: '#1e222d' },
@@ -198,7 +194,6 @@
             crosshair: {
                 mode: LightweightCharts.CrosshairMode.Normal,
             },
-            /* ترتيب التاريخ والوقت الاحترافي */
             timeScale: {
                 timeVisible: true,
                 secondsVisible: false,
@@ -209,7 +204,6 @@
                     const minutes = date.getMinutes().toString().padStart(2, '0');
                     const month = (date.getMonth() + 1).toString().padStart(2, '0');
                     const day = date.getDate().toString().padStart(2, '0');
-                    
                     return currentInterval === '1d' ? `${month}/${day}` : `${month}/${day} ${hours}:${minutes}`;
                 }
             },
@@ -217,51 +211,86 @@
             rightPriceScale: { visible: true, borderColor: '#2a2e39' }
         });
 
-        // شارت السعر الرئيسي (Top Pane)
+        // 1. سلسلة السعر الرئيسية (Right Scale)
         priceSeries = chart.addCandlestickSeries({
             priceScaleId: 'right',
-            upColor: '#089981',
-            downColor: '#f23645',
-            borderVisible: false,
-            wickUpColor: '#089981',
-            wickDownColor: '#f23645'
+            upColor: '#089981', downColor: '#f23645',
+            borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645'
         });
 
-        // شارت الـ OI الشرطي (Bottom Pane)
+        // 2. سلسلة الـ OI الشرطية (Left Scale - Scale 1)
         oiSeries = chart.addCandlestickSeries({
-            priceScaleId: 'left',
+            priceScaleId: 'oiScale',
             borderVisible: false,
         });
 
-        // ضبط المساحات (النسبة 70% سعر : 30% OI)
+        // 3. سلسلة الفوليوم Volume (Left Scale - Scale 2)
+        volumeSeries = chart.addHistogramSeries({
+            priceScaleId: 'volScale',
+            priceFormat: { type: 'volume' },
+        });
+
+        // 4. سلسلة معدل التمويل Funding Rate (Left Scale - Scale 3)
+        fundingSeries = chart.addBaselineSeries({
+            priceScaleId: 'fundingScale',
+            baseValue: { type: 'price', price: 0 },
+            topLineColor: '#089981',
+            topFillColor1: 'rgba(8, 153, 129, 0.2)',
+            topFillColor2: 'rgba(8, 153, 129, 0.0)',
+            bottomLineColor: '#f23645',
+            bottomFillColor1: 'rgba(242, 54, 69, 0.0)',
+            bottomFillColor2: 'rgba(242, 54, 69, 0.2)',
+            lineWidth: 2
+        });
+
+        // === تقسيم الشارت إلى Panes مخصصة عمودياً ===
+        // السعر: Top 0% - 48%
         chart.priceScale('right').applyOptions({
-            scaleMargins: { top: 0.05, bottom: 0.32 },
+            scaleMargins: { top: 0.02, bottom: 0.52 },
         });
 
-        chart.priceScale('left').applyOptions({
-            scaleMargins: { top: 0.72, bottom: 0.01 },
+        // الـ OI: Pane 2 (52% - 68%)
+        chart.priceScale('oiScale').applyOptions({
+            scaleMargins: { top: 0.52, bottom: 0.32 },
         });
 
-        // تحديث أبعاد الشارت عند تغيير حجم الشاشة
+        // الفوليوم: Pane 3 (70% - 84%)
+        chart.priceScale('volScale').applyOptions({
+            scaleMargins: { top: 0.70, bottom: 0.16 },
+        });
+
+        // معدل التمويل: Pane 4 (86% - 98%)
+        chart.priceScale('fundingScale').applyOptions({
+            scaleMargins: { top: 0.86, bottom: 0.02 },
+        });
+
         window.addEventListener('resize', () => {
-            chart.applyOptions({
-                width: container.clientWidth,
-                height: container.clientHeight
-            });
+            chart.applyOptions({ width: container.clientWidth, height: container.clientHeight });
         });
 
-        // متابعة مؤشر الـ Crosshair لتحديث لوحة المعلومات المباشرة
+        // تحديث قيم الـ Crosshair على اللوحة العلوية
         chart.subscribeCrosshairMove(param => {
             if (param.time) {
-                const priceData = param.seriesData.get(priceSeries);
+                const pData = param.seriesData.get(priceSeries);
                 const oiData = param.seriesData.get(oiSeries);
-                if (priceData) {
-                    document.getElementById('price-val').innerText = priceData.close.toFixed(2);
-                    document.getElementById('price-val').className = `legend-value ${priceData.close >= priceData.open ? 'up' : 'down'}`;
+                const vData = param.seriesData.get(volumeSeries);
+                const fData = param.seriesData.get(fundingSeries);
+
+                if (pData) {
+                    document.getElementById('price-val').innerText = pData.close.toFixed(2);
+                    document.getElementById('price-val').className = `legend-value ${pData.close >= pData.open ? 'up' : 'down'}`;
                 }
                 if (oiData) {
-                    const formattedOI = (oiData.close / 1000000).toFixed(2) + 'M $';
-                    document.getElementById('oi-val').innerText = formattedOI;
+                    document.getElementById('oi-val').innerText = (oiData.close / 1000000).toFixed(2) + 'M $';
+                }
+                if (vData) {
+                    document.getElementById('vol-val').innerText = (vData.value / 1000000).toFixed(2) + 'M';
+                    document.getElementById('vol-val').className = `legend-value ${vData.color === '#089981' ? 'up' : 'down'}`;
+                }
+                if (fData) {
+                    const fPercent = (fData.value * 100).toFixed(4) + '%';
+                    document.getElementById('funding-val').innerText = fPercent;
+                    document.getElementById('funding-val').className = `legend-value ${fData.value >= 0 ? 'up' : 'down'}`;
                 }
             }
         });
@@ -269,63 +298,79 @@
 
     async function loadHistoricalData() {
         try {
-            // 1. جلب السعر
+            // 1. جلب Klines (السعر + الفوليوم)
             const klineRes = await fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${currentSymbol}&interval=${currentInterval}&limit=300`);
             const klineData = await klineRes.json();
 
-            // 2. جلب الـ OI
+            // 2. جلب الـ OI التاريخي
             const oiRes = await fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${currentSymbol}&period=${currentInterval}&limit=500`);
             const oiData = await oiRes.json();
 
+            // 3. جلب الـ Funding Rate التاريخي
+            const fundingRes = await fetch(`https://fapi.binance.com/fapi/v1/fundingRate?symbol=${currentSymbol}&limit=500`);
+            const fundingData = await fundingRes.json();
+
+            // خرائط زمنية لمزامنة المؤشرات بنفس التوقيت الدقيق
             const oiMap = new Map();
-            oiData.forEach(item => {
-                const timeKey = Math.floor(item.timestamp / 1000);
-                oiMap.set(timeKey, parseFloat(item.sumOpenInterestValue));
-            });
+            oiData.forEach(item => oiMap.set(Math.floor(item.timestamp / 1000), parseFloat(item.sumOpenInterestValue)));
+
+            const fundingMap = new Map();
+            fundingData.forEach(item => fundingMap.set(Math.floor(item.fundingTime / 1000), parseFloat(item.fundingRate)));
 
             const priceCandles = [];
             const oiCandles = [];
+            const volumeBars = [];
+            const fundingPoints = [];
+
             let lastKnownOI = oiData.length > 0 ? parseFloat(oiData[0].sumOpenInterestValue) : 0;
+            let lastKnownFunding = fundingData.length > 0 ? parseFloat(fundingData[0].fundingRate) : 0;
 
             klineData.forEach((d) => {
                 const candleTime = d[0] / 1000;
                 const openP = parseFloat(d[1]), highP = parseFloat(d[2]), lowP = parseFloat(d[3]), closeP = parseFloat(d[4]);
+                const vol = parseFloat(d[7]); // Quote Asset Volume (بالدولار)
 
+                // إضافة السعر
                 priceCandles.push({ time: candleTime, open: openP, high: highP, low: lowP, close: closeP });
 
+                // إضافة الفوليوم
+                const isUp = closeP >= openP;
+                volumeBars.push({
+                    time: candleTime,
+                    value: vol,
+                    color: isUp ? '#089981' : '#f23645'
+                });
+
+                // مطابقة الـ OI
                 let currentOI = oiMap.get(candleTime) !== undefined ? oiMap.get(candleTime) : lastKnownOI;
                 lastKnownOI = currentOI;
-
                 const oiOpen = oiCandles.length > 0 ? oiCandles[oiCandles.length - 1].close : currentOI;
                 const oiClose = currentOI;
 
-                // شرط التلوين: شمعة سعر هابطة + ارتفاع الـ OI -> شمعة سوداء
                 let candleColor = oiClose >= oiOpen ? '#2962ff' : '#ff6d00';
-                if (closeP < openP && oiClose >= oiOpen) {
-                    candleColor = '#000000'; // شمعة سوداء
-                }
+                if (closeP < openP && oiClose >= oiOpen) candleColor = '#000000'; // شمعة سوداء شرطية
 
                 oiCandles.push({
                     time: candleTime,
-                    open: oiOpen,
-                    high: Math.max(oiOpen, oiClose),
-                    low: Math.min(oiOpen, oiClose),
-                    close: oiClose,
-                    color: candleColor,
-                    wickColor: candleColor === '#000000' ? '#555555' : candleColor,
-                    borderColor: candleColor
+                    open: oiOpen, high: Math.max(oiOpen, oiClose), low: Math.min(oiOpen, oiClose), close: oiClose,
+                    color: candleColor, wickColor: candleColor === '#000000' ? '#555555' : candleColor, borderColor: candleColor
                 });
+
+                // مطابقة Funding Rate
+                let currentFunding = fundingMap.get(candleTime) !== undefined ? fundingMap.get(candleTime) : lastKnownFunding;
+                lastKnownFunding = currentFunding;
+                fundingPoints.push({ time: candleTime, value: currentFunding });
             });
 
+            // تعبئة السلاسل البرمجية
             priceSeries.setData(priceCandles);
             oiSeries.setData(oiCandles);
+            volumeSeries.setData(volumeBars);
+            fundingSeries.setData(fundingPoints);
 
-            lastCandle = priceCandles[priceCandles.length - 1];
             lastOIVat = oiCandles[oiCandles.length - 1].close;
 
             chart.timeScale().fitContent();
-
-            // البدء بالبث المباشر فور الانتهاء من التحميل
             connectWebSocket();
 
         } catch (err) {
@@ -333,7 +378,6 @@
         }
     }
 
-    // === الربط مع Binance WebSocket المباشر لحظة بلحظة ===
     function connectWebSocket() {
         if (ws) ws.close();
 
@@ -345,39 +389,27 @@
             if (message.e === "kline") {
                 const k = message.k;
                 const candleTime = k.t / 1000;
+                const openP = parseFloat(k.o), closeP = parseFloat(k.c);
+                const vol = parseFloat(k.q);
 
-                const updatedPriceCandle = {
-                    time: candleTime,
-                    open: parseFloat(k.o),
-                    high: parseFloat(k.h),
-                    low: parseFloat(k.l),
-                    close: parseFloat(k.c)
-                };
-
-                // تحديث السعر المباشر
-                priceSeries.update(updatedPriceCandle);
-
-                // تحديث الـ OI المباشر مع حركة الشمعة
-                let currentOI = lastOIVat; 
-                let candleColor = currentOI >= lastOIVat ? '#2962ff' : '#ff6d00';
-                if (updatedPriceCandle.close < updatedPriceCandle.open && currentOI >= lastOIVat) {
-                    candleColor = '#000000'; // لون أسود عند الهبوط مع زيادة الـ OI
-                }
-
-                oiSeries.update({
-                    time: candleTime,
-                    open: lastOIVat,
-                    high: Math.max(lastOIVat, currentOI),
-                    low: Math.min(lastOIVat, currentOI),
-                    close: currentOI,
-                    color: candleColor,
-                    wickColor: candleColor === '#000000' ? '#555555' : candleColor,
-                    borderColor: candleColor
+                // 1. تحديث السعر المباشر
+                priceSeries.update({
+                    time: candleTime, open: openP, high: parseFloat(k.h), low: parseFloat(k.l), close: closeP
                 });
 
-                // تحديث القيم المباشرة في شريط التتبع العلوي
-                document.getElementById('price-val').innerText = updatedPriceCandle.close.toFixed(2);
-                document.getElementById('price-val').className = `legend-value ${updatedPriceCandle.close >= updatedPriceCandle.open ? 'up' : 'down'}`;
+                // 2. تحديث الفوليوم المباشر
+                volumeSeries.update({
+                    time: candleTime,
+                    value: vol,
+                    color: closeP >= openP ? '#089981' : '#f23645'
+                });
+
+                // 3. تحديث الـ OI المباشر
+                let candleColor = closeP < openP ? '#000000' : '#2962ff';
+                oiSeries.update({
+                    time: candleTime, open: lastOIVat, high: Math.max(lastOIVat, lastOIVat), low: Math.min(lastOIVat, lastOIVat), close: lastOIVat,
+                    color: candleColor, wickColor: candleColor === '#000000' ? '#555555' : candleColor, borderColor: candleColor
+                });
             }
         };
     }
