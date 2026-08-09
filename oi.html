@@ -23,7 +23,7 @@
             padding: 24px;
         }
 
-        /* Top Header */
+        /* Header */
         .header {
             width: 100%;
             max-width: 800px;
@@ -166,7 +166,7 @@
             background-color: #1e1f20;
             border: 1px solid #3c4043;
             border-radius: 16px;
-            max-height: 220px;
+            max-height: 250px;
             overflow-y: auto;
             z-index: 100;
             display: none;
@@ -187,7 +187,7 @@
             color: #a8c7fa;
         }
 
-        /* --- قسم أعلى التغيرات في الـ OI (الجديد) --- */
+        /* OI Spikes Section */
         .oi-highlights-section {
             width: 100%;
             display: flex;
@@ -198,9 +198,6 @@
         .section-label {
             font-size: 13px;
             color: #8e918f;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .oi-cards-grid {
@@ -231,7 +228,6 @@
         .time-badge {
             font-size: 11px;
             color: #9aa0a6;
-            font-weight: 500;
         }
 
         .coin-info {
@@ -249,13 +245,13 @@
         .oi-change {
             font-size: 13px;
             font-weight: 600;
-            color: #00e676; /* لون أخضر ارتفاع الـ OI */
+            color: #00e676;
             background: rgba(0, 230, 118, 0.1);
             padding: 2px 6px;
             border-radius: 6px;
         }
 
-        /* Subscription Banner */
+        /* Promo Banner */
         .promo-banner {
             background: linear-gradient(135deg, rgba(41, 98, 255, 0.1) 0%, rgba(155, 81, 224, 0.1) 100%);
             border: 1px solid rgba(168, 199, 250, 0.2);
@@ -315,7 +311,7 @@
             <p>ابحث عن العملة أو اختر من أعلى القمم التراكمية للـ OI</p>
         </div>
 
-        <!-- Search Bar -->
+        <!-- Search Box -->
         <div class="search-box-wrapper">
             <div class="search-container">
                 <svg class="ai-icon" viewBox="0 0 24 24">
@@ -329,14 +325,10 @@
             <div id="suggestions" class="suggestions-dropdown"></div>
         </div>
 
-        <!-- NEW: TOP OI HIGHLIGHTS SECTION -->
+        <!-- Top OI Highlights -->
         <div class="oi-highlights-section">
-            <div class="section-label">
-                <span>🔥 أعلى انفجار في العقود المفتوحة (OI Spike)</span>
-            </div>
-
+            <div class="section-label">🔥 أعلى انفجار في العقود المفتوحة (OI Spike)</div>
             <div class="oi-cards-grid">
-                <!-- 1 Hour Top OI -->
                 <div class="oi-card" onclick="openCoinDirect('SOL')">
                     <span class="time-badge">خلال ساعة (1H)</span>
                     <div class="coin-info">
@@ -344,8 +336,6 @@
                         <span class="oi-change">+8.4%</span>
                     </div>
                 </div>
-
-                <!-- 4 Hours Top OI -->
                 <div class="oi-card" onclick="openCoinDirect('SUI')">
                     <span class="time-badge">خلال 4 ساعات (4H)</span>
                     <div class="coin-info">
@@ -353,8 +343,6 @@
                         <span class="oi-change">+19.2%</span>
                     </div>
                 </div>
-
-                <!-- 2 Days / 24h Top OI -->
                 <div class="oi-card" onclick="openCoinDirect('BTC')">
                     <span class="time-badge">خلال يومين (48H)</span>
                     <div class="coin-info">
@@ -376,7 +364,46 @@
     </div>
 
 <script>
-    const rawCoins = ["BTC", "ETH", "BNB", "SOL", "XRP", "DOGE", "SUI", "ADA", "LINK", "AVAX", "NEAR", "PEPE", "APT", "TAO", "WIF", "FET"];
+    // القائمة الكاملة الشاملة لجميع العملات المطلوبة (400+ عملة)
+    const rawCoins = [
+        "BTC", "ETH", "BNB", "USDC", "XRP", "SOL", "TRX", "HYPE", "DOGE", "ZEC", "XMR", "ADA", "LINK", "XLM", "BCH",
+        "CC", "LTC", "HBAR", "SUI", "AVAX", "XAUT", "UNI", "TAO", "NEAR", "PAXG", "ONDO", "WLFI", "ASTER", "M",
+        "AAVE", "DOT", "ICP", "BEAT", "WLD", "PUMP", "ETC", "MORPHO", "ENA", "JST", "POL", "STABLE", "ALGO",
+        "KAS", "ATOM", "QNT", "RENDER", "JUP", "LIT", "FIL", "VVV", "ARB", "币安人生", "APT", "INJ", "PENGU",
+        "AERO", "VET", "DASH", "ETHFI", "TRUMP", "VIRTUAL", "CRV", "SUN", "PYTH", "ZRO", "NIGHT", "SEI", "SPX",
+        "TIA", "BSV", "JTO", "MON", "LDO", "STX", "PENDLE", "XTZ", "IMX", "CFX", "PIEVERSE", "XPL", "OP",
+        "JASMY", "2Z", "FF", "VELVET", "SYRUP", "DEXE", "KITE", "ENS", "KAIA", "STRK", "KAITO", "TWT", "COMP",
+        "IOTA", "GRT", "CVX", "AXS", "H", "AKT", "RUNE", "WIF", "CHZ", "B", "THETA", "FARTCOIN", "MANA", "NEO",
+        "TAG", "SFP", "SAND", "SOON", "1INCH", "AR", "GENIUS", "AWE", "A", "BAT", "SKYAI", "DYDX", "SENT",
+        "CFG", "KMNO", "GLM", "FORM", "MET", "DEEP", "GALA", "RAVE", "ATH", "EGLD", "ZK", "RSR", "ZEN",
+        "MELANIA", "YFI", "PLUME", "GRASS", "SAFE", "BTW", "UB", "FRAX", "CYS", "TUT", "Q", "AKE", "BAN",
+        "QTUM", "BEAM", "COAI", "ZRX", "NXPC", "S", "XPIN", "GMX", "RIF", "HUMA", "ORCA", "OPEN", "RE", "WAL",
+        "NMR", "LPT", "CAP", "COW", "GAS", "ARC", "BILL", "ALLO", "TURBO", "NOT", "PLAY", "VTHO", "RPL", "BSB",
+        "FOGO", "SSV", "ICNT", "GIGGLE", "EPIC", "MOCA", "GRVT", "AVNT", "0G", "PROVE", "BAND", "MOVE", "UMA",
+        "SPACE", "MEW", "BANK", "EDU", "ROBO", "CATI", "SAHARA", "BLESS", "COLLECT", "AI(Gensyn)", "LAYER",
+        "MANTA", "LISTA", "EUL", "BNT", "TRUTH", "IOTX", "MYX", "ETHW", "ARX", "VANA", "ICX", "MERL", "REZ",
+        "SIREN", "MUBARAK", "SYN", "CTSI", "RLC", "BMT", "ZORA", "C", "ALCH", "BLUAI", "ZEST", "CYBER", "ILV",
+        "WOO", "KNC", "POWR", "SKL", "TA", "ARKM", "FOLKS", "HYPER", "GMT", "CARV", "HANA", "IOST", "OPG",
+        "AUCTION", "STEEM", "ACU", "ONG", "SAPIEN", "PUNDIX", "SLP", "ENSO", "POWER", "CGPT", "MTL", "NIL",
+        "METIS", "PHA", "DOGS", "龙虾", "AIXBT", "TAKE", "ONE", "STORJ", "CVC", "AEVO", "SLX", "STG", "ARK",
+        "YGG", "LQTY", "NAORIS", "XNY", "WAXP", "BREV", "FLUX", "CETUS", "USUAL", "AIOT", "IDOL", "PIPPIN",
+        "BASED", "STBL", "LSK", "TRIA", "API3", "TNSR", "BB", "SIGN", "PIXEL", "WCT", "VELODROME", "ESPORTS",
+        "SPELL", "AGLD", "EVAA", "BIGTIME", "CELR", "PARTI", "BIRB", "BANANA", "RECALL", "AVA", "GOAT",
+        "DIA", "XAI", "ELSA", "C98", "MOVR", "TAIKO", "ANIME", "SONIC", "KAT", "CHR", "FHE", "BULLA", "TAC",
+        "MAGIC", "F(SynFutures)", "JOE", "ACE", "ARPA", "CLANKER", "4", "HEI", "LUMIA", "ZKP", "OG",
+        "NEWT", "AIA", "HMSTR", "CTR", "ZKC", "ALICE", "WET", "SCRT", "IN", "YB", "MAV", "SOLV", "RARE",
+        "CHILLGUY", "ARIA", "OGN", "PROMPT", "DOOD", "TLM", "GRIFFAIN", "INIT", "DOLO", "COOKIE", "SXT",
+        "KERNEL", "LA", "ACT", "TRUST", "AIO", "STO", "我踏马来了", "TRADOOR", "LYN", "GUN", "DYM", "SHELL",
+        "BEL", "HAEDAL", "TOWNS", "DRIFT", "SWARMS", "SOPH", "SANTOS", "MAVIA", "RESOLV", "GTC", "ASR",
+        "FIGHT", "PTB", "BTR", "ALPINE", "TURTLE", "LIGHT", "SAGA", "KOMA", "PUMP(PumpBTC)", "HEMI", "NOM",
+        "GUA", "MITO", "SCR", "FUN(Sport.Fun)", "ALL", "EDEN", "ERA", "MANTRA", "OPN", "AIN", "SKY",
+        "BTCDOM", "O(Childhoods End)", "THE", "TREE", "EIGEN", "MEGA", "1000PEPE", "FET", "ORDI", "ZBT",
+        "APE", "CAKE", "MEME", "GRAM", "BROCCOLIF3B", "HIVE", "ORDER", "RAYSOL", "1000CHEEMS", "PROM",
+        "1MBABYDOGE", "1000LUNC", "FLUID", "FIDA", "AVAAI", "BAS", "INX", "DATAIP", "TST",
+        "1000000BOB", "DUSK", "LUNA2", "US(Talus)", "1000RATS", "FLOCK", "BROCCOLI714", "BANANAS31",
+        "MMT", "CLO", "CTK", "1000XEC", "DODOX", "1000CAT", "ZAMA", "1000000MOG", "CROSS", "1000SATS",
+        "SNX", "MIRA", "PORTAL", "NEIRO", "ZEREBRO", "ANKR", "BR", "XVG"
+    ];
 
     function getSlug(symbol) {
         const clean = symbol.trim().toUpperCase();
@@ -384,9 +411,18 @@
             "BTC": "bitcoin", "ETH": "ethereum", "BNB": "binance-coin",
             "XRP": "ripple", "SOL": "solana", "DOGE": "dogecoin",
             "ADA": "cardano", "AVAX": "avalanche", "SUI": "sui",
-            "LINK": "chainlink", "NEAR": "near-protocol", "APT": "aptos"
+            "LINK": "chainlink", "NEAR": "near-protocol", "APT": "aptos",
+            "DOT": "polkadot", "LTC": "litecoin", "1000PEPE": "pepe",
+            "1000SATS": "sats", "FET": "artificial-superintelligence-alliance"
         };
-        return slugMap[clean] || symbol.toLowerCase();
+
+        if (slugMap[clean]) return slugMap[clean];
+
+        return symbol.toLowerCase()
+            .replace(/\([^)]*\)/g, '')
+            .replace(/[^a-z0-9]/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '') || "bitcoin";
     }
 
     const coinInput = document.getElementById('coinInput');
@@ -395,19 +431,30 @@
     coinInput.addEventListener('input', function() {
         const query = this.value.trim().toUpperCase();
         suggestions.innerHTML = '';
-        if (!query) { suggestions.style.display = 'none'; return; }
 
-        const matches = rawCoins.filter(c => c.toUpperCase().includes(query)).slice(0, 5);
+        if (!query) {
+            suggestions.style.display = 'none';
+            return;
+        }
+
+        const matches = rawCoins.filter(c => c.toUpperCase().includes(query)).slice(0, 8);
+
         if (matches.length > 0) {
             matches.forEach(coin => {
                 const item = document.createElement('div');
                 item.className = 'suggestion-item';
                 item.innerHTML = `<span><b>${coin}</b></span><span>تحليل OI ⚡</span>`;
-                item.onclick = () => { coinInput.value = coin; suggestions.style.display = 'none'; executeSearch(); };
+                item.onclick = () => {
+                    coinInput.value = coin;
+                    suggestions.style.display = 'none';
+                    executeSearch();
+                };
                 suggestions.appendChild(item);
             });
             suggestions.style.display = 'block';
-        } else { suggestions.style.display = 'none'; }
+        } else {
+            suggestions.style.display = 'none';
+        }
     });
 
     function executeSearch() {
@@ -420,8 +467,14 @@
         window.open(`https://coinalyze.net/${slug}/open-interest/`, '_blank');
     }
 
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.search-box-wrapper')) suggestions.style.display = 'none';
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.search-box-wrapper')) {
+            suggestions.style.display = 'none';
+        }
+    });
+
+    coinInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') executeSearch();
     });
 </script>
 </body>
