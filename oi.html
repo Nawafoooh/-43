@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini - Coinalyze OI Navigator</title>
+    <title>WYCKOFF AI - Smart Order Flow Terminal</title>
     <style>
         * {
             box-sizing: border-box;
@@ -15,280 +15,459 @@
         body {
             background-color: #131314;
             color: #e3e3e3;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            padding: 20px;
+            padding: 24px;
         }
 
-        /* شريط علوي بسيط بأسلوب جيميناي */
-        .top-nav {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        /* Top Header */
+        .header {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .brand-logo {
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .gemini-badge {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
             background: linear-gradient(90deg, #4285f4, #9b51e0, #e91e63);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: 0.5px;
         }
 
-        /* الكارت المركزي */
-        .central-card {
-            background-color: #1e1f20;
-            border: 1px solid #2f3032;
-            border-radius: 24px;
-            padding: 40px 32px;
+        /* Telegram VIP Card */
+        .tg-contact-card {
+            background: rgba(42, 46, 57, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #8ab4f8;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .tg-contact-card:hover {
+            background: rgba(66, 133, 244, 0.15);
+            border-color: #4285f4;
+            transform: translateY(-1px);
+        }
+
+        .tg-badge {
+            background: #2962ff;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* Main Container */
+        .main-content {
             width: 100%;
-            max-width: 580px;
-            text-align: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            max-width: 680px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 24px;
+            gap: 28px;
+            margin: auto 0;
         }
 
-        .card-header h1 {
-            font-size: 24px;
+        .ai-title-wrapper {
+            text-align: center;
+        }
+
+        .ai-title-wrapper h1 {
+            font-size: 32px;
             font-weight: 500;
             color: #f1f3f4;
             margin-bottom: 8px;
         }
 
-        .card-header p {
-            font-size: 14px;
+        .ai-title-wrapper p {
+            font-size: 15px;
             color: #9aa0a6;
         }
 
-        /* القائمة المنسدلة المخصصة */
-        .select-wrapper {
+        /* Gemini Input Box */
+        .search-box-wrapper {
             width: 100%;
             position: relative;
         }
 
-        select {
-            width: 100%;
-            background-color: #131314;
-            color: #e3e3e3;
-            border: 1px solid #444746;
-            padding: 16px 20px;
-            border-radius: 16px;
-            font-size: 15px;
-            outline: none;
-            cursor: pointer;
-            appearance: none;
-            -webkit-appearance: none;
+        .search-container {
+            background-color: #1e1f20;
+            border: 1px solid #3c4043;
+            border-radius: 28px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             transition: all 0.2s ease;
         }
 
-        select:hover, select:focus {
+        .search-container:focus-within {
             border-color: #a8c7fa;
-            background-color: #1a1a1c;
+            background-color: #28292a;
+            box-shadow: 0 4px 24px rgba(168, 199, 250, 0.15);
         }
 
-        .select-wrapper::after {
-            content: '▼';
-            font-size: 10px;
-            color: #9aa0a6;
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
+        .ai-icon {
+            width: 24px;
+            height: 24px;
+            fill: #a8c7fa;
+            flex-shrink: 0;
         }
 
-        /* زر الفتح بأسلوب أزرار جوجل */
-        .btn-launch {
+        input {
             width: 100%;
-            background: linear-gradient(135deg, #a8c7fa 0%, #7cacf8 100%);
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #e3e3e3;
+            font-size: 16px;
+        }
+
+        input::placeholder {
+            color: #8e918f;
+        }
+
+        .search-btn {
+            background: #a8c7fa;
             color: #040c1e;
             border: none;
-            padding: 16px;
-            border-radius: 16px;
-            font-size: 15px;
+            border-radius: 20px;
+            padding: 10px 18px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.1s ease, box-shadow 0.2s ease;
+            white-space: nowrap;
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            transition: background 0.2s;
         }
 
-        .btn-launch:hover {
-            box-shadow: 0 4px 16px rgba(168, 199, 250, 0.25);
-            transform: translateY(-1px);
+        .search-btn:hover {
+            background: #c2e7ff;
         }
 
-        .btn-launch:active {
-            transform: translateY(0);
+        /* Autocomplete Suggestions Dropdown */
+        .suggestions-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background-color: #1e1f20;
+            border: 1px solid #3c4043;
+            border-radius: 16px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
 
-        .footer-note {
+        .suggestion-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 14px;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: #2d2f31;
+            color: #a8c7fa;
+        }
+
+        .symbol-badge {
+            background: #2a2e39;
+            color: #9aa0a6;
+            padding: 2px 8px;
+            border-radius: 6px;
             font-size: 12px;
-            color: #72777d;
-            margin-top: 8px;
+        }
+
+        /* Quick List Toggle & Grid */
+        .quick-list-toggle {
+            background: none;
+            border: none;
+            color: #8e918f;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .quick-list-toggle:hover {
+            color: #a8c7fa;
+        }
+
+        /* Subscription Banner */
+        .promo-banner {
+            background: linear-gradient(135deg, rgba(41, 98, 255, 0.1) 0%, rgba(155, 81, 224, 0.1) 100%);
+            border: 1px solid rgba(168, 199, 250, 0.2);
+            border-radius: 20px;
+            padding: 18px 24px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .promo-text h3 {
+            font-size: 15px;
+            color: #f1f3f4;
+            margin-bottom: 4px;
+        }
+
+        .promo-text p {
+            font-size: 12px;
+            color: #9aa0a6;
+        }
+
+        .promo-btn {
+            background: #2962ff;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .promo-btn:hover {
+            background: #1e4bd8;
+        }
+
+        /* Footer Note */
+        .footer-text {
+            font-size: 12px;
+            color: #5f6368;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <div class="top-nav">
-        <span class="gemini-badge">Gemini Hub</span>
+    <!-- Header -->
+    <div class="header">
+        <div class="brand-logo">
+            <span>WYCKOFF AI</span>
+        </div>
+
+        <a href="https://t.me/WYCKOFFNAWAF" target="_blank" class="tg-contact-card">
+            <span class="tg-badge">تلغرام</span>
+            <span>@WYCKOFFNAWAF</span>
+        </a>
     </div>
 
-    <div class="central-card">
-        <div class="card-header">
-            <h1>موجّه سيولة Coinalyze</h1>
-            <p>اختر العملة للانتقال المباشر لبيانات الـ Open Interest</p>
+    <!-- Main AI Interface -->
+    <div class="main-content">
+        <div class="ai-title-wrapper">
+            <h1>محرك تحليل تدفق السيولة (Order Flow)</h1>
+            <p>ابحث عن العملة للتحليل المباشر واستكشاف تتابع عقود الـ OI</p>
         </div>
 
-        <div class="select-wrapper">
-            <select id="coinalyzeSelect"></select>
+        <!-- Gemini Input Style Bar -->
+        <div class="search-box-wrapper">
+            <div class="search-container">
+                <svg class="ai-icon" viewBox="0 0 24 24">
+                    <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+                </svg>
+                <input type="text" id="coinInput" placeholder="اكتب اسم العملة هنا (مثال: BTC, SOL, SUI...)" autocomplete="off">
+                <button class="search-btn" onclick="executeSearch()">
+                    <span>تحليل</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </button>
+            </div>
+
+            <!-- Autocomplete Dropdown List -->
+            <div id="suggestions" class="suggestions-dropdown"></div>
         </div>
 
-        <button class="btn-launch" onclick="openCoinalyzeLink()">
-            <span>الانتقال إلى Coinalyze</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-        </button>
-
-        <div class="footer-note">
-            يتم التوجيه تلقائياً إلى صفحة /open-interest الخاصة بالعملة المحددة.
+        <!-- Subscription Promo Section -->
+        <div class="promo-banner">
+            <div class="promo-text">
+                <h3>للانضمام إلى أقوى استراتيجية تداول باشتراك رمزي</h3>
+                <p>تواصل مع المطور مباشرة عبر الخاص لمعرفة تفاصيل المؤشرات والاستراتيجية الخاصة</p>
+            </div>
+            <a href="https://t.me/WYCKOFFNAWAF" target="_blank" class="promo-btn">تواصل الآن 💬</a>
         </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-text">
+        WYCKOFFNAWAF AI Engine • جميع الحقوق محفوظة
     </div>
 
 <script>
-    const coinalyze100List = [
-        { name: "1. Bitcoin (BTC)", slug: "bitcoin" },
-        { name: "2. Ethereum (ETH)", slug: "ethereum" },
-        { name: "3. Binance Coin (BNB)", slug: "binance-coin" },
-        { name: "4. Solana (SOL)", slug: "solana" },
-        { name: "5. Ripple (XRP)", slug: "ripple" },
-        { name: "6. Dogecoin (DOGE)", slug: "dogecoin" },
-        { name: "7. Cardano (ADA)", slug: "cardano" },
-        { name: "8. Avalanche (AVAX)", slug: "avalanche" },
-        { name: "9. Sui (SUI)", slug: "sui" },
-        { name: "10. Chainlink (LINK)", slug: "chainlink" },
-        { name: "11. Near Protocol (NEAR)", slug: "near-protocol" },
-        { name: "12. Aptos (APT)", slug: "aptos" },
-        { name: "13. Polkadot (DOT)", slug: "polkadot" },
-        { name: "14. Litecoin (LTC)", slug: "litecoin" },
-        { name: "15. Polygon (MATIC)", slug: "polygon" },
-        { name: "16. Shiba Inu (SHIB)", slug: "shiba-inu" },
-        { name: "17. Pepe (PEPE)", slug: "pepe" },
-        { name: "18. Artificial Superintelligence (FET)", slug: "artificial-superintelligence-alliance" },
-        { name: "19. Arbitrum (ARB)", slug: "arbitrum" },
-        { name: "20. Optimism (OP)", slug: "optimism" },
-        { name: "21. Injective (INJ)", slug: "injective" },
-        { name: "22. Render (RENDER)", slug: "render" },
-        { name: "23. Celestia (TIA)", slug: "celestia" },
-        { name: "24. Sei (SEI)", slug: "sei" },
-        { name: "25. Stacks (STX)", slug: "stacks" },
-        { name: "26. Filecoin (FIL)", slug: "filecoin" },
-        { name: "27. Cosmos (ATOM)", slug: "cosmos" },
-        { name: "28. dogwifhat (WIF)", slug: "dogwifhat" },
-        { name: "29. Floki (FLOKI)", slug: "floki" },
-        { name: "30. Bonk (BONK)", slug: "bonk" },
-        { name: "31. Tron (TRX)", slug: "tron" },
-        { name: "32. Bitcoin Cash (BCH)", slug: "bitcoin-cash" },
-        { name: "33. Ethereum Classic (ETC)", slug: "ethereum-classic" },
-        { name: "34. Stellar (XLM)", slug: "stellar" },
-        { name: "35. Algorand (ALGO)", slug: "algorand" },
-        { name: "36. Aave (AAVE)", slug: "aave" },
-        { name: "37. Uniswap (UNI)", slug: "uniswap" },
-        { name: "38. Bittensor (TAO)", slug: "bittensor" },
-        { name: "39. ORDI (ORDI)", slug: "ordi" },
-        { name: "40. Fantom (FTM)", slug: "fantom" },
-        { name: "41. Curve (CRV)", slug: "curve-dao-token" },
-        { name: "42. Lido DAO (LDO)", slug: "lido-dao" },
-        { name: "43. THORChain (RUNE)", slug: "thorchain" },
-        { name: "44. MultiversX (EGLD)", slug: "elrond" },
-        { name: "45. Kaspa (KAS)", slug: "kaspa" },
-        { name: "46. Blur (BLUR)", slug: "blur" },
-        { name: "47. Worldcoin (WLD)", slug: "worldcoin" },
-        { name: "48. Ethena (ENA)", slug: "ethena" },
-        { name: "49. Ondo (ONDO)", slug: "ondo" },
-        { name: "50. Notcoin (NOT)", slug: "notcoin" },
-        { name: "51. Pyth Network (PYTH)", slug: "pyth-network" },
-        { name: "52. Jupiter (JUP)", slug: "jupiter" },
-        { name: "53. Core (CORE)", slug: "core" },
-        { name: "54. Starknet (STRK)", slug: "starknet" },
-        { name: "55. Wormhole (W)", slug: "wormhole" },
-        { name: "56. GMX (GMX)", slug: "gmx" },
-        { name: "57. dYdX (DYDX)", slug: "dydx" },
-        { name: "58. Pendle (PENDLE)", slug: "pendle" },
-        { name: "59. JasmyCoin (JASMY)", slug: "jasmycoin" },
-        { name: "60. Arweave (AR)", slug: "arweave" },
-        { name: "61. Gala (GALA)", slug: "gala" },
-        { name: "62. The Sandbox (SAND)", slug: "the-sandbox" },
-        { name: "63. Decentraland (MANA)", slug: "decentraland" },
-        { name: "64. Axie Infinity (AXS)", slug: "axie-infinity" },
-        { name: "65. Chiliz (CHZ)", slug: "chiliz" },
-        { name: "66. EOS (EOS)", slug: "eos" },
-        { name: "67. Neo (NEO)", slug: "neo" },
-        { name: "68. IOTA (IOTA)", slug: "iota" },
-        { name: "69. Tezos (XTZ)", slug: "tezos" },
-        { name: "70. Kava (KAVA)", slug: "kava" },
-        { name: "71. Mina (MINA)", slug: "mina" },
-        { name: "72. Flow (FLOW)", slug: "flow" },
-        { name: "73. Conflux (CFX)", slug: "conflux-network" },
-        { name: "74. Klaytn (KLAY)", slug: "klaytn" },
-        { name: "75. Oasis Network (ROSE)", slug: "oasis-network" },
-        { name: "76. WOONetwork (WOO)", slug: "woo-network" },
-        { name: "77. 1inch (1INCH)", slug: "1inch" },
-        { name: "78. Zcash (ZEC)", slug: "zcash" },
-        { name: "79. Monero (XMR)", slug: "monero" },
-        { name: "80. Dash (DASH)", slug: "dash" },
-        { name: "81. Comp (COMP)", slug: "compound" },
-        { name: "82. Synthetix (SNX)", slug: "synthetix-network-token" },
-        { name: "83. Enjin Coin (ENJ)", slug: "enjin-coin" },
-        { name: "84. Loopring (LRC)", slug: "loopring" },
-        { name: "85. Mask Network (MASK)", slug: "mask-network" },
-        { name: "86. Ankr (ANKR)", slug: "ankr" },
-        { name: "87. 1000SATS (SATS)", slug: "sats" },
-        { name: "88. Biaoqing (BIAO)", slug: "biaoqing" },
-        { name: "89. Popcat (POPCAT)", slug: "popcat" },
-        { name: "90. Cats in a dogs world (MEW)", slug: "cat-in-a-dogs-world" },
-        { name: "91. Brett (BRETT)", slug: "brett" },
-        { name: "92. Mog Coin (MOG)", slug: "mog-coin" },
-        { name: "93. BOOK OF MEME (BOME)", slug: "book-of-meme" },
-        { name: "94. Memecoin (MEME)", slug: "memecoin" },
-        { name: "95. Turbo (TURBO)", slug: "turbo" },
-        { name: "96. Myro (MYRO)", slug: "myro" },
-        { name: "97. Ether.fi (ETHFI)", slug: "ether-fi" },
-        { name: "98. Altlayer (ALT)", slug: "altlayer" },
-        { name: "99. Pixel (PIXEL)", slug: "pixels" },
-        { name: "100. Portal (PORTAL)", slug: "portal" }
+    // قائمة العملات الشاملة المحددة من المستخدم
+    const rawCoins = [
+        "BTC", "ETH", "BNB", "USDC", "XRP", "SOL", "TRX", "HYPE", "DOGE", "ZEC", "XMR", "ADA", "LINK", "XLM", "BCH",
+        "CC", "LTC", "HBAR", "SUI", "AVAX", "XAUT", "UNI", "TAO", "NEAR", "PAXG", "ONDO", "WLFI", "ASTER", "M",
+        "AAVE", "DOT", "ICP", "BEAT", "WLD", "PUMP", "ETC", "MORPHO", "ENA", "JST", "POL", "STABLE", "ALGO",
+        "KAS", "ATOM", "QNT", "RENDER", "JUP", "LIT", "FIL", "VVV", "ARB", "币安人生", "APT", "INJ", "PENGU",
+        "AERO", "VET", "DASH", "ETHFI", "TRUMP", "VIRTUAL", "CRV", "SUN", "PYTH", "ZRO", "NIGHT", "SEI", "SPX",
+        "TIA", "BSV", "JTO", "MON", "LDO", "STX", "PENDLE", "XTZ", "IMX", "CFX", "PIEVERSE", "XPL", "OP",
+        "JASMY", "2Z", "FF", "VELVET", "SYRUP", "DEXE", "KITE", "ENS", "KAIA", "STRK", "KAITO", "TWT", "COMP",
+        "IOTA", "GRT", "CVX", "AXS", "H", "AKT", "RUNE", "WIF", "CHZ", "B", "THETA", "FARTCOIN", "MANA", "NEO",
+        "TAG", "SFP", "SAND", "SOON", "1INCH", "AR", "GENIUS", "AWE", "A", "BAT", "SKYAI", "DYDX", "SENT",
+        "CFG", "KMNO", "GLM", "FORM", "MET", "DEEP", "GALA", "RAVE", "ATH", "EGLD", "ZK", "RSR", "ZEN",
+        "MELANIA", "YFI", "PLUME", "GRASS", "SAFE", "BTW", "UB", "FRAX", "CYS", "TUT", "Q", "AKE", "BAN",
+        "QTUM", "BEAM", "COAI", "ZRX", "NXPC", "S", "XPIN", "GMX", "RIF", "HUMA", "ORCA", "OPEN", "RE", "WAL",
+        "NMR", "LPT", "CAP", "COW", "GAS", "ARC", "BILL", "ALLO", "TURBO", "NOT", "PLAY", "VTHO", "RPL", "BSB",
+        "FOGO", "SSV", "ICNT", "GIGGLE", "EPIC", "MOCA", "GRVT", "AVNT", "0G", "PROVE", "BAND", "MOVE", "UMA",
+        "SPACE", "MEW", "BANK", "EDU", "ROBO", "CATI", "SAHARA", "BLESS", "COLLECT", "AI(Gensyn)", "LAYER",
+        "MANTA", "LISTA", "EUL", "BNT", "TRUTH", "IOTX", "MYX", "ETHW", "ARX", "VANA", "ICX", "MERL", "REZ",
+        "SIREN", "MUBARAK", "SYN", "CTSI", "RLC", "BMT", "ZORA", "C", "ALCH", "BLUAI", "ZEST", "CYBER", "ILV",
+        "WOO", "KNC", "POWR", "SKL", "TA", "ARKM", "FOLKS", "HYPER", "GMT", "CARV", "HANA", "IOST", "OPG",
+        "AUCTION", "STEEM", "ACU", "ONG", "SAPIEN", "PUNDIX", "SLP", "ENSO", "POWER", "CGPT", "MTL", "NIL",
+        "METIS", "PHA", "DOGS", "龙虾", "AIXBT", "TAKE", "ONE", "STORJ", "CVC", "AEVO", "SLX", "STG", "ARK",
+        "YGG", "LQTY", "NAORIS", "XNY", "WAXP", "BREV", "FLUX", "CETUS", "USUAL", "AIOT", "IDOL", "PIPPIN",
+        "BASED", "STBL", "LSK", "TRIA", "API3", "TNSR", "BB", "SIGN", "PIXEL", "WCT", "VELODROME", "ESPORTS",
+        "SPELL", "AGLD", "EVAA", "BIGTIME", "CELR", "PARTI", "BIRB", "BANANA", "RECALL", "AVA", "GOAT",
+        "DIA", "XAI", "ELSA", "C98", "MOVR", "TAIKO", "ANIME", "SONIC", "KAT", "CHR", "FHE", "BULLA", "TAC",
+        "MAGIC", "F(SynFutures)", "JOE", "ACE", "ARPA", "CLANKER", "4", "HEI", "LUMIA", "ZKP", "OG",
+        "NEWT", "AIA", "HMSTR", "CTR", "ZKC", "ALICE", "WET", "SCRT", "IN", "YB", "MAV", "SOLV", "RARE",
+        "CHILLGUY", "ARIA", "OGN", "PROMPT", "DOOD", "TLM", "GRIFFAIN", "INIT", "DOLO", "COOKIE", "SXT",
+        "KERNEL", "LA", "ACT", "TRUST", "AIO", "STO", "我踏马来了", "TRADOOR", "LYN", "GUN", "DYM", "SHELL",
+        "BEL", "HAEDAL", "TOWNS", "DRIFT", "SWARMS", "SOPH", "SANTOS", "MAVIA", "RESOLV", "GTC", "ASR",
+        "FIGHT", "PTB", "BTR", "ALPINE", "TURTLE", "LIGHT", "SAGA", "KOMA", "PUMP(PumpBTC)", "HEMI", "NOM",
+        "GUA", "MITO", "SCR", "FUN(Sport.Fun)", "ALL", "EDEN", "ERA", "MANTRA", "OPN", "AIN", "SKY",
+        "BTCDOM", "O(Childhoods End)", "THE", "TREE", "EIGEN", "MEGA", "1000PEPE", "FET", "ORDI", "ZBT",
+        "APE", "CAKE", "MEME", "GRAM", "BROCCOLIF3B", "HIVE", "ORDER", "RAYSOL", "1000CHEEMS", "PROM",
+        "1MBABYDOGE", "1000LUNC", "FLUID", "FIDA", "AVAAI", "BAS", "INX", "DATAIP", "TST",
+        "1000000BOB", "DUSK", "LUNA2", "US(Talus)", "1000RATS", "FLOCK", "BROCCOLI714", "BANANAS31",
+        "MMT", "CLO", "CTK", "1000XEC", "DODOX", "1000CAT", "ZAMA", "1000000MOG", "CROSS", "1000SATS",
+        "SNX", "MIRA", "PORTAL", "NEIRO", "ZEREBRO", "ANKR", "BR", "XVG"
     ];
 
-    function populateSelect() {
-        const select = document.getElementById('coinalyzeSelect');
-        select.innerHTML = '';
-        coinalyze100List.forEach(item => {
-            const opt = document.createElement('option');
-            opt.value = item.slug;
-            opt.textContent = item.name;
-            select.appendChild(opt);
-        });
+    // خريطة تحويل الأسماء الخاصة إلى Slugs متوافقة مع روابط Coinalyze
+    function getSlug(symbol) {
+        const clean = symbol.trim().toUpperCase();
+        
+        // استثناءات الميم والرموز الرقمية
+        const slugMap = {
+            "BTC": "bitcoin",
+            "ETH": "ethereum",
+            "BNB": "binance-coin",
+            "XRP": "ripple",
+            "SOL": "solana",
+            "DOGE": "dogecoin",
+            "ADA": "cardano",
+            "AVAX": "avalanche",
+            "SUI": "sui",
+            "LINK": "chainlink",
+            "NEAR": "near-protocol",
+            "APT": "aptos",
+            "DOT": "polkadot",
+            "LTC": "litecoin",
+            "SHIB": "shiba-inu",
+            "PEPE": "pepe",
+            "1000PEPE": "pepe",
+            "1000SATS": "sats",
+            "1000CHEEMS": "cheems",
+            "1MBABYDOGE": "baby-doge-coin",
+            "1000LUNC": "terra-classic",
+            "FET": "artificial-superintelligence-alliance"
+        };
+
+        if (slugMap[clean]) return slugMap[clean];
+
+        // تنظيف الرموز التي تحوي أقواس أو أسماء خاصة
+        let formatted = symbol.toLowerCase()
+            .replace(/\([^)]*\)/g, '') // إزالة الأقواس وما داخلها
+            .replace(/[^a-z0-9]/g, '-') // استبدال الرموز الخاصة بـ -
+            .replace(/-+/g, '-')        // إزالة التكرار
+            .replace(/^-|-$/g, '');     // قص الأطراف
+
+        return formatted || "bitcoin";
     }
 
-    function openCoinalyzeLink() {
-        const slug = document.getElementById('coinalyzeSelect').value;
-        const url = `https://coinalyze.net/${slug}/open-interest/`;
-        window.open(url, '_blank');
+    const coinInput = document.getElementById('coinInput');
+    const suggestions = document.getElementById('suggestions');
+
+    // محرك البحث التلقائي (Autocomplete)
+    coinInput.addEventListener('input', function() {
+        const query = this.value.trim().toUpperCase();
+        suggestions.innerHTML = '';
+
+        if (!query) {
+            suggestions.style.display = 'none';
+            return;
+        }
+
+        const matches = rawCoins.filter(c => c.toUpperCase().includes(query)).slice(0, 8);
+
+        if (matches.length > 0) {
+            matches.forEach(coin => {
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+                item.innerHTML = `
+                    <span><b>${coin}</b></span>
+                    <span class="symbol-badge">تحليل السيولة ⚡</span>
+                `;
+                item.onclick = () => {
+                    coinInput.value = coin;
+                    suggestions.style.display = 'none';
+                    executeSearch();
+                };
+                suggestions.appendChild(item);
+            });
+            suggestions.style.display = 'block';
+        } else {
+            suggestions.style.display = 'none';
+        }
+    });
+
+    // التنفيذ والتوجيه عند الضغط على Enter أو زر التحليل
+    coinInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            executeSearch();
+        }
+    });
+
+    function executeSearch() {
+        const val = coinInput.value.trim();
+        if (!val) return;
+
+        const slug = getSlug(val);
+        const targetUrl = `https://coinalyze.net/${slug}/open-interest/`;
+        
+        // فتح الرابط في تبويب جديد بدون ترك أثر
+        window.open(targetUrl, '_blank');
     }
 
-    window.onload = populateSelect;
+    // إخفاء القائمة عند النقر خارجها
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.search-box-wrapper')) {
+            suggestions.style.display = 'none';
+        }
+    });
 </script>
 </body>
 </html>
