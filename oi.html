@@ -3,226 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TradingView Pro - Order Flow & Coinalyze Hub</title>
-    <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+    <title>Gemini - Coinalyze OI Navigator</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
         body {
-            background-color: #131722;
-            color: #d1d4dc;
-            font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif;
+            background-color: #131314;
+            color: #e3e3e3;
             height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
-        .tv-header {
-            height: 50px;
-            background-color: #1e222d;
-            border-bottom: 1px solid #2a2e39;
+        /* شريط علوي بسيط بأسلوب جيميناي */
+        .top-nav {
+            position: absolute;
+            top: 20px;
+            right: 20px;
             display: flex;
             align-items: center;
-            padding: 0 16px;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .selector-group {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            gap: 10px;
         }
 
-        label {
-            font-size: 11px;
-            font-weight: bold;
-            color: #787b86;
+        .gemini-badge {
+            font-size: 18px;
+            font-weight: 600;
+            background: linear-gradient(90deg, #4285f4, #9b51e0, #e91e63);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
+
+        /* الكارت المركزي */
+        .central-card {
+            background-color: #1e1f20;
+            border: 1px solid #2f3032;
+            border-radius: 24px;
+            padding: 40px 32px;
+            width: 100%;
+            max-width: 580px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .card-header h1 {
+            font-size: 24px;
+            font-weight: 500;
+            color: #f1f3f4;
+            margin-bottom: 8px;
+        }
+
+        .card-header p {
+            font-size: 14px;
+            color: #9aa0a6;
+        }
+
+        /* القائمة المنسدلة المخصصة */
+        .select-wrapper {
+            width: 100%;
+            position: relative;
         }
 
         select {
-            background-color: #2a2e39;
-            color: #f0f3fa;
-            border: 1px solid #434651;
-            padding: 5px 10px;
-            border-radius: 4px;
+            width: 100%;
+            background-color: #131314;
+            color: #e3e3e3;
+            border: 1px solid #444746;
+            padding: 16px 20px;
+            border-radius: 16px;
+            font-size: 15px;
             outline: none;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            transition: all 0.2s ease;
+        }
+
+        select:hover, select:focus {
+            border-color: #a8c7fa;
+            background-color: #1a1a1c;
+        }
+
+        .select-wrapper::after {
+            content: '▼';
+            font-size: 10px;
+            color: #9aa0a6;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        /* زر الفتح بأسلوب أزرار جوجل */
+        .btn-launch {
+            width: 100%;
+            background: linear-gradient(135deg, #a8c7fa 0%, #7cacf8 100%);
+            color: #040c1e;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            font-size: 12px;
-        }
-        select:hover { border-color: #2962ff; }
-
-        .coinalyze-btn {
-            background-color: #2962ff;
-            color: #ffffff;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            transition: background 0.2s;
-        }
-        .coinalyze-btn:hover { background-color: #1e4bd8; }
-
-        .timeframe-group {
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
             display: flex;
-            gap: 4px;
-            background-color: #2a2e39;
-            padding: 3px;
-            border-radius: 4px;
-        }
-        .tf-btn {
-            background: none;
-            border: none;
-            color: #787b86;
-            padding: 4px 8px;
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        .tf-btn.active, .tf-btn:hover { background-color: #363a45; color: #f0f3fa; }
-        .tf-btn.active { color: #2962ff; }
-
-        .market-assistant {
-            background: linear-gradient(90deg, #181b25 0%, #222735 100%);
-            border-bottom: 1px solid #2a2e39;
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 12px;
-        }
-        .assistant-title {
-            display: flex;
+            justify-content: center;
             align-items: center;
             gap: 8px;
-            font-weight: bold;
-            color: #f0f3fa;
-        }
-        
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            display: inline-block;
-        }
-        .badge-wait { background-color: #434651; color: #d1d4dc; }
-        .badge-long { background-color: #089981; color: #ffffff; box-shadow: 0 0 10px rgba(8, 153, 129, 0.5); }
-        .badge-short { background-color: #f23645; color: #ffffff; box-shadow: 0 0 10px rgba(242, 54, 69, 0.5); }
-        .badge-setup { background-color: #ffa726; color: #131722; box-shadow: 0 0 10px rgba(255, 167, 38, 0.5); }
-
-        .assistant-msg {
-            color: #d1d4dc;
-            font-weight: 500;
         }
 
-        .live-status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-right: auto;
-            font-size: 11px;
-            font-weight: bold;
-            color: #089981;
-        }
-        .live-dot {
-            width: 7px; height: 7px;
-            background-color: #089981;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #089981;
-            animation: pulse 1.5s infinite;
+        .btn-launch:hover {
+            box-shadow: 0 4px 16px rgba(168, 199, 250, 0.25);
+            transform: translateY(-1px);
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; }
+        .btn-launch:active {
+            transform: translateY(0);
         }
 
-        .main-container { flex: 1; position: relative; width: 100%; }
-        #chart-container { width: 100%; height: 100%; }
-
-        .chart-legend {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 10;
-            font-size: 11px;
-            color: #b2b5be;
-            background: rgba(19, 23, 34, 0.85);
-            padding: 6px 12px;
-            border-radius: 4px;
-            backdrop-filter: blur(4px);
-            border: 1px solid #2a2e39;
-            pointer-events: none;
-            display: flex;
-            gap: 12px;
+        .footer-note {
+            font-size: 12px;
+            color: #72777d;
+            margin-top: 8px;
         }
-        .legend-item { display: flex; gap: 4px; align-items: center; }
-        .legend-title { font-weight: 600; color: #787b86; }
-        .legend-value { font-weight: bold; }
-        .up { color: #089981; }
-        .down { color: #f23645; }
     </style>
 </head>
 <body>
 
-    <div class="tv-header">
-        <!-- خيار شارت البينانس -->
-        <div class="selector-group">
-            <label>شارت Binance:</label>
-            <select id="symbol" onchange="switchSymbol()"></select>
+    <div class="top-nav">
+        <span class="gemini-badge">Gemini Hub</span>
+    </div>
+
+    <div class="central-card">
+        <div class="card-header">
+            <h1>موجّه سيولة Coinalyze</h1>
+            <p>اختر العملة للانتقال المباشر لبيانات الـ Open Interest</p>
         </div>
 
-        <div class="timeframe-group">
-            <button class="tf-btn" onclick="changeInterval('1h')">1H</button>
-            <button class="tf-btn active" onclick="changeInterval('4h')">4H</button>
-            <button class="tf-btn" onclick="changeInterval('1d')">1D</button>
-        </div>
-
-        <!-- قائمة 100 عملة على Coinalyze -->
-        <div class="selector-group" style="margin-right: 15px;">
-            <label>رابط Coinalyze (100 عملة):</label>
+        <div class="select-wrapper">
             <select id="coinalyzeSelect"></select>
-            <button class="coinalyze-btn" onclick="openCoinalyzeLink()">🔗 فتح Coinalyze</button>
         </div>
 
-        <div class="live-status">
-            <div class="live-dot"></div>
-            <span>LIVE DATA</span>
-        </div>
-    </div>
+        <button class="btn-launch" onclick="openCoinalyzeLink()">
+            <span>الانتقال إلى Coinalyze</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+        </button>
 
-    <!-- شريط تحليل تسلسل ألوان مدى الـ OI -->
-    <div class="market-assistant">
-        <div class="assistant-title">
-            <span id="stateBadge" class="status-badge badge-wait">⚪ WAIT</span>
-            <span>تتابع السيولة:</span>
+        <div class="footer-note">
+            يتم التوجيه تلقائياً إلى صفحة /open-interest الخاصة بالعملة المحددة.
         </div>
-        <div class="assistant-msg" id="assistantText">
-            جاري قراءة أحداث المدى الواسع للـ OI وتتابع ألوان الشموع...
-        </div>
-    </div>
-
-    <div class="main-container">
-        <div class="chart-legend" id="legend">
-            <div class="legend-item"><span class="legend-title">Price:</span> <span id="price-val" class="legend-value">-</span></div>
-            <div class="legend-item"><span class="legend-title">OI:</span> <span id="oi-val" class="legend-value">-</span></div>
-            <div class="legend-item"><span class="legend-title">Vol:</span> <span id="vol-val" class="legend-value">-</span></div>
-            <div class="legend-item"><span class="legend-title">Funding:</span> <span id="funding-val" class="legend-value">-</span></div>
-        </div>
-        <div id="chart-container"></div>
     </div>
 
 <script>
-    // قائمة 100 عملة مع الاسم والرابط المخصص في Coinalyze
     const coinalyze100List = [
         { name: "1. Bitcoin (BTC)", slug: "bitcoin" },
         { name: "2. Ethereum (ETH)", slug: "ethereum" },
@@ -326,387 +271,24 @@
         { name: "100. Portal (PORTAL)", slug: "portal" }
     ];
 
-    let currentSymbol = "BTCUSDT";
-    let currentInterval = "4h";
-    
-    let chart;
-    let priceSeries, oiSeries, volumeSeries, fundingSeries;
-    let ws;
-    let cachedPriceData = [], cachedOIData = [], cachedFundingData = [];
-
-    // تعبئة القوائم المنسدلة
-    function populateDropdowns() {
-        const binanceSelect = document.getElementById('symbol');
-        const coinalyzeSelect = document.getElementById('coinalyzeSelect');
-
-        binanceSelect.innerHTML = '';
-        coinalyzeSelect.innerHTML = '';
-
+    function populateSelect() {
+        const select = document.getElementById('coinalyzeSelect');
+        select.innerHTML = '';
         coinalyze100List.forEach(item => {
-            // استخراج اسم الرمز مثل BTC, ETH
-            const symbolMatch = item.name.match(/\(([^)]+)\)/);
-            const rawSymbol = symbolMatch ? symbolMatch[1] : item.slug.toUpperCase();
-            
-            // خيار Binance
-            const optB = document.createElement('option');
-            optB.value = rawSymbol + "USDT";
-            optB.textContent = rawSymbol + " / USDT";
-            binanceSelect.appendChild(optB);
-
-            // خيار Coinalyze
-            const optC = document.createElement('option');
-            optC.value = item.slug;
-            optC.textContent = item.name;
-            coinalyzeSelect.appendChild(optC);
+            const opt = document.createElement('option');
+            opt.value = item.slug;
+            opt.textContent = item.name;
+            select.appendChild(opt);
         });
     }
 
-    // فتح رابط Coinalyze المباشر
     function openCoinalyzeLink() {
         const slug = document.getElementById('coinalyzeSelect').value;
         const url = `https://coinalyze.net/${slug}/open-interest/`;
         window.open(url, '_blank');
     }
 
-    function formatNumber(val) {
-        if (val >= 1000000) return (val / 1000000).toFixed(3) + 'M';
-        if (val >= 1000) return (val / 1000).toFixed(2) + 'K';
-        return val.toFixed(2);
-    }
-
-    function getOICandleType(priceIsUp, oiIsUp) {
-        if (!priceIsUp && oiIsUp) return { color: '#000000', type: 'BLACK' };  
-        if (priceIsUp && !oiIsUp) return { color: '#2962ff', type: 'BLUE' };   
-        if (priceIsUp && oiIsUp) return { color: '#089981', type: 'GREEN' };   
-        if (!priceIsUp && !oiIsUp) return { color: '#f23645', type: 'RED' };  
-        return { color: '#787b86', type: 'NEUTRAL' };
-    }
-
-    // 🔥 محرك تتابع ألوان مدى الـ OI
-    function evaluateOISpreadAndSequenceEngine(targetIndex) {
-        const badgeEl = document.getElementById('stateBadge');
-        const textEl = document.getElementById('assistantText');
-
-        if (!cachedOIData || cachedOIData.length < 15 || targetIndex < 5) {
-            badgeEl.className = "status-badge badge-wait";
-            badgeEl.innerText = "⚪ WAIT";
-            textEl.innerText = "جاري تحميل وتجميع بيانات الـ OI...";
-            return;
-        }
-
-        let totalOISpread = 0;
-        for (let i = targetIndex - 14; i < targetIndex; i++) {
-            totalOISpread += Math.abs(cachedOIData[i].close - cachedOIData[i].open);
-        }
-        const avgOISpread = totalOISpread / 14;
-
-        let climaxIndex = -1;
-
-        for (let i = targetIndex; i >= Math.max(0, targetIndex - 10); i--) {
-            const pUp = cachedPriceData[i].close >= cachedPriceData[i].open;
-            const oiUp = cachedOIData[i].close >= cachedOIData[i].open;
-            const candleInfo = getOICandleType(pUp, oiUp);
-            const spread = Math.abs(cachedOIData[i].close - cachedOIData[i].open);
-
-            if (candleInfo.type === 'BLACK' && spread >= avgOISpread * 1.35) {
-                climaxIndex = i;
-                break;
-            }
-        }
-
-        const currPUp = cachedPriceData[targetIndex].close >= cachedPriceData[targetIndex].open;
-        const currOIUp = cachedOIData[targetIndex].close >= cachedOIData[targetIndex].open;
-        const currCandle = getOICandleType(currPUp, currOIUp);
-
-        if (currCandle.type === 'BLACK' && Math.abs(cachedOIData[targetIndex].close - cachedOIData[targetIndex].open) >= avgOISpread * 1.35) {
-            badgeEl.className = "status-badge badge-setup";
-            badgeEl.innerText = "🟡 REVERSAL SETUP (ذروة امتصاص)";
-            textEl.innerHTML = `<b>شمعة سوداء بمدى واسع على الـ OI:</b> تم امتصاص بيع مكثف. <span style="color:#ffa726">اقترب الانعكاس الصاعد، بانتظار إغلاق شمعة أزرق أو أخضر للتأكيد.</span>`;
-            return;
-        }
-
-        if (climaxIndex !== -1 && climaxIndex < targetIndex) {
-            let confirmedIdx = -1;
-            for (let j = climaxIndex + 1; j <= targetIndex; j++) {
-                const pU = cachedPriceData[j].close >= cachedPriceData[j].open;
-                const oiU = cachedOIData[j].close >= cachedOIData[j].open;
-                const cType = getOICandleType(pU, oiU).type;
-                if (cType === 'BLUE' || cType === 'GREEN') {
-                    confirmedIdx = j;
-                    break;
-                }
-            }
-
-            if (confirmedIdx !== -1) {
-                let hasRedExit = false;
-                for (let k = confirmedIdx + 1; k <= targetIndex; k++) {
-                    const pU = cachedPriceData[k].close >= cachedPriceData[k].open;
-                    const oiU = cachedOIData[k].close >= cachedOIData[k].open;
-                    if (getOICandleType(pU, oiU).type === 'RED') {
-                        hasRedExit = true;
-                        break;
-                    }
-                }
-
-                if (!hasRedExit) {
-                    badgeEl.className = "status-badge badge-long";
-                    badgeEl.innerText = "🟢 LONG BIAS (جاهز للصعود)";
-                    textEl.innerHTML = `<b>الاتجاه صاعد مستمر:</b> تأكد الانعكاس بعد شمعة الامتصاص السوداء، والبارات مستمرة بالأزرق/الأخضر. <span style="color:#089981">يستمر الاتجاه حتى ظهور إغلاق أحمر.</span>`;
-                    return;
-                } else {
-                    badgeEl.className = "status-badge badge-wait";
-                    badgeEl.innerText = "⚪ EXIT / WAIT (توقف الاتجاه)";
-                    textEl.innerHTML = `<b>تم الخروج من الصعود:</b> ظهرت شمعة إغلاق حمراء على الـ OI وأنهت الموجه الصاعدة. <span style="color:#787b86">انتظر شمعة ذروة جديدة.</span>`;
-                    return;
-                }
-            } else {
-                badgeEl.className = "status-badge badge-setup";
-                badgeEl.innerText = "🟡 REVERSAL WATCH";
-                textEl.innerHTML = `<b>تأهب:</b> توجد شمعة امتصاص سوداء سابقة، بانتظار أول إغلاق أزرق أو أخضر لتأكيد بداية الاتجاه الصاعد.`;
-                return;
-            }
-        }
-
-        if (currCandle.type === 'BLUE') {
-            badgeEl.className = "status-badge badge-long";
-            badgeEl.innerText = "🟢 BULLISH MOMENTUM (تغطية شورتات)";
-            textEl.innerHTML = `<b>شمعة زرقاء على الـ OI:</b> السعر يواصل الارتفاع مع انخفاض الـ OI (Short Covering). <span style="color:#2962ff">مستمر بالصعود حتى إغلاق أحمر.</span>`;
-            return;
-        }
-
-        if (currCandle.type === 'RED') {
-            badgeEl.className = "status-badge badge-short";
-            badgeEl.innerText = "🔴 SHORT / BEARISH DRIFT";
-            textEl.innerHTML = `<b>شمعة حمراء على الـ OI:</b> هبوط السعر مع تفريغ عقود. <span style="color:#f23645">البيع مستمر أو خروج من الشراء.</span>`;
-            return;
-        }
-
-        badgeEl.className = "status-badge badge-wait";
-        badgeEl.innerText = "⚪ WAIT (نطاق اعتيادي)";
-        textEl.innerHTML = `بارات OI ضمن المدى الطبيعي الاعتيادي. بانتظار تشكل شمعة سوداء بمدى واسع أو تتابع أزرق صريح.`;
-    }
-
-    function initChart() {
-        const container = document.getElementById('chart-container');
-        
-        chart = LightweightCharts.createChart(container, {
-            width: container.clientWidth,
-            height: container.clientHeight,
-            layout: { backgroundColor: '#131722', textColor: '#787b86', fontSize: 11 },
-            grid: {
-                vertLines: { color: 'rgba(42, 46, 57, 0.3)' },
-                horzLines: { color: 'rgba(42, 46, 57, 0.3)' }
-            },
-            crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-            timeScale: {
-                timeVisible: true,
-                secondsVisible: false,
-                borderColor: '#2a2e39',
-                tickMarkFormatter: (time) => {
-                    const date = new Date(time * 1000);
-                    const hours = date.getHours().toString().padStart(2, '0');
-                    const minutes = date.getMinutes().toString().padStart(2, '0');
-                    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                    const day = date.getDate().toString().padStart(2, '0');
-                    return currentInterval === '1d' ? `${month}/${day}` : `${month}/${day} ${hours}:${minutes}`;
-                }
-            },
-            rightPriceScale: { visible: true, borderColor: '#2a2e39' }
-        });
-
-        priceSeries = chart.addCandlestickSeries({
-            priceScaleId: 'right',
-            upColor: '#089981', downColor: '#f23645',
-            borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645'
-        });
-
-        oiSeries = chart.addCandlestickSeries({
-            priceScaleId: 'oiScale',
-            borderVisible: false,
-            priceFormat: { type: 'custom', formatter: price => formatNumber(price) },
-        });
-
-        volumeSeries = chart.addHistogramSeries({
-            priceScaleId: 'volScale',
-            priceFormat: { type: 'volume' }
-        });
-
-        fundingSeries = chart.addBaselineSeries({
-            priceScaleId: 'fundingScale',
-            baseValue: { type: 'price', price: 0 },
-            topLineColor: '#089981', topFillColor1: 'rgba(8, 153, 129, 0.2)', topFillColor2: 'rgba(8, 153, 129, 0.0)',
-            bottomLineColor: '#f23645', bottomFillColor1: 'rgba(242, 54, 69, 0.0)', bottomFillColor2: 'rgba(242, 54, 69, 0.2)',
-            lineWidth: 2
-        });
-
-        chart.priceScale('right').applyOptions({ scaleMargins: { top: 0.02, bottom: 0.52 } });
-        chart.priceScale('oiScale').applyOptions({ scaleMargins: { top: 0.52, bottom: 0.32 }, autoScale: true });
-        chart.priceScale('volScale').applyOptions({ scaleMargins: { top: 0.70, bottom: 0.16 } });
-        chart.priceScale('fundingScale').applyOptions({ scaleMargins: { top: 0.86, bottom: 0.02 } });
-
-        window.addEventListener('resize', () => {
-            chart.applyOptions({ width: container.clientWidth, height: container.clientHeight });
-        });
-
-        chart.subscribeCrosshairMove(param => {
-            if (param.time) {
-                const pData = param.seriesData.get(priceSeries);
-                const oiData = param.seriesData.get(oiSeries);
-                const vData = param.seriesData.get(volumeSeries);
-                const fData = param.seriesData.get(fundingSeries);
-
-                if (pData) {
-                    document.getElementById('price-val').innerText = pData.close.toFixed(2);
-                    document.getElementById('price-val').className = `legend-value ${pData.close >= pData.open ? 'up' : 'down'}`;
-                }
-                if (oiData) {
-                    document.getElementById('oi-val').innerText = formatNumber(oiData.close);
-                }
-                if (vData) {
-                    document.getElementById('vol-val').innerText = formatNumber(vData.value);
-                    document.getElementById('vol-val').className = `legend-value ${vData.color === '#089981' ? 'up' : 'down'}`;
-                }
-                if (fData) {
-                    document.getElementById('funding-val').innerText = (fData.value * 100).toFixed(4) + '%';
-                    document.getElementById('funding-val').className = `legend-value ${fData.value >= 0 ? 'up' : 'down'}`;
-                }
-
-                const hoverIdx = cachedPriceData.findIndex(item => item.time === param.time);
-                if (hoverIdx !== -1) {
-                    evaluateOISpreadAndSequenceEngine(hoverIdx);
-                }
-            }
-        });
-    }
-
-    async function loadHistoricalData() {
-        try {
-            const klineRes = await fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${currentSymbol}&interval=${currentInterval}&limit=300`);
-            const klineData = await klineRes.json();
-
-            const oiRes = await fetch(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${currentSymbol}&period=${currentInterval}&limit=500`);
-            const oiData = await oiRes.json();
-
-            const fundingRes = await fetch(`https://fapi.binance.com/fapi/v1/fundingRate?symbol=${currentSymbol}&limit=500`);
-            const fundingData = await fundingRes.json();
-
-            const oiMap = new Map();
-            oiData.forEach(item => oiMap.set(Math.floor(item.timestamp / 1000), parseFloat(item.sumOpenInterest)));
-
-            const fundingMap = new Map();
-            fundingData.forEach(item => fundingMap.set(Math.floor(item.fundingTime / 1000), parseFloat(item.fundingRate)));
-
-            cachedPriceData = [];
-            cachedOIData = [];
-            cachedFundingData = [];
-            const volumeBars = [];
-
-            let lastKnownOI = oiData.length > 0 ? parseFloat(oiData[0].sumOpenInterest) : 0;
-            let lastKnownFunding = fundingData.length > 0 ? parseFloat(fundingData[0].fundingRate) : 0;
-
-            klineData.forEach((d) => {
-                const candleTime = d[0] / 1000;
-                const openP = parseFloat(d[1]), highP = parseFloat(d[2]), lowP = parseFloat(d[3]), closeP = parseFloat(d[4]);
-                const vol = parseFloat(d[5]);
-
-                cachedPriceData.push({ time: candleTime, open: openP, high: highP, low: lowP, close: closeP });
-
-                const priceIsUp = closeP >= openP;
-                volumeBars.push({ time: candleTime, value: vol, color: priceIsUp ? '#089981' : '#f23645' });
-
-                let currentOI = oiMap.get(candleTime) !== undefined ? oiMap.get(candleTime) : lastKnownOI;
-                lastKnownOI = currentOI;
-                
-                const oiOpen = cachedOIData.length > 0 ? cachedOIData[cachedOIData.length - 1].close : currentOI;
-                const oiClose = currentOI;
-                const oiIsUp = oiClose >= oiOpen;
-
-                const candleInfo = getOICandleType(priceIsUp, oiIsUp);
-
-                cachedOIData.push({
-                    time: candleTime,
-                    open: oiOpen,
-                    high: Math.max(oiOpen, oiClose),
-                    low: Math.min(oiOpen, oiClose),
-                    close: oiClose,
-                    color: candleInfo.color,
-                    wickColor: candleInfo.color === '#000000' ? '#555555' : candleInfo.color,
-                    borderColor: candleInfo.color
-                });
-
-                let currentFunding = fundingMap.get(candleTime) !== undefined ? fundingMap.get(candleTime) : lastKnownFunding;
-                lastKnownFunding = currentFunding;
-                cachedFundingData.push({ time: candleTime, value: currentFunding });
-            });
-
-            priceSeries.setData(cachedPriceData);
-            oiSeries.setData(cachedOIData);
-            volumeSeries.setData(volumeBars);
-            fundingSeries.setData(cachedFundingData);
-
-            if (cachedPriceData.length > 15) {
-                evaluateOISpreadAndSequenceEngine(cachedPriceData.length - 1);
-            }
-
-            chart.timeScale().fitContent();
-            connectWebSocket();
-
-        } catch (err) {
-            console.error("خطأ في جلب البيانات:", err);
-        }
-    }
-
-    function connectWebSocket() {
-        if (ws) ws.close();
-        const streamSymbol = currentSymbol.toLowerCase();
-        ws = new WebSocket(`wss://fstream.binance.com/ws/${streamSymbol}@kline_${currentInterval}`);
-
-        ws.onmessage = (event) => {
-            const message = JSON.parse(event.data);
-            if (message.e === "kline") {
-                const k = message.k;
-                const candleTime = k.t / 1000;
-                const openP = parseFloat(k.o), closeP = parseFloat(k.c);
-                const vol = parseFloat(k.v);
-
-                const priceIsUp = closeP >= openP;
-
-                priceSeries.update({
-                    time: candleTime, open: openP, high: parseFloat(k.h), low: parseFloat(k.l), close: closeP
-                });
-
-                volumeSeries.update({
-                    time: candleTime, value: vol, color: priceIsUp ? '#089981' : '#f23645'
-                });
-            }
-        };
-    }
-
-    function switchSymbol() {
-        currentSymbol = document.getElementById('symbol').value;
-        
-        // ربط تلقائي: تحديث خيار Coinalyze ليتوافق مع العملة المختارة
-        const symbolWithoutUSDT = currentSymbol.replace('USDT', '');
-        const matchedItem = coinalyze100List.find(item => item.name.includes(`(${symbolWithoutUSDT})`));
-        if (matchedItem) {
-            document.getElementById('coinalyzeSelect').value = matchedItem.slug;
-        }
-
-        loadHistoricalData();
-    }
-
-    function changeInterval(tf) {
-        currentInterval = tf;
-        document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-        loadHistoricalData();
-    }
-
-    window.onload = () => {
-        populateDropdowns();
-        initChart();
-        loadHistoricalData();
-    };
+    window.onload = populateSelect;
 </script>
 </body>
 </html>
