@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volume &amp; Price Action Lab</title>
+<style>
+  :root{
+    --bg:#0B0F14;
+    --panel:#111820;
+    --panel2:#0E141B;
+    --grid:#1E2933;
+    --bull:#22C55E;
+    --bear:#EF4444;
+    --vol:#64748B;
+    --highlight:#FACC15;
+    --golden:#FFD700;
+    --text:#E5E7EB;
+    --text2:#94A3B8;
+    --blue:#3B82F6;
+    --border:#1E2933;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;height:100%;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;
+    overflow:hidden;
+  }
+  #app{
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+    width:100vw;
+  }
+  /* ---------- TOOLBAR ---------- */
+  #toolbar{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    background:var(--panel);
+    border-bottom:1px solid var(--border);
+    flex-wrap:wrap;
+    z-index:20;
+  }
+  #toolbar .title{
+    font-weight:700;
+    letter-spacing:1px;
+    font-size:14px;
+    color:var(--text);
+    margin-right:12px;
+    white-space:nowrap;
+  }
+  .btn{
+    background:var(--panel2);
+    color:var(--text);
+    border:1px solid var(--border);
+    padding:6px 10px;
+    border-radius:5px;
+    cursor:pointer;
+    font-size:12px;
+    white-space:nowrap;
+    transition:background .12s,border-color .12s;
+  }
+  .btn:hover{background:#182531;border-color:#2A3947;}
+  .btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .btn.gold{border-color:var(--golden);color:var(--golden);}
+  .btn.gold.active{background:var(--golden);color:#111;}
+  .btn:disabled{opacity:.35;cursor:not-allowed;}
+  select,input[type=number],input[type=text],input[type=color]{
+    background:var(--panel2);
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:5px;
+    padding:5px 6px;
+    font-size:12px;
+  }
+  .sep{width:1px;height:22px;background:var(--border);margin:0 4px;}
+  .grp{display:flex;align-items:center;gap:4px;}
+  .lbl{font-size:11px;color:var(--text2);margin-right:2px;white-space:nowrap;}
+
+  /* ---------- LAYOUT ---------- */
+  #main{
+    flex:1;
+    display:flex;
+    min-height:0;
+  }
+  #chartCol{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+    position:relative;
+  }
+  #chartWrap{
+    flex:1;
+    position:relative;
+    min-height:0;
+  }
+  #chartCanvas{
+    position:absolute;top:0;left:0;width:100%;height:100%;
+    cursor:crosshair;
+  }
+  #overlayLayer{
+    position:absolute;top:0;left:0;width:100%;height:100%;
+    pointer-events:none;
+  }
+  #progressBar{
+    position:absolute;top:6px;left:50%;transform:translateX(-50%);
+    background:rgba(17,24,32,.85);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:4px 14px;
+    font-size:12px;
+    color:var(--text2);
+    pointer-events:none;
+  }
+  #sidePanel{
+    width:270px;
+    min-width:230px;
+    background:var(--panel);
+    border-left:1px solid var(--border);
+    overflow-y:auto;
+    padding:10px;
+    font-size:12px;
+  }
+  #sidePanel h3{
+    font-size:11px;text-transform:uppercase;letter-spacing:1px;
+    color:var(--text2);margin:14px 0 6px 0;border-bottom:1px solid var(--border);padding-bottom:4px;
+  }
+  #sidePanel h3:first-child{margin-top:0;}
+  .kv{display:flex;justify-content:space-between;padding:2px 0;}
+  .kv .k{color:var(--text2);}
+  .kv .v{font-weight:600;}
+  .pill{
+    display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;
+  }
+  .badge{
+    display:inline-block;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;margin:2px 3px 2px 0;
+    background:#1c2733;border:1px solid var(--border);color:var(--text);
+  }
+  .vsaBox{
+    background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:8px;margin-top:6px;
+  }
+  .barRow{display:flex;align-items:center;gap:6px;margin:4px 0;}
+  .barTrack{flex:1;background:#1c2733;border-radius:3px;height:10px;overflow:hidden;}
+  .barFill{height:100%;border-radius:3px;}
+  textarea.note{
+    width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--border);
+    border-radius:5px;padding:6px;font-size:12px;resize:vertical;min-height:40px;font-family:inherit;
+  }
+
+  /* bottom mini panels row for presets/notes toggle areas */
+  #bottomStrip{
+    background:var(--panel);
+    border-top:1px solid var(--border);
+    padding:6px 10px;
+    font-size:11px;
+    color:var(--text2);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  /* floating text editor */
+  .floatEdit{
+    position:absolute;
+    background:var(--panel2);
+    border:1px solid var(--highlight);
+    border-radius:4px;
+    padding:4px 6px;
+    color:var(--text);
+    font-size:13px;
+    min-width:60px;
+    outline:none;
+    z-index:50;
+  }
+  /* wyckoff label picker */
+  .labelMenu{
+    position:absolute;
+    background:var(--panel2);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:6px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:4px;
+    z-index:60;
+    box-shadow:0 4px 18px rgba(0,0,0,.5);
+  }
+  .labelMenu button{
+    background:#1c2733;border:1px solid var(--border);color:var(--text);
+    padding:4px 2px;border-radius:4px;font-size:11px;cursor:pointer;
+  }
+  .labelMenu button:hover{background:var(--blue);}
+
+  /* presentation mode */
+  body.presentation #toolbar .nonessential{display:none;}
+  body.presentation #sidePanel{width:230px;}
+  body.presentation #toolbar{padding:12px 16px;}
+
+  body.hideUI #toolbar, body.hideUI #sidePanel, body.hideUI #bottomStrip{display:none;}
+
+  /* capture mode - hides chrome for screenshots */
+  body.capture #toolbar, body.capture #sidePanel, body.capture #bottomStrip, body.capture #progressBar{
+    display:none;
+  }
+
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-thumb{background:#243040;border-radius:4px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  @media (max-width: 900px){
+    #sidePanel{width:210px;min-width:190px;}
+    #toolbar .title{display:none;}
+  }
+  @media (max-width: 680px){
+    #main{flex-direction:column;}
+    #sidePanel{width:100%;border-left:none;border-top:1px solid var(--border);max-height:38vh;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="toolbar">
+    <span class="title">VOLUME &amp; PRICE ACTION LAB</span>
+
+    <div class="grp">
+      <button class="btn" id="btnReset" title="Reset (R)">Reset</button>
+      <button class="btn" id="btnPrev" title="Previous Bar (←)">◀ Prev</button>
+      <button class="btn" id="btnNext" title="Next Bar (→)">Next ▶</button>
+      <button class="btn" id="btnPlay" title="Play/Pause (Space)">▶ Play</button>
+    </div>
+    <div class="sep"></div>
+    <div class="grp">
+      <span class="lbl">Speed</span>
+      <select id="speedSel">
+        <option value="0.5">0.5x</option>
+        <option value="1" selected>1x</option>
+        <option value="2">2x</option>
+        <option value="4">4x</option>
+      </select>
+    </div>
+    <div class="sep"></div>
+    <div class="grp">
+      <span class="lbl">Scenario</span>
+      <select id="scenarioSel"></select>
+    </div>
+    <div class="sep nonessential"></div>
+    <div class="grp nonessential">
+      <span class="lbl">Timeframe</span>
+      <select id="tfSel">
+        <option>1m</option><option>5m</option><option>15m</option>
+        <option selected>1H</option><option>4H</option><option>1D</option><option>1W</option>
+      </select>
+    </div>
+    <div class="sep nonessential"></div>
+    <div class="grp nonessential">
+      <button class="btn" id="btnCSV" title="Load OHLCV CSV">Load CSV</button>
+      <input type="file" id="csvInput" accept=".csv" style="display:none;">
+    </div>
+    <div class="sep"></div>
+    <div class="grp">
+      <button class="btn" id="btnVSA" title="VSA Mode (V)">VSA Mode</button>
+      <button class="btn" id="btnWyckoff" title="Wyckoff Mode (W)">Wyckoff Mode</button>
+      <button class="btn gold" id="btnGolden" title="Golden Bar (G)">Golden Bar</button>
+      <button class="btn" id="btnFocus" title="Focus (F)">Focus</button>
+    </div>
+    <div class="sep nonessential"></div>
+    <div class="grp nonessential">
+      <span class="lbl">Draw</span>
+      <select id="toolSel">
+        <option value="pointer">Pointer</option>
+        <option value="hline">H-Line</option>
+        <option value="vline">V-Line</option>
+        <option value="trend">Trend Line</option>
+        <option value="arrow">Arrow</option>
+        <option value="rect">Rectangle</option>
+        <option value="circle">Circle</option>
+        <option value="highlight">Highlight</option>
+        <option value="text">Text</option>
+      </select>
+      <button class="btn" id="btnDelSel">Delete Sel.</button>
+      <button class="btn" id="btnClearDraw">Clear All</button>
+    </div>
+    <div class="sep"></div>
+    <div class="grp">
+      <button class="btn" id="btnZoomOut">−</button>
+      <button class="btn" id="btnZoomIn">+</button>
+      <button class="btn" id="btnFit">Fit</button>
+      <button class="btn" id="btnFull" title="Fullscreen">⛶</button>
+    </div>
+    <div class="sep"></div>
+    <div class="grp" style="margin-left:auto;">
+      <button class="btn" id="btnCapture" title="Screenshot Mode">Capture</button>
+      <button class="btn" id="btnHideUI" title="Hide UI">Hide UI</button>
+      <button class="btn" id="btnPresentation" title="Presentation Mode (Esc to exit)">Presentation Mode</button>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="chartCol">
+      <div id="chartWrap">
+        <canvas id="chartCanvas"></canvas>
+        <div id="overlayLayer"></div>
+        <div id="progressBar">BAR 0 / 0</div>
+      </div>
+    </div>
+
+    <div id="sidePanel">
+      <h3>Selected Bar</h3>
+      <div id="barInfo">
+        <div class="kv"><span class="k">Open</span><span class="v" id="v_open">—</span></div>
+        <div class="kv"><span class="k">High</span><span class="v" id="v_high">—</span></div>
+        <div class="kv"><span class="k">Low</span><span class="v" id="v_low">—</span></div>
+        <div class="kv"><span class="k">Close</span><span class="v" id="v_close">—</span></div>
+        <div class="kv"><span class="k">Volume</span><span class="v" id="v_vol">—</span></div>
+        <div class="kv"><span class="k">Avg Volume</span><span class="v" id="v_avgvol">—</span></div>
+        <div class="kv"><span class="k">Rel. Volume</span><span class="v" id="v_relvol">—</span></div>
+        <div class="kv"><span class="k">Range</span><span class="v" id="v_range">—</span></div>
+        <div class="kv"><span class="k">Body</span><span class="v" id="v_body">—</span></div>
+        <div class="kv"><span class="k">Upper Wick</span><span class="v" id="v_uwick">—</span></div>
+        <div class="kv"><span class="k">Lower Wick</span><span class="v" id="v_lwick">—</span></div>
+        <div class="kv"><span class="k">Candle Type</span><span class="v" id="v_type">—</span></div>
+        <div class="kv"><span class="k">Vol. Class</span><span class="v" id="v_volclass">—</span></div>
+      </div>
+
+      <h3>Avg Volume Period</h3>
+      <div class="grp">
+        <select id="avgPeriodSel" style="width:100%;">
+          <option value="5">5 bars</option>
+          <option value="10">10 bars</option>
+          <option value="20" selected>20 bars</option>
+          <option value="50">50 bars</option>
+        </select>
+      </div>
+
+      <h3>Relative Volume Thresholds</h3>
+      <div class="kv"><span class="k">Blue &lt;</span><input type="number" id="th_low" value="0.7" step="0.1" style="width:60px;"></div>
+      <div class="kv"><span class="k">Yellow &gt;</span><input type="number" id="th_mid" value="1.2" step="0.1" style="width:60px;"></div>
+      <div class="kv"><span class="k">Red &gt;</span><input type="number" id="th_high" value="2.0" step="0.1" style="width:60px;"></div>
+
+      <h3>Volume Colour Mode</h3>
+      <select id="volColorMode" style="width:100%;">
+        <option value="direction">Candle Direction</option>
+        <option value="strength">Volume Strength</option>
+        <option value="vsa">VSA Mode</option>
+      </select>
+
+      <div id="vsaPanel" style="display:none;">
+        <h3>Possible VSA Interpretation</h3>
+        <div class="vsaBox" id="vsaContent">Select a candle to see interpretation.</div>
+        <h3>Effort vs Result</h3>
+        <div class="vsaBox">
+          <div style="font-size:11px;color:var(--text2);">EFFORT (Volume)</div>
+          <div class="barRow"><div class="barTrack"><div class="barFill" id="effortBar" style="background:var(--blue);width:0%;"></div></div><span id="effortLbl">—</span></div>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px;">RESULT (Spread)</div>
+          <div class="barRow"><div class="barTrack"><div class="barFill" id="resultBar" style="background:var(--vol);width:0%;"></div></div><span id="resultLbl">—</span></div>
+          <div id="effortResultText" style="margin-top:6px;color:var(--text2);font-style:italic;"></div>
+        </div>
+      </div>
+
+      <h3>Golden Bar Levels</h3>
+      <div class="grp">
+        <label style="font-size:11px;"><input type="checkbox" id="chkGoldHigh" checked> Show High</label>
+      </div>
+      <div class="grp">
+        <label style="font-size:11px;"><input type="checkbox" id="chkGoldLow" checked> Show Low</label>
+      </div>
+
+      <h3>Lesson Notes</h3>
+      <input type="text" id="noteTitle" placeholder="Lesson Title" style="width:100%;margin-bottom:4px;">
+      <input type="text" id="noteConcept" placeholder="Concept" style="width:100%;margin-bottom:4px;">
+      <textarea class="note" id="noteObs" placeholder="Observation"></textarea>
+      <textarea class="note" id="noteKey" placeholder="Key Point" style="margin-top:4px;"></textarea>
+    </div>
+  </div>
+
+  <div id="bottomStrip">
+    <span id="statusText">Ready. Click a candle to inspect it. Use ← → or Next/Prev to reveal bars.</span>
+    <span>Shortcuts: →/← bars · Space play · R reset · F focus · G golden · V vsa · W wyckoff · D draw · Esc exit presentation</span>
+  </div>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   SEEDED RNG + DATA GENERATION
+   ============================================================ */
+function mulberry32(seed){
+  return function(){
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function makeBar(time,o,h,l,c,v){
+  return {time:time, open:+o, high:+h, low:+l, close:+c, volume:Math.max(1,Math.round(v))};
+}
+
+// generic random-walk bar generator
+function genWalk(n, seed, opts){
+  opts = opts || {};
+  const rnd = mulberry32(seed);
+  let price = opts.start || 100;
+  const bars = [];
+  const baseVol = opts.baseVol || 100000;
+  for(let i=0;i<n;i++){
+    const drift = (rnd()-0.5) * (opts.drift || 1.2);
+    const open = price;
+    const spread = (0.4 + rnd()*1.4) * (opts.volatility || 1);
+    const dir = drift + (rnd()-0.5)*1.5;
+    const close = open + dir;
+    const high = Math.max(open,close) + rnd()*spread*0.6;
+    const low = Math.min(open,close) - rnd()*spread*0.6;
+    const vol = baseVol * (0.6 + rnd()*0.8);
+    bars.push(makeBar(i, open, high, low, close, vol));
+    price = close;
+  }
+  return bars;
+}
+
+// insert / overwrite a "feature" bar built from explicit spread & volume multipliers
+function shapeBar(bars, idx, avgSpread, avgVol, opts){
+  opts = opts || {};
+  const prev = bars[idx-1] || bars[0];
+  const spreadMult = opts.spreadMult != null ? opts.spreadMult : 1;
+  const volMult = opts.volMult != null ? opts.volMult : 1;
+  const closeLoc = opts.closeLoc != null ? opts.closeLoc : 0.5; // 0=low,1=high
+  const dirUp = opts.dirUp != null ? opts.dirUp : true;
+  const spread = Math.max(0.3, avgSpread * spreadMult);
+  const open = prev.close;
+  let high, low, close;
+  if(dirUp){
+    low = open - spread*0.15;
+    high = low + spread;
+    close = low + spread*closeLoc;
+  } else {
+    high = open + spread*0.15;
+    low = high - spread;
+    close = high - spread*closeLoc;
+  }
+  bars[idx] = makeBar(idx, open, high, low, close, avgVol*volMult);
+  // re-link next bar's open
+  if(bars[idx+1]) bars[idx+1].open = close;
+  return bars[idx];
+}
+
+function avgSpreadOf(bars){
+  return bars.reduce((s,b)=>s+(b.high-b.low),0)/bars.length;
+}
+function avgVolOf(bars){
+  return bars.reduce((s,b)=>s+b.volume,0)/bars.length;
+}
+
+function defaultDataset(){
+  const n = 140;
+  const bars = genWalk(n, 42, {start:100, drift:0.6, volatility:1, baseVol:120000});
+  const aS = avgSpreadOf(bars), aV = avgVolOf(bars);
+  // seed a handful of teaching situations through the default dataset
+  shapeBar(bars, 30, aS, aV, {spreadMult:2.3, volMult:2.6, closeLoc:0.85, dirUp:true});   // high vol up bar
+  shapeBar(bars, 55, aS, aV, {spreadMult:2.4, volMult:2.7, closeLoc:0.15, dirUp:false});  // high vol down bar
+  shapeBar(bars, 75, aS, aV, {spreadMult:0.5, volMult:0.4, closeLoc:0.5, dirUp:true});    // low volume
+  shapeBar(bars, 95, aS, aV, {spreadMult:0.6, volMult:2.9, closeLoc:0.3, dirUp:true});    // narrow spread high vol (absorption)
+  shapeBar(bars, 118, aS, aV, {spreadMult:3.0, volMult:3.4, closeLoc:0.5, dirUp:false});  // climax-ish
+  return bars;
+}
+
+const SCENARIOS = {
+  normal:{label:"1. Normal Volume", build:s=>{
+    const bars = genWalk(45,s,{start:100,drift:0.5,volatility:1,baseVol:100000});
+    return bars;
+  }},
+  highUp:{label:"2. High Volume Up Bar", build:s=>{
+    const bars = genWalk(45,s,{start:100,drift:0.4,volatility:1,baseVol:100000});
+    const aS=avgSpreadOf(bars), aV=avgVolOf(bars);
+    shapeBar(bars,34,aS,aV,{spreadMult:2.6,volMult:2.8,closeLoc:0.9,dirUp:true});
+    return bars;
+  }},
+  highDown:{label:"3. High Volume Down Bar", build:s=>{
+    const bars = genWalk(45,s,{start:100,drift:0.4,volatility:1,baseVol:100000});
+    const aS=avgSpreadOf(bars), aV=avgVolOf(bars);
+    shapeBar(bars,34,aS,aV,{spreadMult:2.6,volMult:2.8,closeLoc:0.1,dirUp:false});
+    return bars;
+  }},
+  lowVol:{label:"4. Low Volume", build:s=>{
+    const bars = genWalk(45,s,{start:100,drift:0.3,volatility:0.8,baseVol:100000});
+    const aS=avgSpreadOf(bars), aV=avgVolOf(bars);
+    shapeBar(bars,34,aS,aV,{spreadMult:0.4,volMult:0.3,closeLoc:0.5,dirUp:true});
+    return bars;
+  }},
+  noDemand:{label:"5. No Demand", build:s=>{
+    const bars = genWalk(45,s,{start:100,drift:-0.6,volatility:1,baseVol:100000});
+    const aS=avgSpreadOf(bars), aV=avgVolOf(bars);
+    // a rally attempt into resistance on shrinking volume
+    shapeBar(bars,32,aS,aV,{spreadMult:1.1,volMult:1.0,closeLoc:0.7,dirUp:true});
+    shapeBar(bars,33,aS,aV,{spreadMult:0.5,volMult:0.35,closeLoc:0.55,dirUp:true});
+    return bars;
+  }},
+  noSupply:{label:"6. No Supply", build:s=>{
+    const bars = genWalk(45,s,{start:100,drift:0.6,volatility:1,baseVol:100000});
+    const aS=avgSpreadOf(bars), aV=avgVolOf(bars);
+    shapeBar(bars,32,aS,aV,{spreadMult:1.1,volMult:1.0,closeLoc:0.3,dirUp:false});
+    shapeBar(bars,33,aS,aV,{spreadMult:0.5,volMult:0.3,closeLoc:0.45,dirUp:false});
+    return bars;
+  }},
+  effortResult:{label:"7. Effort vs Result", build:s=>{
+    const bars = genWalk(45,s,{start:100,drift:0.4,volatility:1,baseVol:100000});
+    const aS=avgSpreadOf(bars), aV=avgVolOf(bars);
+    shapeBar(bars,34,aS,aV,{spreadMult:0.9,volMult:3.1,closeLoc:0.55,dirUp:true});
+    return bars;
+  }},
+  climax:{label:"8. Climax", build:s=>{
+    const bars = genWalk(45,s,{start:100,drift:-0.5,volatility:1.1,baseVol:100000});
+    const aS=avgSpreadOf(bars), aV=avgVolOf(bars);
+    shapeBar(bars,34,aS,aV,{spreadMult:3.2,volMult:3.6,closeLoc:0.6,dirUp:false});
+    shapeBar(bars,35,aS,aV,{spreadMult:1.0,volMult:1.4,closeLoc:0.75,dirUp:true});
+    return bars;
+  }},
+  absorption:{label:"9. Absorption", build:s=>{
+    const bars = genWalk(45,s,{start:100,drift:0.5,volatility:1,baseVol:100000});
+    const aS=avgSpreadOf(bars), aV=avgVolOf(bars);
+    shapeBar(bars,33,aS,aV,{spreadMult:0.55,volMult:3.0,closeLoc:0.4,dirUp:true});
+    shapeBar(bars,34,aS,aV,{spreadMult:0.5,volMult:2.7,closeLoc:0.4,dirUp:true});
+    return bars;
+  }},
+  spring:{label:"10. Spring", build:s=>{
+    const bars = genWalk(45,s,{start:100,drift:-0.2,volatility:0.9,baseVol:100000});
+    const aS=avgSpreadOf(bars), aV=avgVolOf(bars);
+    shapeBar(bars,34,aS,aV,{spreadMult:2.0,volMult:2.4,closeLoc:0.85,dirUp:false});
+    // false break of support then strong close back up
+    bars[34].low = bars[34].low - aS*0.7;
+    return bars;
+  }},
+  test:{label:"11. Test", build:s=>{
+    const bars = genWalk(45,s,{start:100,drift:0.1,volatility:0.8,baseVol:100000});
+    const aS=avgSpreadOf(bars), aV=avgVolOf(bars);
+    shapeBar(bars,34,aS,aV,{spreadMult:0.45,volMult:0.35,closeLoc:0.6,dirUp:true});
+    return bars;
+  }},
+  upthrust:{label:"12. Upthrust", build:s=>{
+    const bars = genWalk(45,s,{start:100,drift:0.2,volatility:0.9,baseVol:100000});
+    const aS=avgSpreadOf(bars), aV=avgVolOf(bars);
+    shapeBar(bars,34,aS,aV,{spreadMult:2.1,volMult:2.5,closeLoc:0.15,dirUp:true});
+    bars[34].high = bars[34].high + aS*0.7;
+    return bars;
+  }},
+  accumulation:{label:"13. Wyckoff Accumulation", build:s=>{
+    const bars = genWalk(70,s,{start:100,drift:-0.35,volatility:1,baseVol:100000});
+    const aS=avgSpreadOf(bars), aV=avgVolOf(bars);
+    shapeBar(bars,15,aS,aV,{spreadMult:2.8,volMult:3.2,closeLoc:0.6,dirUp:false}); // SC
+    shapeBar(bars,22,aS,aV,{spreadMult:1.4,volMult:1.6,closeLoc:0.8,dirUp:true});  // AR
+    shapeBar(bars,34,aS,aV,{spreadMult:1.6,volMult:1.2,closeLoc:0.4,dirUp:false}); // ST
+    shapeBar(bars,50,aS,aV,{spreadMult:2.0,volMult:2.2,closeLoc:0.85,dirUp:false});// Spring
+    bars[50].low -= aS*0.6;
+    shapeBar(bars,60,aS,aV,{spreadMult:1.5,volMult:2.0,closeLoc:0.9,dirUp:true});  // SOS
+    return bars;
+  }},
+  distribution:{label:"14. Wyckoff Distribution", build:s=>{
+    const bars = genWalk(70,s,{start:100,drift:0.35,volatility:1,baseVol:100000});
+    const aS=avgSpreadOf(bars), aV=avgVolOf(bars);
+    shapeBar(bars,15,aS,aV,{spreadMult:2.8,volMult:3.2,closeLoc:0.4,dirUp:true});  // BC
+    shapeBar(bars,22,aS,aV,{spreadMult:1.4,volMult:1.6,closeLoc:0.2,dirUp:false}); // AR
+    shapeBar(bars,34,aS,aV,{spreadMult:1.6,volMult:1.2,closeLoc:0.6,dirUp:true});  // ST/UT
+    shapeBar(bars,50,aS,aV,{spreadMult:2.0,volMult:2.2,closeLoc:0.15,dirUp:true}); // UTAD
+    bars[50].high += aS*0.6;
+    shapeBar(bars,60,aS,aV,{spreadMult:1.5,volMult:2.0,closeLoc:0.1,dirUp:false}); // SOW
+    return bars;
+  }}
+};
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  bars: defaultDataset(),
+  revealed: 10,
+  selected: null,
+  playing: false,
+  speed: 1,
+  playTimer: null,
+  avgPeriod: 20,
+  thLow: 0.7, thMid: 1.2, thHigh: 2.0,
+  volColorMode: 'direction',
+  vsaMode: false,
+  wyckoffMode: false,
+  goldenIndex: null,
+  goldenShowHigh: true,
+  goldenShowLow: true,
+  focusMode: false,
+  tool: 'pointer',
+  drawings: [],
+  selectedDrawing: null,
+  drawing: null, // in-progress drawing
+  viewBars: 40,      // bars-per-view (zoom)
+  viewStart: 0,
+  autoFollow: true,
+  labels: [] // {barIndex, code, color, pos}
+};
+
+const WYCKOFF_CODES = ["PS","SC","AR","ST","SPRING","TEST","SOS","LPS","UT","UTAD","PSY","BC","SOW","LPSY"];
+
+/* ============================================================
+   DOM refs
+   ============================================================ */
+const canvas = document.getElementById('chartCanvas');
+const ctx = canvas.getContext('2d');
+const overlay = document.getElementById('overlayLayer');
+const chartWrap = document.getElementById('chartWrap');
+const progressBar = document.getElementById('progressBar');
+const statusText = document.getElementById('statusText');
+
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+/* ============================================================
+   RESIZE / DPI
+   ============================================================ */
+function resizeCanvas(){
+  const rect = chartWrap.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.max(1,rect.width*dpr);
+  canvas.height = Math.max(1,rect.height*dpr);
+  canvas.style.width = rect.width+'px';
+  canvas.style.height = rect.height+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  render();
+}
+window.addEventListener('resize', resizeCanvas);
+
+/* ============================================================
+   VIEW WINDOW HELPERS
+   ============================================================ */
+function clampView(){
+  state.viewBars = Math.max(5, Math.min(state.viewBars, Math.max(5,state.revealed)));
+  if(state.autoFollow){
+    state.viewStart = Math.max(0, state.revealed - state.viewBars);
+  }
+  state.viewStart = Math.max(0, Math.min(state.viewStart, Math.max(0,state.revealed-state.viewBars)));
+}
+
+function visibleRange(){
+  clampView();
+  const start = state.viewStart;
+  const end = Math.min(state.revealed, start + state.viewBars);
+  return {start,end};
+}
+
+/* ============================================================
+   CHART GEOMETRY
+   ============================================================ */
+function geometry(){
+  const rect = chartWrap.getBoundingClientRect();
+  const W = rect.width, H = rect.height;
+  const padL = 8, padR = 60, padTop = 14, padBottom = 6;
+  const volH = Math.max(60, H*0.22);
+  const priceH = H - volH - padTop - padBottom - 8;
+  return {W,H,padL,padR,padTop,padBottom,volH,priceH,
+    priceTop: padTop, priceBottom: padTop+priceH,
+    volTop: padTop+priceH+8, volBottom: padTop+priceH+8+volH};
+}
+
+function priceExtent(range){
+  let hi=-Infinity, lo=Infinity;
+  for(let i=range.start;i<range.end;i++){
+    const b = state.bars[i];
+    hi = Math.max(hi,b.high); lo = Math.min(lo,b.low);
+  }
+  if(!isFinite(hi)){hi=1;lo=0;}
+  const pad = (hi-lo)*0.08 || 1;
+  return {hi:hi+pad, lo:lo-pad};
+}
+function volExtent(range){
+  let mx=0;
+  for(let i=range.start;i<range.end;i++) mx = Math.max(mx, state.bars[i].volume);
+  return mx*1.15 || 1;
+}
+
+function xForIndex(i, range, geo){
+  const n = range.end-range.start;
+  const usable = geo.W - geo.padL - geo.padR;
+  const bw = usable/n;
+  return geo.padL + (i-range.start)*bw + bw/2;
+}
+function barWidth(range, geo){
+  const n = range.end-range.start;
+  const usable = geo.W - geo.padL - geo.padR;
+  return usable/n;
+}
+function yForPrice(p, ext, geo){
+  const t = (p-ext.lo)/(ext.hi-ext.lo);
+  return geo.priceBottom - t*(geo.priceBottom-geo.priceTop);
+}
+function yForVol(v, vmax, geo){
+  const t = v/vmax;
+  return geo.volBottom - t*(geo.volBottom-geo.volTop);
+}
+function priceForY(y, ext, geo){
+  const t = (geo.priceBottom-y)/(geo.priceBottom-geo.priceTop);
+  return ext.lo + t*(ext.hi-ext.lo);
+}
+function indexForX(x, range, geo){
+  const n = range.end-range.start;
+  const usable = geo.W - geo.padL - geo.padR;
+  const bw = usable/n;
+  let idx = range.start + Math.floor((x-geo.padL)/bw);
+  return Math.max(0, Math.min(state.revealed-1, idx));
+}
+
+/* data-space <-> pixel-space converters for drawings (bar index float, price) */
+function dataToPx(pt, range, geo, ext){
+  return {x:xForIndex(pt.bar, range, geo), y:yForPrice(pt.price, ext, geo)};
+}
+function pxToData(x,y, range, geo, ext){
+  return {bar: indexForX(x, range, geo) + ((x-geo.padL)% (barWidth(range,geo))) / barWidth(range,geo) - 0.5 + (range.start), price: priceForY(y, ext, geo)};
+}
+// simpler: store bar as float using continuous mapping
+function xToBarFloat(x, range, geo){
+  const n = range.end-range.start;
+  const usable = geo.W - geo.padL - geo.padR;
+  const bw = usable/n;
+  return range.start + (x-geo.padL)/bw - 0.5;
+}
+function barFloatToX(barF, range, geo){
+  const n = range.end-range.start;
+  const usable = geo.W - geo.padL - geo.padR;
+  const bw = usable/n;
+  return geo.padL + (barF-range.start+0.5)*bw;
+}
+
+/* ============================================================
+   ANALYSIS
+   ============================================================ */
+function avgVolumeAt(i, period){
+  const start = Math.max(0,i-period);
+  const slice = state.bars.slice(start,i);
+  if(slice.length===0) return state.bars[i].volume;
+  return slice.reduce((s,b)=>s+b.volume,0)/slice.length;
+}
+function avgSpreadAt(i, period){
+  const start = Math.max(0,i-period);
+  const slice = state.bars.slice(start,i);
+  if(slice.length===0) return state.bars[i].high-state.bars[i].low;
+  return slice.reduce((s,b)=>s+(b.high-b.low),0)/slice.length;
+}
+function analyzeBar(i){
+  const b = state.bars[i];
+  const range = b.high-b.low;
+  const body = Math.abs(b.close-b.open);
+  const upperWick = b.high - Math.max(b.open,b.close);
+  const lowerWick = Math.min(b.open,b.close) - b.low;
+  const avgVol = avgVolumeAt(i, state.avgPeriod) || b.volume;
+  const relVol = b.volume/avgVol;
+  const avgSpread = avgSpreadAt(i, state.avgPeriod) || range;
+  const spreadRatio = range/avgSpread;
+  const closeLoc = range>0 ? (b.close-b.low)/range : 0.5;
+  const bodyPct = range>0 ? body/range : 0;
+  const isUp = b.close>=b.open;
+  return {b, range, body, upperWick, lowerWick, avgVol, relVol, avgSpread, spreadRatio, closeLoc, bodyPct, isUp};
+}
+
+function volClassOf(relVol){
+  if(relVol < state.thLow) return {label:'LOW', color:'blue'};
+  if(relVol < state.thMid) return {label:'NORMAL', color:'grey'};
+  if(relVol < state.thHigh) return {label:'ELEVATED', color:'yellow'};
+  return {label:'HIGH', color:'red'};
+}
+function colorFor(name){
+  return {blue:css('--blue'), grey:css('--vol'), yellow:css('--highlight'), red:css('--bear')}[name] || css('--text2');
+}
+
+function classifyVSA(i){
+  const a = analyzeBar(i);
+  const tags = [];
+  const prevUp = i>0 ? state.bars[i-1].close>=state.bars[i-1].open : true;
+
+  const wideSpread = a.spreadRatio > 1.4;
+  const narrowSpread = a.spreadRatio < 0.65;
+  const highVol = a.relVol > state.thHigh;
+  const lowVol = a.relVol < state.thLow;
+  const nearHigh = a.closeLoc > 0.66;
+  const nearLow = a.closeLoc < 0.33;
+
+  let primary = "NORMAL VOLUME";
+  let explain = "Volume and spread are within a typical range for this bar; no strong effort/result imbalance stands out.";
+
+  if(highVol && wideSpread && a.relVol>state.thHigh*1.4 && (nearHigh||nearLow)){
+    primary = a.isUp ? "CLIMAX UP" : "CLIMAX DOWN";
+    explain = "Very high volume with a wide spread near the extreme of the bar can mark exhaustion of the preceding move — a possible climactic action.";
+    tags.push(primary);
+  } else if(highVol && narrowSpread){
+    primary = "ABSORPTION";
+    explain = "Volume expanded sharply but the spread stayed narrow — supply or demand may be being absorbed by a larger opposing interest.";
+    tags.push(primary, "NARROW SPREAD HIGH VOLUME");
+  } else if(highVol){
+    primary = a.isUp ? "HIGH VOLUME UP BAR" : "HIGH VOLUME DOWN BAR";
+    explain = a.isUp ? "Strong volume accompanied an up bar — genuine demand or an important test of supply." :
+                        "Strong volume accompanied a down bar — genuine supply or an important test of demand.";
+    tags.push(primary);
+  } else if(lowVol && a.isUp && !prevUp){
+    primary = "NO SUPPLY";
+    explain = "An up bar on low volume after a decline suggests sellers are absent — a classic 'no supply' signature.";
+    tags.push(primary);
+  } else if(lowVol && !a.isUp && prevUp){
+    primary = "NO DEMAND";
+    explain = "A down bar on low volume after an advance suggests buyers are absent — a classic 'no demand' signature.";
+    tags.push(primary);
+  } else if(lowVol){
+    primary = "LOW VOLUME";
+    explain = "Volume is well below average — limited participation, often a pause or consolidation bar.";
+    tags.push(primary);
+  } else if(wideSpread){
+    primary = a.isUp ? "WIDE SPREAD UP BAR" : "WIDE SPREAD DOWN BAR";
+    explain = "The spread is wide relative to recent bars, showing an above-average price move for the volume involved.";
+    tags.push(primary);
+  }
+
+  // effort vs result note
+  const effortResult = a.relVol - a.spreadRatio;
+  let erText;
+  if(effortResult > 0.6){
+    erText = "High effort (volume) produced a relatively limited result (spread) — worth watching for absorption or reversal risk.";
+  } else if(effortResult < -0.6){
+    erText = "A relatively small effort (volume) produced a large result (spread) — the move may be easier than it looks, or thin.";
+  } else {
+    erText = "Effort (volume) and result (spread) are broadly in proportion.";
+  }
+
+  return {a, primary, explain, tags, erText};
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function render(){
+  const range = visibleRange();
+  const geo = geometry();
+  const ext = priceExtent(range);
+  const vmax = volExtent(range);
+  const W = geo.W, H = geo.H;
+
+  ctx.clearRect(0,0,W,H);
+
+  // grid
+  ctx.strokeStyle = css('--grid');
+  ctx.lineWidth = 1;
+  ctx.font = '10px Segoe UI, sans-serif';
+  ctx.fillStyle = css('--text2');
+  const gridLines = 5;
+  for(let g=0; g<=gridLines; g++){
+    const p = ext.lo + (ext.hi-ext.lo)*g/gridLines;
+    const y = yForPrice(p, ext, geo);
+    ctx.beginPath(); ctx.moveTo(geo.padL,y); ctx.lineTo(W-geo.padR,y); ctx.stroke();
+    ctx.fillText(p.toFixed(2), W-geo.padR+6, y+3);
+  }
+  ctx.beginPath(); ctx.moveTo(geo.padL,geo.volTop); ctx.lineTo(W-geo.padR,geo.volTop); ctx.stroke();
+
+  const bw = barWidth(range, geo);
+  const candleW = Math.max(1, bw*0.6);
+
+  for(let i=range.start;i<range.end;i++){
+    const b = state.bars[i];
+    const x = xForIndex(i, range, geo);
+    const isUp = b.close>=b.open;
+    const dim = state.focusMode && state.selected!==i;
+
+    // ---- candle ----
+    let candleColor = isUp ? css('--bull') : css('--bear');
+    if(state.goldenIndex===i) candleColor = css('--golden');
+    ctx.globalAlpha = dim ? 0.22 : 1;
+
+    ctx.strokeStyle = candleColor;
+    ctx.fillStyle = candleColor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, yForPrice(b.high, ext, geo));
+    ctx.lineTo(x, yForPrice(b.low, ext, geo));
+    ctx.stroke();
+
+    const yO = yForPrice(b.open, ext, geo);
+    const yC = yForPrice(b.close, ext, geo);
+    const top = Math.min(yO,yC), h = Math.max(1, Math.abs(yC-yO));
+    ctx.fillRect(x-candleW/2, top, candleW, h);
+
+    // ---- volume ----
+    let volColor;
+    if(state.volColorMode==='direction'){
+      volColor = isUp ? css('--bull') : css('--bear');
+    } else if(state.volColorMode==='strength'){
+      const a = analyzeBar(i);
+      volColor = colorFor(volClassOf(a.relVol).color);
+    } else { // vsa
+      const cls = classifyVSA(i);
+      volColor = cls.primary.includes('UP') ? css('--bull') :
+                 cls.primary.includes('DOWN') ? css('--bear') :
+                 cls.primary==='ABSORPTION' ? css('--highlight') :
+                 css('--vol');
+    }
+    ctx.fillStyle = volColor;
+    const vy = yForVol(b.volume, vmax, geo);
+    ctx.fillRect(x-candleW/2, vy, candleW, geo.volBottom-vy);
+
+    ctx.globalAlpha = 1;
+
+    // ---- selection highlight ----
+    if(state.selected===i){
+      ctx.save();
+      ctx.strokeStyle = css('--highlight');
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x-candleW/2-3, geo.priceTop, candleW+6, geo.priceBottom-geo.priceTop);
+      ctx.setLineDash([3,3]);
+      ctx.strokeStyle = 'rgba(250,204,21,0.5)';
+      ctx.beginPath(); ctx.moveTo(x, geo.priceTop); ctx.lineTo(x, geo.volBottom); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.strokeRect(x-candleW/2-3, vy-2, candleW+6, (geo.volBottom-vy)+4);
+      ctx.restore();
+    }
+
+    // current (last revealed) bar subtle highlight
+    if(i===state.revealed-1){
+      ctx.save();
+      ctx.strokeStyle = 'rgba(59,130,246,0.6)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x-candleW/2-2, geo.priceTop, candleW+4, geo.priceBottom-geo.priceTop);
+      ctx.restore();
+    }
+  }
+
+  // Golden Bar levels
+  if(state.goldenIndex!=null && state.goldenIndex < range.end){
+    const gb = state.bars[state.goldenIndex];
+    const gx = xForIndex(state.goldenIndex, range, geo);
+    ctx.save();
+    ctx.setLineDash([6,4]);
+    ctx.lineWidth = 1.5;
+    if(state.goldenShowHigh){
+      const y = yForPrice(gb.high, ext, geo);
+      ctx.strokeStyle = css('--golden');
+      ctx.beginPath(); ctx.moveTo(gx,y); ctx.lineTo(W-geo.padR,y); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = css('--golden');
+      ctx.fillText('GB HIGH '+gb.high.toFixed(2), W-geo.padR-90, y-4);
+      ctx.setLineDash([6,4]);
+    }
+    if(state.goldenShowLow){
+      const y = yForPrice(gb.low, ext, geo);
+      ctx.strokeStyle = css('--golden');
+      ctx.beginPath(); ctx.moveTo(gx,y); ctx.lineTo(W-geo.padR,y); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = css('--golden');
+      ctx.fillText('GB LOW '+gb.low.toFixed(2), W-geo.padR-90, y+12);
+      ctx.setLineDash([6,4]);
+    }
+    ctx.restore();
+  }
+
+  // Wyckoff labels
+  ctx.font = 'bold 11px Segoe UI, sans-serif';
+  state.labels.forEach(lb=>{
+    if(lb.barIndex < range.start || lb.barIndex >= range.end) return;
+    const b = state.bars[lb.barIndex];
+    const x = xForIndex(lb.barIndex, range, geo);
+    const y = lb.pos==='above' ? yForPrice(b.high, ext, geo)-10 : yForPrice(b.low, ext, geo)+18;
+    ctx.fillStyle = lb.color;
+    ctx.textAlign = 'center';
+    ctx.fillText(lb.code, x, y);
+    ctx.textAlign = 'left';
+  });
+
+  // Drawings
+  drawDrawings(ctx, range, geo, ext);
+
+  // progress
+  progressBar.textContent = 'BAR '+state.revealed+' / '+state.bars.length;
+}
+
+function drawDrawings(ctx, range, geo, ext){
+  ctx.save();
+  ctx.lineWidth = 2;
+  state.drawings.forEach((d,idx)=>{
+    ctx.strokeStyle = d.color || css('--highlight');
+    ctx.fillStyle = d.color || css('--highlight');
+    const sel = state.selectedDrawing===idx;
+    if(sel){ ctx.setLineDash([4,3]); } else { ctx.setLineDash([]); }
+    if(d.type==='hline'){
+      const y = yForPrice(d.points[0].price, ext, geo);
+      ctx.beginPath(); ctx.moveTo(geo.padL,y); ctx.lineTo(geo.W-geo.padR,y); ctx.stroke();
+    } else if(d.type==='vline'){
+      const x = barFloatToX(d.points[0].bar, range, geo);
+      ctx.beginPath(); ctx.moveTo(x,geo.priceTop); ctx.lineTo(x,geo.volBottom); ctx.stroke();
+    } else if(d.type==='trend'){
+      const p1 = {x:barFloatToX(d.points[0].bar,range,geo), y:yForPrice(d.points[0].price,ext,geo)};
+      const p2 = {x:barFloatToX(d.points[1].bar,range,geo), y:yForPrice(d.points[1].price,ext,geo)};
+      ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+    } else if(d.type==='arrow'){
+      const p1 = {x:barFloatToX(d.points[0].bar,range,geo), y:yForPrice(d.points[0].price,ext,geo)};
+      const p2 = {x:barFloatToX(d.points[1].bar,range,geo), y:yForPrice(d.points[1].price,ext,geo)};
+      ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+      const ang = Math.atan2(p2.y-p1.y,p2.x-p1.x);
+      ctx.beginPath();
+      ctx.moveTo(p2.x,p2.y);
+      ctx.lineTo(p2.x-10*Math.cos(ang-0.4), p2.y-10*Math.sin(ang-0.4));
+      ctx.lineTo(p2.x-10*Math.cos(ang+0.4), p2.y-10*Math.sin(ang+0.4));
+      ctx.closePath(); ctx.fill();
+    } else if(d.type==='rect'){
+      const p1 = {x:barFloatToX(d.points[0].bar,range,geo), y:yForPrice(d.points[0].price,ext,geo)};
+      const p2 = {x:barFloatToX(d.points[1].bar,range,geo), y:yForPrice(d.points[1].price,ext,geo)};
+      ctx.strokeRect(Math.min(p1.x,p2.x), Math.min(p1.y,p2.y), Math.abs(p2.x-p1.x), Math.abs(p2.y-p1.y));
+    } else if(d.type==='circle'){
+      const p1 = {x:barFloatToX(d.points[0].bar,range,geo), y:yForPrice(d.points[0].price,ext,geo)};
+      const p2 = {x:barFloatToX(d.points[1].bar,range,geo), y:yForPrice(d.points[1].price,ext,geo)};
+      const rx = Math.abs(p2.x-p1.x)/2, ry = Math.abs(p2.y-p1.y)/2;
+      const cx = (p1.x+p2.x)/2, cy=(p1.y+p2.y)/2;
+      ctx.beginPath(); ctx.ellipse(cx,cy,Math.max(2,rx),Math.max(2,ry),0,0,Math.PI*2); ctx.stroke();
+    } else if(d.type==='highlight'){
+      const p1 = {x:barFloatToX(d.points[0].bar,range,geo), y:yForPrice(d.points[0].price,ext,geo)};
+      const p2 = {x:barFloatToX(d.points[1].bar,range,geo), y:yForPrice(d.points[1].price,ext,geo)};
+      ctx.globalAlpha = 0.22;
+      ctx.fillRect(Math.min(p1.x,p2.x), Math.min(p1.y,p2.y), Math.abs(p2.x-p1.x), Math.abs(p2.y-p1.y));
+      ctx.globalAlpha = 1;
+    } else if(d.type==='text'){
+      const x = barFloatToX(d.points[0].bar,range,geo), y = yForPrice(d.points[0].price,ext,geo);
+      ctx.font = (d.bold?'bold ':'')+(d.fontSize||13)+'px Segoe UI, sans-serif';
+      if(d.bg){
+        const wtext = ctx.measureText(d.text).width;
+        ctx.fillStyle = d.bg;
+        ctx.fillRect(x-3, y-(d.fontSize||13), wtext+6, (d.fontSize||13)+6);
+      }
+      ctx.fillStyle = d.color || css('--highlight');
+      ctx.fillText(d.text, x, y);
+    }
+    ctx.setLineDash([]);
+  });
+  // in-progress
+  if(state.drawing){
+    ctx.strokeStyle = css('--highlight');
+    ctx.setLineDash([3,3]);
+    const d = state.drawing;
+    if(d.points.length>=2){
+      const p1 = {x:barFloatToX(d.points[0].bar,range,geo), y:yForPrice(d.points[0].price,ext,geo)};
+      const p2 = {x:barFloatToX(d.points[1].bar,range,geo), y:yForPrice(d.points[1].price,ext,geo)};
+      if(d.type==='rect'||d.type==='highlight') ctx.strokeRect(Math.min(p1.x,p2.x),Math.min(p1.y,p2.y),Math.abs(p2.x-p1.x),Math.abs(p2.y-p1.y));
+      else { ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke(); }
+    }
+    ctx.setLineDash([]);
+  }
+  ctx.restore();
+}
+
+/* ============================================================
+   INFO PANEL
+   ============================================================ */
+function updateInfoPanel(){
+  if(state.selected==null){
+    ['open','high','low','close','vol','avgvol','relvol','range','body','uwick','lwick','type','volclass']
+      .forEach(k=>document.getElementById('v_'+k).textContent='—');
+    document.getElementById('vsaContent').textContent = 'Select a candle to see interpretation.';
+    return;
+  }
+  const i = state.selected;
+  const a = analyzeBar(i);
+  document.getElementById('v_open').textContent = a.b.open.toFixed(2);
+  document.getElementById('v_high').textContent = a.b.high.toFixed(2);
+  document.getElementById('v_low').textContent = a.b.low.toFixed(2);
+  document.getElementById('v_close').textContent = a.b.close.toFixed(2);
+  document.getElementById('v_vol').textContent = Math.round(a.b.volume).toLocaleString();
+  document.getElementById('v_avgvol').textContent = Math.round(a.avgVol).toLocaleString();
+  const relEl = document.getElementById('v_relvol');
+  relEl.textContent = a.relVol.toFixed(2)+'x';
+  const vc = volClassOf(a.relVol);
+  relEl.style.color = colorFor(vc.color);
+  document.getElementById('v_range').textContent = a.range.toFixed(2);
+  document.getElementById('v_body').textContent = a.body.toFixed(2)+' ('+(a.bodyPct*100).toFixed(0)+'%)';
+  document.getElementById('v_uwick').textContent = a.upperWick.toFixed(2);
+  document.getElementById('v_lwick').textContent = a.lowerWick.toFixed(2);
+  document.getElementById('v_type').textContent = a.isUp ? 'Bullish' : 'Bearish';
+  document.getElementById('v_volclass').textContent = vc.label;
+
+  if(state.vsaMode){
+    const cls = classifyVSA(i);
+    const box = document.getElementById('vsaContent');
+    box.innerHTML =
+      '<div class="kv"><span class="k">Volume</span><span class="v">'+vc.label+'</span></div>'+
+      '<div class="kv"><span class="k">Spread</span><span class="v">'+(a.spreadRatio>1.3?'WIDE':a.spreadRatio<0.65?'NARROW':'NORMAL')+'</span></div>'+
+      '<div class="kv"><span class="k">Close</span><span class="v">'+(a.closeLoc>0.66?'NEAR HIGH':a.closeLoc<0.33?'NEAR LOW':'MID')+'</span></div>'+
+      '<div style="margin-top:6px;"><span class="badge" style="border-color:'+css('--highlight')+';color:'+css('--highlight')+';">'+cls.primary+'</span></div>'+
+      '<div style="margin-top:6px;color:var(--text2);font-style:italic;">"'+cls.explain+'"</div>'+
+      '<div style="margin-top:6px;font-size:10px;color:var(--text2);">Educational classification — requires confirmation, not a trading signal.</div>';
+
+    const effortPct = Math.min(100, a.relVol/3*100);
+    const resultPct = Math.min(100, a.spreadRatio/3*100);
+    document.getElementById('effortBar').style.width = effortPct+'%';
+    document.getElementById('resultBar').style.width = resultPct+'%';
+    document.getElementById('effortLbl').textContent = a.relVol.toFixed(2)+'x avg';
+    document.getElementById('resultLbl').textContent = a.spreadRatio.toFixed(2)+'x avg spread';
+    document.getElementById('effortResultText').textContent = '"'+cls.erText+'"';
+  }
+}
+
+/* ============================================================
+   UI ACTIONS
+   ============================================================ */
+function setStatus(t){ statusText.textContent = t; }
+
+function nextBar(){
+  if(state.revealed < state.bars.length){
+    state.revealed++;
+    clampView();
+    render(); updateInfoPanel();
+  } else {
+    pause();
+    setStatus('End of data reached.');
+  }
+}
+function prevBar(){
+  if(state.revealed > 2){
+    state.revealed--;
+    if(state.selected!=null && state.selected >= state.revealed) state.selected = state.revealed-1;
+    clampView();
+    render(); updateInfoPanel();
+  }
+}
+function resetReplay(){
+  pause();
+  state.revealed = Math.min(10, state.bars.length);
+  state.selected = null;
+  state.goldenIndex = null;
+  state.autoFollow = true;
+  clampView();
+  render(); updateInfoPanel();
+  setStatus('Replay reset.');
+}
+function play(){
+  if(state.playing) return;
+  if(state.revealed>=state.bars.length){ state.revealed = Math.min(10,state.bars.length); }
+  state.playing = true;
+  document.getElementById('btnPlay').textContent = '⏸ Pause';
+  document.getElementById('btnPlay').classList.add('active');
+  const interval = 900/state.speed;
+  state.playTimer = setInterval(()=>{
+    if(state.revealed>=state.bars.length){ pause(); return; }
+    nextBar();
+  }, interval);
+}
+function pause(){
+  state.playing = false;
+  document.getElementById('btnPlay').textContent = '▶ Play';
+  document.getElementById('btnPlay').classList.remove('active');
+  if(state.playTimer) clearInterval(state.playTimer);
+  state.playTimer = null;
+}
+function togglePlay(){ state.playing ? pause() : play(); }
+
+function selectIndex(i){
+  state.selected = i;
+  render(); updateInfoPanel();
+}
+
+/* ============================================================
+   MOUSE / TOOL HANDLING
+   ============================================================ */
+let dragStart = null;
+let panDrag = null;
+
+canvas.addEventListener('mousedown', (e)=>{
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX-rect.left, y = e.clientY-rect.top;
+  const range = visibleRange(); const geo = geometry(); const ext = priceExtent(range);
+
+  if(state.wyckoffMode && state.tool==='pointer'){
+    const barF = xToBarFloat(x, range, geo);
+    const idx = Math.max(range.start, Math.min(range.end-1, Math.round(barF)));
+    openLabelMenu(e.clientX, e.clientY, idx);
+    return;
+  }
+
+  if(state.tool==='pointer'){
+    if(e.shiftKey){
+      panDrag = {x, viewStart:state.viewStart};
+      return;
+    }
+    // check drawing hit (very rough: text/points proximity) else select candle
+    const barF = xToBarFloat(x, range, geo);
+    const idx = Math.max(range.start, Math.min(range.end-1, Math.round(barF)));
+    selectIndex(idx);
+    return;
+  }
+
+  if(state.tool==='text'){
+    const barF = xToBarFloat(x, range, geo);
+    const price = priceForY(y, ext, geo);
+    openTextEditor(e.clientX, e.clientY, barF, price);
+    return;
+  }
+
+  // shape tools
+  const barF = xToBarFloat(x, range, geo);
+  const price = priceForY(y, ext, geo);
+  state.drawing = {type:state.tool, points:[{bar:barF, price}], color: css('--highlight')};
+  if(state.tool==='hline' || state.tool==='vline'){
+    finalizeDrawing();
+  }
+});
+
+canvas.addEventListener('mousemove', (e)=>{
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX-rect.left, y = e.clientY-rect.top;
+  const range = visibleRange(); const geo = geometry(); const ext = priceExtent(range);
+
+  if(panDrag){
+    const dx = x - panDrag.x;
+    const bw = barWidth(range, geo);
+    const shift = -Math.round(dx/bw);
+    state.autoFollow = false;
+    state.viewStart = Math.max(0, Math.min(Math.max(0,state.revealed-state.viewBars), panDrag.viewStart+shift));
+    render();
+    return;
+  }
+
+  if(state.drawing && state.drawing.points.length>=1){
+    const barF = xToBarFloat(x, range, geo);
+    const price = priceForY(y, ext, geo);
+    if(state.drawing.points.length===1) state.drawing.points.push({bar:barF,price});
+    else state.drawing.points[1] = {bar:barF,price};
+    render();
+  }
+});
+
+window.addEventListener('mouseup', ()=>{
+  if(panDrag){ panDrag=null; return; }
+  if(state.drawing && state.drawing.points.length===2){
+    finalizeDrawing();
+  }
+});
+
+function finalizeDrawing(){
+  state.drawings.push(state.drawing);
+  state.drawing = null;
+  render();
+}
+
+canvas.addEventListener('wheel', (e)=>{
+  e.preventDefault();
+  const dir = e.deltaY>0 ? 1 : -1;
+  state.viewBars = Math.max(5, Math.min(state.bars.length, state.viewBars + dir*4));
+  clampView();
+  render();
+}, {passive:false});
+
+/* ---- text editor overlay ---- */
+function openTextEditor(clientX, clientY, barF, price){
+  const rect = chartWrap.getBoundingClientRect();
+  const div = document.createElement('div');
+  div.className = 'floatEdit';
+  div.contentEditable = 'true';
+  div.style.left = (clientX-rect.left)+'px';
+  div.style.top = (clientY-rect.top)+'px';
+  overlay.appendChild(div);
+  div.focus();
+  function commit(){
+    const text = div.textContent.trim();
+    if(text){
+      state.drawings.push({type:'text', points:[{bar:barF, price}], text, color:css('--highlight'), fontSize:13, bold:false});
+    }
+    div.remove();
+    render();
+  }
+  div.addEventListener('blur', commit);
+  div.addEventListener('keydown', (ev)=>{
+    if(ev.key==='Enter'){ ev.preventDefault(); div.blur(); }
+    if(ev.key==='Escape'){ div.textContent=''; div.blur(); }
+  });
+}
+
+/* ---- wyckoff label menu ---- */
+function openLabelMenu(clientX, clientY, barIndex){
+  document.querySelectorAll('.labelMenu').forEach(m=>m.remove());
+  const rect = chartWrap.getBoundingClientRect();
+  const menu = document.createElement('div');
+  menu.className = 'labelMenu';
+  menu.style.left = (clientX-rect.left)+'px';
+  menu.style.top = (clientY-rect.top)+'px';
+  WYCKOFF_CODES.forEach(code=>{
+    const btn = document.createElement('button');
+    btn.textContent = code;
+    btn.onclick = ()=>{
+      const b = state.bars[barIndex];
+      const pos = b.close>=b.open ? 'above' : 'below';
+      state.labels.push({barIndex, code, color:css('--highlight'), pos});
+      menu.remove();
+      render();
+    };
+    menu.appendChild(btn);
+  });
+  const del = document.createElement('button');
+  del.textContent = 'Clear here';
+  del.style.gridColumn = '1 / span 4';
+  del.onclick = ()=>{
+    state.labels = state.labels.filter(l=>l.barIndex!==barIndex);
+    menu.remove(); render();
+  };
+  menu.appendChild(del);
+  overlay.appendChild(menu);
+  setTimeout(()=>{
+    document.addEventListener('click', function h(ev){
+      if(!menu.contains(ev.target)){ menu.remove(); document.removeEventListener('click',h); }
+    });
+  },0);
+}
+
+/* ============================================================
+   TOOLBAR BINDINGS
+   ============================================================ */
+document.getElementById('btnReset').onclick = resetReplay;
+document.getElementById('btnPrev').onclick = ()=>{ pause(); prevBar(); };
+document.getElementById('btnNext').onclick = ()=>{ pause(); nextBar(); };
+document.getElementById('btnPlay').onclick = togglePlay;
+document.getElementById('speedSel').onchange = (e)=>{
+  state.speed = parseFloat(e.target.value);
+  if(state.playing){ pause(); play(); }
+};
+
+const scenarioSel = document.getElementById('scenarioSel');
+(function fillScenarios(){
+  const optDefault = document.createElement('option');
+  optDefault.value='default'; optDefault.textContent='Default (mixed) dataset';
+  scenarioSel.appendChild(optDefault);
+  Object.keys(SCENARIOS).forEach(key=>{
+    const o = document.createElement('option');
+    o.value = key; o.textContent = SCENARIOS[key].label;
+    scenarioSel.appendChild(o);
+  });
+})();
+scenarioSel.onchange = (e)=>{
+  loadScenario(e.target.value);
+};
+function loadScenario(key){
+  pause();
+  state.drawings=[]; state.labels=[]; state.goldenIndex=null; state.selected=null;
+  state.autoFollow = true;
+  if(key==='default'){
+    state.bars = defaultDataset();
+  } else {
+    const seed = Math.floor(Math.random()*100000);
+    state.bars = SCENARIOS[key].build(seed);
+  }
+  state.revealed = Math.min(10, state.bars.length);
+  state.viewBars = Math.min(40, state.bars.length);
+  clampView();
+  render(); updateInfoPanel();
+  setStatus('Loaded scenario: '+(key==='default'?'Default dataset':SCENARIOS[key].label)+'. Reveal bars to teach the concept.');
+}
+
+document.getElementById('tfSel').onchange = (e)=>{
+  setStatus('Timeframe label set to '+e.target.value+' — illustrative only (synthetic data is not real market data).');
+};
+
+document.getElementById('btnCSV').onclick = ()=> document.getElementById('csvInput').click();
+document.getElementById('csvInput').onchange = (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    try{
+      const bars = parseCSV(ev.target.result);
+      if(bars.length<2){ setStatus('CSV did not contain enough valid rows.'); return; }
+      pause();
+      state.bars = bars;
+      state.drawings=[]; state.labels=[]; state.goldenIndex=null; state.selected=null;
+      state.revealed = Math.min(10, bars.length);
+      state.viewBars = Math.min(40, bars.length);
+      state.autoFollow = true;
+      clampView();
+      render(); updateInfoPanel();
+      setStatus('Loaded '+bars.length+' bars from '+file.name+'.');
+    }catch(err){
+      setStatus('Failed to parse CSV: '+err.message);
+    }
+  };
+  reader.readAsText(file);
+};
+function parseCSV(text){
+  const lines = text.split(/\r?\n/).filter(l=>l.trim().length>0);
+  if(lines.length<2) throw new Error('not enough rows');
+  const header = lines[0].split(',').map(h=>h.trim().toLowerCase());
+  const find = (names)=> header.findIndex(h=>names.includes(h));
+  const iDate = find(['date','time','datetime']);
+  const iOpen = find(['open','o']);
+  const iHigh = find(['high','h']);
+  const iLow = find(['low','l']);
+  const iClose = find(['close','c','adj close','close/last']);
+  const iVol = find(['volume','vol','v']);
+  if(iOpen<0||iHigh<0||iLow<0||iClose<0) throw new Error('missing OHLC columns');
+  const bars = [];
+  for(let r=1;r<lines.length;r++){
+    const cols = lines[r].split(',');
+    if(cols.length<4) continue;
+    const o = parseFloat(cols[iOpen]), h = parseFloat(cols[iHigh]), l = parseFloat(cols[iLow]), c = parseFloat(cols[iClose]);
+    const v = iVol>=0 ? parseFloat((cols[iVol]||'0').replace(/[^0-9.\-]/g,'')) : 100000;
+    if([o,h,l,c].some(isNaN)) continue;
+    bars.push(makeBar(iDate>=0?cols[iDate]:r, o,h,l,c, isNaN(v)?100000:v));
+  }
+  return bars;
+}
+
+document.getElementById('btnVSA').onclick = (e)=>{
+  state.vsaMode = !state.vsaMode;
+  e.target.classList.toggle('active', state.vsaMode);
+  document.getElementById('vsaPanel').style.display = state.vsaMode ? 'block' : 'none';
+  updateInfoPanel();
+};
+document.getElementById('btnWyckoff').onclick = (e)=>{
+  state.wyckoffMode = !state.wyckoffMode;
+  e.target.classList.toggle('active', state.wyckoffMode);
+  setStatus(state.wyckoffMode ? 'Wyckoff Mode: click a candle to label it (PS, SC, AR, ST, SPRING…).' : 'Wyckoff Mode off.');
+};
+document.getElementById('btnGolden').onclick = (e)=>{
+  if(state.selected==null){ setStatus('Select a candle first, then press Golden Bar.'); return; }
+  state.goldenIndex = state.goldenIndex===state.selected ? null : state.selected;
+  e.target.classList.toggle('active', state.goldenIndex!=null);
+  render();
+};
+document.getElementById('btnFocus').onclick = (e)=>{
+  state.focusMode = !state.focusMode;
+  e.target.classList.toggle('active', state.focusMode);
+  render();
+};
+
+document.getElementById('toolSel').onchange = (e)=>{ state.tool = e.target.value; canvas.style.cursor = e.target.value==='pointer'?'crosshair':'cell'; };
+document.getElementById('btnDelSel').onclick = ()=>{
+  if(state.selectedDrawing!=null){ state.drawings.splice(state.selectedDrawing,1); state.selectedDrawing=null; render(); }
+};
+document.getElementById('btnClearDraw').onclick = ()=>{ state.drawings=[]; state.selectedDrawing=null; render(); };
+
+document.getElementById('btnZoomIn').onclick = ()=>{ state.viewBars = Math.max(5,state.viewBars-5); clampView(); render(); };
+document.getElementById('btnZoomOut').onclick = ()=>{ state.viewBars = Math.min(state.bars.length,state.viewBars+5); clampView(); render(); };
+document.getElementById('btnFit').onclick = ()=>{ state.autoFollow=true; state.viewBars = Math.max(5,state.revealed); clampView(); render(); };
+document.getElementById('btnFull').onclick = ()=>{
+  if(!document.fullscreenElement) document.getElementById('app').requestFullscreen().catch(()=>{});
+  else document.exitFullscreen();
+};
+
+document.getElementById('btnCapture').onclick = (e)=>{
+  document.body.classList.toggle('capture');
+  e.target.classList.toggle('active', document.body.classList.contains('capture'));
+  setTimeout(resizeCanvas, 50);
+};
+document.getElementById('btnHideUI').onclick = (e)=>{
+  document.body.classList.toggle('hideUI');
+  e.target.classList.toggle('active', document.body.classList.contains('hideUI'));
+  setTimeout(resizeCanvas, 50);
+};
+document.getElementById('btnPresentation').onclick = (e)=>{
+  document.body.classList.toggle('presentation');
+  e.target.classList.toggle('active', document.body.classList.contains('presentation'));
+  setTimeout(resizeCanvas, 50);
+};
+
+document.getElementById('avgPeriodSel').onchange = (e)=>{ state.avgPeriod = parseInt(e.target.value,10); render(); updateInfoPanel(); };
+document.getElementById('th_low').onchange = (e)=>{ state.thLow = parseFloat(e.target.value)||0.7; updateInfoPanel(); };
+document.getElementById('th_mid').onchange = (e)=>{ state.thMid = parseFloat(e.target.value)||1.2; updateInfoPanel(); };
+document.getElementById('th_high').onchange = (e)=>{ state.thHigh = parseFloat(e.target.value)||2.0; updateInfoPanel(); };
+document.getElementById('volColorMode').onchange = (e)=>{ state.volColorMode = e.target.value; render(); };
+document.getElementById('chkGoldHigh').onchange = (e)=>{ state.goldenShowHigh = e.target.checked; render(); };
+document.getElementById('chkGoldLow').onchange = (e)=>{ state.goldenShowLow = e.target.checked; render(); };
+
+/* ============================================================
+   KEYBOARD SHORTCUTS
+   ============================================================ */
+window.addEventListener('keydown', (e)=>{
+  if(document.activeElement && ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+  if(document.querySelector('.floatEdit')) return;
+  switch(e.key){
+    case 'ArrowRight': nextBar(); break;
+    case 'ArrowLeft': prevBar(); break;
+    case ' ': e.preventDefault(); togglePlay(); break;
+    case 'r': case 'R': resetReplay(); break;
+    case 'f': case 'F': document.getElementById('btnFocus').click(); break;
+    case 'g': case 'G': document.getElementById('btnGolden').click(); break;
+    case 'v': case 'V': document.getElementById('btnVSA').click(); break;
+    case 'w': case 'W': document.getElementById('btnWyckoff').click(); break;
+    case 'd': case 'D':
+      state.tool = state.tool==='pointer' ? 'trend' : 'pointer';
+      document.getElementById('toolSel').value = state.tool;
+      break;
+    case 'Escape':
+      if(document.body.classList.contains('presentation')) document.getElementById('btnPresentation').click();
+      break;
+  }
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+clampView();
+resizeCanvas();
+render();
+updateInfoPanel();
+
+})();
+</script>
+</body>
+</html>
