@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nawaf Pro | Private Wyckoff & Market Analysis Sessions</title>
 
-    <!-- Firebase SDKs (Modular/CDN Compatible) -->
+    <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { 
@@ -20,7 +20,6 @@
             onSnapshot 
         } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBaY75jwos44EbgZMlhIcU_YfrGeKY7r3w",
             authDomain: "naj7-7da9d.firebaseapp.com",
@@ -31,11 +30,9 @@
             measurementId: "G-308H9HW0FP"
         };
 
-        // Initialize Firebase & Firestore
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Expose Firebase functions globally for UI interaction
         window.db = db;
         window.collection = collection;
         window.addDoc = addDoc;
@@ -350,19 +347,16 @@
 
     <div class="container">
 
-        <!-- 1. Date Selection -->
         <section class="glass-panel">
             <h2 class="section-title">📅 اختر يوم التدريب</h2>
             <input type="date" id="booking-date-picker" class="date-picker-input" onchange="onDateSelected()">
         </section>
 
-        <!-- 2. Time Slots Section -->
         <section id="slots-section" class="glass-panel hidden">
             <h2 class="section-title">🕒 المواعيد المتاحة</h2>
             <div id="slots-grid-container" class="slots-grid"></div>
         </section>
 
-        <!-- 3. Manage Booking -->
         <section class="glass-panel">
             <h2 class="section-title">🔍 استعلام عن حجز متدرب</h2>
             <div style="display: flex; gap: 0.5rem;">
@@ -372,7 +366,6 @@
             <div id="booking-result-card" class="hidden" style="margin-top: 1rem; padding: 1rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px;"></div>
         </section>
 
-        <!-- 4. Admin Panel Section -->
         <section class="glass-panel">
             <h2 class="section-title">🔐 لوحة الإدارة والتحكم الخاصة</h2>
             <div id="admin-login-box" style="display: flex; gap: 0.5rem;">
@@ -406,7 +399,6 @@
 
     </div>
 
-    <!-- Booking Modal -->
     <div id="booking-modal" class="modal-overlay">
         <div class="glass-panel modal-box">
             <h3 class="section-title" id="modal-title">تأكيد بيانات الحجز</h3>
@@ -434,7 +426,7 @@
             </form>
 
             <div id="booking-success-box" class="hidden" style="text-align: center; margin-top: 1rem;">
-                <p id="success-message-text" style="color: #4cd964; margin-bottom: 1rem; font-size: 0.9rem;"></p>
+                <p id="success-message-text" style="color: #ffffff; margin-bottom: 1rem; font-size: 0.9rem;"></p>
                 
                 <a id="btn-add-calendar" target="_blank" class="btn btn-white" style="margin-bottom: 0.5rem;">
                     🔔 إضافة تنبيه للتقويم (تنبيه قبل 15 دقيقة)
@@ -454,7 +446,6 @@
 
         let activeDate = null;
         let activeSlot = null;
-        let isAdminLoggedIn = false;
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('booking-date-picker').min = new Date().toISOString().split('T')[0];
@@ -466,10 +457,9 @@
 
             const container = document.getElementById('slots-grid-container');
             document.getElementById('slots-section').classList.remove('hidden');
-            container.innerHTML = '<p style="color:#888;">جاري تحميل المواعيد من قاعدة البيانات...</p>';
+            container.innerHTML = '<p style="color:#888;">جاري تحميل المواعيد من Firebase...</p>';
 
             try {
-                // Query Firestore for active bookings on the selected date
                 const q = window.query(
                     window.collection(window.db, "bookings"), 
                     window.where("session_date", "==", activeDate),
@@ -501,7 +491,7 @@
                 });
             } catch (err) {
                 console.error("Firebase Read Error: ", err);
-                container.innerHTML = '<p style="color:#ff5555;">حدث خطأ أثناء قراءة الحجوزات، يرجى المحاولة لاحقاً.</p>';
+                container.innerHTML = '<p style="color:#ff5555;">حدث خطأ أثناء قراءة المواعيد.</p>';
             }
         }
 
@@ -531,7 +521,6 @@
             const note = document.getElementById('input-note').value;
 
             try {
-                // Save to Firestore Database
                 await window.addDoc(window.collection(window.db, "bookings"), {
                     booking_code: bookingCode,
                     student_name: studentName,
@@ -550,13 +539,13 @@
                 document.getElementById('booking-form').classList.add('hidden');
                 document.getElementById('booking-success-box').classList.remove('hidden');
                 document.getElementById('modal-title').innerText = '🎉 تم الحجز بنجاح';
-                document.getElementById('success-message-text').innerText = `رمز الحجز الخاص بك: [ ${bookingCode} ]\nتم حفظ موعدك بنجاح في السحابة.`;
+                document.getElementById('success-message-text').innerText = `رمز الحجز الخاص بك: [ ${bookingCode} ]\nتم الحفظ في قاعدة البيانات السحابية.`;
                 document.getElementById('btn-add-calendar').href = calLink;
 
                 onDateSelected();
             } catch (err) {
                 console.error("Firebase Save Error: ", err);
-                alert("حدث خطأ أثناء حفظ الحجز. يرجى المحاولة مرة أخرى.");
+                alert("حدث خطأ أثناء حفظ الحجز.");
             } finally {
                 btnSubmit.innerText = "تأكيد الحجز";
                 btnSubmit.disabled = false;
@@ -567,7 +556,7 @@
             const startISO = dateStr.replace(/-/g, '') + 'T' + startTime.replace(':', '') + '00';
             const endISO = dateStr.replace(/-/g, '') + 'T' + endTime.replace(':', '') + '00';
             const title = encodeURIComponent("محاضرة خاصة - NAWAF PRO");
-            const details = encodeURIComponent(`جلسة تحليل خاصة مع المتدرب: ${name}\nيرجى التواجد قبل الموعد.`);
+            const details = encodeURIComponent(`جلسة تحليل خاصة مع المتدرب: ${name}`);
             
             return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startISO}/${endISO}&details=${details}&ctz=Asia/Riyadh`;
         }
@@ -603,29 +592,27 @@
                 }
             } catch (err) {
                 console.error(err);
-                card.innerHTML = `<p style="color:#ff5555;">تعذر إجراء البحث.</p>`;
+                card.innerHTML = `<p style="color:#ff5555;">تعذر البحث.</p>`;
             }
         }
 
         async function cancelBookingDoc(docId) {
-            if(!confirm('هل أنت متأكد من إلغاء هذا الحجز؟')) return;
+            if(!confirm('هل أنت متأكد من إلغاء الحجز؟')) return;
             try {
                 const docRef = window.doc(window.db, "bookings", docId);
                 await window.updateDoc(docRef, { status: 'Cancelled' });
-                alert('تم إلغاء الحجز بنجاح.');
+                alert('تم إلغاء الحجز.');
                 document.getElementById('booking-result-card').classList.add('hidden');
                 onDateSelected();
             } catch (err) {
                 console.error(err);
-                alert('تعذر إلغاء الحجز.');
+                alert('تعذر الإلغاء.');
             }
         }
 
-        /* ADMIN FUNCTIONS WITH REAL-TIME LISTENER */
         function checkAdminPass() {
             const pass = document.getElementById('admin-pass-input').value;
             if(pass === "nawaf2030") {
-                isAdminLoggedIn = true;
                 document.getElementById('admin-login-box').classList.add('hidden');
                 document.getElementById('admin-dashboard').classList.remove('hidden');
                 listenToBookingsRealtime();
@@ -635,7 +622,6 @@
         }
 
         function logoutAdmin() {
-            isAdminLoggedIn = false;
             document.getElementById('admin-pass-input').value = '';
             document.getElementById('admin-login-box').classList.remove('hidden');
             document.getElementById('admin-dashboard').classList.add('hidden');
@@ -648,10 +634,9 @@
                 window.where("status", "==", "Booked")
             );
 
-            // Listen for changes in realtime
             window.onSnapshot(q, (snapshot) => {
                 if (snapshot.empty) {
-                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#888;">لا توجد حجوزات مسجلة حالياً.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#888;">لا توجد حجوزات.</td></tr>`;
                     return;
                 }
 
