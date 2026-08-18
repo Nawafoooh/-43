@@ -61,7 +61,6 @@
             position: relative;
         }
 
-        /* Dark Grid Background */
         .bg-grid {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -134,7 +133,6 @@
             padding: 0 1.2rem;
         }
 
-        /* Stepper Bar */
         .stepper {
             display: flex;
             justify-content: space-between;
@@ -166,7 +164,6 @@
             color: #ffffff;
         }
 
-        /* Panel Box */
         .card-panel {
             background: rgba(15, 15, 15, 0.8);
             border: 1px solid #222222;
@@ -407,28 +404,22 @@
             <div id="slots-grid-container" class="slots-grid"></div>
         </section>
 
-        <!-- 3. Manage Booking -->
+        <!-- 3. Manage Booking & Admin Panel -->
         <section class="card-panel">
-            <div class="card-title">🔍 إدارة حجزي</div>
+            <div class="card-title">🔍 إدارة حجزي / لوحة التحكّم</div>
             <div style="display: flex; gap: 0.5rem;">
-                <input type="text" id="lookup-code-input" class="form-control" placeholder="أدخل رمز الحجز (مثال: NP-X89K2)">
-                <button class="btn btn-white" style="width: auto; min-width: 100px;" onclick="lookupBooking()">بحث</button>
+                <input type="text" id="lookup-code-input" class="form-control" placeholder="أدخل رمز الحجز (مثل NP-X89K2) أو كلمة مرور الإدارة">
+                <button class="btn btn-white" style="width: auto; min-width: 100px;" onclick="handleLookupOrAdmin()">بحث / دخول</button>
             </div>
+
+            <!-- Booking Result Box (For Students) -->
             <div id="booking-result-card" class="hidden" style="margin-top: 1rem; padding: 1rem; border: 1px solid #333333; border-radius: 6px;"></div>
-        </section>
 
-        <!-- 4. Admin Panel -->
-        <section class="card-panel">
-            <div class="card-title">🔐 لوحة الإدارة والتحكم</div>
-            <div id="admin-login-box" style="display: flex; gap: 0.5rem;">
-                <input type="password" id="admin-pass-input" class="form-control" placeholder="أدخل الرقم السري للإدارة">
-                <button class="btn btn-white" style="width: auto; min-width: 110px;" onclick="checkAdminPass()">دخول</button>
-            </div>
-
-            <div id="admin-dashboard" class="hidden" style="margin-top: 1rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="color: #fff; font-size: 0.95rem;">الحجوزات المسجلة في السحابة:</h3>
-                    <button class="btn btn-outline" style="width: auto; padding: 0.3rem 0.8rem; font-size: 0.8rem; margin:0;" onclick="logoutAdmin()">خروج</button>
+            <!-- Admin Dashboard (For Nawaf) -->
+            <div id="admin-dashboard" class="hidden" style="margin-top: 1.5rem; border-top: 1px dashed #333; padding-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="color: #fff; font-size: 0.95rem;">🔒 جدول الحجوزات الكاملة والملاحظات (خاص بالمدرب)</h3>
+                    <button class="btn btn-outline" style="width: auto; padding: 0.3rem 0.8rem; font-size: 0.8rem; margin:0;" onclick="logoutAdmin()">خروج الإدارة</button>
                 </div>
                 <div style="overflow-x: auto;">
                     <table class="admin-table">
@@ -439,7 +430,7 @@
                                 <th>Telegram</th>
                                 <th>التاريخ</th>
                                 <th>الوقت</th>
-                                <th>الملاحظة</th>
+                                <th>الملاحظات السرية</th>
                                 <th>الإجراء</th>
                             </tr>
                         </thead>
@@ -471,7 +462,7 @@
 
                 <div class="form-group">
                     <label>ملاحظة خاصة للمدرب (سرية)</label>
-                    <textarea id="input-note" class="form-control" rows="3" placeholder="ملاحظتك هنا..."></textarea>
+                    <textarea id="input-note" class="form-control" rows="3" placeholder="أدخل ملاحظتك هنا..."></textarea>
                 </div>
 
                 <button type="submit" class="btn btn-white" id="btn-submit-booking">تأكيد الحجز</button>
@@ -479,10 +470,10 @@
             </form>
 
             <div id="booking-success-box" class="hidden" style="text-align: center; margin-top: 1rem;">
-                <p id="success-message-text" style="color: #ffffff; margin-bottom: 1rem; font-size: 0.9rem;"></p>
+                <p id="success-message-text" style="color: #ffffff; margin-bottom: 1rem; font-size: 0.9rem; white-space: pre-line;"></p>
                 
-                <a id="btn-add-calendar" target="_blank" class="btn btn-white" style="margin-bottom: 0.5rem;">
-                    🔔 إضافة تنبيه للتقويم (تنبيه قبل 15 دقيقة)
+                <a id="btn-add-calendar" target="_blank" class="btn btn-white" style="margin-bottom: 0.5rem; display: block; text-decoration: none;">
+                    🔔 إضافة الجلسة لتقويم Google (تنبيه قبل 15 دقيقة)
                 </a>
                 <button type="button" class="btn btn-outline" onclick="closeModal()">إغلاق</button>
             </div>
@@ -511,7 +502,7 @@
             document.getElementById('step-2').classList.add('active');
             const container = document.getElementById('slots-grid-container');
             document.getElementById('slots-section').classList.remove('hidden');
-            container.innerHTML = '<p style="color:#888;">جاري تحميل المواعيد من Firebase...</p>';
+            container.innerHTML = '<p style="color:#888;">جاري تحميل المواعيد من السحابة...</p>';
 
             try {
                 const q = window.query(
@@ -545,7 +536,7 @@
                 });
             } catch (err) {
                 console.error("Firebase Read Error: ", err);
-                container.innerHTML = '<p style="color:#ff5555;">حدث خطأ أثناء قراءة المواعيد.</p>';
+                container.innerHTML = '<p style="color:#ff5555;">حدث خطأ أثناء تحميل المواعيد.</p>';
             }
         }
 
@@ -595,7 +586,7 @@
                 document.getElementById('booking-form').classList.add('hidden');
                 document.getElementById('booking-success-box').classList.remove('hidden');
                 document.getElementById('modal-title').innerText = '🎉 تم الحجز بنجاح';
-                document.getElementById('success-message-text').innerText = `رمز الحجز الخاص بك: [ ${bookingCode} ]\nتم الحفظ في قاعدة البيانات السحابية.`;
+                document.getElementById('success-message-text').innerText = `رمز الحجز الخاص بك: [ ${bookingCode} ]\nاحتفظ بهذا الرمز لمتابعة حجزك.`;
                 document.getElementById('btn-add-calendar').href = calLink;
 
                 onDateSelected();
@@ -608,47 +599,66 @@
             }
         }
 
+        // إنشاء رابط التقويم مع تنبيه 15 دقيقة
         function createGoogleCalendarLink(dateStr, startTime, endTime, name) {
             const startISO = dateStr.replace(/-/g, '') + 'T' + startTime.replace(':', '') + '00';
             const endISO = dateStr.replace(/-/g, '') + 'T' + endTime.replace(':', '') + '00';
             const title = encodeURIComponent("محاضرة خاصة - NAWAF PRO");
-            const details = encodeURIComponent(`جلسة تحليل خاصة مع المتدرب: ${name}`);
+            const details = encodeURIComponent(`جلسة تحليل خاصة ومباشرة مع الأستاذ نواف.\nالمتدرب: ${name}`);
             
-            return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startISO}/${endISO}&details=${details}&ctz=Asia/Riyadh`;
+            return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startISO}/${endISO}&details=${details}&ctz=Asia/Riyadh&add=15`;
         }
 
-        async function lookupBooking() {
-            const code = document.getElementById('lookup-code-input').value.trim().toUpperCase();
-            const card = document.getElementById('booking-result-card');
-            if(!code) return;
+        // معالجة البحث عن الحجز أو تسجيل دخول الإدارة
+        async function handleLookupOrAdmin() {
+            const inputVal = document.getElementById('lookup-code-input').value.trim();
+            const resultCard = document.getElementById('booking-result-card');
+            const adminDashboard = document.getElementById('admin-dashboard');
 
-            card.classList.remove('hidden');
-            card.innerHTML = `<p style="color:#888;">جاري البحث...</p>`;
+            if(!inputVal) return;
+
+            // التحقق من الرقم السري للوحة التحكّم
+            if (inputVal === "nawaf2030") {
+                resultCard.classList.add('hidden');
+                adminDashboard.classList.remove('hidden');
+                listenToBookingsRealtime();
+                document.getElementById('lookup-code-input').value = '';
+                return;
+            }
+
+            // خيار البحث عن حجز المتدرب
+            adminDashboard.classList.add('hidden');
+            resultCard.classList.remove('hidden');
+            resultCard.innerHTML = `<p style="color:#888;">جاري البحث...</p>`;
 
             try {
                 const q = window.query(
                     window.collection(window.db, "bookings"), 
-                    window.where("booking_code", "==", code),
+                    window.where("booking_code", "==", inputVal.toUpperCase()),
                     window.where("status", "==", "Booked")
                 );
                 
                 const snapshot = await window.getDocs(q);
                 if (snapshot.empty) {
-                    card.innerHTML = `<p style="color:#aaa;">❌ لا يوجد حجز نشط بهذا الرمز.</p>`;
+                    resultCard.innerHTML = `<p style="color:#aaa;">❌ لا يوجد حجز نشط بهذا الرمز.</p>`;
                 } else {
                     const docData = snapshot.docs[0].data();
                     const docId = snapshot.docs[0].id;
+                    const calLink = createGoogleCalendarLink(docData.session_date, docData.start_time, docData.end_time, docData.student_name);
 
-                    card.innerHTML = `
+                    resultCard.innerHTML = `
                         <p><strong>اسم المتدرب:</strong> ${docData.student_name}</p>
                         <p><strong>التاريخ:</strong> ${docData.session_date}</p>
                         <p><strong>الوقت:</strong> ${docData.slot_label}</p>
-                        <button class="btn btn-outline" style="margin-top:0.8rem; color:#ff5555;" onclick="cancelBookingDoc('${docId}')">إلغاء الحجز</button>
+                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <a href="${calLink}" target="_blank" class="btn btn-white" style="width: auto; padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none;">🔔 إضافة للتنبيه (تقويم Google)</a>
+                            <button class="btn btn-outline" style="width: auto; padding: 0.5rem 1rem; font-size: 0.85rem; color:#ff5555; margin:0;" onclick="cancelBookingDoc('${docId}')">إلغاء الحجز</button>
+                        </div>
                     `;
                 }
             } catch (err) {
                 console.error(err);
-                card.innerHTML = `<p style="color:#ff5555;">تعذر البحث.</p>`;
+                resultCard.innerHTML = `<p style="color:#ff5555;">تعذر إجراء البحث.</p>`;
             }
         }
 
@@ -657,29 +667,16 @@
             try {
                 const docRef = window.doc(window.db, "bookings", docId);
                 await window.updateDoc(docRef, { status: 'Cancelled' });
-                alert('تم إلغاء الحجز.');
+                alert('تم إلغاء الحجز بنجاح.');
                 document.getElementById('booking-result-card').classList.add('hidden');
                 onDateSelected();
             } catch (err) {
                 console.error(err);
-                alert('تعذر الإلغاء.');
-            }
-        }
-
-        function checkAdminPass() {
-            const pass = document.getElementById('admin-pass-input').value;
-            if(pass === "nawaf2030") {
-                document.getElementById('admin-login-box').classList.add('hidden');
-                document.getElementById('admin-dashboard').classList.remove('hidden');
-                listenToBookingsRealtime();
-            } else {
-                alert("الرمز السري غير صحيح!");
+                alert('تعذر إلغاء الحجز.');
             }
         }
 
         function logoutAdmin() {
-            document.getElementById('admin-pass-input').value = '';
-            document.getElementById('admin-login-box').classList.remove('hidden');
             document.getElementById('admin-dashboard').classList.add('hidden');
         }
 
@@ -692,7 +689,7 @@
 
             window.onSnapshot(q, (snapshot) => {
                 if (snapshot.empty) {
-                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#888;">لا توجد حجوزات.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#888;">لا توجد حجوزات مسجلة حالياً.</td></tr>`;
                     return;
                 }
 
@@ -706,8 +703,8 @@
                             <td>${b.contact}</td>
                             <td>${b.session_date}</td>
                             <td>${b.slot_label}</td>
-                            <td>${b.note || '-'}</td>
-                            <td><button style="color:#ff5555; background:none; border:none; cursor:pointer;" onclick="cancelBookingDoc('${docId}')">إلغاء</button></td>
+                            <td style="color: #ffd700;">${b.note || '-'}</td>
+                            <td><button style="color:#ff5555; background:none; border:none; cursor:pointer; font-weight:bold;" onclick="cancelBookingDoc('${docId}')">إلغاء</button></td>
                         </tr>
                     `;
                 }).join('');
