@@ -10,23 +10,21 @@
 
     <style>
         /* ==========================================================================
-           1. DESIGN SYSTEM & VARIABLES (DARK PREMIUM THEME)
+           1. DESIGN SYSTEM & VARIABLES (MONOCHROME / BLACK & WHITE PREMIUM THEME)
            ========================================================================== */
         :root {
-            --bg-dark: #07090e;
-            --bg-card: #0e131f;
-            --gold-primary: #D4AF37;
-            --gold-light: #f3e5ab;
-            --gold-muted: rgba(212, 175, 55, 0.15);
-            --blue-accent: #1e3a5f;
-            --blue-glow: rgba(30, 58, 95, 0.4);
-            --text-main: #f0f4f8;
-            --text-muted: #8892b0;
-            --text-dim: #5a6578;
-            --border-glass: rgba(212, 175, 55, 0.2);
-            --border-muted: rgba(255, 255, 255, 0.08);
-            --status-available: #10b981;
-            --status-booked: #ef4444;
+            --bg-dark: #000000;
+            --bg-card: #0a0a0a;
+            --mono-primary: #ffffff;
+            --mono-secondary: #e0e0e0;
+            --mono-muted: rgba(255, 255, 255, 0.15);
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --text-dim: #666666;
+            --border-glass: rgba(255, 255, 255, 0.2);
+            --border-muted: rgba(255, 255, 255, 0.1);
+            --status-available: #ffffff;
+            --status-booked: #555555;
             --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
@@ -47,7 +45,7 @@
             padding-bottom: 3rem;
         }
 
-        /* Abstract Financial Background Elements */
+        /* Abstract Financial Background Elements (Monochrome Grid) */
         .bg-grid {
             position: fixed;
             top: 0;
@@ -55,8 +53,8 @@
             width: 100%;
             height: 100%;
             background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
             background-size: 40px 40px;
             z-index: -2;
             pointer-events: none;
@@ -69,19 +67,19 @@
             transform: translateX(50%);
             width: 600px;
             height: 600px;
-            background: radial-gradient(circle, var(--blue-glow) 0%, rgba(7, 9, 14, 0) 70%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
             z-index: -1;
             pointer-events: none;
         }
 
         /* UI Glassmorphism Class */
         .glass-panel {
-            background: rgba(14, 19, 31, 0.75);
+            background: rgba(15, 15, 15, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--border-glass);
             border-radius: 12px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
         }
 
         /* ==========================================================================
@@ -97,15 +95,15 @@
         .brand-title {
             font-size: 2.8rem;
             font-weight: 800;
-            letter-spacing: 3px;
-            color: var(--gold-primary);
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+            letter-spacing: 4px;
+            color: var(--mono-primary);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
             margin-bottom: 0.2rem;
         }
 
         .brand-subtitle {
             font-size: 1.1rem;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
             color: var(--text-muted);
             text-transform: uppercase;
             font-weight: 500;
@@ -135,8 +133,8 @@
         }
 
         .pill {
-            background: rgba(30, 58, 95, 0.3);
-            border: 1px solid var(--blue-accent);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
             padding: 0.4rem 0.9rem;
             border-radius: 50px;
             font-size: 0.85rem;
@@ -168,7 +166,7 @@
             top: 50%;
             left: 0;
             right: 0;
-            height: 2px;
+            height: 1px;
             background: var(--border-muted);
             z-index: 1;
             transform: translateY(-50%);
@@ -186,13 +184,13 @@
         }
 
         .step-item.active {
-            color: var(--gold-primary);
+            color: var(--mono-primary);
         }
 
         /* Section Titles */
         .section-title {
             font-size: 1.2rem;
-            color: var(--gold-primary);
+            color: var(--mono-primary);
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
@@ -212,14 +210,18 @@
         .date-picker-input {
             width: 100%;
             padding: 0.8rem;
-            background: rgba(0, 0, 0, 0.4);
+            background: #000000;
             border: 1px solid var(--border-glass);
-            color: var(--gold-light);
+            color: #ffffff;
             font-size: 1.1rem;
             border-radius: 6px;
             outline: none;
             cursor: pointer;
             text-align: center;
+        }
+
+        .date-picker-input::-webkit-calendar-picker-indicator {
+            filter: invert(1);
         }
 
         .slots-grid {
@@ -240,21 +242,21 @@
         }
 
         .slot-card.available {
-            border-color: rgba(16, 185, 129, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
             cursor: pointer;
         }
 
         .slot-card.available:hover {
-            border-color: var(--gold-primary);
-            background: var(--gold-muted);
+            border-color: var(--mono-primary);
+            background: rgba(255, 255, 255, 0.1);
             transform: translateY(-3px);
         }
 
         .slot-card.booked {
-            border-color: rgba(239, 68, 68, 0.2);
-            opacity: 0.6;
+            border-color: rgba(255, 255, 255, 0.05);
+            opacity: 0.4;
             cursor: not-allowed;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.6);
         }
 
         .slot-time {
@@ -278,8 +280,8 @@
             font-weight: 600;
         }
 
-        .badge-available { background: rgba(16, 185, 129, 0.15); color: var(--status-available); }
-        .badge-booked { background: rgba(239, 68, 68, 0.15); color: var(--status-booked); }
+        .badge-available { background: rgba(255, 255, 255, 0.2); color: #ffffff; border: 1px solid #ffffff; }
+        .badge-booked { background: rgba(255, 255, 255, 0.05); color: #777777; border: 1px solid #333333; }
 
         /* ==========================================================================
            5. BOOKING FORM MODAL & UI
@@ -287,7 +289,7 @@
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -324,16 +326,16 @@
         .form-control {
             width: 100%;
             padding: 0.75rem;
-            background: rgba(0, 0, 0, 0.6);
+            background: #000000;
             border: 1px solid var(--border-glass);
             border-radius: 6px;
-            color: #fff;
+            color: #ffffff;
             font-size: 0.95rem;
             outline: none;
         }
 
         .form-control:focus {
-            border-color: var(--gold-primary);
+            border-color: var(--mono-primary);
         }
 
         textarea.form-control {
@@ -343,8 +345,8 @@
 
         /* Summary Box */
         .summary-card {
-            background: rgba(212, 175, 55, 0.05);
-            border: 1px dashed var(--gold-primary);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed var(--border-glass);
             padding: 1rem;
             border-radius: 6px;
             margin-bottom: 1.2rem;
@@ -368,16 +370,16 @@
             font-size: 0.95rem;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
+            transition: background 0.2s, color 0.2s, transform 0.1s;
         }
 
-        .btn-gold {
-            background: linear-gradient(135deg, var(--gold-primary) 0%, #b89228 100%);
-            color: var(--bg-dark);
+        .btn-mono {
+            background: #ffffff;
+            color: #000000;
         }
 
-        .btn-gold:hover {
-            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold-primary) 100%);
+        .btn-mono:hover {
+            background: #cccccc;
         }
 
         .btn-outline {
@@ -388,19 +390,19 @@
         }
 
         .btn-outline:hover {
-            color: #fff;
-            border-color: #fff;
+            color: #ffffff;
+            border-color: #ffffff;
         }
 
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--status-booked);
-            border: 1px solid rgba(239, 68, 68, 0.4);
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             margin-top: 0.8rem;
         }
 
-        .btn-danger:hover {
-            background: rgba(239, 68, 68, 0.4);
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
         }
 
         /* ==========================================================================
@@ -412,8 +414,8 @@
         }
 
         .zoom-card {
-            background: rgba(30, 58, 95, 0.4);
-            border: 1px solid var(--blue-accent);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
             padding: 1rem;
             border-radius: 6px;
             text-align: center;
@@ -476,7 +478,7 @@
             <h2 class="section-title">🔍 إدارة حجزي السابق</h2>
             <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
                 <input type="text" id="lookup-code-input" class="form-control" placeholder="أدخل رمز الحجز الخاص بك (مثال: NP-X89K2)">
-                <button class="btn btn-gold" style="width: auto; min-width: 120px;" onclick="lookupBooking()">بحث</button>
+                <button class="btn btn-mono" style="width: auto; min-width: 120px;" onclick="lookupBooking()">بحث</button>
             </div>
 
             <!-- Booking Lookup Result Card -->
@@ -493,8 +495,8 @@
             <h3 class="section-title">إكمال بيانات الحجز</h3>
 
             <div class="summary-card">
-                <div class="summary-row"><span>التاريخ:</span><strong id="modal-date-val" style="color:var(--gold-light);"></strong></div>
-                <div class="summary-row"><span>وقت المحاضرة:</span><strong id="modal-time-val" style="color:var(--gold-light);"></strong></div>
+                <div class="summary-row"><span>التاريخ:</span><strong id="modal-date-val" style="color:#ffffff;"></strong></div>
+                <div class="summary-row"><span>وقت المحاضرة:</span><strong id="modal-time-val" style="color:#ffffff;"></strong></div>
                 <div class="summary-row"><span>مدة الجلسة:</span><span>75 دقيقة</span></div>
                 <div class="summary-row"><span>المنطقة الزمنية:</span><span>السعودية (UTC+3)</span></div>
             </div>
@@ -515,7 +517,7 @@
                     <textarea id="input-note" class="form-control" placeholder="أرغب في التركيز على منهج Wyckoff، أو التداول مع الاتجاه..."></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-gold" id="btn-submit-booking">تأكيد الحجز النهائي</button>
+                <button type="submit" class="btn btn-mono" id="btn-submit-booking">تأكيد الحجز النهائي</button>
                 <button type="button" class="btn btn-outline" onclick="closeModal()">إلغاء</button>
             </form>
         </div>
@@ -526,11 +528,9 @@
         /* ==========================================================================
            1. SUPABASE DATABASE CONFIGURATION
            ========================================================================== */
-        // ضع روابط مشروع Supabase الخاص بك هنا
         const SUPABASE_URL = "https://YOUR_SUPABASE_PROJECT_ID.supabase.co";
         const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
-        // تهيئة العميل (يستمر العمل محلیاً بدون أخطاء إذا لم يُربط الخادم)
         const db = (SUPABASE_URL.includes("YOUR_SUPABASE")) 
             ? null 
             : supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -548,7 +548,6 @@
         let activeDate = null;
         let activeSlot = null;
 
-        // Local Storage Mock fallback in case Supabase is not connected yet
         let localBookingsDB = JSON.parse(localStorage.getItem('nawaf_pro_bookings') || '[]');
 
         /* ==========================================================================
@@ -556,7 +555,6 @@
            ========================================================================== */
         document.addEventListener('DOMContentLoaded', () => {
             const datePicker = document.getElementById('booking-date-picker');
-            // Set min date to Today (Saudi Time Offset)
             const today = new Date().toISOString().split('T')[0];
             datePicker.min = today;
         });
@@ -575,7 +573,6 @@
             while (start < endLimit) {
                 let sessionEnd = new Date(start.getTime() + SYSTEM_CONFIG.sessionDuration * 60000);
                 
-                // Cut-off if it exceeds max working hours
                 if (sessionEnd > endLimit) break;
 
                 const timeStartStr = formatTime24(start);
@@ -588,7 +585,6 @@
                     isBooked: false
                 });
 
-                // Add Rest Break Automatically
                 start = new Date(sessionEnd.getTime() + SYSTEM_CONFIG.breakDuration * 60000);
             }
             return slots;
@@ -610,13 +606,11 @@
             section.classList.remove('hidden');
             container.innerHTML = '<p style="color:var(--text-muted); grid-column:1/-1; text-align:center;">جاري فحص الأوقات المتاحة...</p>';
 
-            // Generate System Base Slots
             let slots = generateSlotsForDay();
 
-            // Fetch actual bookings (Supabase / LocalFallback)
             let bookedTimes = [];
             if (db) {
-                const { data, error } = await db
+                const { data } = await db
                     .from('bookings')
                     .select('start_time')
                     .eq('session_date', activeDate)
@@ -629,7 +623,6 @@
                     .map(b => b.start_time);
             }
 
-            // Flag booked slots (NO STUDENT DATA SHOWN - PRIVACY FIRST)
             slots.forEach(slot => {
                 if (bookedTimes.includes(slot.startTime)) {
                     slot.isBooked = true;
@@ -706,10 +699,9 @@
             let isSuccess = false;
 
             if (db) {
-                const { data, error } = await db.from('bookings').insert([bookingPayload]);
+                const { error } = await db.from('bookings').insert([bookingPayload]);
                 if (!error) isSuccess = true;
             } else {
-                // Local Fallback Mocking atomic lock
                 const isConflict = localBookingsDB.some(
                     b => b.session_date === activeDate && b.start_time === activeSlot.startTime && b.status === 'Booked'
                 );
@@ -728,7 +720,6 @@
                 document.getElementById('step4-label').classList.add('active');
                 alert(`✅ تم حجز جلستك بنجاح!\n\nرمز الحجز الخاص بك هو: [ ${bookingCode} ]\nاحفظ هذا الرمز لاستخدامه في إدارة أو إلغاء حجزك لاحقاً.`);
                 
-                // Clear Form and refresh slots
                 document.getElementById('booking-form').reset();
                 onDateSelected();
             } else {
@@ -763,7 +754,7 @@
             card.classList.remove('hidden');
 
             if (!booking || booking.status === 'Cancelled') {
-                card.innerHTML = `<p style="color:var(--status-booked);">❌ لم يتم العثور على حجز نشط بهذا الرمز.</p>`;
+                card.innerHTML = `<p style="color:#777777;">❌ لم يتم العثور على حجز نشط بهذا الرمز.</p>`;
                 return;
             }
 
@@ -777,12 +768,12 @@
                     
                     <div class="zoom-card">
                         <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.4rem;">رابط المحاضرة الخاص بك عبر Zoom:</p>
-                        <a href="${booking.zoom_link || '#'}" target="_blank" class="btn btn-gold" style="display:inline-block; width:auto; text-decoration:none; padding:0.4rem 1.2rem;">
+                        <a href="${booking.zoom_link || '#'}" target="_blank" class="btn btn-mono" style="display:inline-block; width:auto; text-decoration:none; padding:0.4rem 1.2rem;">
                             💻 الانضمام عبر Zoom
                         </a>
                     </div>
 
-                    <button class="btn btn-danger" onclick="cancelBooking('${booking.booking_code}')">إلغاء هذا الحجز</button>
+                    <button class="btn btn-cancel" onclick="cancelBooking('${booking.booking_code}')">إلغاء هذا الحجز</button>
                 </div>
             `;
         }
