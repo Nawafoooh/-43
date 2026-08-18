@@ -3,74 +3,840 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nawaf Pro - Private Market Sessions</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- استدعاء Supabase -->
+    <title>Nawaf Pro | Private Wyckoff & Market Analysis Sessions</title>
+
+    <!-- Supabase JS Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* ==========================================================================
+           1. DESIGN SYSTEM & VARIABLES (DARK PREMIUM THEME)
+           ========================================================================== */
+        :root {
+            --bg-dark: #07090e;
+            --bg-card: #0e131f;
+            --gold-primary: #D4AF37;
+            --gold-light: #f3e5ab;
+            --gold-muted: rgba(212, 175, 55, 0.15);
+            --blue-accent: #1e3a5f;
+            --blue-glow: rgba(30, 58, 95, 0.4);
+            --text-main: #f0f4f8;
+            --text-muted: #8892b0;
+            --text-dim: #5a6578;
+            --border-glass: rgba(212, 175, 55, 0.2);
+            --border-muted: rgba(255, 255, 255, 0.08);
+            --status-available: #10b981;
+            --status-booked: #ef4444;
+            --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            padding-bottom: 3rem;
+        }
+
+        /* Abstract Financial Background Elements */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: -10%;
+            right: 50%;
+            transform: translateX(50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--blue-glow) 0%, rgba(7, 9, 14, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* UI Glassmorphism Class */
+        .glass-panel {
+            background: rgba(14, 19, 31, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* ==========================================================================
+           2. HEADER & HERO SECTION
+           ========================================================================== */
+        header {
+            text-align: center;
+            padding: 3.5rem 1rem 2rem;
+            position: relative;
+            border-bottom: 1px solid var(--border-muted);
+        }
+
+        .brand-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: var(--gold-primary);
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+            margin-bottom: 0.2rem;
+        }
+
+        .brand-subtitle {
+            font-size: 1.1rem;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 0.8rem;
+        }
+
+        .arabic-title {
+            font-size: 1.8rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            max-width: 600px;
+            margin: 0 auto 1.8rem;
+        }
+
+        .meta-pills {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .pill {
+            background: rgba(30, 58, 95, 0.3);
+            border: 1px solid var(--blue-accent);
+            padding: 0.4rem 0.9rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* ==========================================================================
+           3. MAIN LAYOUT & PROGRESS BAR
+           ========================================================================== */
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .progress-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .progress-indicator::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--border-muted);
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .step-item {
+            position: relative;
+            z-index: 2;
+            background: var(--bg-dark);
+            padding: 0 0.8rem;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .step-item.active {
+            color: var(--gold-primary);
+        }
+
+        /* Section Titles */
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--gold-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 0.5rem;
+        }
+
+        /* ==========================================================================
+           4. CALENDAR & TIME SLOTS
+           ========================================================================== */
+        .calendar-wrapper {
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .date-picker-input {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-glass);
+            color: var(--gold-light);
+            font-size: 1.1rem;
+            border-radius: 6px;
+            outline: none;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .slot-card {
+            padding: 1.2rem;
+            text-align: center;
+            border-radius: 8px;
+            transition: all 0.25s ease;
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-muted);
+        }
+
+        .slot-card.available {
+            border-color: rgba(16, 185, 129, 0.3);
+            cursor: pointer;
+        }
+
+        .slot-card.available:hover {
+            border-color: var(--gold-primary);
+            background: var(--gold-muted);
+            transform: translateY(-3px);
+        }
+
+        .slot-card.booked {
+            border-color: rgba(239, 68, 68, 0.2);
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .slot-time {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 0.2rem;
+        }
+
+        .slot-duration {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+        }
+
+        .slot-status-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .badge-available { background: rgba(16, 185, 129, 0.15); color: var(--status-available); }
+        .badge-booked { background: rgba(239, 68, 68, 0.15); color: var(--status-booked); }
+
+        /* ==========================================================================
+           5. BOOKING FORM MODAL & UI
+           ========================================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border-glass);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--gold-primary);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Summary Box */
+        .summary-card {
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px dashed var(--gold-primary);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.2rem;
+            font-size: 0.85rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+
+        /* ==========================================================================
+           6. BUTTONS & ACTIONS
+           ========================================================================== */
+        .btn {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold-primary) 0%, #b89228 100%);
+            color: var(--bg-dark);
+        }
+
+        .btn-gold:hover {
+            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold-primary) 100%);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-glass);
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .btn-outline:hover {
+            color: #fff;
+            border-color: #fff;
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--status-booked);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            margin-top: 0.8rem;
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+
+        /* ==========================================================================
+           7. MANAGE BOOKING & SUCCESS CARDS
+           ========================================================================== */
+        .manage-section {
+            margin-top: 3rem;
+            padding: 1.5rem;
+        }
+
+        .zoom-card {
+            background: rgba(30, 58, 95, 0.4);
+            border: 1px solid var(--blue-accent);
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .hidden { display: none !important; }
+    </style>
 </head>
 <body>
-    <div class="bg-elements"></div> <!-- خلفية الشارتات المجردة -->
-    
-    <header class="hero">
-        <h1>NAWAF PRO</h1>
-        <h2>PRIVATE WYCKOFF & MARKET ANALYSIS SESSIONS</h2>
-        <p>احجز جلستك التدريبية الفردية مباشرة.</p>
-        
-        <div class="session-info">
-            <span>🕒 جميع المواعيد بتوقيت السعودية (UTC+3)</span>
-            <span>💻 عبر Zoom</span>
-            <span>⏱ مدة الجلسة: 75 دقيقة</span>
-            <span>🔒 خصوصية كاملة</span>
+
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+
+    <!-- Header Section -->
+    <header>
+        <div class="brand-title">NAWAF PRO</div>
+        <div class="brand-subtitle">Private Wyckoff & Market Analysis Sessions</div>
+        <h1 class="arabic-title">حجز المحاضرات الفردية اليومية</h1>
+        <p class="hero-desc">جلسات مباشرة وخاصة لتحليل الأسواق، منهج Wyckoff، قراءة حركة السعر، وإدارة الفرص التداولية.</p>
+
+        <div class="meta-pills">
+            <span class="pill">🕒 توقيت المملكة العربية السعودية (UTC+3)</span>
+            <span class="pill">💻 عبر Zoom</span>
+            <span class="pill">⏱ مدة الجلسة: 75 دقيقة</span>
+            <span class="pill">🔒 خصوصية كاملة للمتدربين</span>
         </div>
     </header>
 
-    <main class="booking-container">
-        <!-- Progress -->
-        <div class="progress-bar">
-            <span class="active">01 التاريخ</span>
-            <span>02 الوقت</span>
-            <span>03 البيانات</span>
+    <!-- Main Content -->
+    <div class="container">
+
+        <!-- Progress Steps -->
+        <div class="progress-indicator">
+            <span class="step-item active" id="step1-label">01 اختيار التاريخ</span>
+            <span class="step-item" id="step2-label">02 اختيار الوقت</span>
+            <span class="step-item" id="step3-label">03 بيانات الحجز</span>
+            <span class="step-item" id="step4-label">04 تأكيد</span>
         </div>
 
-        <!-- Calendar Section -->
-        <section id="date-selection" class="step-section">
-            <h3>اختر يوم التدريب</h3>
-            <input type="date" id="booking-date" min="" onchange="loadAvailableSlots()">
+        <!-- 1. Calendar Selection -->
+        <section class="glass-panel calendar-wrapper">
+            <h2 class="section-title">📅 اختر تاريخ المحاضرة</h2>
+            <input type="date" id="booking-date-picker" class="date-picker-input" onchange="onDateSelected()">
         </section>
 
-        <!-- Time Slots Section -->
-        <section id="time-selection" class="step-section hidden">
-            <h3>المواعيد المتاحة</h3>
-            <div class="slots-grid" id="slots-container">
-                <!-- يتم توليد البطاقات عبر JS -->
+        <!-- 2. Time Slots Section -->
+        <section id="slots-section" class="glass-panel calendar-wrapper hidden">
+            <h2 class="section-title">🕒 المواعيد المتاحة لذلك اليوم</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                * جميع المواعيد تعتمد توقيت المملكة العربية السعودية (AST).
+            </p>
+            <div id="slots-grid-container" class="slots-grid">
+                <!-- Time Slot Cards Will Be Rendered Dynamically Here -->
             </div>
         </section>
 
-        <!-- Booking Form Modal (Hidden by default) -->
-        <div id="booking-modal" class="modal hidden">
-            <div class="modal-content glass">
-                <h3>تأكيد الحجز</h3>
-                <p id="selected-slot-info" class="gold-text"></p>
-                <form id="booking-form">
-                    <input type="text" id="student_name" placeholder="الاسم الكريم (مطلوب)" required>
-                    <input type="text" id="contact" placeholder="رقم الجوال أو حساب تيليجرام">
-                    <textarea id="note" placeholder="ملاحظة للمدرب (خاصة وسرية)..."></textarea>
-                    <button type="submit" class="btn-primary">تأكيد الحجز</button>
-                    <button type="button" class="btn-secondary" onclick="closeModal()">إلغاء</button>
-                </form>
+        <!-- Manage Booking Area -->
+        <section class="glass-panel manage-section">
+            <h2 class="section-title">🔍 إدارة حجزي السابق</h2>
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                <input type="text" id="lookup-code-input" class="form-control" placeholder="أدخل رمز الحجز الخاص بك (مثال: NP-X89K2)">
+                <button class="btn btn-gold" style="width: auto; min-width: 120px;" onclick="lookupBooking()">بحث</button>
             </div>
+
+            <!-- Booking Lookup Result Card -->
+            <div id="booking-result-card" class="glass-panel hidden" style="margin-top: 1rem; padding: 1rem;">
+                <!-- Filled via JS -->
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Modal Form (Booking Inputs) -->
+    <div id="booking-modal" class="modal-overlay">
+        <div class="glass-panel modal-box">
+            <h3 class="section-title">إكمال بيانات الحجز</h3>
+
+            <div class="summary-card">
+                <div class="summary-row"><span>التاريخ:</span><strong id="modal-date-val" style="color:var(--gold-light);"></strong></div>
+                <div class="summary-row"><span>وقت المحاضرة:</span><strong id="modal-time-val" style="color:var(--gold-light);"></strong></div>
+                <div class="summary-row"><span>مدة الجلسة:</span><span>75 دقيقة</span></div>
+                <div class="summary-row"><span>المنطقة الزمنية:</span><span>السعودية (UTC+3)</span></div>
+            </div>
+
+            <form id="booking-form" onsubmit="submitBooking(event)">
+                <div class="form-group">
+                    <label>الاسم الكامل *</label>
+                    <input type="text" id="input-student-name" class="form-control" required placeholder="أدخل اسمك الكريم">
+                </div>
+
+                <div class="form-group">
+                    <label>رقم الجوال أو Telegram Username (اختياري)</label>
+                    <input type="text" id="input-contact" class="form-control" placeholder="@username أو 05xxxxxxxx">
+                </div>
+
+                <div class="form-group">
+                    <label>ملاحظات خاصة للمدرب (سرية)</label>
+                    <textarea id="input-note" class="form-control" placeholder="أرغب في التركيز على منهج Wyckoff، أو التداول مع الاتجاه..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-gold" id="btn-submit-booking">تأكيد الحجز النهائي</button>
+                <button type="button" class="btn btn-outline" onclick="closeModal()">إلغاء</button>
+            </form>
         </div>
-    </main>
+    </div>
 
-    <!-- Manage Booking Section -->
-    <section class="manage-booking">
-        <h3>إدارة حجزي</h3>
-        <input type="text" id="manage_code" placeholder="أدخل رمز الحجز (Booking ID)">
-        <button class="btn-outline" onclick="fetchMyBooking()">استعراض الحجز</button>
-        <div id="my-booking-details" class="hidden"></div>
-    </section>
+    <!-- Javascript Logic -->
+    <script>
+        /* ==========================================================================
+           1. SUPABASE DATABASE CONFIGURATION
+           ========================================================================== */
+        // ضع روابط مشروع Supabase الخاص بك هنا
+        const SUPABASE_URL = "https://YOUR_SUPABASE_PROJECT_ID.supabase.co";
+        const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
-    <script src="config.js"></script>
-    <script src="app.js"></script>
+        // تهيئة العميل (يستمر العمل محلیاً بدون أخطاء إذا لم يُربط الخادم)
+        const db = (SUPABASE_URL.includes("YOUR_SUPABASE")) 
+            ? null 
+            : supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        /* ==========================================================================
+           2. CONFIGURATION & STATE MANAGEMENT
+           ========================================================================== */
+        const SYSTEM_CONFIG = {
+            startHour: 16,        // 4:00 PM
+            endHour: 22,          // 10:00 PM
+            sessionDuration: 75,  // Minutes
+            breakDuration: 30     // Minutes
+        };
+
+        let activeDate = null;
+        let activeSlot = null;
+
+        // Local Storage Mock fallback in case Supabase is not connected yet
+        let localBookingsDB = JSON.parse(localStorage.getItem('nawaf_pro_bookings') || '[]');
+
+        /* ==========================================================================
+           3. INITIALIZATION
+           ========================================================================== */
+        document.addEventListener('DOMContentLoaded', () => {
+            const datePicker = document.getElementById('booking-date-picker');
+            // Set min date to Today (Saudi Time Offset)
+            const today = new Date().toISOString().split('T')[0];
+            datePicker.min = today;
+        });
+
+        /* ==========================================================================
+           4. TIME SLOT GENERATOR ENGINE
+           ========================================================================== */
+        function generateSlotsForDay() {
+            const slots = [];
+            let start = new Date();
+            start.setHours(SYSTEM_CONFIG.startHour, 0, 0, 0);
+
+            const endLimit = new Date();
+            endLimit.setHours(SYSTEM_CONFIG.endHour, 0, 0, 0);
+
+            while (start < endLimit) {
+                let sessionEnd = new Date(start.getTime() + SYSTEM_CONFIG.sessionDuration * 60000);
+                
+                // Cut-off if it exceeds max working hours
+                if (sessionEnd > endLimit) break;
+
+                const timeStartStr = formatTime24(start);
+                const timeEndStr = formatTime24(sessionEnd);
+
+                slots.push({
+                    startTime: timeStartStr,
+                    endTime: timeEndStr,
+                    displayLabel: `${formatTime12(timeStartStr)} – ${formatTime12(timeEndStr)}`,
+                    isBooked: false
+                });
+
+                // Add Rest Break Automatically
+                start = new Date(sessionEnd.getTime() + SYSTEM_CONFIG.breakDuration * 60000);
+            }
+            return slots;
+        }
+
+        /* ==========================================================================
+           5. EVENT HANDLERS & SLOTS FETCHING
+           ========================================================================== */
+        async function onDateSelected() {
+            const datePicker = document.getElementById('booking-date-picker');
+            activeDate = datePicker.value;
+            if(!activeDate) return;
+
+            document.getElementById('step1-label').classList.add('active');
+            document.getElementById('step2-label').classList.add('active');
+            
+            const container = document.getElementById('slots-grid-container');
+            const section = document.getElementById('slots-section');
+            section.classList.remove('hidden');
+            container.innerHTML = '<p style="color:var(--text-muted); grid-column:1/-1; text-align:center;">جاري فحص الأوقات المتاحة...</p>';
+
+            // Generate System Base Slots
+            let slots = generateSlotsForDay();
+
+            // Fetch actual bookings (Supabase / LocalFallback)
+            let bookedTimes = [];
+            if (db) {
+                const { data, error } = await db
+                    .from('bookings')
+                    .select('start_time')
+                    .eq('session_date', activeDate)
+                    .eq('status', 'Booked');
+                
+                if (data) bookedTimes = data.map(b => b.start_time);
+            } else {
+                bookedTimes = localBookingsDB
+                    .filter(b => b.session_date === activeDate && b.status === 'Booked')
+                    .map(b => b.start_time);
+            }
+
+            // Flag booked slots (NO STUDENT DATA SHOWN - PRIVACY FIRST)
+            slots.forEach(slot => {
+                if (bookedTimes.includes(slot.startTime)) {
+                    slot.isBooked = true;
+                }
+            });
+
+            renderSlotCards(slots);
+        }
+
+        function renderSlotCards(slots) {
+            const container = document.getElementById('slots-grid-container');
+            container.innerHTML = '';
+
+            slots.forEach(slot => {
+                const card = document.createElement('div');
+                card.className = `slot-card ${slot.isBooked ? 'booked' : 'available'}`;
+                
+                card.innerHTML = `
+                    <div class="slot-time">🕒 ${formatTime12(slot.startTime)}</div>
+                    <div class="slot-duration">${slot.displayLabel} (75 دقيقة)</div>
+                    <span class="slot-status-badge ${slot.isBooked ? 'badge-booked' : 'badge-available'}">
+                        ${slot.isBooked ? '🔒 غير متاح' : '✅ متاح للحجز'}
+                    </span>
+                `;
+
+                if (!slot.isBooked) {
+                    card.onclick = () => openModal(slot);
+                }
+
+                container.appendChild(card);
+            });
+        }
+
+        /* ==========================================================================
+           6. BOOKING FORM MODAL & SUBMISSION
+           ========================================================================== */
+        function openModal(slot) {
+            activeSlot = slot;
+            document.getElementById('modal-date-val').innerText = activeDate;
+            document.getElementById('modal-time-val').innerText = slot.displayLabel;
+            document.getElementById('step3-label').classList.add('active');
+            
+            document.getElementById('booking-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('booking-modal').classList.remove('active');
+            document.getElementById('step3-label').classList.remove('active');
+        }
+
+        async function submitBooking(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('btn-submit-booking');
+            btn.innerText = 'جاري التثبيت...';
+            btn.disabled = true;
+
+            const studentName = document.getElementById('input-student-name').value;
+            const contact = document.getElementById('input-contact').value;
+            const note = document.getElementById('input-note').value;
+            const bookingCode = 'NP-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+
+            const bookingPayload = {
+                booking_code: bookingCode,
+                student_name: studentName,
+                contact: contact,
+                session_date: activeDate,
+                start_time: activeSlot.startTime,
+                end_time: activeSlot.endTime,
+                note: note,
+                status: 'Booked'
+            };
+
+            let isSuccess = false;
+
+            if (db) {
+                const { data, error } = await db.from('bookings').insert([bookingPayload]);
+                if (!error) isSuccess = true;
+            } else {
+                // Local Fallback Mocking atomic lock
+                const isConflict = localBookingsDB.some(
+                    b => b.session_date === activeDate && b.start_time === activeSlot.startTime && b.status === 'Booked'
+                );
+                if (!isConflict) {
+                    localBookingsDB.push(bookingPayload);
+                    localStorage.setItem('nawaf_pro_bookings', JSON.stringify(localBookingsDB));
+                    isSuccess = true;
+                }
+            }
+
+            btn.innerText = 'تأكيد الحجز النهائي';
+            btn.disabled = false;
+
+            if (isSuccess) {
+                closeModal();
+                document.getElementById('step4-label').classList.add('active');
+                alert(`✅ تم حجز جلستك بنجاح!\n\nرمز الحجز الخاص بك هو: [ ${bookingCode} ]\nاحفظ هذا الرمز لاستخدامه في إدارة أو إلغاء حجزك لاحقاً.`);
+                
+                // Clear Form and refresh slots
+                document.getElementById('booking-form').reset();
+                onDateSelected();
+            } else {
+                alert('⚠️ عذراً، تم حجز هذا الموعد للتو من قبل شخص آخر. يرجى اختيار موعد آخر.');
+                closeModal();
+                onDateSelected();
+            }
+        }
+
+        /* ==========================================================================
+           7. MANAGE MY BOOKING & CANCELLATION
+           ========================================================================== */
+        async function lookupBooking() {
+            const code = document.getElementById('lookup-code-input').value.trim();
+            const card = document.getElementById('booking-result-card');
+            
+            if(!code) return alert('يرجى إدخال رمز الحجز');
+
+            let booking = null;
+
+            if (db) {
+                const { data } = await db
+                    .from('bookings')
+                    .select('*')
+                    .eq('booking_code', code)
+                    .single();
+                booking = data;
+            } else {
+                booking = localBookingsDB.find(b => b.booking_code === code);
+            }
+
+            card.classList.remove('hidden');
+
+            if (!booking || booking.status === 'Cancelled') {
+                card.innerHTML = `<p style="color:var(--status-booked);">❌ لم يتم العثور على حجز نشط بهذا الرمز.</p>`;
+                return;
+            }
+
+            card.innerHTML = `
+                <div style="font-size:0.9rem;">
+                    <p><strong>حالة الحجز:</strong> <span class="slot-status-badge badge-available">مؤكد</span></p>
+                    <p><strong>اسم المتدرب:</strong> ${escapeHtml(booking.student_name)}</p>
+                    <p><strong>التاريخ:</strong> ${booking.session_date}</p>
+                    <p><strong>الوقت:</strong> ${formatTime12(booking.start_time)} – ${formatTime12(booking.end_time)} (توقيت السعودية)</p>
+                    ${booking.note ? `<p><strong>ملاحظتك:</strong> ${escapeHtml(booking.note)}</p>` : ''}
+                    
+                    <div class="zoom-card">
+                        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.4rem;">رابط المحاضرة الخاص بك عبر Zoom:</p>
+                        <a href="${booking.zoom_link || '#'}" target="_blank" class="btn btn-gold" style="display:inline-block; width:auto; text-decoration:none; padding:0.4rem 1.2rem;">
+                            💻 الانضمام عبر Zoom
+                        </a>
+                    </div>
+
+                    <button class="btn btn-danger" onclick="cancelBooking('${booking.booking_code}')">إلغاء هذا الحجز</button>
+                </div>
+            `;
+        }
+
+        async function cancelBooking(code) {
+            if (!confirm('هل أنت متأكد من رغبتك في إلغاء هذه المحاضرة؟')) return;
+
+            let success = false;
+
+            if (db) {
+                const { error } = await db
+                    .from('bookings')
+                    .update({ status: 'Cancelled' })
+                    .eq('booking_code', code);
+                if (!error) success = true;
+            } else {
+                const item = localBookingsDB.find(b => b.booking_code === code);
+                if (item) {
+                    item.status = 'Cancelled';
+                    localStorage.setItem('nawaf_pro_bookings', JSON.stringify(localBookingsDB));
+                    success = true;
+                }
+            }
+
+            if (success) {
+                alert('تم إلغاء حجزك بنجاح، وأصبح الموعد متاحاً للحجز مرة أخرى.');
+                document.getElementById('booking-result-card').classList.add('hidden');
+                document.getElementById('lookup-code-input').value = '';
+                if(activeDate) onDateSelected();
+            }
+        }
+
+        /* ==========================================================================
+           8. HELPERS & FORMATTERS
+           ========================================================================== */
+        function formatTime24(dateObj) {
+            const h = String(dateObj.getHours()).padStart(2, '0');
+            const m = String(dateObj.getMinutes()).padStart(2, '0');
+            return `${h}:${m}`;
+        }
+
+        function formatTime12(time24) {
+            let [hours, minutes] = time24.split(':').map(Number);
+            const period = hours >= 12 ? 'م' : 'ص';
+            hours = hours % 12 || 12;
+            return `${hours}:${String(minutes).padStart(2, '0')} ${period}`;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+    </script>
 </body>
 </html>
