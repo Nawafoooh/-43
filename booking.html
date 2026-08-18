@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nawaf Pro | Private Wyckoff & Market Analysis Sessions</title>
+    <title>NAWAF PRO | Private Wyckoff & Market Analysis Sessions</title>
 
     <!-- Firebase SDKs -->
     <script type="module">
@@ -49,71 +49,65 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
         body {
-            background-color: #050505 !important;
-            color: #ffffff !important;
+            background-color: #030303;
+            color: #ffffff;
             line-height: 1.6;
             min-height: 100vh;
             padding-bottom: 4rem;
+            position: relative;
         }
 
+        /* Dark Grid Background */
         .bg-grid {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
+            background-size: 40px 40px;
             background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-            background-size: 35px 35px;
-            z-index: -1;
+                linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            z-index: 0;
             pointer-events: none;
         }
 
-        .glass-panel {
-            background: #0f0f0f;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            padding: 1.8rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
-        }
-
         header {
+            position: relative;
+            z-index: 1;
             text-align: center;
-            padding: 3rem 1rem 2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            background: linear-gradient(180deg, #111 0%, #050505 100%);
+            padding: 3.5rem 1rem 2rem;
         }
 
         .brand-title {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: 900;
-            letter-spacing: 4px;
+            letter-spacing: 6px;
             color: #ffffff;
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.3rem;
         }
 
         .brand-subtitle {
-            font-size: 0.95rem;
-            letter-spacing: 2px;
+            font-size: 0.85rem;
+            letter-spacing: 3px;
             color: #888888;
             text-transform: uppercase;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .arabic-title {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
+            font-weight: 800;
             color: #ffffff;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
         }
 
         .hero-desc {
             color: #aaaaaa;
-            font-size: 0.9rem;
-            max-width: 600px;
-            margin: 0 auto 1.5rem;
+            font-size: 0.95rem;
+            max-width: 650px;
+            margin: 0 auto 1.8rem;
         }
 
         .meta-pills {
@@ -124,33 +118,79 @@
         }
 
         .pill {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 0.4rem 0.8rem;
+            background: #111111;
+            border: 1px solid #222222;
+            padding: 0.5rem 1rem;
             border-radius: 30px;
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             color: #dddddd;
         }
 
         .container {
-            max-width: 850px;
-            margin: 2rem auto;
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 1.5rem auto;
             padding: 0 1.2rem;
         }
 
-        .section-title {
-            font-size: 1.1rem;
+        /* Stepper Bar */
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            position: relative;
+            padding: 0 0.5rem;
+        }
+
+        .stepper::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0; right: 0;
+            height: 1px;
+            background: #222222;
+            z-index: -1;
+        }
+
+        .step-item {
+            background: #030303;
+            padding: 0 0.8rem;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #555555;
+        }
+
+        .step-item.active {
+            color: #ffffff;
+        }
+
+        /* Panel Box */
+        .card-panel {
+            background: rgba(15, 15, 15, 0.8);
+            border: 1px solid #222222;
+            border-radius: 12px;
+            padding: 1.8rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
             color: #ffffff;
             margin-bottom: 1.2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .date-picker-input {
             width: 100%;
-            padding: 0.9rem;
+            padding: 1rem;
             background: #000000;
-            border: 1px solid rgba(255, 255, 255, 0.25);
+            border: 1px solid #333333;
             color: #ffffff;
             font-size: 1rem;
             border-radius: 8px;
@@ -174,13 +214,13 @@
             padding: 1.2rem;
             text-align: center;
             border-radius: 8px;
-            background: #000000;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: #080808;
+            border: 1px solid #222222;
             transition: all 0.2s ease;
         }
 
         .slot-card.available {
-            border-color: rgba(255, 255, 255, 0.5);
+            border-color: #444444;
             cursor: pointer;
         }
 
@@ -195,9 +235,9 @@
         }
 
         .slot-card.booked {
-            opacity: 0.35;
+            opacity: 0.3;
             cursor: not-allowed;
-            border-color: rgba(255, 255, 255, 0.05);
+            border-color: #111111;
         }
 
         .slot-time {
@@ -227,19 +267,19 @@
 
         .form-group label {
             display: block;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: #aaaaaa;
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.4rem;
         }
 
         .form-control {
             width: 100%;
-            padding: 0.8rem;
+            padding: 0.9rem;
             background: #000000;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid #333333;
             border-radius: 6px;
             color: #ffffff;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             outline: none;
         }
 
@@ -249,7 +289,7 @@
 
         .btn {
             width: 100%;
-            padding: 0.85rem;
+            padding: 0.9rem;
             border: none;
             border-radius: 6px;
             font-size: 0.95rem;
@@ -267,12 +307,12 @@
         }
 
         .btn-white:hover {
-            background: #cccccc;
+            background: #dddddd;
         }
 
         .btn-outline {
             background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid #333333;
             color: #aaaaaa;
             margin-top: 0.5rem;
         }
@@ -285,7 +325,7 @@
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.85);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -314,13 +354,13 @@
         }
 
         .admin-table th, .admin-table td {
-            border: 1px solid rgba(255,255,255,0.15);
-            padding: 0.6rem;
+            border: 1px solid #222222;
+            padding: 0.7rem;
             text-align: right;
         }
 
         .admin-table th {
-            background: rgba(255,255,255,0.05);
+            background: #111111;
             color: #fff;
         }
 
@@ -333,7 +373,7 @@
 
     <header>
         <div class="brand-title">NAWAF PRO</div>
-        <div class="brand-subtitle">Private Wyckoff & Market Analysis Sessions</div>
+        <div class="brand-subtitle">PRIVATE WYCKOFF & MARKET ANALYSIS SESSIONS</div>
         <h1 class="arabic-title">حجز المحاضرات الفردية اليومية</h1>
         <p class="hero-desc">جلسات مباشرة وخاصة لتحليل الأسواق، منهج Wyckoff، قراءة حركة السعر، وإدارة الفرص التداولية.</p>
 
@@ -347,27 +387,39 @@
 
     <div class="container">
 
-        <section class="glass-panel">
-            <h2 class="section-title">📅 اختر يوم التدريب</h2>
+        <!-- Stepper -->
+        <div class="stepper">
+            <div class="step-item active" id="step-1">01 التاريخ</div>
+            <div class="step-item" id="step-2">02 الوقت</div>
+            <div class="step-item" id="step-3">03 البيانات</div>
+            <div class="step-item" id="step-4">04 التأكيد</div>
+        </div>
+
+        <!-- 1. Select Date -->
+        <section class="card-panel">
+            <div class="card-title">📅 اختر يوم التدريب</div>
             <input type="date" id="booking-date-picker" class="date-picker-input" onchange="onDateSelected()">
         </section>
 
-        <section id="slots-section" class="glass-panel hidden">
-            <h2 class="section-title">🕒 المواعيد المتاحة</h2>
+        <!-- 2. Time Slots -->
+        <section id="slots-section" class="card-panel hidden">
+            <div class="card-title">🕒 المواعيد المتاحة</div>
             <div id="slots-grid-container" class="slots-grid"></div>
         </section>
 
-        <section class="glass-panel">
-            <h2 class="section-title">🔍 استعلام عن حجز متدرب</h2>
+        <!-- 3. Manage Booking -->
+        <section class="card-panel">
+            <div class="card-title">🔍 إدارة حجزي</div>
             <div style="display: flex; gap: 0.5rem;">
                 <input type="text" id="lookup-code-input" class="form-control" placeholder="أدخل رمز الحجز (مثال: NP-X89K2)">
                 <button class="btn btn-white" style="width: auto; min-width: 100px;" onclick="lookupBooking()">بحث</button>
             </div>
-            <div id="booking-result-card" class="hidden" style="margin-top: 1rem; padding: 1rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px;"></div>
+            <div id="booking-result-card" class="hidden" style="margin-top: 1rem; padding: 1rem; border: 1px solid #333333; border-radius: 6px;"></div>
         </section>
 
-        <section class="glass-panel">
-            <h2 class="section-title">🔐 لوحة الإدارة والتحكم الخاصة</h2>
+        <!-- 4. Admin Panel -->
+        <section class="card-panel">
+            <div class="card-title">🔐 لوحة الإدارة والتحكم</div>
             <div id="admin-login-box" style="display: flex; gap: 0.5rem;">
                 <input type="password" id="admin-pass-input" class="form-control" placeholder="أدخل الرقم السري للإدارة">
                 <button class="btn btn-white" style="width: auto; min-width: 110px;" onclick="checkAdminPass()">دخول</button>
@@ -375,7 +427,7 @@
 
             <div id="admin-dashboard" class="hidden" style="margin-top: 1rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="color: #fff; font-size: 0.95rem;">جدول الحجوزات المسجلة بالسحابة:</h3>
+                    <h3 style="color: #fff; font-size: 0.95rem;">الحجوزات المسجلة في السحابة:</h3>
                     <button class="btn btn-outline" style="width: auto; padding: 0.3rem 0.8rem; font-size: 0.8rem; margin:0;" onclick="logoutAdmin()">خروج</button>
                 </div>
                 <div style="overflow-x: auto;">
@@ -399,9 +451,10 @@
 
     </div>
 
+    <!-- Modal -->
     <div id="booking-modal" class="modal-overlay">
-        <div class="glass-panel modal-box">
-            <h3 class="section-title" id="modal-title">تأكيد بيانات الحجز</h3>
+        <div class="card-panel modal-box">
+            <div class="card-title" id="modal-title">تأكيد بيانات الحجز</div>
             
             <p id="modal-slot-summary" style="font-size: 0.85rem; color: #aaaaaa; margin-bottom: 1rem;"></p>
 
@@ -455,6 +508,7 @@
             activeDate = document.getElementById('booking-date-picker').value;
             if(!activeDate) return;
 
+            document.getElementById('step-2').classList.add('active');
             const container = document.getElementById('slots-grid-container');
             document.getElementById('slots-section').classList.remove('hidden');
             container.innerHTML = '<p style="color:#888;">جاري تحميل المواعيد من Firebase...</p>';
@@ -497,6 +551,7 @@
 
         function openModal(slot) {
             activeSlot = slot;
+            document.getElementById('step-3').classList.add('active');
             document.getElementById('booking-form').classList.remove('hidden');
             document.getElementById('booking-success-box').classList.add('hidden');
             document.getElementById('modal-title').innerText = 'تأكيد بيانات الحجز';
@@ -536,6 +591,7 @@
 
                 const calLink = createGoogleCalendarLink(activeDate, activeSlot.startTime, activeSlot.endTime, studentName);
                 
+                document.getElementById('step-4').classList.add('active');
                 document.getElementById('booking-form').classList.add('hidden');
                 document.getElementById('booking-success-box').classList.remove('hidden');
                 document.getElementById('modal-title').innerText = '🎉 تم الحجز بنجاح';
