@@ -5,13 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nawaf Pro | Private Wyckoff & Market Analysis Sessions</title>
 
-    <!-- Supabase JS Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Firebase SDKs (Modular/CDN Compatible) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            getDocs, 
+            query, 
+            where, 
+            updateDoc, 
+            doc, 
+            onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBaY75jwos44EbgZMlhIcU_YfrGeKY7r3w",
+            authDomain: "naj7-7da9d.firebaseapp.com",
+            projectId: "naj7-7da9d",
+            storageBucket: "naj7-7da9d.firebasestorage.app",
+            messagingSenderId: "72751584563",
+            appId: "1:72751584563:web:8562f042882919d2c4da46",
+            measurementId: "G-308H9HW0FP"
+        };
+
+        // Initialize Firebase & Firestore
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Expose Firebase functions globally for UI interaction
+        window.db = db;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.getDocs = getDocs;
+        window.query = query;
+        window.where = where;
+        window.updateDoc = updateDoc;
+        window.doc = doc;
+        window.onSnapshot = onSnapshot;
+    </script>
 
     <style>
-        /* ==========================================================================
-           MONOCHROME / BLACK & PREMIUM DARK THEME
-           ========================================================================== */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -27,7 +63,6 @@
             padding-bottom: 4rem;
         }
 
-        /* Abstract Grid Background */
         .bg-grid {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -39,7 +74,6 @@
             pointer-events: none;
         }
 
-        /* Glass Panel Styling */
         .glass-panel {
             background: #0f0f0f;
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -49,7 +83,6 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
         }
 
-        /* Header Layout */
         header {
             text-align: center;
             padding: 3rem 1rem 2rem;
@@ -102,46 +135,12 @@
             color: #dddddd;
         }
 
-        /* Container Layout */
         .container {
             max-width: 850px;
             margin: 2rem auto;
             padding: 0 1.2rem;
         }
 
-        /* Progress Steps */
-        .progress-indicator {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-
-        .progress-indicator::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0; right: 0;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.1);
-            z-index: 1;
-        }
-
-        .step-item {
-            position: relative;
-            z-index: 2;
-            background: #050505;
-            padding: 0 0.6rem;
-            font-size: 0.8rem;
-            color: #555555;
-            font-weight: bold;
-        }
-
-        .step-item.active {
-            color: #ffffff;
-        }
-
-        /* Titles */
         .section-title {
             font-size: 1.1rem;
             color: #ffffff;
@@ -150,7 +149,6 @@
             padding-bottom: 0.5rem;
         }
 
-        /* Calendar Input */
         .date-picker-input {
             width: 100%;
             padding: 0.9rem;
@@ -168,10 +166,9 @@
             filter: invert(1);
         }
 
-        /* Time Slots Grid */
         .slots-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 1rem;
             margin-top: 1rem;
         }
@@ -227,7 +224,6 @@
             border: 1px solid #ffffff;
         }
 
-        /* Forms & Inputs */
         .form-group {
             margin-bottom: 1rem;
         }
@@ -254,7 +250,6 @@
             border-color: #ffffff;
         }
 
-        /* Buttons */
         .btn {
             width: 100%;
             padding: 0.85rem;
@@ -264,6 +259,9 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .btn-white {
@@ -287,7 +285,6 @@
             border-color: #ffffff;
         }
 
-        /* Modal Overlay */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -310,6 +307,24 @@
         .modal-box {
             width: 100%;
             max-width: 480px;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .admin-table th, .admin-table td {
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 0.6rem;
+            text-align: right;
+        }
+
+        .admin-table th {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
         }
 
         .hidden { display: none !important; }
@@ -335,14 +350,7 @@
 
     <div class="container">
 
-        <div class="progress-indicator">
-            <span class="step-item active" id="step1-label">01 التاريخ</span>
-            <span class="step-item" id="step2-label">02 الوقت</span>
-            <span class="step-item" id="step3-label">03 البيانات</span>
-            <span class="step-item" id="step4-label">04 التأكيد</span>
-        </div>
-
-        <!-- 1. Calendar Selection -->
+        <!-- 1. Date Selection -->
         <section class="glass-panel">
             <h2 class="section-title">📅 اختر يوم التدريب</h2>
             <input type="date" id="booking-date-picker" class="date-picker-input" onchange="onDateSelected()">
@@ -356,7 +364,7 @@
 
         <!-- 3. Manage Booking -->
         <section class="glass-panel">
-            <h2 class="section-title">🔍 إدارة حجزي</h2>
+            <h2 class="section-title">🔍 استعلام عن حجز متدرب</h2>
             <div style="display: flex; gap: 0.5rem;">
                 <input type="text" id="lookup-code-input" class="form-control" placeholder="أدخل رمز الحجز (مثال: NP-X89K2)">
                 <button class="btn btn-white" style="width: auto; min-width: 100px;" onclick="lookupBooking()">بحث</button>
@@ -364,24 +372,56 @@
             <div id="booking-result-card" class="hidden" style="margin-top: 1rem; padding: 1rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px;"></div>
         </section>
 
+        <!-- 4. Admin Panel Section -->
+        <section class="glass-panel">
+            <h2 class="section-title">🔐 لوحة الإدارة والتحكم الخاصة</h2>
+            <div id="admin-login-box" style="display: flex; gap: 0.5rem;">
+                <input type="password" id="admin-pass-input" class="form-control" placeholder="أدخل الرقم السري للإدارة">
+                <button class="btn btn-white" style="width: auto; min-width: 110px;" onclick="checkAdminPass()">دخول</button>
+            </div>
+
+            <div id="admin-dashboard" class="hidden" style="margin-top: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="color: #fff; font-size: 0.95rem;">جدول الحجوزات المسجلة بالسحابة:</h3>
+                    <button class="btn btn-outline" style="width: auto; padding: 0.3rem 0.8rem; font-size: 0.8rem; margin:0;" onclick="logoutAdmin()">خروج</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>الرمز</th>
+                                <th>الاسم</th>
+                                <th>Telegram</th>
+                                <th>التاريخ</th>
+                                <th>الوقت</th>
+                                <th>الملاحظة</th>
+                                <th>الإجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
     </div>
 
     <!-- Booking Modal -->
     <div id="booking-modal" class="modal-overlay">
         <div class="glass-panel modal-box">
-            <h3 class="section-title">تأكيد بيانات الحجز</h3>
+            <h3 class="section-title" id="modal-title">تأكيد بيانات الحجز</h3>
             
             <p id="modal-slot-summary" style="font-size: 0.85rem; color: #aaaaaa; margin-bottom: 1rem;"></p>
 
             <form id="booking-form" onsubmit="submitBooking(event)">
                 <div class="form-group">
                     <label>الاسم الكريم *</label>
-                    <input type="text" id="input-student-name" class="form-control" required placeholder="أدخل اسمك">
+                    <input type="text" id="input-student-name" class="form-control" required placeholder="أدخل اسمك الكريم">
                 </div>
 
                 <div class="form-group">
-                    <label>رقم الجوال أو حساب Telegram</label>
-                    <input type="text" id="input-contact" class="form-control" placeholder="@username أو 05xxxxxxxx">
+                    <label>حساب Telegram *</label>
+                    <input type="text" id="input-contact" class="form-control" required placeholder="@username">
                 </div>
 
                 <div class="form-group">
@@ -392,151 +432,245 @@
                 <button type="submit" class="btn btn-white" id="btn-submit-booking">تأكيد الحجز</button>
                 <button type="button" class="btn btn-outline" onclick="closeModal()">إلغاء</button>
             </form>
+
+            <div id="booking-success-box" class="hidden" style="text-align: center; margin-top: 1rem;">
+                <p id="success-message-text" style="color: #4cd964; margin-bottom: 1rem; font-size: 0.9rem;"></p>
+                
+                <a id="btn-add-calendar" target="_blank" class="btn btn-white" style="margin-bottom: 0.5rem;">
+                    🔔 إضافة تنبيه للتقويم (تنبيه قبل 15 دقيقة)
+                </a>
+                <button type="button" class="btn btn-outline" onclick="closeModal()">إغلاق</button>
+            </div>
         </div>
     </div>
 
     <script>
-        const SYSTEM_CONFIG = { startHour: 16, endHour: 22, sessionDuration: 75, breakDuration: 30 };
+        const FIXED_SLOTS = [
+            { startTime: "16:00", endTime: "17:15", label: "4:00 م – 5:15 م" },
+            { startTime: "17:45", endTime: "19:00", label: "5:45 م – 7:00 م" },
+            { startTime: "19:30", endTime: "20:45", label: "7:30 م – 8:45 م" },
+            { startTime: "21:15", endTime: "22:30", label: "9:15 م – 10:30 م" }
+        ];
+
         let activeDate = null;
         let activeSlot = null;
-        let localBookingsDB = JSON.parse(localStorage.getItem('nawaf_pro_bookings') || '[]');
+        let isAdminLoggedIn = false;
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('booking-date-picker').min = new Date().toISOString().split('T')[0];
         });
 
-        function generateSlotsForDay() {
-            const slots = [];
-            let start = new Date();
-            start.setHours(SYSTEM_CONFIG.startHour, 0, 0, 0);
-            const endLimit = new Date();
-            endLimit.setHours(SYSTEM_CONFIG.endHour, 0, 0, 0);
-
-            while (start < endLimit) {
-                let sessionEnd = new Date(start.getTime() + SYSTEM_CONFIG.sessionDuration * 60000);
-                if (sessionEnd > endLimit) break;
-
-                const tStart = formatTime24(start);
-                const tEnd = formatTime24(sessionEnd);
-
-                slots.push({
-                    startTime: tStart,
-                    endTime: tEnd,
-                    displayLabel: `${formatTime12(tStart)} – ${formatTime12(tEnd)}`,
-                    isBooked: false
-                });
-
-                start = new Date(sessionEnd.getTime() + SYSTEM_CONFIG.breakDuration * 60000);
-            }
-            return slots;
-        }
-
-        function onDateSelected() {
+        async function onDateSelected() {
             activeDate = document.getElementById('booking-date-picker').value;
             if(!activeDate) return;
 
-            document.getElementById('step2-label').classList.add('active');
             const container = document.getElementById('slots-grid-container');
             document.getElementById('slots-section').classList.remove('hidden');
+            container.innerHTML = '<p style="color:#888;">جاري تحميل المواعيد من قاعدة البيانات...</p>';
 
-            let slots = generateSlotsForDay();
-            let bookedTimes = localBookingsDB
-                .filter(b => b.session_date === activeDate && b.status === 'Booked')
-                .map(b => b.start_time);
-
-            container.innerHTML = '';
-            slots.forEach(slot => {
-                const isBooked = bookedTimes.includes(slot.startTime);
-                const card = document.createElement('div');
-                card.className = `slot-card ${isBooked ? 'booked' : 'available'}`;
+            try {
+                // Query Firestore for active bookings on the selected date
+                const q = window.query(
+                    window.collection(window.db, "bookings"), 
+                    window.where("session_date", "==", activeDate),
+                    window.where("status", "==", "Booked")
+                );
                 
-                card.innerHTML = `
-                    <div class="slot-time">🕒 ${formatTime12(slot.startTime)}</div>
-                    <div class="slot-duration">${slot.displayLabel}</div>
-                    <span class="badge">${isBooked ? 'غير متاح' : 'متاح للحجز'}</span>
-                `;
+                const querySnapshot = await window.getDocs(q);
+                let bookedTimes = [];
+                querySnapshot.forEach((doc) => {
+                    bookedTimes.push(doc.data().start_time);
+                });
 
-                if (!isBooked) {
-                    card.onclick = () => openModal(slot);
-                }
-                container.appendChild(card);
-            });
+                container.innerHTML = '';
+                FIXED_SLOTS.forEach(slot => {
+                    const isBooked = bookedTimes.includes(slot.startTime);
+                    const card = document.createElement('div');
+                    card.className = `slot-card ${isBooked ? 'booked' : 'available'}`;
+                    
+                    card.innerHTML = `
+                        <div class="slot-time">🕒 ${slot.label}</div>
+                        <div class="slot-duration">مدة الجلسة: 75 دقيقة</div>
+                        <span class="badge">${isBooked ? 'غير متاح' : 'متاح للحجز'}</span>
+                    `;
+
+                    if (!isBooked) {
+                        card.onclick = () => openModal(slot);
+                    }
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                console.error("Firebase Read Error: ", err);
+                container.innerHTML = '<p style="color:#ff5555;">حدث خطأ أثناء قراءة الحجوزات، يرجى المحاولة لاحقاً.</p>';
+            }
         }
 
         function openModal(slot) {
             activeSlot = slot;
-            document.getElementById('modal-slot-summary').innerText = `التاريخ: ${activeDate} | الوقت: ${slot.displayLabel}`;
-            document.getElementById('step3-label').classList.add('active');
+            document.getElementById('booking-form').classList.remove('hidden');
+            document.getElementById('booking-success-box').classList.add('hidden');
+            document.getElementById('modal-title').innerText = 'تأكيد بيانات الحجز';
+            document.getElementById('modal-slot-summary').innerText = `التاريخ: ${activeDate} | الوقت: ${slot.label}`;
             document.getElementById('booking-modal').classList.add('active');
         }
 
         function closeModal() {
             document.getElementById('booking-modal').classList.remove('active');
-        }
-
-        function submitBooking(event) {
-            event.preventDefault();
-            const bookingCode = 'NP-' + Math.random().toString(36).substring(2, 7).toUpperCase();
-
-            localBookingsDB.push({
-                booking_code: bookingCode,
-                student_name: document.getElementById('input-student-name').value,
-                contact: document.getElementById('input-contact').value,
-                session_date: activeDate,
-                start_time: activeSlot.startTime,
-                end_time: activeSlot.endTime,
-                note: document.getElementById('input-note').value,
-                status: 'Booked'
-            });
-
-            localStorage.setItem('nawaf_pro_bookings', JSON.stringify(localBookingsDB));
-            closeModal();
-            alert(`✅ تم الحجز بنجاح!\nرمز الحجز الخاص بك: [ ${bookingCode} ]`);
             document.getElementById('booking-form').reset();
-            onDateSelected();
         }
 
-        function lookupBooking() {
-            const code = document.getElementById('lookup-code-input').value.trim();
+        async function submitBooking(event) {
+            event.preventDefault();
+            const btnSubmit = document.getElementById('btn-submit-booking');
+            btnSubmit.innerText = "جاري الحفظ...";
+            btnSubmit.disabled = true;
+
+            const bookingCode = 'NP-' + Math.random().toString(36).substring(2, 7).toUpperCase();
+            const studentName = document.getElementById('input-student-name').value;
+            const contact = document.getElementById('input-contact').value;
+            const note = document.getElementById('input-note').value;
+
+            try {
+                // Save to Firestore Database
+                await window.addDoc(window.collection(window.db, "bookings"), {
+                    booking_code: bookingCode,
+                    student_name: studentName,
+                    contact: contact,
+                    session_date: activeDate,
+                    start_time: activeSlot.startTime,
+                    end_time: activeSlot.endTime,
+                    slot_label: activeSlot.label,
+                    note: note,
+                    status: 'Booked',
+                    created_at: new Date()
+                });
+
+                const calLink = createGoogleCalendarLink(activeDate, activeSlot.startTime, activeSlot.endTime, studentName);
+                
+                document.getElementById('booking-form').classList.add('hidden');
+                document.getElementById('booking-success-box').classList.remove('hidden');
+                document.getElementById('modal-title').innerText = '🎉 تم الحجز بنجاح';
+                document.getElementById('success-message-text').innerText = `رمز الحجز الخاص بك: [ ${bookingCode} ]\nتم حفظ موعدك بنجاح في السحابة.`;
+                document.getElementById('btn-add-calendar').href = calLink;
+
+                onDateSelected();
+            } catch (err) {
+                console.error("Firebase Save Error: ", err);
+                alert("حدث خطأ أثناء حفظ الحجز. يرجى المحاولة مرة أخرى.");
+            } finally {
+                btnSubmit.innerText = "تأكيد الحجز";
+                btnSubmit.disabled = false;
+            }
+        }
+
+        function createGoogleCalendarLink(dateStr, startTime, endTime, name) {
+            const startISO = dateStr.replace(/-/g, '') + 'T' + startTime.replace(':', '') + '00';
+            const endISO = dateStr.replace(/-/g, '') + 'T' + endTime.replace(':', '') + '00';
+            const title = encodeURIComponent("محاضرة خاصة - NAWAF PRO");
+            const details = encodeURIComponent(`جلسة تحليل خاصة مع المتدرب: ${name}\nيرجى التواجد قبل الموعد.`);
+            
+            return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startISO}/${endISO}&details=${details}&ctz=Asia/Riyadh`;
+        }
+
+        async function lookupBooking() {
+            const code = document.getElementById('lookup-code-input').value.trim().toUpperCase();
             const card = document.getElementById('booking-result-card');
             if(!code) return;
 
-            const booking = localBookingsDB.find(b => b.booking_code === code && b.status === 'Booked');
             card.classList.remove('hidden');
+            card.innerHTML = `<p style="color:#888;">جاري البحث...</p>`;
 
-            if (!booking) {
-                card.innerHTML = `<p style="color:#aaa;">❌ لا يوجد حجز نشط بهذا الرمز.</p>`;
-            } else {
-                card.innerHTML = `
-                    <p><strong>اسم المتدرب:</strong> ${booking.student_name}</p>
-                    <p><strong>التاريخ:</strong> ${booking.session_date}</p>
-                    <p><strong>الوقت:</strong> ${formatTime12(booking.start_time)}</p>
-                    <button class="btn btn-outline" style="margin-top:0.8rem; color:#ff5555;" onclick="cancelBooking('${booking.booking_code}')">إلغاء الحجز</button>
-                `;
+            try {
+                const q = window.query(
+                    window.collection(window.db, "bookings"), 
+                    window.where("booking_code", "==", code),
+                    window.where("status", "==", "Booked")
+                );
+                
+                const snapshot = await window.getDocs(q);
+                if (snapshot.empty) {
+                    card.innerHTML = `<p style="color:#aaa;">❌ لا يوجد حجز نشط بهذا الرمز.</p>`;
+                } else {
+                    const docData = snapshot.docs[0].data();
+                    const docId = snapshot.docs[0].id;
+
+                    card.innerHTML = `
+                        <p><strong>اسم المتدرب:</strong> ${docData.student_name}</p>
+                        <p><strong>التاريخ:</strong> ${docData.session_date}</p>
+                        <p><strong>الوقت:</strong> ${docData.slot_label}</p>
+                        <button class="btn btn-outline" style="margin-top:0.8rem; color:#ff5555;" onclick="cancelBookingDoc('${docId}')">إلغاء الحجز</button>
+                    `;
+                }
+            } catch (err) {
+                console.error(err);
+                card.innerHTML = `<p style="color:#ff5555;">تعذر إجراء البحث.</p>`;
             }
         }
 
-        function cancelBooking(code) {
-            if(!confirm('هل أنت متأكد من الإلغاء؟')) return;
-            const item = localBookingsDB.find(b => b.booking_code === code);
-            if(item) {
-                item.status = 'Cancelled';
-                localStorage.setItem('nawaf_pro_bookings', JSON.stringify(localBookingsDB));
-                alert('تم الإلغاء بنجاح.');
+        async function cancelBookingDoc(docId) {
+            if(!confirm('هل أنت متأكد من إلغاء هذا الحجز؟')) return;
+            try {
+                const docRef = window.doc(window.db, "bookings", docId);
+                await window.updateDoc(docRef, { status: 'Cancelled' });
+                alert('تم إلغاء الحجز بنجاح.');
                 document.getElementById('booking-result-card').classList.add('hidden');
                 onDateSelected();
+            } catch (err) {
+                console.error(err);
+                alert('تعذر إلغاء الحجز.');
             }
         }
 
-        function formatTime24(d) {
-            return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        /* ADMIN FUNCTIONS WITH REAL-TIME LISTENER */
+        function checkAdminPass() {
+            const pass = document.getElementById('admin-pass-input').value;
+            if(pass === "nawaf2030") {
+                isAdminLoggedIn = true;
+                document.getElementById('admin-login-box').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                listenToBookingsRealtime();
+            } else {
+                alert("الرمز السري غير صحيح!");
+            }
         }
 
-        function formatTime12(t24) {
-            let [h, m] = t24.split(':').map(Number);
-            const p = h >= 12 ? 'م' : 'ص';
-            h = h % 12 || 12;
-            return `${h}:${String(m).padStart(2, '0')} ${p}`;
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            document.getElementById('admin-pass-input').value = '';
+            document.getElementById('admin-login-box').classList.remove('hidden');
+            document.getElementById('admin-dashboard').classList.add('hidden');
+        }
+
+        function listenToBookingsRealtime() {
+            const tbody = document.getElementById('admin-table-body');
+            const q = window.query(
+                window.collection(window.db, "bookings"),
+                window.where("status", "==", "Booked")
+            );
+
+            // Listen for changes in realtime
+            window.onSnapshot(q, (snapshot) => {
+                if (snapshot.empty) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#888;">لا توجد حجوزات مسجلة حالياً.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = snapshot.docs.map(docSnap => {
+                    const b = docSnap.data();
+                    const docId = docSnap.id;
+                    return `
+                        <tr>
+                            <td><strong>${b.booking_code}</strong></td>
+                            <td>${b.student_name}</td>
+                            <td>${b.contact}</td>
+                            <td>${b.session_date}</td>
+                            <td>${b.slot_label}</td>
+                            <td>${b.note || '-'}</td>
+                            <td><button style="color:#ff5555; background:none; border:none; cursor:pointer;" onclick="cancelBookingDoc('${docId}')">إلغاء</button></td>
+                        </tr>
+                    `;
+                }).join('');
+            });
         }
     </script>
 </body>
