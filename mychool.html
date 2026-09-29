@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متوسطة المنذر بن عمرو الأنصاري</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #0f4c75 0%, #3282b8 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-text {
+            text-align: center;
+        }
+
+        .ministry-info {
+            color: #0f4c75;
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .school-name {
+            color: #0f4c75;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .director-info {
+            color: #3282b8;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .welcome-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .welcome-title {
+            color: #0f4c75;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .welcome-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #0f4c75, #3282b8);
+            border-radius: 2px;
+        }
+
+        .welcome-message {
+            color: #444;
+            font-size: 18px;
+            line-height: 2;
+            text-align: justify;
+            margin-bottom: 30px;
+        }
+
+        .quote {
+            background: linear-gradient(135deg, #0f4c75, #3282b8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(15, 76, 117, 0.3);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #0f4c75, #3282b8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 24px;
+        }
+
+        .feature-title {
+            color: #0f4c75;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .feature-desc {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .contact-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            text-align: center;
+        }
+
+        .contact-title {
+            color: #0f4c75;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .whatsapp-btn, .commitment-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+
+        .whatsapp-btn {
+            background: linear-gradient(45deg, #25d366, #128c7e);
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        }
+
+        .commitment-btn {
+            background: linear-gradient(45deg, #0f4c75, #3282b8);
+            box-shadow: 0 4px 15px rgba(15, 76, 117, 0.3);
+        }
+
+        .whatsapp-btn:hover, .commitment-btn:hover {
+            transform: translateY(-2px);
+            text-decoration: none;
+            color: white;
+        }
+
+        .whatsapp-btn:hover {
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+        }
+
+        .commitment-btn:hover {
+            box-shadow: 0 6px 20px rgba(15, 76, 117, 0.4);
+        }
+
+        .rules-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .rules-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .rules-title {
+            color: #0f4c75;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .rules-subtitle {
+            color: #3282b8;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .behavior-system {
+            margin-bottom: 30px;
+        }
+
+        .system-card {
+            background: linear-gradient(135deg, #0f4c75, #3282b8);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .system-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .score-breakdown {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .score-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            min-width: 150px;
+        }
+
+        .score-number {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .score-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: rgba(15, 76, 117, 0.1);
+            color: #0f4c75;
+            border: 2px solid #0f4c75;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .tab-btn:hover {
+            background: rgba(15, 76, 117, 0.2);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(45deg, #0f4c75, #3282b8);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .attendance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .attendance-card {
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid;
+        }
+
+        .attendance-card.critical {
+            background: #ffe6e6;
+            border-left-color: #dc3545;
+        }
+
+        .attendance-card.warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+
+        .attendance-card.moderate {
+            background: #fff8e1;
+            border-left-color: #ff9800;
+        }
+
+        .attendance-card.mild {
+            background: #e8f5e8;
+            border-left-color: #28a745;
+        }
+
+        .card-header h4 {
+            color: #0f4c75;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .behavior-levels {
+            display: grid;
+            gap: 20px;
+        }
+
+        .level-card {
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid;
+            background: #f8f9fa;
+        }
+
+        .level-card.level-1 { border-left-color: #17a2b8; }
+        .level-card.level-2 { border-left-color: #28a745; }
+        .level-card.level-3 { border-left-color: #ffc107; }
+        .level-card.level-4 { border-left-color: #fd7e14; }
+        .level-card.level-5 { border-left-color: #dc3545; }
+
+        .level-card h4 {
+            color: #0f4c75;
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .level-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .level-card li {
+            padding: 8px 0;
+            padding-right: 20px;
+            position: relative;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .level-card li:last-child {
+            border-bottom: none;
+        }
+
+        .level-card li:before {
+            content: '•';
+            color: #3282b8;
+            font-weight: bold;
+            position: absolute;
+            right: 0;
+        }
+
+        .excellent-behaviors {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .excellent-card {
+            padding: 20px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+            border: 2px solid #28a745;
+        }
+
+        .excellent-card.high-reward {
+            background: linear-gradient(135deg, #fff3cd, #fff8e1);
+            border-color: #ffc107;
+        }
+
+        .excellent-card.medium-reward {
+            background: linear-gradient(135deg, #e1ecf4, #f0f7ff);
+            border-color: #3282b8;
+        }
+
+        .excellent-card h4 {
+            color: #0f4c75;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .excuses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .excuse-category {
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .excuse-category.medical {
+            background: linear-gradient(135deg, #ffe6e6, #fff0f0);
+            border-top: 4px solid #dc3545;
+        }
+
+        .excuse-category.social {
+            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+            border-top: 4px solid #28a745;
+        }
+
+        .excuse-category.official {
+            background: linear-gradient(135deg, #e1ecf4, #f0f7ff);
+            border-top: 4px solid #3282b8;
+        }
+
+        .excuse-category h4 {
+            color: #0f4c75;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .excuse-category ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .excuse-category li {
+            padding: 8px 0;
+            padding-right: 20px;
+            position: relative;
+            border-bottom: 1px solid rgba(15, 76, 117, 0.1);
+        }
+
+        .excuse-category li:last-child {
+            border-bottom: none;
+        }
+
+        .excuse-category li:before {
+            content: '✓';
+            color: #28a745;
+            font-weight: bold;
+            position: absolute;
+            right: 0;
+        }
+
+        .values-hero {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #0f4c75, #3282b8);
+            color: white;
+            border-radius: 15px;
+        }
+
+        .values-logo {
+            margin-bottom: 20px;
+        }
+
+        .logo-character {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .values-hero h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .values-intro {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .school-vision {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .vision-card, .mission-card {
+            padding: 25px;
+            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+            border: 2px solid #28a745;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .vision-card h3, .mission-card h3 {
+            color: #0f4c75;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .vision-card p, .mission-card p {
+            color: #444;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .value-card {
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-top: 4px solid;
+        }
+
+        .value-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .value-card.excellence {
+            background: linear-gradient(135deg, #fff3cd, #fff8e1);
+            border-top-color: #ffc107;
+        }
+
+        .value-card.professionalism {
+            background: linear-gradient(135deg, #e1ecf4, #f0f7ff);
+            border-top-color: #3282b8;
+        }
+
+        .value-card.citizenship {
+            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+            border-top-color: #28a745;
+        }
+
+        .value-card.achievement {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            border-top-color: #ff9800;
+        }
+
+        .value-card.responsibility2 {
+            background: linear-gradient(135deg, #f1f8e9, #dcedc8);
+            border-top-color: #8bc34a;
+        }
+
+        .value-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .value-card h4 {
+            color: #0f4c75;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .value-card p {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .developer-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .developer-info {
+            font-size: 16px;
+            color: #0f4c75;
+            font-weight: 600;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .school-name {
+                font-size: 22px;
+            }
+            
+            .welcome-message {
+                font-size: 16px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .header, .welcome-section, .contact-section {
+                padding: 20px;
+            }
+
+            .contact-section div {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .whatsapp-btn, .commitment-btn {
+                margin: 5px 0;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header animate-fade">
+            <div class="logo-section">
+                <div class="header-text">
+                    <div class="ministry-info">
+                        المملكة العربية السعودية<br>
+                        وزارة التعليم<br>
+                        مكتب تعليم العوالي
+                    </div>
+                    <h1 class="school-name">متوسطة المنذر بن عمرو الأنصاري</h1>
+                    <div class="director-info">مدير المدرسة: خالد سعود المطيري</div>
+                </div>
+            </div>
+        </header>
+
+        <section class="welcome-section animate-fade">
+            <h2 class="welcome-title">مرحباً بكم في عام دراسي جديد</h2>
+            <div class="welcome-message">
+                <div class="bismillah" style="text-align: center; font-size: 20px; font-weight: 700; color: #0f4c75; margin-bottom: 25px;">بسم الله الرحمن الرحيم</div>
+                
+                <p><strong>أولياء أمورنا الكرام، أبنائي الطلاب الأعزاء، السلام عليكم ورحمة الله وبركاته،</strong></p>
+                
+                <p>نستقبل اليوم عاماً دراسياً جديداً، يحمل في طياته آمالاً واسعة، وفرصاً ثمينة لبناء مستقبل يليق بطموحاتكم. إن مقاعد الدراسة ليست مجرد مكان نتلقى فيه المعلومة، بل هي منطلق لصناعة الرجال، وغرس القيم، وتشكيل العقول القادرة على الإبداع والعطاء.</p>
+                
+                <p>أبنائي الطلاب، قد تشعرون في بداية الطريق بشيء من القلق أو التردد، وهذا طبيعي، لكن تذكروا أن كل رحلة عظمى تبدأ بخطوة، وأن التميز لا يناله إلا من صبر واجتهد وثابر. إن مدرستكم هي بيتكم الثاني، وأساتذتكم الأفاضل هم سندكم ورفقاء دربكم، فلا تترددوا في طلب العون والنصيحة، ولا تتركوا يوماً يمرّ دون أن تضيفوا فيه لبنة جديدة في صرح نجاحكم.</p>
+                
+                <p>وليكن شعارنا هذا العام: <strong>انضباطٌ في السلوك، جدٌّ في العمل، وسموٌّ في الطموح</strong>. فالانضباط يفتح أبواب التوفيق، والعمل يثمر إنجازاً، والطموح يصنع فارقاً بين العادي والمتميز.</p>
+                
+                <p>فلنجعل من هذا العام سجلاً حافلاً بالعلم والمعرفة، وميداناً للجد والاجتهاد، وموسماً تُكتب فيه قصص نجاحكم بأيديكم.</p>
+                
+                <p>والله أسأل أن يكون عاماً دراسياً مباركاً، عامراً بالعزائم والإنجازات.</p>
+                
+                <div style="text-align: left; margin-top: 25px; font-weight: 600; color: #0f4c75;">
+                    <p>مدير المدرسة<br>
+                    خالد سعود المطيري</p>
+                </div>
+            </div>
+            <div class="quote">
+                "الغد مرآة ما نصنعه اليوم، فليكن عملكم الآن هو زاد نجاحكم القادم"
+            </div>
+        </section>
+
+        <div class="features-grid">
+            <div class="feature-card animate-fade">
+                <div class="feature-icon">📚</div>
+                <h3 class="feature-title">التعليم المتميز</h3>
+                <p class="feature-desc">نقدم تعليماً عالي الجودة يواكب أحدث المناهج والطرق التعليمية</p>
+            </div>
+            
+            <div class="feature-card animate-fade">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">بناء الشخصية</h3>
+                <p class="feature-desc">نهتم ببناء شخصية الطالب وتنمية مواهبه وقدراته المختلفة</p>
+            </div>
+            
+            <div class="feature-card animate-fade">
+                <div class="feature-icon">🤝</div>
+                <h3 class="feature-title">التعاون المجتمعي</h3>
+                <p class="feature-desc">نعمل بشراكة مع أولياء الأمور لتحقيق أفضل النتائج للطلاب</p>
+            </div>
+        </div>
+
+        <section class="rules-section animate-fade">
+            <div class="rules-header">
+                <h2 class="rules-title">📋 قواعد السلوك والمواظبة</h2>
+                <p class="rules-subtitle">الإصدار الخامس 1447هـ - للمرحلة المتوسطة</p>
+            </div>
+
+            <div class="behavior-system">
+                <div class="system-card">
+                    <h3 class="system-title">🎯 نظام تقييم السلوك</h3>
+                    <div class="score-breakdown">
+                        <div class="score-item positive">
+                            <span class="score-number">80</span>
+                            <span class="score-label">درجة السلوك الإيجابي</span>
+                        </div>
+                        <div class="score-item excellent">
+                            <span class="score-number">20</span>
+                            <span class="score-label">درجة السلوك المتميز</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rules-tabs">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="showTab('attendance')">📅 المواظبة</button>
+                    <button class="tab-btn" onclick="showTab('behavior')">🎭 مستويات السلوك</button>
+                    <button class="tab-btn" onclick="showTab('excellent')">⭐ السلوك المتميز</button>
+                    <button class="tab-btn" onclick="showTab('excuses')">📝 الأعذار المقبولة</button>
+                    <button class="tab-btn" onclick="showTab('values')">🌟 قيمنا</button>
+                </div>
+
+                <div id="attendance" class="tab-content active">
+                    <div class="attendance-grid">
+                        <div class="attendance-card critical">
+                            <div class="card-header">
+                                <h4>🚨 تجاوز 10% خلال العام</h4>
+                            </div>
+                            <p>حرمان من الانتقال للعام التالي (المتوسطة) أو للفصل التالي (الثانوية)</p>
+                        </div>
+                        
+                        <div class="attendance-card warning">
+                            <div class="card-header">
+                                <h4>📞 عند 10 أيام</h4>
+                            </div>
+                            <p>مخاطبة الجهات المختصة وإشعار إدارة التعليم</p>
+                        </div>
+                        
+                        <div class="attendance-card moderate">
+                            <div class="card-header">
+                                <h4>🔔 عند 5 أيام</h4>
+                            </div>
+                            <p>استدعاء ولي الأمر وإحالة للجنة التوجيه الطلابي</p>
+                        </div>
+                        
+                        <div class="attendance-card mild">
+                            <div class="card-header">
+                                <h4>📋 عند 3 أيام</h4>
+                            </div>
+                            <p>تحويل للموجه الطلابي واستدعاء ولي الأمر وأخذ تعهد</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="behavior" class="tab-content">
+                    <div class="behavior-levels">
+                        <div class="level-card level-1">
+                            <h4>المستوى الأول - حسم درجة واحدة</h4>
+                            <ul>
+                                <li>التأخر الصباحي</li>
+                                <li>عدم حضور الاصطفاف</li>
+                                <li>التأخر عن الحصص</li>
+                                <li>إعاقة سير الحصص</li>
+                                <li>النوم داخل الفصل</li>
+                            </ul>
+                        </div>
+
+                        <div class="level-card level-2">
+                            <h4>المستوى الثاني - حسم درجتان</h4>
+                            <ul>
+                                <li>عدم حضور الحصة أو الهروب منها</li>
+                                <li>الدخول والخروج دون استئذان</li>
+                                <li>إثارة الفوضى</li>
+                            </ul>
+                        </div>
+
+                        <div class="level-card level-3">
+                            <h4>المستوى الثالث - حسم 3 درجات</h4>
+                            <ul>
+                                <li>عدم التقيد بالزي الرسمي</li>
+                                <li>الشجار أو المضاربة</li>
+                                <li>الكلمات النابية</li>
+                                <li>العبث بتجهيزات المدرسة</li>
+                                <li>حيازة السجائر</li>
+                            </ul>
+                        </div>
+
+                        <div class="level-card level-4">
+                            <h4>المستوى الرابع - حسم 10 درجات</h4>
+                            <ul>
+                                <li>الاعتداء بالضرب</li>
+                                <li>السرقة</li>
+                                <li>التصوير أو التسجيل</li>
+                                <li>التدخين</li>
+                                <li>الهروب من المدرسة</li>
+                            </ul>
+                        </div>
+
+                        <div class="level-card level-5">
+                            <h4>المستوى الخامس - حسم 15 درجة والرفع لإدارة التعليم</h4>
+                            <ul>
+                                <li>الإساءة لشعائر الإسلام</li>
+                                <li>التحرش الجنسي</li>
+                                <li>حيازة الأسلحة</li>
+                                <li>المخدرات والمسكرات</li>
+                                <li>الجرائم المعلوماتية</li>
+                                <li>التنمر والابتزاز</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="excellent" class="tab-content">
+                    <div class="excellent-behaviors">
+                        <div class="excellent-card high-reward">
+                            <h4>⭐ 6 درجات</h4>
+                            <ul>
+                                <li>الانضباط وعدم التغيب بدون عذر</li>
+                                <li>المشاركة في الخدمة المجتمعية</li>
+                                <li>المشاركة في البرامج التوعوية</li>
+                            </ul>
+                        </div>
+
+                        <div class="excellent-card medium-reward">
+                            <h4>🌟 4 درجات</h4>
+                            <ul>
+                                <li>مهارات الاتصال والقيادة</li>
+                                <li>المهارات الرقمية</li>
+                                <li>مهارة إدارة الوقت</li>
+                            </ul>
+                        </div>
+
+                        <div class="excellent-card low-reward">
+                            <h4>✨ درجتان</h4>
+                            <ul>
+                                <li>كتابة رسائل الشكر</li>
+                                <li>المشاركة في الإذاعة</li>
+                                <li>التعاون مع الزملاء</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="excuses" class="tab-content">
+                    <div class="excuses-grid">
+                        <div class="excuse-category medical">
+                            <h4>🏥 الأعذار الطبية</h4>
+                            <ul>
+                                <li>الإجازة المرضية</li>
+                                <li>مراجعة المستشفيات</li>
+                                <li>المرافقة الصحية</li>
+                                <li>الظروف الصحية الخاصة</li>
+                            </ul>
+                        </div>
+
+                        <div class="excuse-category social">
+                            <h4>👨‍👩‍👧‍👦 الأعذار الاجتماعية</h4>
+                            <ul>
+                                <li>وفاة الأقارب حتى الدرجة الثالثة</li>
+                                <li>مرافقة الأقارب للجهات الرسمية</li>
+                                <li>الظروف الأسرية الطارئة</li>
+                            </ul>
+                        </div>
+
+                        <div class="excuse-category official">
+                            <h4>🏛️ الأعذار الرسمية</h4>
+                            <ul>
+                                <li>مراجعة الجهات الرسمية</li>
+                                <li>المشاركة في المسابقات</li>
+                                <li>الكوارث والحرائق</li>
+                                <li>ما تقرره أنظمة حماية الطفل</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="values" class="tab-content">
+                    <div class="values-hero">
+                        <div class="values-logo">
+                            <div class="logo-character">
+                                🌟
+                            </div>
+                        </div>
+                        <h2>قيمنا</h2>
+                        <p class="values-intro">نؤمن في مدرستنا بأن القيم هي أساس النجاح والتطور، وهي التي تصقل شخصية الطالب ليصبح عضواً فاعلاً في مجتمعه.</p>
+                    </div>
+
+                    <div class="school-vision">
+                        <div class="vision-card">
+                            <h3>رؤيتنا</h3>
+                            <p>صناعة جيل واعٍ، متميز، ومنضبط، قادر على الإسهام في بناء مجتمع المعرفة، وفقًا لمبادئنا وقيمنا الإسلامية، وتحقيقًا لرؤية 2030.</p>
+                        </div>
+                        <div class="mission-card">
+                            <h3>رسالتنا</h3>
+                            <p>توفير بيئة تعليمية محفزة ومبتكرة، تعزز التميز الأكاديمي والنمو الشخصي، من خلال منهج تعليمي متكامل، وشراكة فاعلة مع الأسرة والمجتمع.</p>
+                        </div>
+                    </div>
+
+                    <div class="values-grid">
+                        <div class="value-card excellence">
+                            <div class="value-icon">🏆</div>
+                            <h4>التميز</h4>
+                            <p>السعي المستمر نحو التفوق في كافة المجالات الأكاديمية والسلوكية.</p>
+                        </div>
+                        <div class="value-card professionalism">
+                            <div class="value-icon">🤝</div>
+                            <h4>الاحترافية</h4>
+                            <p>الالتزام بأعلى معايير الأداء والمهنية في كافة الأنشطة التعليمية والإدارية.</p>
+                        </div>
+                        <div class="value-card citizenship">
+                            <div class="value-icon">🇸🇦</div>
+                            <h4>المواطنة الصالحة</h4>
+                            <p>غرس قيم الانتماء والمسؤولية تجاه الوطن والمجتمع.</p>
+                        </div>
+                        <div class="value-card achievement">
+                            <div class="value-icon">🎯</div>
+                            <h4>الإنجاز</h4>
+                            <p>التركيز على تحقيق الأهداف وتقدير الجهود المبذولة في سبيلها.</p>
+                        </div>
+                        <div class="value-card responsibility2">
+                            <div class="value-icon">🛡️</div>
+                            <h4>المسؤولية</h4>
+                            <p>تحمل النتائج الشخصية والتعليمية والاجتماعية</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact-section animate-fade">
+            <h3 class="contact-title">الخدمات الإلكترونية</h3>
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <a href="commitment.html" class="commitment-btn">
+                    📋 نموذج التعهد
+                </a>
+                <a href="https://wa.me/966535876985" class="whatsapp-btn">
+                    📱 واتساب
+                </a>
+            </div>
+        </section>
+
+        <section class="developer-section">
+            <div class="developer-info" dir="ltr" style="font-family: 'Segoe UI', Arial, sans-serif;">
+                Designed & Developed by Nawaf Alsubhi
+            </div>
+            <div class="developer-info">
+                &copy; 2025
+            </div>
+        </section>
+        
+        <script>
+            function showTab(tabId) {
+                const tabs = document.querySelectorAll('.tab-content');
+                const buttons = document.querySelectorAll('.tab-btn');
+                
+                tabs.forEach(tab => tab.classList.remove('active'));
+                buttons.forEach(btn => btn.classList.remove('active'));
+                
+                document.getElementById(tabId).classList.add('active');
+                document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+            }
+        </script>
+    </body>
+</html>
