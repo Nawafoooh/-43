@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>لوحة وكيل شؤون الطلاب — سجل إقرارات أولياء الأمور</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--g1:#0b6b45;--g2:#0e8a5a;--g3:#e7f3ec;--bg:#f4f6f5;--card:#fff;--tx:#1d2b25;--mut:#5f6f68;--bd:#d9e2de;--err:#b3261e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--g1:#3fb884;--g2:#2f9d70;--g3:#16302a;--bg:#0f1714;--card:#17211d;--tx:#e8f0ec;--mut:#9db0a7;--bd:#2a3a34;--err:#f2b8b5}}
+:root[data-theme="dark"]{--g1:#3fb884;--g2:#2f9d70;--g3:#16302a;--bg:#0f1714;--card:#17211d;--tx:#e8f0ec;--mut:#9db0a7;--bd:#2a3a34;--err:#f2b8b5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",Arial,sans-serif;line-height:1.8}
+.wrap{max-width:760px;margin:0 auto;padding:16px}
+header{background:var(--card);border:1px solid var(--bd);border-top:6px solid var(--g1);border-radius:14px;padding:22px 20px;text-align:center}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.logo{width:74px;height:74px;flex:none}
+.moe{font-size:.85rem;color:var(--mut);line-height:1.6;text-align:center;flex:1}
+.moe b{display:block;color:var(--g1);font-size:.95rem}
+.school{display:inline-block;background:var(--g3);color:var(--g1);font-weight:600;padding:4px 16px;border-radius:99px;font-size:.95rem}
+h1{font-size:clamp(1.3rem,4.5vw,1.75rem);color:var(--g1);margin:12px 0 6px;line-height:1.5}
+.intro{color:var(--mut);margin:0;font-size:.98rem}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px 20px;margin-top:14px}
+.card h2{font-size:1.05rem;margin:0 0 14px;color:var(--g1);display:flex;align-items:center;gap:8px}
+.card h2 span{background:var(--g1);color:#fff;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:.85rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.full{grid-column:1/-1}
+label.l{display:block;font-weight:600;font-size:.92rem;margin-bottom:4px}
+input[type=text],select{width:100%;padding:11px 12px;border:1px solid var(--bd);border-radius:9px;background:var(--bg);color:var(--tx);font:inherit}
+input:focus,select:focus{outline:2px solid var(--g2);border-color:var(--g2)}
+.bad{border-color:var(--err)!important}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer;border:2px solid var(--g1);background:var(--g3);color:var(--g1)}
+.btn:hover{background:var(--g1);color:#fff}
+.status{font-size:.88rem;margin:8px 0 0;color:var(--mut);text-align:center}
+.status.ok{color:var(--g1);font-weight:600}
+.ack{display:flex;gap:12px;align-items:flex-start;border:2px solid var(--bd);border-radius:12px;padding:16px;background:var(--g3);margin-top:14px;cursor:pointer;transition:.2s}
+.ack.locked{opacity:.55;cursor:not-allowed;background:var(--bg)}
+.ack input{width:26px;height:26px;flex:none;margin-top:4px;accent-color:var(--g1)}
+.ack p{margin:0;font-size:.98rem}
+.note{text-align:center;color:var(--mut);font-size:.88rem;margin:12px 0}
+.hint{color:var(--err);font-size:.85rem;text-align:center;min-height:1.4em;margin:0 0 8px}
+.submit{width:100%;padding:15px;border:0;border-radius:10px;background:var(--g1);color:#fff;font:inherit;font-size:1.05rem;font-weight:700;cursor:pointer}
+.submit:disabled{background:#9aa9a2;cursor:not-allowed}
+.success{display:none;text-align:center}
+.tick{width:62px;height:62px;border-radius:50%;background:var(--g1);color:#fff;font-size:2rem;display:grid;place-items:center;margin:0 auto 10px}
+.success h2{justify-content:center;font-size:1.1rem;line-height:1.7}
+dl{margin:16px 0 0;text-align:right;border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+dl div{display:flex;justify-content:space-between;gap:12px;padding:11px 14px;border-bottom:1px solid var(--bd)}
+dl div:last-child{border:0}
+dt{color:var(--mut);font-size:.9rem}dd{margin:0;font-weight:600}
+.ref{color:var(--g1);letter-spacing:1px;direction:ltr}
+footer{text-align:center;margin:22px 0 8px;color:var(--mut);font-size:.92rem}
+footer b{display:block;color:var(--g1);font-size:1rem}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.logo{width:58px;height:58px}dl div{flex-direction:column;gap:0}}
+
+.top{justify-content:center}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.bar input,.bar select{flex:1;min-width:140px}
+.sm{width:auto;padding:10px 16px}
+.tw{overflow-x:auto;border:1px solid var(--bd);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:.9rem}
+th,td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{background:var(--g3);color:var(--g1)}
+.cnt{color:var(--mut);font-size:.9rem}
+</style></head><body><div class="wrap">
+<header><span class="school">متوسطة المنذر بن عمرو الأنصاري</span><h1>لوحة وكيل شؤون الطلاب</h1><p class="intro">سجل إقرارات أولياء الأمور بالاطلاع على لائحة السلوك والمواظبة</p></header>
+<section class="card" id="login"><h2>تسجيل الدخول</h2><div class="grid">
+<div class="full"><label class="l" for="em">اسم المستخدم</label><input type="text" id="em" dir="ltr" autocomplete="username" autocapitalize="none"></div>
+<div class="full"><label class="l" for="pw">كلمة المرور</label><input type="password" id="pw" dir="ltr" autocomplete="current-password"></div></div>
+<p class="hint" id="err" style="margin-top:10px"></p><button class="submit" id="go">دخول</button></section>
+<section class="card" id="panel" style="display:none">
+<div class="bar"><input type="text" id="q" placeholder="بحث بالاسم أو الرقم المرجعي"><select id="fg"><option value="">كل الصفوف</option><option>الأول المتوسط</option><option>الثاني المتوسط</option><option>الثالث المتوسط</option></select><button class="btn sm" id="csv">تصدير CSV</button><button class="btn sm" id="out">خروج</button></div>
+<p class="cnt" id="cnt"></p><div class="tw"><table><thead><tr><th>#</th><th>الطالب</th><th>الصف</th><th>الفصل</th><th>ولي الأمر</th><th>الصلة</th><th>التاريخ والوقت</th><th>المرجع</th></tr></thead><tbody id="tb"></tbody></table></div></section>
+<footer><b>متوسطة المنذر بن عمرو الأنصاري</b>وكيل شؤون الطلاب</footer></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+import { getFirestore, doc, setDoc, serverTimestamp, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAlv4YWj4nq1Oab6Cr-XcWJg2uo-ikw_qs",
+  authDomain: "late-3df89.firebaseapp.com",
+  projectId: "late-3df89",
+  storageBucket: "late-3df89.firebasestorage.app",
+  messagingSenderId: "993893093680",
+  appId: "1:993893093680:web:9288f8740473073e0278f5",
+  measurementId: "G-LKLYM74R6H"
+};
+
+const app = initializeApp(firebaseConfig);
+isSupported().then(y => { if (y) getAnalytics(app); }).catch(() => {});
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+var $=function(i){return document.getElementById(i)},rows=[],unsub=null;
+$("go").onclick=function(){$("err").textContent="";signInWithEmailAndPassword(auth,$("em").value.trim().toLowerCase()+"@agent.school",$("pw").value).catch(function(){$("err").textContent="اسم المستخدم أو كلمة المرور غير صحيحة."})};
+$("out").onclick=function(){signOut(auth)};
+onAuthStateChanged(auth,function(u){
+  $("login").style.display=u?"none":"block";$("panel").style.display=u?"block":"none";
+  if(unsub){unsub();unsub=null}
+  if(u){unsub=onSnapshot(query(collection(db,"acknowledgments"),orderBy("createdAt","desc"),limit(1000)),function(s){
+    rows=s.docs.map(function(d){return d.data()});draw()},function(){$("cnt").textContent="ليس لديك صلاحية عرض السجل."})}
+});
+function fmt(r){var t=r.createdAt&&r.createdAt.toDate?r.createdAt.toDate():null;return t?t.toLocaleString("ar-SA-u-nu-latn",{dateStyle:"medium",timeStyle:"short"}):""}
+function cur(){var q=$("q").value.trim().toLowerCase(),g=$("fg").value;return rows.filter(function(r){return(!g||r.grade===g)&&(!q||(r.studentName+r.guardianName+r.ref).toLowerCase().indexOf(q)>-1)})}
+function draw(){var list=cur(),tb=$("tb");tb.innerHTML="";$("cnt").textContent="عدد الإقرارات: "+list.length;
+  list.forEach(function(r,i){var tr=document.createElement("tr");[i+1,r.studentName,r.grade,r.classNo,r.guardianName,r.relation,fmt(r),r.ref].forEach(function(v){var td=document.createElement("td");td.textContent=v;tr.appendChild(td)});tb.appendChild(tr)})}
+$("q").oninput=draw;$("fg").onchange=draw;
+$("csv").onclick=function(){var h=["الطالب","الصف","الفصل","ولي الأمر","الصلة","التاريخ","المرجع"];
+  var l=[h].concat(cur().map(function(r){return[r.studentName,r.grade,r.classNo,r.guardianName,r.relation,fmt(r),r.ref]}));
+  var t=l.map(function(a){return a.map(function(v){return'"'+String(v).replace(/"/g,'""')+'"'}).join(",")}).join("\n");
+  var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download="acknowledgments.csv";a.click()};
+</script></body></html>
