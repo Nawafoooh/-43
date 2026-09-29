@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>إقرار ولي الأمر بالاطلاع على لائحة السلوك والمواظبة</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--g1:#0b6b45;--g2:#0e8a5a;--g3:#e7f3ec;--bg:#f4f6f5;--card:#fff;--tx:#1d2b25;--mut:#5f6f68;--bd:#d9e2de;--err:#b3261e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--g1:#3fb884;--g2:#2f9d70;--g3:#16302a;--bg:#0f1714;--card:#17211d;--tx:#e8f0ec;--mut:#9db0a7;--bd:#2a3a34;--err:#f2b8b5}}
+:root[data-theme="dark"]{--g1:#3fb884;--g2:#2f9d70;--g3:#16302a;--bg:#0f1714;--card:#17211d;--tx:#e8f0ec;--mut:#9db0a7;--bd:#2a3a34;--err:#f2b8b5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",Arial,sans-serif;line-height:1.8}
+.wrap{max-width:760px;margin:0 auto;padding:16px}
+header{background:var(--card);border:1px solid var(--bd);border-top:6px solid var(--g1);border-radius:14px;padding:22px 20px;text-align:center}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.logo{width:74px;height:74px;flex:none}
+.moe{font-size:.85rem;color:var(--mut);line-height:1.6;text-align:center;flex:1}
+.moe b{display:block;color:var(--g1);font-size:.95rem}
+.school{display:inline-block;background:var(--g3);color:var(--g1);font-weight:600;padding:4px 16px;border-radius:99px;font-size:.95rem}
+h1{font-size:clamp(1.3rem,4.5vw,1.75rem);color:var(--g1);margin:12px 0 6px;line-height:1.5}
+.intro{color:var(--mut);margin:0;font-size:.98rem}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px 20px;margin-top:14px}
+.card h2{font-size:1.05rem;margin:0 0 14px;color:var(--g1);display:flex;align-items:center;gap:8px}
+.card h2 span{background:var(--g1);color:#fff;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:.85rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.full{grid-column:1/-1}
+label.l{display:block;font-weight:600;font-size:.92rem;margin-bottom:4px}
+input[type=text],select{width:100%;padding:11px 12px;border:1px solid var(--bd);border-radius:9px;background:var(--bg);color:var(--tx);font:inherit}
+input:focus,select:focus{outline:2px solid var(--g2);border-color:var(--g2)}
+.bad{border-color:var(--err)!important}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer;border:2px solid var(--g1);background:var(--g3);color:var(--g1)}
+.btn:hover{background:var(--g1);color:#fff}
+.status{font-size:.88rem;margin:8px 0 0;color:var(--mut);text-align:center}
+.status.ok{color:var(--g1);font-weight:600}
+.ack{display:flex;gap:12px;align-items:flex-start;border:2px solid var(--bd);border-radius:12px;padding:16px;background:var(--g3);margin-top:14px;cursor:pointer;transition:.2s}
+.ack.locked{opacity:.55;cursor:not-allowed;background:var(--bg)}
+.ack input{width:26px;height:26px;flex:none;margin-top:4px;accent-color:var(--g1)}
+.ack p{margin:0;font-size:.98rem}
+.note{text-align:center;color:var(--mut);font-size:.88rem;margin:12px 0}
+.hint{color:var(--err);font-size:.85rem;text-align:center;min-height:1.4em;margin:0 0 8px}
+.submit{width:100%;padding:15px;border:0;border-radius:10px;background:var(--g1);color:#fff;font:inherit;font-size:1.05rem;font-weight:700;cursor:pointer}
+.submit:disabled{background:#9aa9a2;cursor:not-allowed}
+.success{display:none;text-align:center}
+.tick{width:62px;height:62px;border-radius:50%;background:var(--g1);color:#fff;font-size:2rem;display:grid;place-items:center;margin:0 auto 10px}
+.success h2{justify-content:center;font-size:1.1rem;line-height:1.7}
+dl{margin:16px 0 0;text-align:right;border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+dl div{display:flex;justify-content:space-between;gap:12px;padding:11px 14px;border-bottom:1px solid var(--bd)}
+dl div:last-child{border:0}
+dt{color:var(--mut);font-size:.9rem}dd{margin:0;font-weight:600}
+.ref{color:var(--g1);letter-spacing:1px;direction:ltr}
+footer{text-align:center;margin:22px 0 8px;color:var(--mut);font-size:.92rem}
+footer b{display:block;color:var(--g1);font-size:1rem}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.logo{width:58px;height:58px}dl div{flex-direction:column;gap:0}}
+
+.top{justify-content:center}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.bar input,.bar select{flex:1;min-width:140px}
+.sm{width:auto;padding:10px 16px}
+.tw{overflow-x:auto;border:1px solid var(--bd);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:.9rem}
+th,td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{background:var(--g3);color:var(--g1)}
+.cnt{color:var(--mut);font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="top">
+    <div class="moe"><b>المملكة العربية السعودية</b>وزارة التعليم</div>
+    
+  </div>
+  <span class="school">متوسطة المنذر بن عمرو الأنصاري</span>
+  <h1>إقرار ولي الأمر بالاطلاع على لائحة السلوك والمواظبة</h1>
+  <p class="intro">حرصًا على تعزيز الشراكة بين المدرسة والأسرة، نأمل من ولي الأمر الاطلاع على لائحة السلوك والمواظبة المعتمدة، والتأكيد على الاطلاع عليها.</p>
+</header>
+
+<form id="f" novalidate>
+  <section class="card">
+    <h2><span>1</span>بيانات الطالب وولي الأمر</h2>
+    <div class="grid">
+      <div class="full"><label class="l" for="sn">اسم الطالب</label><input type="text" id="sn" autocomplete="off" placeholder="الاسم الرباعي"></div>
+      <div><label class="l" for="gr">الصف</label><select id="gr"><option value="">اختر الصف</option><option>الأول المتوسط</option><option>الثاني المتوسط</option><option>الثالث المتوسط</option></select></div>
+      <div><label class="l" for="cl">الفصل</label><select id="cl"><option value="">اختر الفصل</option></select></div>
+      <div><label class="l" for="gn">اسم ولي الأمر</label><input type="text" id="gn" autocomplete="off" placeholder="الاسم الثلاثي"></div>
+      <div><label class="l" for="rl">صلة ولي الأمر بالطالب</label><select id="rl"><option value="">اختر الصلة</option><option>أب</option><option>أم</option><option>ولي أمر</option></select></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span>2</span>الاطلاع على اللائحة</h2>
+    <button type="button" class="btn" id="open">📄 الاطلاع على لائحة السلوك والمواظبة</button>
+    <p class="status" id="st">يجب فتح اللائحة أولًا لتفعيل خانة الإقرار.</p>
+    <label class="ack locked" id="ackbox">
+      <input type="checkbox" id="ck" disabled>
+      <p>أقر أنا ولي أمر الطالب المذكور أعلاه بأنني اطلعت على لائحة السلوك والمواظبة، وفهمت ما ورد فيها من أنظمة وتعليمات وحقوق وواجبات وإجراءات، وأتعهد بمتابعة التزام ابني/ابنتي بما ورد فيها، والتعاون مع المدرسة في كل ما يحقق الانضباط والسلوك الإيجابي.</p>
+    </label>
+    <p class="note">يُعد الضغط على زر الإرسال تأكيدًا على الاطلاع والإقرار بما ورد أعلاه.</p>
+    <p class="hint" id="hint"></p>
+    <button type="submit" class="submit" id="sub" disabled>تأكيد الاطلاع والإقرار</button>
+  </section>
+</form>
+
+
+<section class="card success" id="ok">
+<div class="tick">✓</div>
+<h2>تم تسجيل إقرار ولي الأمر بالاطلاع على لائحة السلوك والمواظبة بنجاح.</h2>
+<dl><div><dt>اسم الطالب</dt><dd id="r1"></dd></div><div><dt>اسم ولي الأمر</dt><dd id="r2"></dd></div><div><dt>تاريخ ووقت الإقرار</dt><dd id="r3"></dd></div><div><dt>الرقم المرجعي</dt><dd class="ref" id="r4"></dd></div></dl>
+<p class="note"><a href="#" onclick="print();return false">طباعة / حفظ كـ PDF</a></p>
+</section>
+<footer><b>متوسطة المنذر بن عمرو الأنصاري</b>وكيل شؤون الطلاب</footer>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+import { getFirestore, doc, setDoc, serverTimestamp, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAlv4YWj4nq1Oab6Cr-XcWJg2uo-ikw_qs",
+  authDomain: "late-3df89.firebaseapp.com",
+  projectId: "late-3df89",
+  storageBucket: "late-3df89.firebasestorage.app",
+  messagingSenderId: "993893093680",
+  appId: "1:993893093680:web:9288f8740473073e0278f5",
+  measurementId: "G-LKLYM74R6H"
+};
+
+const app = initializeApp(firebaseConfig);
+isSupported().then(y => { if (y) getAnalytics(app); }).catch(() => {});
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// ضع هنا رابط لائحة السلوك والمواظبة الرسمي
+var REGULATION_URL = "https://www.moe.gov.sa/ar/aboutus/aboutministry/RPRLibrary/%D9%82%D9%88%D8%A7%D8%B9%D8%AF%20%D8%A7%D9%84%D8%B3%D9%84%D9%88%D9%83%20%D9%88%D8%A7%D9%84%D9%85%D9%88%D8%A7%D8%B8%D8%A8%D8%A9%20%D9%84%D8%B7%D9%84%D8%A7%D8%A8%20%D9%88%D8%B7%D8%A7%D9%84%D8%A8%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AA%D8%B9%D9%84%D9%8A%D9%85%20%D8%A7%D9%84%D8%B9%D8%A7%D9%85%201447.pdf";
+var $ = function(i){return document.getElementById(i)};
+var opened = false;
+for (var i=1;i<=10;i++){var o=document.createElement("option");o.textContent=i;$("cl").appendChild(o)}
+function upd(){
+  var on = opened;
+  $("ck").disabled = !on;
+  $("ackbox").classList.toggle("locked", !on);
+  $("sub").disabled = !(on && $("ck").checked);
+}
+$("open").onclick = function(){
+  if (REGULATION_URL) window.open(REGULATION_URL, "_blank", "noopener");
+  opened = true;
+  $("st").textContent = "✓ تم فتح اللائحة، يمكنك الآن تأكيد الإقرار.";
+  $("st").className = "status ok";
+  upd();
+};
+$("ck").onchange = upd;
+$("f").onsubmit = async function(e){
+  e.preventDefault();
+  var ids=["sn","gr","cl","gn","rl"], miss=false;
+  ids.forEach(function(k){var bad=!$(k).value.trim();$(k).classList.toggle("bad",bad);if(bad)miss=true});
+  if (miss){$("hint").textContent="يرجى استكمال جميع بيانات الطالب وولي الأمر.";window.scrollTo({top:0,behavior:"smooth"});return}
+  if (!opened || !$("ck").checked){$("hint").textContent="يجب الاطلاع على اللائحة وتحديد خانة الإقرار.";return}
+  var d=new Date(), p=function(n){return String(n).padStart(2,"0")};
+  var ref="MNA-"+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"-"+Math.random().toString(36).slice(2,8).toUpperCase();
+  var data={ref:ref,studentName:$("sn").value.trim(),grade:$("gr").value,classNo:$("cl").value,guardianName:$("gn").value.trim(),relation:$("rl").value,acknowledged:true,regulationOpened:true,createdAt:serverTimestamp()};
+  $("sub").disabled=true;$("sub").textContent="جارٍ تسجيل الإقرار…";$("hint").textContent="";
+  try{
+    await setDoc(doc(db,"acknowledgments",ref),data);
+    var when=d.toLocaleDateString("ar-SA-u-ca-islamic-umalqura",{day:"numeric",month:"long",year:"numeric"})+" هـ — "+d.toLocaleDateString("ar-SA-u-ca-gregory-nu-latn",{day:"numeric",month:"long",year:"numeric"})+" م — "+d.toLocaleTimeString("ar-SA-u-nu-latn",{hour:"2-digit",minute:"2-digit"});
+    $("r1").textContent=data.studentName;$("r2").textContent=data.guardianName;$("r3").textContent=when;$("r4").textContent=ref;
+    $("f").style.display="none";$("ok").style.display="block";window.scrollTo({top:0,behavior:"smooth"});
+  }catch(err){
+    console.error(err);
+    $("hint").textContent="تعذر تسجيل الإقرار. تحقق من الاتصال وأعد المحاولة.";
+    $("sub").disabled=false;$("sub").textContent="تأكيد الاطلاع والإقرار";
+  }
+};
+</script>
+</body>
+</html>
